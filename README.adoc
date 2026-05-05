@@ -6,6 +6,7 @@
 :docinfo: shared
 :server-path: ~/apps/glassfish7/glassfish
 :project_version: 1.0.0
+:project_path:~/github/fm-jakarta
 
 = FMS : Form Management System
 telman şahbazoğlu <tsahbazoglu@tspb.org.tr>
@@ -65,7 +66,7 @@ To accelerate the deployment phase, we first perform a standalone compile with `
 === Standalone Compile
 [source,js,subs="attributes,verbatim,quotes"]
 ----       
-cd ~/github/fms
+cd {project_path}
 ----
 
 ----
@@ -85,7 +86,7 @@ Extract the libraries from the EAR and move them to the domain library folder to
 ----  
 # Navigate to deployment target
 
-cd ~/github/fms/fms-ear/target/
+cd {project_path}/fms-ear/target/
 jar -xvf fms-ear-{project_version}.ear
 
 # Deploy fresh libraries
@@ -122,7 +123,7 @@ asadmin start-domain --debug;
 Once libraries are in the server path, use the `provided` scope for faster iteration:
 
 ----        
-cd ~/github/fms
+cd {project_path}
 ----
 
 ----
@@ -168,9 +169,7 @@ asadmin list-components;
 
 asadmin undeploy fms-ear-{project_version};
 
-asadmin deploy /home/telman/github/fms/fms-ear/target/fms-ear-{project_version}.ear;
-
-asadmin deploy fms-ear-{project_version}.ear;
+asadmin deploy {project_path}/fms-ear/target/fms-ear-{project_version}.ear;
 ----
 
 === Directory deployment (Dev)
@@ -178,7 +177,7 @@ asadmin deploy fms-ear-{project_version}.ear;
 ----
 asadmin list-components;
                         
-asadmin deploy --force=true --upload=false --name fms-app /home/telman/github/fms/fms-ear/target/fms-ear-{project_version}
+asadmin deploy --force=true --upload=false --name fms-app {project_path}/fms-ear/target/fms-ear-{project_version}
 
 asadmin undeploy fms-app
 
