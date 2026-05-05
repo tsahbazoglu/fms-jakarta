@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import jakarta.enterprise.inject.Alternative;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.outsider.EsignDoor;
+import tr.org.tspb.outsider.qualifier.DefaultEsignDoor;
 
 /**
  *
@@ -15,6 +16,7 @@ import tr.org.tspb.outsider.EsignDoor;
  */
 @Alternative
 @Dependent
+@DefaultEsignDoor
 public class EsignDoorDefaultImpl implements EsignDoor {
 
     @Override

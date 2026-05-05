@@ -16,6 +16,6 @@ import jakarta.inject.Qualifier;
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({FIELD, METHOD, TYPE, PARAMETER})
-public @interface OyasEsignDoorQualifier {
+public @interface OyasEsignDoor {
 
 }

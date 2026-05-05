@@ -5,7 +5,7 @@
        version="4.0"
        bean-discovery-mode="annotated">
     <alternatives>
-        <class>tr.org.tspb.outsider.impl.EsignDoorDefaultImpl</class>
+        <!--<class>tr.org.tspb.outsider.impl.EsignDoorDefaultImpl</class>-->
         <!--<class>tr.org.tspb.esign.gateway.EsignDoorMuhurdarImpl</class>-->
     </alternatives>
 </beans>

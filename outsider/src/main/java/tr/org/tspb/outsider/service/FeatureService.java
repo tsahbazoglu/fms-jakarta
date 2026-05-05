@@ -1,10 +1,13 @@
 package tr.org.tspb.outsider.service;
 
 import java.io.Serializable;
+//
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+//
 import tr.org.tspb.outsider.EsignDoor;
+import tr.org.tspb.outsider.qualifier.OyasEsignDoor;
 
 /**
  *
@@ -15,6 +18,7 @@ import tr.org.tspb.outsider.EsignDoor;
 public class FeatureService implements Serializable {
 
     @Inject
+    @OyasEsignDoor
     private EsignDoor esignDoor;
 
     public EsignDoor getEsignDoor() {
