@@ -32,10 +32,39 @@ To set up the project according to the environment requirements, please ensure t
 *   **Project Version:** The current stable version of this project is `{project-version}`.
 
 ==== Setup Instructions
+
+Operation System::
 ----
-1.  Ensure GlassFish 7 is installed at the specified `:server-path:`.
-2.  Verify that your local environment variables match the project versioning requirements.
-3.  Run the Maven build to synchronize the configuration with your local server instance.
+lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 25.10
+Release:	25.10
+Codename:	questing
+----
+
+Java::
+----
+java -version
+openjdk version "17.0.18" 2026-01-20
+OpenJDK Runtime Environment (build 17.0.18+8-Ubuntu-125.10.1)
+OpenJDK 64-Bit Server VM (build 17.0.18+8-Ubuntu-125.10.1, mixed mode, sharing)
+----
+
+Maven::
+----
+mvn -v
+Apache Maven 3.9.9
+Maven home: /usr/share/maven
+Java version: 17.0.18, vendor: Ubuntu, runtime: /usr/lib/jvm/java-17-openjdk-amd64
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "6.17.0-22-generic", arch: "amd64", family: "unix"
+----
+
+----
+Ensure GlassFish 7 is installed at the specified `:server-path:`.
+Verify that your local environment variables match the project versioning requirements.
+Run the Maven build to synchronize the configuration with your local server instance.
 ----
 
 === Clean Glassfish
