@@ -122,6 +122,7 @@ asadmin start-domain --debug;
 
 Once libraries are in the server path, use the `provided` scope for faster iteration:
 
+[source,js,subs="attributes,verbatim,quotes"]
 ----        
 cd {project_path}
 ----
