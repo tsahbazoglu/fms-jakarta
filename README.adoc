@@ -17,6 +17,26 @@ v1.0.0, 2018-03-06
 asciidoctor -b html5 -r asciidoctor-diagram -D release *.adoc 
 ----
 
+= Project Configuration
+    
+    :server-path: ~/apps/glassfish7/glassfish
+    :project-version: 1.0.0
+    
+== Environment Requirements
+    
+    To set up the project according to the environment requirements, please ensure the following variables are configured:
+    
+    *   **Server Path:** The application is configured to deploy to `{server-path}`.
+    *   **Project Version:** The current stable version of this project is `{project-version}`.
+    
+=== Setup Instructions
+    
+    1.  Ensure GlassFish 7 is installed at the specified `:server-path:`.
+    2.  Verify that your local environment variables match the project versioning requirements.
+    3.  Run the Maven build to synchronize the configuration with your local server instance.
+
+
+
 === Clean Glassfish
 [source,js,subs="attributes,verbatim,quotes"]
 ----        
