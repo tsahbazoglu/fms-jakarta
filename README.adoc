@@ -6,7 +6,7 @@
 :docinfo: shared
 :server-path: ~/apps/glassfish7/glassfish
 :project_version: 1.0.0
-:project_path: ~/github/fm-jakarta
+:project_path: ~/github/fms-jakarta
 
 = FMS : Form Management System
 telman şahbazoğlu <tsahbazoglu@tspb.org.tr>
