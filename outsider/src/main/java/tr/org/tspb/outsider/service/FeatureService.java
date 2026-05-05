@@ -7,7 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 //
 import tr.org.tspb.outsider.EsignDoor;
-import tr.org.tspb.outsider.qualifier.OyasEsignDoor;
+import tr.org.tspb.outsider.qualifier.DefaultEsignDoor;
 
 /**
  *
@@ -18,7 +18,8 @@ import tr.org.tspb.outsider.qualifier.OyasEsignDoor;
 public class FeatureService implements Serializable {
 
     @Inject
-    @OyasEsignDoor
+    @DefaultEsignDoor
+    //@OyasEsignDoor
     private EsignDoor esignDoor;
 
     public EsignDoor getEsignDoor() {

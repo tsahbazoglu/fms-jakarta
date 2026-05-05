@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-import jakarta.enterprise.inject.Alternative;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.outsider.EsignDoor;
 import tr.org.tspb.outsider.qualifier.DefaultEsignDoor;
@@ -14,7 +13,7 @@ import tr.org.tspb.outsider.qualifier.DefaultEsignDoor;
  *
  * @author Telman Şahbazoğlu
  */
-@Alternative
+//@Alternative : is used in case when we want to switch over beans.xml
 @Dependent
 @DefaultEsignDoor
 public class EsignDoorDefaultImpl implements EsignDoor {
