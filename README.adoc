@@ -88,19 +88,17 @@ Extract the libraries from the EAR and move them to the domain library folder to
 
 [source,js,subs="attributes,verbatim,quotes"]
 ----  
+# Navigate to deployment target
+
 cd ~/github/fms/fms-ear/target/
-
-ls -lrt
-jar -tf fms-ear-1.0.0.ear
-jar -tf fms-ear-1.0.0.ear | grep smth 
-
 jar -xvf fms-ear-{project_version}.ear
-            
+
+# Deploy fresh libraries
+
 cp lib/*.jar {server-path}/domains/domain1/lib
 
-ls -lrt {server-path}/domains/domain1/lib
-ls -lrt {server-path}/domains/domain1/lib | grep smth
-            
+# Remove project-specific libraries from the local path to prevent JAR confusion
+
 rm -rf {server-path}/domains/domain1/lib/common-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/constants-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/converter-1.0.0.jar
@@ -117,7 +115,9 @@ rm -rf {server-path}/domains/domain1/lib/pivot-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/service-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/table-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/util-1.0.0.jar
-             
+
+# Restart the domain to refresh the ClassLoader
+
 asadmin stop-domain;
 asadmin start-domain --debug;              
 ----
