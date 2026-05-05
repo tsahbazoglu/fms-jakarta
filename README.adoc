@@ -17,54 +17,6 @@ v1.0.0, 2018-03-06
 asciidoctor -b html5 -r asciidoctor-diagram -D release *.adoc 
 ----
 
-== Start Server
-[source,js,subs="attributes,verbatim,quotes"]
-----
-java -version
-
-export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
-
-export SERVER_HOME={server-path}
-
-export MONGODB_HOME=~/apps/mongodb-linux-x86_64-3.2.3
-export PATH=$PATH:$SERVER_HOME/bin:$MONGODB_HOME/bin
-mongod --dbpath ~/fmsdb --fork --logpath  ~/fmsdb.log  --logappend
-
-asadmin stop-domain
- 
-asadmin start-domain --debug
-
-asadmin stop-domain
-----
-
-== Log Server
-[source,js,subs="attributes,verbatim,quotes"]
-----
-tail -f {server-path}/domains/domain1/logs/server.log
-----
-
-
-== Compile
-1.0.0::
-----
-java -version
-
-cd /home/telman/github/fms
-
-export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
-
-/home/telman/Downloads/apache-maven-3.6.3/bin/./mvn clean install -DskipTests=true
-  
-----
-
-2.0.0::
-----
-mvn help:evaluate -Dexpression=deployment.notes -q -DforceStdout
-            
-mvn help:evaluate -Dexpression=deployment.notes -DforceStdout -pl .
-
-----
-
 === Clean Glassfish
 [source,js,subs="attributes,verbatim,quotes"]
 ----        
@@ -80,6 +32,20 @@ rm -rf {server-path}/domain1/applications/fms-ear-{project_version}
 rm -rf {server-path}/domain1/lib/*.jar
 
 asadmin start-domain --debug
+----
+
+== Log Server
+[source,js,subs="attributes,verbatim,quotes"]
+----
+tail -f {server-path}/domains/domain1/logs/server.log
+----
+
+
+== Compile
+----
+mvn help:evaluate -Dexpression=deployment.notes -q -DforceStdout
+            
+mvn help:evaluate -Dexpression=deployment.notes -DforceStdout -pl .
 ----
 
 === Standalone Compile
