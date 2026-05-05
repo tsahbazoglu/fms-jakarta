@@ -121,7 +121,7 @@ rm -rf {server-path}/domains/domain1/lib/common-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/constants-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/converter-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/datamodel-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/esign-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/esign-core-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/esign-util-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/factory-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/fgtpswd-1.0.0.jar
