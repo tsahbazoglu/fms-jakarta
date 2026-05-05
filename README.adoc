@@ -128,15 +128,12 @@ cd {project_path}
 ----
 
 ----
-mvn clean install \
--Ddependency.scope=provided            
+mvn clean install -Ddependency.scope=provided            
 ----
 
 === Optimized Build + E-sign Support
 ----        
-mvn clean install \
--PesignSupport \
--Ddependency.scope=provided            
+mvn clean install -PesignSupport -Ddependency.scope=provided            
 ----
 
 [NOTE]
