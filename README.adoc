@@ -61,6 +61,7 @@ Default locale: en_US, platform encoding: UTF-8
 OS name: "linux", version: "6.17.0-22-generic", arch: "amd64", family: "unix"
 ----
 
+Java Server::
 ----
 Ensure GlassFish 7 is installed at the specified `:server-path:`.
 Verify that your local environment variables match the project versioning requirements.
