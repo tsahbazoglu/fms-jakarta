@@ -60,7 +60,9 @@ asadmin start-domain --debug
 tail -f {server-path}/domains/domain1/logs/server.log
 ----
 
-== Compile
+== Compilation and Deployment
+
+To accelerate the deployment phase, we first perform a standalone compile with `compile` scope to extract and migrate core libraries to the GlassFish global library directory. Subsequent builds use the `provided` scope to create a lightweight EAR file, significantly reducing deployment time during active development.
 
 === Standalone Compile
 [source,js,subs="attributes,verbatim,quotes"]
@@ -73,14 +75,17 @@ mvn clean install \
 -Ddependency.scope=compile
 ----
 
-=== Standalone compile + Esign
+=== Standalone compile + E-sign Support
 ----
 mvn clean install \
 -PesignSupport \
 -Ddependency.scope=compile
 ----
 
-=== Copy Libs to Glassfish
+=== Library Migration (GlassFish)
+
+Extract the libraries from the EAR and move them to the domain library folder to avoid redundant bundling:
+
 [source,js,subs="attributes,verbatim,quotes"]
 ----  
 cd ~/github/fms/fms-ear/target/
@@ -117,7 +122,10 @@ asadmin stop-domain;
 asadmin start-domain --debug;              
 ----
 
-=== Compile As Provided
+=== Optimized Build (Provided Scope)
+
+Once libraries are in the server path, use the `provided` scope for faster iteration:
+
 ----        
 cd ~/github/fms
 ----
@@ -127,7 +135,7 @@ mvn clean install \
 -Ddependency.scope=provided            
 ----
 
-=== Compile  As Provided + Esign
+=== Optimized Build + E-sign Support
 ----        
 mvn clean install \
 -PesignSupport \
@@ -135,8 +143,10 @@ mvn clean install \
 ----
 
 [NOTE]
-ATTENTION
-
+====
+When using the `outsider` module, ensure the CDI alternatives in `beans.xml` are correctly configured for your specific `EsignDoor` implementation.
+====
+    
 ----
 <artifactId>outsider</artifactId>
 ----
@@ -157,10 +167,11 @@ ATTENTION
 ----
 
 [NOTE] 
+====
 Do not forget to replace with you own EsginDoor implementation.
+====
 
-
-=== Regular deployment (Production)
+=== Production deployment
 [source,js,subs="attributes,verbatim,quotes"]
 ----
 asadmin list-components;
