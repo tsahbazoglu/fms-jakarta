@@ -164,11 +164,6 @@ When using the `outsider` module, ensure the CDI alternatives in `beans.xml` are
 </beans>
 ----
 
-[NOTE] 
-====
-Do not forget to replace with you own EsginDoor implementation.
-====
-
 === Production deployment
 [source,js,subs="attributes,verbatim,quotes"]
 ----
@@ -182,6 +177,7 @@ asadmin deploy fms-ear-{project_version}.ear;
 ----
 
 === Directory deployment (Dev)
+[source,js,subs="attributes,verbatim,quotes"]
 ----
 asadmin list-components;
                         
