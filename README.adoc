@@ -27,9 +27,8 @@ asciidoctor -b html5 -r asciidoctor-diagram -D release *.adoc
 
 To set up the project according to the environment requirements, please ensure the following variables are configured:
     
-    *   **Server Path:** The application is configured to deploy to `{server-path}`.
-    *   **Project Version:** The current stable version of this project is `{project-version}`.
-
+*   **Server Path:** The application is configured to deploy to `{server-path}`.
+*   **Project Version:** The current stable version of this project is `{project-version}`.
 
 ==== Setup Instructions
 ----
