@@ -40,13 +40,7 @@ asadmin start-domain --debug
 tail -f {server-path}/domains/domain1/logs/server.log
 ----
 
-
 == Compile
-----
-mvn help:evaluate -Dexpression=deployment.notes -q -DforceStdout
-            
-mvn help:evaluate -Dexpression=deployment.notes -DforceStdout -pl .
-----
 
 === Standalone Compile
 [source,js,subs="attributes,verbatim,quotes"]
@@ -99,12 +93,10 @@ rm -rf {server-path}/domains/domain1/lib/pivot-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/service-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/table-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/util-1.0.0.jar
-            
              
 asadmin stop-domain;
 asadmin start-domain --debug;              
 ----
-
 
 === Compile As Provided
 ----        
