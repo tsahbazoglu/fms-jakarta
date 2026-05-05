@@ -85,17 +85,16 @@ mvn clean install \
 ----  
 cd ~/github/fms/fms-ear/target/
 
-# ls -lrt
-# jar -tf fms-ear-1.0.0.ear
-# jar -tf fms-ear-1.0.0.ear | grep slf4j 
-# jar -tf fms-ear-1.0.0.ear | grep guava 
+ls -lrt
+jar -tf fms-ear-1.0.0.ear
+jar -tf fms-ear-1.0.0.ear | grep smth 
 
 jar -xvf fms-ear-{project_version}.ear
             
 cp lib/*.jar {server-path}/domains/domain1/lib
 
 ls -lrt {server-path}/domains/domain1/lib
-ls -lrt {server-path}/domains/domain1/lib | grep outsider
+ls -lrt {server-path}/domains/domain1/lib | grep smth
             
 rm -rf {server-path}/domains/domain1/lib/common-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/constants-1.0.0.jar
