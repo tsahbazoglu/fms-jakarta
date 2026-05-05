@@ -17,7 +17,7 @@ v1.0.0, 2018-03-06
 asciidoctor -b html5 -r asciidoctor-diagram -D release *.adoc 
 ----
 
-== Project Configuration
+== Asccidoc Variables
 ----    
 :server-path: ~/apps/glassfish7/glassfish
 :project-version: 1.0.0
