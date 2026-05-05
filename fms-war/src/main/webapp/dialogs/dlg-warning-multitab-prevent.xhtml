@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog
+        header="Uyarı"
+        visible="#{esignViewCtrl.preventedMultiTab}"
+        >
+        <p:panel>
+            <ul>
+                <li>
+                    Bir oturumda bir görünüm kısıtlaması aktivleştirildi.
+                    <ul>
+                        <li>
+                            mevcut sayfa refresh edilmiş olabilir.
+                        </li>
+                        <li>
+                            yeni sekme açılmış
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    İşlem yapmak için bu sekmeyi kapatınız.
+                </li>
+            </ul>
+        </p:panel>
+    </p:dialog>
+
+</html>

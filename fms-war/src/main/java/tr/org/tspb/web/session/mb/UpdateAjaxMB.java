@@ -1,0 +1,402 @@
+package tr.org.tspb.web.session.mb;
+
+import tr.org.tspb.common.qualifier.MyAjaxQualifier;
+import tr.org.tspb.util.stereotype.MyController;
+import java.io.Serializable;
+import jakarta.annotation.PostConstruct;
+import static tr.org.tspb.constants.ProjectConstants.*;
+
+/**
+ *
+ * @author Telman Şahbazoğlu
+ */
+@MyController
+@MyAjaxQualifier
+public class UpdateAjaxMB implements Serializable {
+
+    private String btnFileUpload;
+    private String btnNotifyWoEsing;
+    private String btnShowMetada;
+    private String btnShowEsignedDoc;
+    private String btnNewRecord;
+    private String btnBulkLoad;
+    private String btnEsignDirectly;
+    private String btn2dDlgEsign;
+    private String btn2dSearch;
+    private String btn2dSave;
+    private String btn2dSaveAs;
+    private String btnSistem;
+    private String btn1dSave;
+    private String btn1dRemoveFile;
+    private String btnCheckAllAsAdmin;
+    private String btnCheckAll;
+    private String btnDetay;
+    private String btnEditDetail;
+    private String buttonDeleteDirectly;
+    private String btnNdSave;
+    private String btnNdSendForms;
+    private String btnPostCreditCard;
+    private String btnRunTbb;
+    private String btnMergeTbb;
+    private String btnReportWebOzet;
+    private String btnWfStart;
+    private String btnShowWf;
+    private String btnWfOnCrud;
+    private String btnLdapAddUserToRole;
+    private String btnPageShowDesc;
+
+    //
+    private String pnlEsignHistory;
+    private String action2DSearch;
+    private String action2DHistory;
+    private String menuTabChange;
+    private String menuSelectForm;
+    private String action1dUploadFile;
+    private String actionEsignAjaxPoll;
+    private String dateTimeEntry1dEventChangeUpdate;
+    private String dateTimeEntry1dEventDateSelectUpdate;
+    private String selectMenu1dChange;
+    private String filterNdDataAndTop;
+    private String filterNdDataCurrent;
+    private String filterNdDataHistory;
+    private String filter2dData;
+    private String twoDimRowSelect;
+
+    @PostConstruct
+    public void postConstruct() {
+
+        btnLdapAddUserToRole = ID_MSG_DLG
+                .concat(COMMA).concat(":id_dlg_ldap");
+        btnShowMetada = ID_2D_DATA_TABLE
+                .concat(COMMA).concat(ID_MSG_DLG);
+        btnNotifyWoEsing = ID_TAB_VIEW
+                .concat(COMMA).concat(ID_TO_BE_SIGNED_DLG);
+        btnShowEsignedDoc = "id-dlg-esigned-document"
+                .concat(COMMA).concat(ID_MSG_DLG);
+        btnNewRecord = ID_CRUD_OPS
+                .concat(COMMA).concat(ID_MSG_DLG)
+                .concat(ID_2D_ACTION_TOOLBAR)
+                .concat(COMMA).concat(ID_CENTER_TOP);
+        btnBulkLoad = ID_2D_CURRENT_LIST
+                .concat(COMMA).concat(ID_MSG_DLG);
+        btnEsignDirectly = ID_TO_BE_SIGNED_DLG
+                .concat(COMMA).concat(ID_PNL_ESIGN_HISTORY)
+                .concat(COMMA).concat(ID_MSG_DLG);
+        btn2dDlgEsign = ID_2D_DATA_TABLE
+                .concat(COMMA).concat(ID_MSG_DLG)
+                .concat(COMMA).concat(ID_TO_BE_SIGNED_DLG)
+                .concat(COMMA).concat(ID_PNL_ESIGN_HISTORY);
+        btn2dSearch = ID_2D_CURRENT_LIST
+                .concat(COMMA_SEMICOLON).concat(ID_MSG_DLG);
+        btn2dSave = ID_2D_DLG_TABVIEW_CRUD_TOOLBAR
+                .concat(COMMA).concat(ID_2D_CURRENT_LIST)
+                .concat(COMMA).concat(ID_CENTER_TOP)
+                .concat(COMMA).concat(ID_TWO_DIM_DLG_PNL)
+                .concat(COMMA).concat("id_2d_DialogControlAndSave")
+                .concat(COMMA).concat(ID_TABLE_UPLOADED_FILES)
+                .concat(COMMA).concat(ID_MSG_DLG)
+                .concat(COMMA).concat("id-tab-view:id-2d-action-form:id-2d-action-toolbar");
+        btn2dSaveAs = ID_2D_DATA_TABLE
+                .concat(COMMA).concat(ID_2D_CURRENT_LIST)
+                .concat(COMMA).concat(ID_CENTER_TOP)
+                .concat(COMMA).concat(ID_MSG_DLG)
+                .concat(COMMA).concat("id_2d_DialogControlAndSave")
+                .concat(COMMA).concat(ID_TABLE_UPLOADED_FILES)
+                .concat(COMMA).concat(ID_CRUD_OPS);
+        btnSistem = ID_CENTER_TOP
+                .concat(COMMA).concat(ID_CENTER_MIDDLE)
+                .concat(COMMA).concat(ID_ESIGN);
+        btnSistem = ID_MSG_DLG
+                // .concat(COMMA).concat(ID_CRUD_OPS)
+                .concat(COMMA).concat(ID_TWO_DIM_DLG_PNL)
+                .concat(COMMA).concat(ID_CENTER_MIDDLE)
+                .concat(COMMA).concat(ID_CENTER_TOP);
+        btn1dSave = ID_UPLOADED_FILES
+                .concat(COMMA).concat(ID_VERSION_TABLE)
+                .concat(COMMA).concat(ID_MSG_DLG)
+                .concat(COMMA).concat("@form");
+        btn1dRemoveFile = ID_UPLOADED_FILES
+                .concat(COMMA).concat(ID_1D_INPUT_FILE_FORM);
+        btnEditDetail = ID_CENTER_TOP
+                .concat(COMMA).concat(ID_CONTENT)
+                .concat(COMMA).concat(ID_ESIGN)
+                .concat(COMMA).concat(ID_MSG_DLG);
+        buttonDeleteDirectly = ID_2D_CURRENT_LIST
+                .concat(COMMA).concat(ID_MSG_DLG);
+        btnDetay = ID_MSG_DLG;
+        btnCheckAllAsAdmin = ID_2D_DATA_TABLE
+                .concat(COMMA).concat(ID_MSG_DLG)
+                .concat(COMMA).concat(ID_CENTER_TOP);
+        btnCheckAll = ID_2D_DATA_TABLE
+                .concat(COMMA).concat(ID_MSG_DLG)
+                .concat(COMMA).concat(ID_CENTER_TOP)
+                .concat(COMMA).concat("id-tab-view:id2DCurrentObjectList:objectsDataTable")
+                .concat(COMMA).concat("id-tab-view:id-2d-action-form:id-2d-action-toolbar");
+        btnNdSave = ID_MSG_DLG
+                .concat(COMMA).concat(ID_CENTER_TOP)
+                .concat(COMMA).concat(ID_DLG_CTRL_AND_SAVE)
+                .concat(COMMA).concat("id-tab-view:nd-form");
+
+        btnNdSendForms = ID_MSG_DLG
+                .concat(COMMA).concat(ID_CENTER_TOP)
+                .concat(COMMA).concat(ID_DLG_CTRL_AND_SAVE)
+                .concat(COMMA).concat("id-tab-view:nd-form");
+        //
+        action1dUploadFile = ID_UPLOADED_FILES;
+        actionEsignAjaxPoll = ID_PNL_ESIGN_HISTORY;
+        dateTimeEntry1dEventChangeUpdate = ID_1D_FRM;
+        dateTimeEntry1dEventDateSelectUpdate = ID_1D_FRM;
+        selectMenu1dChange = ID_1D_PNL_UPL_FILE;
+        pnlEsignHistory = ID_PNL_ESIGN_HISTORY;
+        filterNdDataAndTop = ID_CURRENT_MYGRID_EDITABLE
+                .concat(COMMA).concat(ID_CENTER_TOP)
+                .concat(COMMA).concat("id-tab-view:nd-form")
+                .concat(COMMA).concat("id-tab-view:currentMyGrid");
+
+        filterNdDataCurrent = ID_CURRENT_MYGRID_EDITABLE;
+        filterNdDataHistory = ID_HISTORY_MYGRID_READONLY;
+
+        action2DSearch = ID_CENTER_TOP
+                .concat(COMMA).concat(ID_2D_CURRENT_LIST)
+                .concat(COMMA).concat(ID_2D_ACTION_FORM);
+
+        action2DHistory = ID_CENTER_TOP
+                .concat(COMMA).concat(ID_2D_HISTORY_LIST);
+
+        menuTabChange = ID_CENTER_TOP
+                .concat(COMMA).concat(ID_CONTENT)
+                .concat(COMMA).concat(ID_MSG_DLG);
+
+        menuSelectForm = ID_MSG_DLG
+                // .concat(COMMA).concat(ID_CRUD_OPS)
+                // .concat(COMMA).concat(ID_CENTER_TOP)
+                .concat(COMMA).concat(ID_TWO_DIM_DLG_PNL)
+                .concat(COMMA).concat(ID_CENTER_MIDDLE);
+
+        twoDimRowSelect = ID_MSG_DLG
+                .concat(COMMA).concat(ID_CRUD_OPS)
+                .concat(COMMA).concat(ID_TWO_DIM_DLG_PNL);
+
+        filter2dData = ID_2D_HISTORY_LIST;
+        btnPostCreditCard = "";//:id-post-tst
+        btnRunTbb = "";//:uys_system_form:idBankalarPath
+        //btnMergeTbb = ID_TAB_VIEW.concat(":uys_system_form:idWarningList");
+        //btnMergeTbb = "id-tbb-web-service";//:uys_system_form:idWarningList";
+        btnMergeTbb = ""; //:uys_system_form:idWarningList";
+
+        btnReportWebOzet = "";//ID_MSG_DLG;
+
+        btnWfOnCrud = ID_MSG_DLG
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_TOOLBAR)
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_SCROLL_PNL)
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_WF_TOOLBAR);
+
+        btnShowWf = ID_MSG_DLG
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_TOOLBAR)
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_WF_TOOLBAR)
+                .concat(COMMA).concat("id-diagram")
+                .concat(COMMA).concat("id-diagram-panel");
+
+        btnWfStart = ID_MSG_DLG
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_TOOLBAR)
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_WF_TOOLBAR)
+                .concat(COMMA).concat(ID_DATATABLE_WF_HISTORY)
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_SCROLL_PNL)
+                .concat(COMMA).concat("id-diagram")
+                .concat(COMMA).concat("id-diagram-panel");
+
+        btnFileUpload = ID_TABLE_UPLOADED_FILES;
+
+        btnPageShowDesc = "id-tab-view:id-desc-dlg-pnl";
+    }
+    private static final String ID_2D_DLG_TABVIEW_WF_TOOLBAR = "id-2d-wf-toolbar";
+
+    public String getPnlEsignHistory() {
+        return pnlEsignHistory;
+    }
+
+    public String getMenuTabChange() {
+        return menuTabChange;
+    }
+
+    public String getMenuSelectForm() {
+        return menuSelectForm;
+    }
+
+    public String getMsgDlg() {
+        return ID_MSG_DLG;
+    }
+
+    public String getBtnShowMetada() {
+        return btnShowMetada;
+    }
+
+    public String getBtnShowEsignedDoc() {
+        return btnShowEsignedDoc;
+    }
+
+    public String getBtnNewRecord() {
+        return btnNewRecord;
+    }
+
+    public String getBtn2dSave() {
+        return btn2dSave;
+    }
+
+    public String getBtnSistem() {
+        return btnSistem;
+    }
+
+    public String getAction1dUploadFile() {
+        return action1dUploadFile;
+    }
+
+    public String getBtnCheckAllAsAdmin() {
+        return btnCheckAllAsAdmin;
+    }
+
+    public String getBtnCheckAll() {
+        return btnCheckAll;
+    }
+
+    public String getActionEsignAjaxPoll() {
+        return actionEsignAjaxPoll;
+    }
+
+    public String getBtn2dSaveAs() {
+        return btn2dSaveAs;
+    }
+
+    public String getBtn2dDlgEsign() {
+        return btn2dDlgEsign;
+    }
+
+    public String getBtnDetay() {
+        return btnDetay;
+    }
+
+    public String getBtnEditDetail() {
+        return btnEditDetail;
+    }
+
+    public String getButtonDeleteDirectly() {
+        return buttonDeleteDirectly;
+    }
+
+    public String getBtn1dSave() {
+        return btn1dSave;
+    }
+
+    public String getBtn1dRemoveFile() {
+        return btn1dRemoveFile;
+    }
+
+    public String getBtnBulkLoad() {
+        return btnBulkLoad;
+    }
+
+    public String getBtnEsignDirectly() {
+        return btnEsignDirectly;
+    }
+
+    public String getBtn2dSearch() {
+        return btn2dSearch;
+    }
+
+    public String getAction2DSearch() {
+        return action2DSearch;
+    }
+
+    public String getBtnNotifyWoEsing() {
+        return btnNotifyWoEsing;
+    }
+
+    public String getDateTimeEntry1dEventChangeUpdate() {
+        return dateTimeEntry1dEventChangeUpdate;
+    }
+
+    public String getDateTimeEntry1dEventDateSelectUpdate() {
+        return dateTimeEntry1dEventDateSelectUpdate;
+    }
+
+    public String getSelectMenu1dChange() {
+        return selectMenu1dChange;
+    }
+
+    public String getBtnNdSave() {
+        return btnNdSave;
+    }
+
+    public String getFilterNdDataAndTop() {
+        return filterNdDataAndTop;
+    }
+
+    public String getFilterNdData() {
+        return filterNdDataCurrent;
+    }
+
+    public String getFilterNdDataHistory() {
+        return filterNdDataHistory;
+    }
+
+    public String getFilter2dData() {
+        return filter2dData;
+    }
+
+    public String getBtnPostCreditCard() {
+        return btnPostCreditCard;
+    }
+
+    public String getBtnRunTbb() {
+        return btnRunTbb;
+    }
+
+    public String getBtnMergeTbb() {
+        return btnMergeTbb;
+    }
+
+    public String getBtnReportWebOzet() {
+        return btnReportWebOzet;
+    }
+
+    public String getTwoDimRowSelect() {
+        return twoDimRowSelect;
+    }
+
+    public String getBtnWfStart() {
+        return btnWfStart;
+    }
+
+    public String getBtnShowWf() {
+        return btnShowWf;
+    }
+
+    public String getBtnWfOnCrud() {
+        return btnWfOnCrud;
+    }
+
+    public String getBtnFileUpload() {
+        return btnFileUpload;
+    }
+
+    public String getBtnLdapAddUserToRole() {
+        return btnLdapAddUserToRole;
+    }
+
+    public String getAction2DHistory() {
+        return action2DHistory;
+    }
+
+    public String getBtnPageShowDesc() {
+        return btnPageShowDesc;
+    }
+
+    public String getBtnNdSendForms() {
+        return btnNdSendForms;
+    }
+
+    public String getIdCenterMiddle() {
+        return ID_CENTER_MIDDLE;
+    }
+
+}

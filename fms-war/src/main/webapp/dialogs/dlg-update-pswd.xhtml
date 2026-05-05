@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog widgetVar="updatePasswordDialog"
+              header="Şifre Güncelleme"                        
+              closable="true"
+              modal="true"
+              draggable="fasle"
+              closeOnEscape="true" 
+              position ="center"
+              height="200"
+              >
+        <h:form>
+            <h:panelGrid width="100%" columnClasses="VTopHLeftW100p">
+                <h:panelGrid columns="3" width="100%">
+                    <h:outputText value="Eski Şifre"/>
+                    <h:outputText value=":"/>
+                    <h:inputSecret value="#{loginController.oldPassword}"/>
+                    <h:outputText value="Yeni Şifre"/>
+                    <h:outputText value=":"/>
+                    <h:inputSecret value="#{loginController.newPassword}"/>
+                    <h:outputText value="Yeni Şifre (Tekrar)"/>
+                    <h:outputText value=":"/>
+                    <h:inputSecret value="#{loginController.newPasswordAgain}"/>
+                </h:panelGrid>
+                <p:commandButton
+                    value="Kaydet" 
+                    action="#{loginController.changePassword}" 
+                    style="width: 100%;"/>
+            </h:panelGrid>
+        </h:form>
+    </p:dialog>
+
+
+
+</html>

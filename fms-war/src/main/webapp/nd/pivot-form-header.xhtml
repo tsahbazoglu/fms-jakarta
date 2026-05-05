@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets"
+      >
+
+    <div class="ui-g">
+        <div class="ui-g-12 ui-md-12 ui-lg-7">
+            <p:panel>
+                <div style="height: 35px;">
+                    <p:outputLabel value="#{formService.myForm.name}" style="font-size: 28px;"/>        
+                </div>
+            </p:panel>
+            <br/>
+            <p:panel>
+                <div style="height: 35px;">
+                    <h:panelGrid columns="6" rendered="#{not esignViewCtrl.preventedMultiTab}">
+                        <p:button
+                            icon="pi pi-save"
+                            title="Kaydet"
+                            rendered="#{formService.myForm.myActions.save}"
+                            onclick="rcPivotSave();return false;"
+                            />
+                        <p:button
+                            icon="pi pi-send"
+                            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}" 
+                            rendered="#{formService.myForm.myActions.sendForms}"
+                            onclick="checkSavedStatus();return false;"
+                            />
+                        <p:button
+                            icon="pi pi-info-circle"
+                            title="Bu sayfa ile ilgili açıklamalar için tıklayınız"
+                            rendered="#{pivotModifierCtrl.selectedFormUserNote}"
+                            onclick="rcPivotShowDesc();return false;"
+                            />
+                        <p:button 
+                            icon="pi pi-file-excel"
+                            title="Excele Aktar" 
+                            rendered="#{formService.myForm.myActions.download}"
+                            onclick="rcPivotDownlodExcel();return false;"
+                            />
+                        <p:button 
+                            icon="pi pi-book"
+                            value="E-İmza Süreci" 
+                            rendered="#{formService.myForm.myActions.eimza2D}"
+                            onclick="rcPivotEsign();return false;"
+                            />  
+                    </h:panelGrid>
+                </div>
+            </p:panel>
+        </div>
+        <div class="ui-g-12 ui-md-12 ui-lg-5">
+            <p:outputPanel>
+                <div style="height: 122px;font-size:14px;">
+                    <p:scrollPanel style="width:500px;height:155px">
+                        <p:dataList 
+                            value="#{pivotModifierCtrl.selectedFormMessages}"
+                            var="mymessage"  
+                            >
+                            <p:outputLabel value="#{mymessage}" style="white-space: pre-wrap"/>
+                        </p:dataList>
+                    </p:scrollPanel>
+                </div>
+            </p:outputPanel>
+        </div>
+    </div>
+
+    <ui:include src="../dialogs/dlg-ctrl-save-notify-pivot.xhtml"/>
+
+
+</html>

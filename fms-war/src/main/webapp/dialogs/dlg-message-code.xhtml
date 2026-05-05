@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    >
+    <p:dialog
+        id="id-dlg-code"
+        widgetVar="wv-dlg-code"
+        header="#{dlgCtrl.title}"                        
+        closable="true"
+        closeOnEscape="true" 
+        modal = "false"
+        draggable="true"
+        position="center"
+        visible="false"
+        width="800"
+        height="500"
+        >
+        <p:outputLabel value="#{dlgCtrl.message}" escape="false"/>
+        <br/>
+        <p:inputTextarea 
+            id="codeMirror" 
+            value="#{dlgCtrl.codeMirrorContent}"
+            style="width: 100%;background-color:black;color:green;font-weight:bold;font-family: monospace"
+            />
+
+    </p:dialog>
+</html>

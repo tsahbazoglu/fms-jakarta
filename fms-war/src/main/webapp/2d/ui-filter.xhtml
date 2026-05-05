@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+    <h:head>
+        <title></title>
+        <script>
+            function myClick(e) {
+                var evt = e || window.event
+                if (evt.keyCode == 13) {
+                    rcFilter();
+                }
+            }
+        </script>
+    </h:head>
+
+    <p:panel>
+        <h:panelGrid
+            columns="2"
+            columnClasses="VTopHLeftW50pNowrap,VTopHLeftW50pNowrap"
+            >
+            <h:panelGroup>
+                <ui:include src="ui-filter-current.xhtml"/>
+            </h:panelGroup>
+            <h:panelGroup>
+                <c:if test="#{formService.myForm.historyRendered}">
+                    <ui:include src="ui-filter-history.xhtml"/>
+                </c:if>
+            </h:panelGroup>
+        </h:panelGrid>
+    </p:panel>
+
+</html>

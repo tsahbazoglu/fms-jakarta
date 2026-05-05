@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+          
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <script>
+            PrimeFaces.locales['tr'] = {
+                closeText: 'kapat',
+                prevText: 'geri',
+                nextText: 'ileri',
+                currentText: 'bugün',
+                monthNames: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+                monthNamesShort: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+                dayNames: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
+                dayNamesShort: ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
+                dayNamesMin: ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
+                weekHeader: 'Hf',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: '',
+                timeOnlyTitle: 'Zaman Seçiniz',
+                timeText: 'Zaman',
+                hourText: 'Saat',
+                minuteText: 'Dakika',
+                secondText: 'Saniye',
+                ampm: false,
+                month: 'Ay',
+                week: 'Hafta',
+                day: 'Gün',
+                allDayText: 'Tüm Gün'
+            };
+        </script>
+
+    </h:head>
+
+
+    <pe:sheet 
+        id="sheet" 
+        widgetVar="sheetWidget" 
+        value="#{sheetController.assets}" 
+        var="row"
+        height="400" 
+        rowKey="#{row.assetId}" 
+        showRowHeaders="true"
+        resizableCols="true" 
+        resizableRows="true" 
+        sortOrder="ascending" 
+        readOnly="false" 
+        locale="tr"
+        >
+        
+        <f:facet name="header">
+            <h:outputText value="Assets"/>
+        </f:facet>
+
+        <pe:sheetcolumn
+            
+            headerText="Arch" value="fefwf"
+            >
+            
+        </pe:sheetcolumn>
+
+        
+
+    </pe:sheet>
+
+
+
+</html>

@@ -1,0 +1,333 @@
+:toc: left
+:toc-title: Content
+:toclevels: 3
+:sectnums:
+:sectnumlevels: 3
+:docinfo: shared
+:server-path: ~/apps/glassfish7/glassfish
+:project_version: 1.0.0
+
+= FMS : Form Management System
+telman şahbazoğlu <tsahbazoglu@tspb.org.tr>
+v1.0.0, 2018-03-06
+:title-logo-image: image::tspb_logo.png[]
+
+== Asccidoc
+----
+asciidoctor -b html5 -r asciidoctor-diagram -D release *.adoc 
+----
+
+== Start Server
+[source,js,subs="attributes,verbatim,quotes"]
+----
+java -version
+
+export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+
+export SERVER_HOME={server-path}
+
+export MONGODB_HOME=~/apps/mongodb-linux-x86_64-3.2.3
+export PATH=$PATH:$SERVER_HOME/bin:$MONGODB_HOME/bin
+mongod --dbpath ~/fmsdb --fork --logpath  ~/fmsdb.log  --logappend
+
+asadmin stop-domain
+ 
+asadmin start-domain --debug
+
+asadmin stop-domain
+----
+
+== Log Server
+[source,js,subs="attributes,verbatim,quotes"]
+----
+tail -f {server-path}/domains/domain1/logs/server.log
+----
+
+
+== Compile
+1.0.0::
+----
+java -version
+
+cd /home/telman/github/fms
+
+export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+
+/home/telman/Downloads/apache-maven-3.6.3/bin/./mvn clean install -DskipTests=true
+  
+----
+
+2.0.0::
+----
+mvn help:evaluate -Dexpression=deployment.notes -q -DforceStdout
+            
+mvn help:evaluate -Dexpression=deployment.notes -DforceStdout -pl .
+
+----
+
+=== Clean Glassfish
+[source,js,subs="attributes,verbatim,quotes"]
+----        
+asadmin list-components;
+            
+asadmin undeploy fms-ear-{project_version}
+            
+asadmin stop-domain
+rm -rf {server-path}/domain1/osgi-cache
+rm -rf {server-path}/domain1/generated
+rm -rf {server-path}/domain1/applications/fms-ear-{project_version}
+
+rm -rf {server-path}/domain1/lib/*.jar
+
+asadmin start-domain --debug
+----
+
+=== Standalone Compile
+[source,js,subs="attributes,verbatim,quotes"]
+----       
+cd ~/github/fms
+----
+
+----
+mvn clean install \
+-Ddependency.scope=compile
+----
+
+=== Standalone compile + Esign
+----
+mvn clean install \
+-PesignSupport \
+-Ddependency.scope=compile
+----
+
+=== Copy Libs to Glassfish
+[source,js,subs="attributes,verbatim,quotes"]
+----  
+cd ~/github/fms/fms-ear/target/
+
+# ls -lrt
+# jar -tf fms-ear-1.0.0.ear
+# jar -tf fms-ear-1.0.0.ear | grep slf4j 
+# jar -tf fms-ear-1.0.0.ear | grep guava 
+
+jar -xvf fms-ear-{project_version}.ear
+            
+cp lib/*.jar {server-path}/domains/domain1/lib
+
+ls -lrt {server-path}/domains/domain1/lib
+ls -lrt {server-path}/domains/domain1/lib | grep outsider
+            
+rm -rf {server-path}/domains/domain1/lib/common-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/constants-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/converter-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/datamodel-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/esign-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/esign-util-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/factory-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/fgtpswd-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/logger-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/notification-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/outsider-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/page-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/pivot-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/service-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/table-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/util-1.0.0.jar
+            
+             
+asadmin stop-domain;
+asadmin start-domain --debug;              
+----
+
+
+=== Compile As Provided
+----        
+cd ~/github/fms
+----
+
+----
+mvn clean install \
+-Ddependency.scope=provided            
+----
+
+=== Compile  As Provided + Esign
+----        
+mvn clean install \
+-PesignSupport \
+-Ddependency.scope=provided            
+----
+
+[NOTE]
+ATTENTION
+
+----
+<artifactId>outsider</artifactId>
+----
+
+~/github/fms/outsider/src/main/resources/META-INF/beans.xml::
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
+       version="4.0"
+       bean-discovery-mode="annotated">
+    <alternatives>
+        <class>tr.org.tspb.outsider.impl.EsignDoorDefaultImpl</class>
+        <!--<class>tr.org.tspb.esign.gateway.EsignDoorMuhurdarImpl</class>-->
+    </alternatives>
+</beans>
+----
+
+[NOTE] 
+Do not forget to replace with you own EsginDoor implementation.
+
+
+=== Regular deployment (Production)
+[source,js,subs="attributes,verbatim,quotes"]
+----
+asadmin list-components;
+
+asadmin undeploy fms-ear-{project_version};
+
+asadmin deploy /home/telman/github/fms/fms-ear/target/fms-ear-{project_version}.ear;
+
+asadmin deploy fms-ear-{project_version}.ear;
+----
+
+=== Directory deployment (Dev)
+----
+asadmin list-components;
+                        
+asadmin deploy --force=true --upload=false --name fms-app /home/telman/github/fms/fms-ear/target/fms-ear-{project_version}
+
+asadmin undeploy fms-app
+
+mvn clean install -Ddependency.scope=provided
+
+asadmin set server.admin-service.das-config.dynamic-reload-enabled=true
+asadmin set server.admin-service.das-config.dynamic-reload-poll-interval-in-seconds=2
+
+mvn compile
+mvn compile -pl fms-web
+touch /home/telman/github/fms/fms-ear/target/fms-ear-1.0.0/.reload
+
+web.xml
+
+<context-param>
+    <param-name>jakarta.faces.FACELETS_REFRESH_PERIOD</param-name>
+    <param-value>0</param-value>
+</context-param>
+<context-param>
+    <param-name>jakarta.faces.PROJECT_STAGE</param-name>
+    <param-value>Development</param-value>
+</context-param>
+            
+                        
+mvn compile war:exploded -pl tr.org.tspb:fms-web -am && touch fms-ear/target/fms-ear-1.0.0/.reload
+
+cd ~/github/fms
+   
+cp fms-war/src/main/webapp/contracts/web-layout/template.xhtml \
+fms-ear/target/fms-ear-1.0.0/fms-web-1.0.0.war/contracts/web-layout/template.xhtml
+
+cp fms-war/src/main/webapp/2d/table-form-header.xhtml \
+fms-ear/target/fms-ear-1.0.0/fms-web-1.0.0.war/2d/table-form-header.xhtml
+
+cp fms-war/src/main/webapp/1d/1dActionPanel.xhtml \
+fms-ear/target/fms-ear-1.0.0/fms-web-1.0.0.war/1d/1dActionPanel.xhtml
+
+
+
+mvn compile war:exploded -pl fms-war -am && touch fms-ear/target/fms-ear-1.0.0/.reload
+
+mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/fms-web-1.0.0.war/
+
+
+## Troubleshouting
+
+EsignController.java:1021
+
+Signer signer = bsd.getSignerList().get(0);
+
+Caused by: java.lang.RuntimeException: Lisans kontrolu basarisiz. class tr.gov.tubitak.uekae.esya.api.common.lcns.LV cannot access class sun.security.pkcs.PKCS7 (in module java.base) because module java.base does not export sun.security.pkcs to unnamed module @598c28a
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.Signer.<init>(Signer.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.BES.<init>(BES.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.EST.<init>(EST.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESC.<init>(ESC.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESXLong.<init>(ESXLong.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESignatureType.createSigner(ESignatureType.java)
+	... 57 more
+
+# if domain stopped
+asadmin create-jvm-options --offline --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
+
+# if domain started
+asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
+
+glassfish7/glassfish/domains/domain1/config/domain.xml
+<java-config>
+<jvm-options>--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED</jvm-options>
+
+
+asadmin stop-domain
+export AS_JAVA_WMOPTS="--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED"
+asadmin start-domain --debug
+ 
+----
+
+
+== MongoRestore W/O Index
+----
+mongorestore --db uysdb --noIndexRestore 240909.0230.uys.tspakb.org.tr.dump/uysdb
+----
+
+== About
+
+FMS (Form Management System) project is aimed to accelerate development and deployment process of widely used form types like registration forms, tables and pivot input.
+
+All you need to do is accustom the configuration script file to your needs and import it to mongodb.
+
+You will get both the data structure and Web GUI in one shot.
+
+Check out our live project configuration files to discover all the features.
+
+== Install
+
+All installation process had been documented and dockerized in fms-docker repository
+
+*link:https://github.com/tsahbazoglu/fms-docker[fms-docker^]*
+
+== Live Site
+
+|===
+|url      | *link:http://uys.tspb.org.tr[uys.tspb.org.tr^]*
+|username | DENEME_KURUM
+|pswd     | 123
+|===
+
+
+== License
+
+All code found in this repository is licensed under LGPL v3
+
+----
+Copyright (C) 2012-2019 Turkish Capital Market Association
+
+http://tspb.org.tr
+
+This file is part of Form Management System
+
+Form Management System is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or 
+(at your option) any later version.
+
+Form Management System is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License 
+along with Form Management System. If not, see http://www.gnu.org/licenses/.
+----

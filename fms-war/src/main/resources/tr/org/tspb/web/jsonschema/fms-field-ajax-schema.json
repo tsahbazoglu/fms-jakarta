@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "fms-field-ajax",
+    "description": "Fms Field Ajax Description",
+    "type": "object",
+    "properties": {
+        "enable": {
+            "type": "boolean"
+        },
+        "order": {
+            "type": "number",
+            "description": "order of ajax actions are importand when there more than one field with ajax activated"
+        },
+        "action": {
+            "type": "string"
+        },
+        "effected_keys": {
+            "type": "array"  
+        },
+        "list": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "keys": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "render": {
+                        "type": "object"
+                    },
+                    "refresh-items": {
+                        "type": "object",
+                        "properties": {
+                            "db": {
+                                "type": "string"
+                            },
+                            "table": {
+                                "type": "string"
+                            },
+                            "query": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "order": {
+                                            "type": "number"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "key": {
+                                            "type": "string"
+                                        },
+                                        "fms-value": {
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "required": ["order", "key"]
+                                }
+                            }
+                        }
+                    }
+                },
+                "additionalProperties": false    
+            }
+        }
+    },
+    "required": [],
+    "additionalProperties": false    
+}

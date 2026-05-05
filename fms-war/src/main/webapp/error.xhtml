@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sistem Hatası | TSPB - TCMA</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            body {
+                background-color: #f4f7f9;
+                font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                color: #333;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .error-container {
+                background: white;
+                padding: 40px;
+                border-top: 5px solid #004a8e; /* TSPB Blue */
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                border-radius: 4px;
+                max-width: 600px;
+                width: 90%;
+                text-align: center;
+            }
+            .logo {
+                max-width: 180px;
+                margin-bottom: 20px;
+            }
+            h1 {
+                color: #004a8e;
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+            p {
+                line-height: 1.6;
+                color: #666;
+            }
+            .action-buttons {
+                margin-top: 30px;
+            }
+            .btn-home {
+                background-color: #004a8e;
+                color: white;
+                padding: 10px 25px;
+                text-decoration: none;
+                border-radius: 4px;
+                font-weight: bold;
+                transition: background 0.3s;
+            }
+            .btn-home:hover {
+                background-color: #003366;
+            }
+            .tech-details {
+                margin-top: 40px;
+                text-align: left;
+                font-size: 11px;
+                color: #999;
+                border-top: 1px solid #eee;
+                padding-top: 15px;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <div class="error-container">
+            <h:graphicImage library="images" name="tcma_logo.png" alt="TSPB Logo" class="logo"/>
+
+            <h1>Beklenmedik Bir Hata Oluştu</h1>
+            <p>
+                İşleminiz gerçekleştirilirken teknik bir aksaklık yaşandı. <br/>
+                Lütfen ana sayfaya dönerek tekrar deneyiniz. Sorun devam ederse sistem yöneticisi ile iletişime geçebilirsiniz.
+            </p>
+
+            <div class="action-buttons">
+                <h:link outcome="/index.xhtml" value="Ana Sayfaya Dön" styleClass="btn-home"/>
+            </div>
+
+            <div class="tech-details">
+                <p:accordionPanel activeIndex="-1" rendered="#{facesContext.application.projectStage eq 'Development'}">
+                    <p:tab title="Teknik Detaylar (Sadece Geliştirici Modu)">
+                        <p style="white-space: pre-wrap; font-family: monospace;">
+                            <strong>Mesaj:</strong> #{pfExceptionHandler.message} <br/>
+                            <strong>Exception:</strong> #{pfExceptionHandler.type} <br/>
+                            <strong>Stack Trace:</strong> <br/>
+                            <h:outputText value="#{pfExceptionHandler.formattedStackTrace}" escape="false" />
+                        </p>
+                    </p:tab>
+                </p:accordionPanel>
+                <p style="text-align: center; margin-top: 10px;">
+                    © 2026 Türkiye Sermaye Piyasaları Birliği
+                </p>
+            </div>
+        </div>
+    </h:body>
+</html>

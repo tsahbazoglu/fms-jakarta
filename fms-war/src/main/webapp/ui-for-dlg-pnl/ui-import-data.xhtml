@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <h:form id="id_import_form">  
+        <h:panelGrid>
+            <h:outputText value="Dosya biçimi Excell formatında olmalı."/>
+            <h:outputText value="Excell dosyası aşağıdaki sırada verilen sütun isimlerini içermelidir."/>
+            <h:outputText value=""/>
+            <h:outputText value="#{importDataMB.importTextFormat}" id="id_import_text_format"/>
+            <h:outputText value=""/>  
+            <!--validatorMessage="Dosya geçerli değil (Boyut, tip veya adet hatası)."-->
+            <p:fileUpload 
+                value="#{importDataMB.uploadedFile}"
+                listener="#{importDataMB.uploadImportDataMB}"
+                cancelLabel="Vazgeç"
+                uploadLabel="Yükle"
+                label="Seç"
+                update="id_import_form:id_import_text_format,:id_import_form:id_import_success_data"
+                >
+                <p:validateFile 
+                    sizeLimit="2097152"
+                    allowTypes="/(\.|\/)(xlsx)$/"
+                    fileLimit="3"
+                    />
+            </p:fileUpload>
+            <h:panelGrid columns="2" id="id_my_uploaded_files">
+                <p:commandButton value="Veritabanına Yaz" action="#{importDataMB.writeToDb}"
+                                 />
+            </h:panelGrid>   
+            <p:dataTable  
+                value="#{importDataMB.listOfToBeUpsert}" 
+                var="x" 
+                id="id_import_success_data"
+                lazy="true"
+                >
+                <p:column headerText="ldapUID">
+                    #{x['ldapUID']}
+                </p:column>
+                <p:column headerText="periodValue">
+                    #{x["periodValue"]}
+                </p:column>
+                <p:column headerText="genel_yonetim_giderleri">
+                    #{x["genel_yonetim_giderleri"]}
+                </p:column>
+                <p:column headerText="personel_giderleri">
+                    #{x["personel_giderleri"]}
+                </p:column>
+                <p:column headerText="calisan_sayisi">
+                    #{x["calisan_sayisi"]}
+                </p:column>
+            </p:dataTable>
+        </h:panelGrid>
+    </h:form>
+
+
+</html>

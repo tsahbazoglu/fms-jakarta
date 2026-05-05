@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+
+    <div class="ui-g" style="transform: scale(1.0);transform-origin: 0% 0% 0px">  
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+            <p:outputPanel>
+                <ui:include src="ui-filter-current-vertical.xhtml"/>
+            </p:outputPanel>
+        </div>
+        <div class="ui-g-12 ui-md-10 ui-lg-10">
+            <!--
+              selectionMode="multiple" should be defined on p:dataTable or in p:column not on both
+            -->
+            <h:form id="id2DCurrentObjectList" rendered="#{formService.myForm.currentRendered}"> 
+                <p:remoteCommand
+                    name="rcMultipleDelete"
+                    value="Sil"
+                    action="#{twoDimModifyCtrl.multipleDelete}"
+                    update="#{updateAjaxMB.buttonDeleteDirectly}"
+                    />
+                <p:remoteCommand 
+                    name="rcSetMultiToRelatedForm"
+                    value="ilgili forma aktar" 
+                    action="#{mainFrame.setMultiToRelatedForm}" 
+                    update="#{updateAjaxMB.idCenterMiddle}"
+                    />
+                <p:dataTable 
+                    id="objectsDataTable" 
+                    var="rowData" 
+                    value="#{twoDimModifyCtrl.data}" 
+                    paginator="true" 
+                    paginatorPosition="bottom"
+                    rows="10"
+                    paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                    rowsPerPageTemplate="10,20,30" 
+                    selection="#{twoDimModifyCtrl.selectedRow}" 
+                    lazy="true"
+                    resizableColumns="true"
+                    style="width: 100%;"
+                    tableStyle="width:auto;table-layout: auto !important;"
+                    emptyMessage="veri girişi bulunmamaktadır"
+                    reflow="true"
+                    allowUnsorting="false"
+                    sortMode="single"
+                    > 
+
+                    <p:ajax 
+                        event="rowSelect" 
+                        listener="#{twoDimModifyCtrl.selectListener}"
+                        update="idCrudOperation"
+                        >
+                    </p:ajax>
+
+                    <p:column style="text-align:center" headerText="Select">
+                        <p:selectBooleanCheckbox value="#{twoDimModifyCtrl.selectionStates[rowData]}"/>
+                    </p:column>
+
+                    <p:columns value="#{twoDimModifyCtrl.objectsColumnDataModel}" 
+                               var="columnMap" 
+                               headerText="#{columnMap.shortName}"
+                               sortBy="#{rowData[columnMap.field]}"
+                               style="white-space: normal;"
+                               >
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == 'inputDate'}"
+                            >
+                            <h:outputText  
+                                style="#{columnMap.style}"
+                                value="#{rowData[columnMap.field]}"
+                                converter="fmsDateTimeConverterReadonly"
+                                >
+                                <f:attribute name="datePattern" value="#{columnMap.datePattern}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == twoDimModifyCtrl.inputText}"
+                            >
+                            <h:outputText  
+                                style="#{columnMap.style}"
+                                value="#{rowData[columnMap.field]}"
+                                converter ="#{columnMap.myconverter}"     
+                                >
+                                <f:attribute name="converterInstance" value="#{columnMap.converterInstance}"/>
+                                <f:attribute name="minFractationDigits" value="#{columnMap.minFractationDigits}"/>
+                                <f:attribute name="maxFractationDigits" value="#{columnMap.maxFractationDigits}"/>
+                                <f:attribute name="divider" value="#{columnMap.divider}"/>
+                                <f:attribute name="fieldKey" value="#{columnMap.fieldKey}"/>
+                                <f:attribute name="crudObject" value="#{rowData}"/>
+                                <f:attribute name="uysformat" value="#{columnMap.uysformat}"/>
+                                <f:attribute name="viewKey" value="#{columnMap.viewKey}"/>
+                                <f:attribute name="calculateOnView" value="#{columnMap.calculateOnView}"/>
+                                <f:attribute name="myField" value="#{columnMap}"/>
+                                <f:attribute name="converterFormat" value="#{columnMap.converterFormat}"/>
+                                <f:attribute name="sessionKey" value="#{columnMap.sessionKey}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == twoDimModifyCtrl.inputTextarea}"
+                            >
+                            <h:outputText  
+                                style="#{columnMap.style}"
+                                value="#{rowData[columnMap.field]}"
+                                converter ="#{columnMap.myconverter}"     
+                                >
+                                <f:attribute name="converterInstance" value="#{columnMap.converterInstance}"/>
+                                <f:attribute name="minFractationDigits" value="#{columnMap.minFractationDigits}"/>
+                                <f:attribute name="maxFractationDigits" value="#{columnMap.maxFractationDigits}"/>
+                                <f:attribute name="divider" value="#{columnMap.divider}"/>
+                                <f:attribute name="fieldKey" value="#{columnMap.fieldKey}"/>
+                                <f:attribute name="crudObject" value="#{rowData}"/>
+                                <f:attribute name="uysformat" value="#{columnMap.uysformat}"/>
+                                <f:attribute name="viewKey" value="#{columnMap.viewKey}"/>
+                                <f:attribute name="calculateOnView" value="#{columnMap.calculateOnView}"/>
+                                <f:attribute name="myField" value="#{columnMap}"/>
+                                <f:attribute name="converterFormat" value="#{columnMap.converterFormat}"/>
+                                <f:attribute name="sessionKey" value="#{columnMap.sessionKey}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == twoDimModifyCtrl.inputMask}"
+                            >
+                            <h:outputText  
+                                style="#{columnMap.style}"
+                                value="#{rowData[columnMap.field]}"
+                                converter ="#{columnMap.myconverter}"     
+                                >
+                                <f:attribute name="converterInstance" value="#{columnMap.converterInstance}"/>
+                                <f:attribute name="minFractationDigits" value="#{columnMap.minFractationDigits}"/>
+                                <f:attribute name="maxFractationDigits" value="#{columnMap.maxFractationDigits}"/>
+                                <f:attribute name="divider" value="#{columnMap.divider}"/>
+                                <f:attribute name="fieldKey" value="#{columnMap.fieldKey}"/>
+                                <f:attribute name="crudObject" value="#{rowData}"/>
+                                <f:attribute name="uysformat" value="#{columnMap.uysformat}"/>
+                                <f:attribute name="viewKey" value="#{columnMap.viewKey}"/>
+                                <f:attribute name="calculateOnView" value="#{columnMap.calculateOnView}"/>
+                                <f:attribute name="myField" value="#{columnMap}"/>
+                                <f:attribute name="converterFormat" value="#{columnMap.converterFormat}"/>
+                                <f:attribute name="sessionKey" value="#{columnMap.sessionKey}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == twoDimModifyCtrl.autoComplete}"
+                            >
+                            <h:outputText  
+                                style="#{columnMap.style}"
+                                value="#{rowData[columnMap.field]}"
+                                converter ="#{columnMap.myconverter}"     
+                                >
+                                <f:attribute name="converterInstance" value="#{columnMap.converterInstance}"/>
+                                <f:attribute name="minFractationDigits" value="#{columnMap.minFractationDigits}"/>
+                                <f:attribute name="maxFractationDigits" value="#{columnMap.maxFractationDigits}"/>
+                                <f:attribute name="divider" value="#{columnMap.divider}"/>
+                                <f:attribute name="fieldKey" value="#{columnMap.fieldKey}"/>
+                                <f:attribute name="crudObject" value="#{rowData}"/>
+                                <f:attribute name="uysformat" value="#{columnMap.uysformat}"/>
+                                <f:attribute name="viewKey" value="#{columnMap.viewKey}"/>
+                                <f:attribute name="calculateOnView" value="#{columnMap.calculateOnView}"/>
+                                <f:attribute name="myField" value="#{columnMap}"/>
+                                <f:attribute name="converterFormat" value="#{columnMap.converterFormat}"/>
+                                <f:attribute name="sessionKey" value="#{columnMap.sessionKey}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == twoDimModifyCtrl.selectOneRadio}"
+                            >
+                            <h:outputText  
+                                style="#{columnMap.style}"
+                                value="#{rowData[columnMap.field]}"
+                                converter ="#{columnMap.myconverter}"     
+                                >
+                                <f:attribute name="converterInstance" value="#{columnMap.converterInstance}"/>
+                                <f:attribute name="minFractationDigits" value="#{columnMap.minFractationDigits}"/>
+                                <f:attribute name="maxFractationDigits" value="#{columnMap.maxFractationDigits}"/>
+                                <f:attribute name="divider" value="#{columnMap.divider}"/>
+                                <f:attribute name="fieldKey" value="#{columnMap.fieldKey}"/>
+                                <f:attribute name="crudObject" value="#{rowData}"/>
+                                <f:attribute name="uysformat" value="#{columnMap.uysformat}"/>
+                                <f:attribute name="viewKey" value="#{columnMap.viewKey}"/>
+                                <f:attribute name="calculateOnView" value="#{columnMap.calculateOnView}"/>
+                                <f:attribute name="myField" value="#{columnMap}"/>
+                                <f:attribute name="converterFormat" value="#{columnMap.converterFormat}"/>
+                                <f:attribute name="sessionKey" value="#{columnMap.sessionKey}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == twoDimModifyCtrl.selectOneMenu}"
+                            >
+                            <h:outputText 
+                                style="#{columnMap.style}"
+                                value="#{rowData[columnMap.field]}"
+                                converter ="#{columnMap.myconverter}"     
+                                >
+                                <f:attribute name="converterInstance" value="#{columnMap.converterInstance}"/>
+                                <f:attribute name="minFractationDigits" value="#{columnMap.minFractationDigits}"/>
+                                <f:attribute name="maxFractationDigits" value="#{columnMap.maxFractationDigits}"/>
+                                <f:attribute name="divider" value="#{columnMap.divider}"/>
+                                <f:attribute name="fieldKey" value="#{columnMap.fieldKey}"/>
+                                <f:attribute name="crudObject" value="#{rowData}"/>
+                                <f:attribute name="uysformat" value="#{columnMap.uysformat}"/>
+                                <f:attribute name="viewKey" value="#{columnMap.viewKey}"/>
+                                <f:attribute name="calculateOnView" value="#{columnMap.calculateOnView}"/>
+                                <f:attribute name="myField" value="#{columnMap}"/>
+                                <f:attribute name="converterFormat" value="#{columnMap.converterFormat}"/>
+                                <f:attribute name="sessionKey" value="#{columnMap.sessionKey}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == 'selectBooleanCheckbox'}"
+                            >
+                            <p:selectBooleanCheckbox 
+                                style="#{columnMap.style}"
+                                value="#{rowData[columnMap.field]}"
+                                converter ="#{columnMap.myconverter}"
+                                >
+                            </p:selectBooleanCheckbox>
+                        </p:column>
+
+                        <p:column   
+                            rendered="#{columnMap.componentType == 'inputButton'}"
+                            >
+                            <p:commandButton value="Eylem"/>
+                        </p:column>
+                    </p:columns> 
+                </p:dataTable>
+            </h:form>
+        </div>
+    </div>
+
+</html>

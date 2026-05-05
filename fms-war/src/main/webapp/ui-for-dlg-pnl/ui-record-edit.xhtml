@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+
+    <h:inputHidden id="id-status-data-change" value="false"/>
+
+    <script type="text/javascript">
+
+        var dlg_close_span = $("#idCrudOperation .ui-icon-closethick");
+
+        if (#{formService.myForm.myActions.save}) {
+            // catch primefaces close and change its click event
+            // var dlg_close_span = $(".ui-icon-closethick");
+            dlg_close_span.on("click", openAnotherPopup);
+
+            var form = $(document.getElementById("idTwoDlgTabView:crud2dForm"));
+            form.change(function () {
+                truechange();
+            });
+            form.keyup(function (e) {
+                if (e.which != 27) {
+                    truechange();
+                }
+            });
+        }
+
+        $(document).keyup(function (e) {
+            if (e.which == 27) {
+                dlg_close_span.click();
+            }
+        });
+
+    </script>
+
+    <p:tabView id="idTwoDlgTabView">
+        <p:tab 
+            title="Veri Girişi"
+            >
+            <ui:include src="ui-crud.xhtml"/>
+        </p:tab>
+        <p:tab 
+            title="Veri Kalemleri"
+            rendered="#{formService.myForm.hasChildFields}"
+            >
+            <!--<ui:include src="ui-crud-childs-data-table-inline.xhtml"/>-->
+            <ui:include src="ui-crud-childs-data-table-popup.xhtml"/>
+        </p:tab>
+        <p:tab 
+            title="Ekli Dosyalar"
+            rendered="#{formService.myForm.hasAttachedFiles}"
+            >
+            <ui:include src="ui-upload.xhtml"/>
+        </p:tab>
+        <p:tab 
+            title="Veri Tarihçesi"
+            rendered="#{formService.myForm.versionEnable}"
+            >
+            <ui:include src="ui-version-history.xhtml"/>
+        </p:tab>
+        <p:tab 
+            title="İş Süreci"
+            rendered="#{formService.myForm.workFlowActive}"
+            >
+            <ui:include src="ui-workflow.xhtml"/>
+        </p:tab>   
+        <p:tab 
+            title="E-Posta Bildirimler" 
+            rendered="#{formService.myForm.myActions.email}">
+
+            <ui:include src="../ui-for-dlg-pnl/ui-email-preview.xhtml"/>     
+
+        </p:tab>
+
+    </p:tabView>
+</html>

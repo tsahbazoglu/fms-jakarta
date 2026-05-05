@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:mydynamic="http://java.sun.com/jsf/composite/mydinamic"
+      xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid">
+
+    <h:head>
+        <title></title>
+    </h:head>
+
+    <h:panelGroup id="id-table-file-list">
+        <h:outputText value="Ekli Dosyalar" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+        <br/>
+        <br/>
+        <p:dataTable 
+            var="x" 
+            value="#{twoDimModifyCtrl.fileListAll}" 
+            rendered="#{formService.myForm.hasAttachedFiles}"
+            >
+            <p:column 
+                width="#{columnMap.width}" 
+                style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}"
+                rendered="#{mainFrame.adminRole}"
+                >
+                <f:facet name="header" >
+                    <h:outputText value="Kurum Adı"/> 
+                </f:facet>
+                <h:outputText value="#{x.METADA_USERNAME}"/> 
+            </p:column>
+            <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                <f:facet name="header" >
+                    <h:outputText value="Dosya Adı"/> 
+                </f:facet>
+                <h:outputText value="#{x.fileName}"/> 
+            </p:column>
+            <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                <f:facet name="header" >
+                    <h:outputText value="Dosya Boyutu"/> 
+                </f:facet>
+                <h:outputText value="#{x.fileSize}"/> 
+            </p:column>
+            <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                <f:facet name="header" >
+                    <h:outputText value="Durum"/> 
+                </f:facet>
+                <h:outputText value="#{x.fileState}" style="background: #{x.fileColor}"/> 
+            </p:column>
+            <p:column
+                rendered="#{formService.myForm.myActions.delete and formService.myForm.multiUpload.delete}"
+                >
+                <f:facet name="header">
+                    <h:outputText value="Sil"/> 
+                </f:facet>
+                <p:commandButton 
+                    value="sil" 
+                    action="#{twoDimModifyCtrl.deleteFile}" 
+                    rendered="#{formService.myForm.myActions.delete and formService.myForm.multiUpload.delete}"
+                    update="id-tab-view:id-table-file-list"
+                    >
+                    <f:setPropertyActionListener  target="#{twoDimModifyCtrl.toBeDeletedFileID}" value="#{x.fileID}"/>
+                </p:commandButton>
+            </p:column>
+            <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                <f:facet name="header" >
+                    <h:outputText value="İndir"/> 
+                </f:facet>
+                <h:outputLink 
+                    value="#{application.contextPath}/myDownloadServlet/#{x.fileID}"
+                    style="
+                    text-decoration:none;
+                    font-size: 14px;
+                    color:#112978;
+                    font-weight:bold;"
+                    >
+                    <h:outputText value="indir" />
+                </h:outputLink>           
+            </p:column>
+        </p:dataTable>
+    </h:panelGroup>
+
+
+</html>

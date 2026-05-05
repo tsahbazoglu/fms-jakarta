@@ -1,0 +1,144 @@
+
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "fms-field-items",
+    "description": "Fms Field Items Description",
+    "type": "object",
+    "properties": {
+        "func": {
+            "type": "string"
+        },
+        "list": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false    
+            }
+        },
+        "ref": {
+            "type": "object",
+            "properties": {
+                "db": {
+                    "type": "string"
+                },
+                "itemTable": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "func": {
+                            "type": "string"
+                        },
+                        "list": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "key": {
+                                        "type": "string"
+                                    },
+                                    "string-value": {
+                                        "type": "string"
+                                    },
+                                    "roles": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "additionalProperties": false    
+                },
+                "historyQuery": {
+                    "type": "object",
+                    "properties": {
+                        "func": {
+                            "type": "string"
+                        },
+                        "list": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "key": {
+                                        "type": "string"
+                                    },
+                                    "string-value": {
+                                        "type": "string"
+                                    },
+                                    "roles": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "additionalProperties": false   
+                },
+                "adminQuery": {
+                    "type": "object",
+                    "properties": {
+                        "func": {
+                            "type": "string"
+                        },
+                        "list": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "key": {
+                                        "type": "string"
+                                    },
+                                    "string-value": {
+                                        "type": "string"
+                                    },
+                                    "roles": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "additionalProperties": false   
+                },
+                "v": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "sort": {
+                    "type": "object",
+                    "properties": {
+                        "roles": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [],
+    "additionalProperties": false    
+}

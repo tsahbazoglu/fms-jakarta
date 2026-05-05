@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core"
+    >
+    <p:outputPanel>
+        <h:form>
+            <br/>
+            <p:commandButton 
+                id="buttonSendEmailId"
+                icon="pi pi-at" 
+                title="Email Önizleme"
+                action="#{emailMB.actionEmail}"
+                rendered="#{formService.myForm.myActions.email}"
+                update="#{updateAjaxMB.msgDlg}"
+                /> 
+            <p:selectOneMenu 
+                value="#{emailMB.transparentProperties['emailType']}" 
+                rendered="#{formService.myForm.myActions.email}"
+                >
+                <f:selectItem itemValue="PLEASE_SELECT" itemLabel="Lütfen Seçiniz..."/>
+                <f:selectItem itemValue="HATIRLATMA" itemLabel="Veri Girişini Hatırlat"/>
+                <f:selectItem itemValue="HATIRLATMA_2" itemLabel="Veri Girişini Hatırlat 2"/>
+                <f:selectItems value="#{emailMB.emailTypes}"/>
+            </p:selectOneMenu> 
+            <br/>
+            <p:panelGrid columns="3" layout="grid" columnClasses="ui-g-3,ui-g-6,ui-g-3">
+                <p:outputLabel value="Kime" style="font-weight: bold;"/>
+                <p:inputTextarea value="#{emailMB.emailData['email']}"/>
+                <p:outputLabel value="Birden fazla email gönderimi için yalnız (,) VİRGÜL ayracı kullanılmalı."/>
+
+                <p:outputLabel value="Konu" style="font-weight: bold;"/>
+                <p:outputLabel style="width: 100%;" value="#{emailMB.emailData['subject']}"/>
+                <p:outputLabel value=""/>
+
+                <p:outputLabel value="Ek Not" style="font-weight: bold;"/>
+                <h:inputTextarea value="#{emailMB.emailData['adminComment']}"/>
+                <p:outputLabel value=""/>
+
+                <p:outputLabel value="İçerik" style="font-weight: bold;"/>
+                <p:outputLabel value="#{emailMB.emailData['content']}" escape="false"/>
+                <p:outputLabel value=""/>
+            </p:panelGrid>
+            <p:commandButton value="Gönder" action="#{emailMB.gonder}"/>
+        </h:form>
+    </p:outputPanel>
+</html>

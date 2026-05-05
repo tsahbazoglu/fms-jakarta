@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid"
+      xmlns:c="jakarta.tags.core"
+      >
+
+    <h:head>
+        <title></title>
+    </h:head>
+
+    <p:panel>
+        <h:form rendered="#{formService.myForm.historyRendered}">
+            <p:panelGrid
+                columns="2"
+                layout="grid"
+                columnClasses="ui-g-2,ui-g-10"
+                >
+                <c:forEach items="#{pivotViewerCtrl.zetDimension}" var="filterFieldStructure">
+                    <p:outputLabel value="#{filterFieldStructure['shortName']}"/>
+                    <p:outputPanel>
+                        <p:selectOneMenu  
+                            value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
+                            converter="#{filterFieldStructure.myconverter}"
+                            rendered="#{'member' eq filterFieldStructure.key}" 
+                            filter="true" 
+                            filterMatchMode="contains"   
+                            caseSensitive="true"
+                            style="width: 400px;"
+                            >
+                            <p:ajax 
+                                listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
+                                update="#{updateAjaxMB.filterNdDataHistory}"
+                                />
+                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu  
+                            value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
+                            converter="#{filterFieldStructure.myconverter}"
+                            rendered="#{'period' eq filterFieldStructure.key}" 
+                            style="width: 400px;"
+                            >
+                            <p:ajax 
+                                listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
+                                update="#{updateAjaxMB.filterNdDataHistory}" />
+                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu  
+                            value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
+                            converter="#{filterFieldStructure.myconverter}"
+                            rendered="#{'periodFilter' eq filterFieldStructure.key}" 
+                            style="width: 400px;"
+                            >
+                            <p:ajax 
+                                listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
+                                update="#{updateAjaxMB.filterNdDataHistory}"/>
+                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu  
+                            value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
+                            converter="#{filterFieldStructure.myconverter}"
+                            rendered="#{'template' eq filterFieldStructure.key}" 
+                            style="width: 400px;"
+                            >
+                            <p:ajax 
+                                listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
+                                update="#{updateAjaxMB.filterNdDataHistory}"/>
+                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                        </p:selectOneMenu>
+                    </p:outputPanel>
+                </c:forEach>
+            </p:panelGrid>
+
+            <p:panelGrid
+                columns="1"
+                layout="grid"
+                >
+                <c:forEach items="#{formService.myForm.fieldsRowKeys}" var="fieldKey">
+                    <h:panelGrid columns="1">
+                        <h:outputText
+                            value="#{pivotViewerCtrl.componentMap[fieldKey].label}" 
+                            escape="false"
+                            style="#{pivotViewerCtrl.componentMap[fieldKey].style}"
+                            rendered="#{pivotViewerCtrl.componentMap[fieldKey].rendered}"
+                            >
+                        </h:outputText>
+                        <p:selectOneMenu
+                            value="#{pivotViewerCtrl.rowObject[fieldKey]}"
+                            label="#{pivotViewerCtrl.componentMap[fieldKey].label}" 
+                            rendered="#{'selectOneMenu' eq  pivotViewerCtrl.componentMap[fieldKey].componentType and pivotViewerCtrl.componentMap[fieldKey].rendered}"
+                            converter="#{pivotViewerCtrl.componentMap[fieldKey].myconverter}"
+                            >
+                            <f:selectItems value="#{pivotViewerCtrl.componentMap[fieldKey].items}"/>
+                        </p:selectOneMenu>   
+                    </h:panelGrid>
+                </c:forEach>   
+            </p:panelGrid>
+        </h:form>
+    </p:panel>
+
+    <p:outputPanel id="historyMyGridReadOnly">
+        <p:scrollPanel mode="native" 
+                       style="width:95%;height:800px">    
+            <mygrid:mygridHistory 
+                id="idHistoryMyGridReadOnly"
+                rowHeaderWidh="#{pivotViewerCtrl.pivotDataModel.handsonRowHeaderWidth}"
+                colWidths="#{pivotViewerCtrl.pivotDataModel.handsonColWidths}"
+                columns="#{pivotViewerCtrl.pivotDataModel.columns}" 
+                rows="#{pivotViewerCtrl.pivotDataModel.rows}" 
+                cell="#{pivotViewerCtrl.pivotDataModel.cell}"
+                rendered="#{formService.myForm.historyRendered}"
+                /> 
+        </p:scrollPanel>
+
+    </p:outputPanel>
+</html>

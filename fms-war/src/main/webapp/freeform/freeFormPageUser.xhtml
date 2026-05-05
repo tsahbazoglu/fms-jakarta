@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui"   
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:mydynamic="http://java.sun.com/jsf/composite/mydinamic">
+
+    <h:head>
+        <title>Dynamic Form</title>
+    </h:head>
+
+    <h:body>
+        <ui:include src="ui-free-form-toolbar.xhtml"/>
+
+        <h:form id="id_freeform" styleClass="p-3"> 
+            <p:tooltip globalSelector=".label-tooltip" 
+                       position="top" 
+                       escape="false"
+                       showDelay="300"
+                       widgetVar="vtLabelTooltip">
+                <f:attribute name="beforeShow" 
+                             value="this.cfg.content = $(this.target).attr('data-tooltip');" />
+            </p:tooltip>
+
+            <p:remoteCommand 
+                name="rcHybridFormSave" 
+                action="#{freeDesigner.save}" 
+                update="#{updateAjaxMB.msgDlg}" />
+
+            <div class="ui-fluid">
+                <ui:repeat value="#{freeDesigner.selectedFormFieldKeySetAsList}" var="x">
+                    <h:panelGroup rendered="#{x ne 'ekler' and freeDesigner.myRecord.crudFieldMap[x].rendered}">
+
+                        <div class="grid mb-2 align-items-center">
+
+                            <div class="col-12 md:col-6">
+                                <h:outputText 
+                                    value="#{freeDesigner.myRecord.crudFieldMap[x].name}" 
+                                    styleClass="label-tooltip font-bold block white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                                    pt:data-tooltip="#{freeDesigner.myRecord.crudFieldMap[x].name}"
+                                    style="cursor: help; #{freeDesigner.myRecord.crudFieldMap[x].style}"
+                                    escape="false" />
+                            </div>
+
+                            <div class="col-12 md:col-6">
+                                <p:inputText 
+                                    value="#{freeDesigner.myRecord.crudMap[x]}" 
+                                    readonly="#{freeDesigner.myRecord.crudFieldMap[x].readonly}"
+                                    rendered="#{freeDesigner.myRecord.crudFieldMap[x].componentType eq 'inputText'}" />
+
+                                <p:inputTextarea 
+                                    value="#{freeDesigner.myRecord.crudMap[x]}" 
+                                    readonly="#{freeDesigner.myRecord.crudFieldMap[x].readonly}"
+                                    rendered="#{freeDesigner.myRecord.crudFieldMap[x].componentType eq 'inputTextarea'}" />
+
+                                <h:panelGroup rendered="#{freeDesigner.myRecord.crudFieldMap[x].componentType eq 'inputDate'}">
+                                    <div class="flex">
+                                        <mydynamic:uysDateTimeEntry 
+                                            myvalue="#{freeDesigner.myRecord.crudMap[x]}" 
+                                            label="#{freeDesigner.myRecord.crudFieldMap[x].name}" 
+                                            dateChange="#{freeDesigner.dateChange}"
+                                            mypattern="yyyy.MM.dd HH:mm" />
+                                    </div>
+                                </h:panelGroup>
+
+                                <p:selectOneMenu 
+                                    value="#{freeDesigner.myRecord.crudMap[x]}" 
+                                    rendered="#{freeDesigner.myRecord.crudFieldMap[x].componentType eq 'selectOneMenu'}"
+                                    disabled="#{freeDesigner.myRecord.crudFieldMap[x].readonly}">
+                                    <f:selectItems value="#{freeDesigner.myRecord.crudFieldMap[x].selectItemsCurrent}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </ui:repeat>
+            </div>
+
+            <div class="mt-4">
+                <h:outputText value="İzin Verilen Yatırım Hizmet ve Faaliyet" styleClass="font-bold mb-2 block"/>
+                <p:dataTable 
+                    value="#{freeDesigner.myRecord.listOfLicense}" 
+                    var="license" 
+                    tableStyle="width:auto">
+
+                    <p:column style="#{license.style}">
+                        <h:outputText value="#{license.licenseName}" styleClass="white-space-nowrap" style="#{license.style}"/>
+                    </p:column>
+
+                    <p:column headerText="Yurt İçinde" 
+                              rendered="#{not freeDesigner.myRecord.renderedInOut}"
+                              styleClass="text-center"
+                              style="#{license.style}">
+                        <p:selectBooleanCheckbox value="#{license.in}" 
+                                                 rendered="#{license.renderedIn}" 
+                                                 disabled="#{license.readonlyIn}" />
+                    </p:column>
+
+                    <p:column headerText="Yurt Dışında" 
+                              rendered="#{not freeDesigner.myRecord.renderedInOut}"
+                              styleClass="text-center"
+                              style="#{license.style}">
+                        <p:selectBooleanCheckbox value="#{license.out}" 
+                                                 rendered="#{license.renderedOut}" 
+                                                 disabled="#{license.readonlyOut}" />
+                    </p:column>
+
+                    <p:column headerText="Durum" 
+                              rendered="#{freeDesigner.myRecord.renderedInOut}"
+                              styleClass="text-center"
+                              style="#{license.style}">
+                        <p:selectBooleanCheckbox widgetVar="#{license.licenseCode}" 
+                                                 value="#{license.inout}" 
+                                                 onchange="checkOthers('#{license.licenseCode}')" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function checkOthers(code) {
+                const map = {'F3000': 'F3020', 'F3020': 'F3000'};
+                const targetCode = map[code];
+                if (targetCode) {
+                    const source = PF(code);
+                    const target = PF(targetCode);
+                    if (source && target) {
+                        source.isChecked() ? target.check() : target.uncheck();
+                    }
+                }
+            }
+            //]]>
+        </script>
+    </h:body>
+</html>

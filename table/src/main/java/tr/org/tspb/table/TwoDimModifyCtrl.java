@@ -1,0 +1,2402 @@
+package tr.org.tspb.table;
+
+import static jakarta.xml.bind.Marshaller.JAXB_ENCODING;
+import static jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
+import static tr.org.tspb.constants.ProjectConstants.*;
+//
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.*;
+import java.text.ParseException;
+//
+import javax.script.ScriptException;
+import javax.xml.transform.TransformerException;
+//
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.AbortProcessingException;
+import jakarta.faces.event.ActionEvent;
+import jakarta.faces.event.ActionListener;
+import jakarta.faces.event.AjaxBehaviorEvent;
+import jakarta.servlet.http.HttpSession;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.application.FacesMessage;
+import jakarta.el.ELException;
+import jakarta.faces.model.SelectItem;
+import jakarta.mail.MessagingException;
+import jakarta.inject.Inject;
+//
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoConfigurationException;
+import com.mongodb.client.model.Filters;
+import org.bson.types.Code;
+import org.bson.types.ObjectId;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.model.StreamedContent;
+import org.xml.sax.SAXException;
+import org.bson.Document;
+import org.apache.commons.io.FileUtils;
+import org.primefaces.event.CellEditEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.DualListModel;
+import org.primefaces.model.TreeNode;
+import tr.org.tspb.datamodel.gui.FmsTableDataModel;
+import tr.org.tspb.constants.exceptions.NullNotExpectedException;
+import tr.org.tspb.datamodel.pojo.MyConstraintFormula;
+import tr.org.tspb.datamodel.pojo.MyControlResult;
+import tr.org.tspb.datamodel.pojo.MyCommandResult;
+import tr.org.tspb.constants.exceptions.UserException;
+import tr.org.tspb.datamodel.pojo.UysListOfMapElement;
+import tr.org.tspb.service.CalcService;
+import tr.org.tspb.service.CtrlService;
+import tr.org.tspb.util.stereotype.MyController;
+import tr.org.tspb.constants.exceptions.FormConfigException;
+import tr.org.tspb.constants.exceptions.LdapException;
+import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
+import tr.org.tspb.constants.exceptions.MoreThenOneInListException;
+import tr.org.tspb.constants.exceptions.RecursiveLimitExceedException;
+import tr.org.tspb.common.qualifier.MyCtrlServiceQualifier;
+import tr.org.tspb.common.qualifier.MyQualifier;
+import tr.org.tspb.common.qualifier.ViewerController;
+import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
+import tr.org.tspb.datamodel.dao.MyField;
+import tr.org.tspb.datamodel.dao.FmsForm;
+import tr.org.tspb.datamodel.dao.MyMap;
+import tr.org.tspb.outsider.FmsWorkFlow;
+import tr.org.tspb.datamodel.pojo.UserDetail;
+import tr.org.tspb.converter.base.BsonConverter;
+import tr.org.tspb.datamodel.dao.CtrlItems;
+import tr.org.tspb.datamodel.dao.TagActionsAction;
+import tr.org.tspb.datamodel.dao.MyActions;
+import tr.org.tspb.datamodel.dao.MyBaseRecord;
+import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFormProperty;
+import tr.org.tspb.datamodel.dao.TagEvent;
+import tr.org.tspb.datamodel.dp.nullobj.PlainRecordData;
+import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
+import tr.org.tspb.outsider.PaymentDoor;
+import tr.org.tspb.outsider.qualifier.DefaultPaymentDoor;
+import tr.org.tspb.util.qualifier.KeepOpenQualifier;
+import tr.org.tspb.util.tools.MongoDbUtilIntr;
+import tr.org.tspb.factory.cp.OgmCreatorIntr;
+import tr.org.tspb.datamodel.pojo.ComponentType;
+import tr.org.tspb.datamodel.pojo.DatabaseUser;
+import tr.org.tspb.outsider.service.FeatureService;
+import tr.org.tspb.datamodel.tags.FmsCheck;
+
+/*
+ * @author Telman Şahbazoğlu
+ */
+@MyController
+@MyQualifier(myEnum = ViewerController.twoDimModifyCtrl)
+public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
+
+    @Inject
+    @MyCtrlServiceQualifier
+    private CtrlService ctrlService;
+
+    @Inject
+    private CalcService calcService;
+
+    @Inject
+    //@MyWorkFlowQualifier
+    // eğer qualifier burada eklediyse 
+    // ilgili producer tarafında eklenmeli
+    // eğer produce tarafında eklenmediyse buradada eklenMemeli
+    private FmsWorkFlow fmsFlowCtrl;
+
+    @Inject
+    private FeatureService featureService;
+
+    @Inject
+    @DefaultPaymentDoor
+    private PaymentDoor paymentDoor;
+
+    @Inject
+    @KeepOpenQualifier
+    private MongoDbUtilIntr mongoDbUtil;
+
+    @Inject
+    @OgmCreatorQualifier
+    private OgmCreatorIntr ogmCreator;
+
+    @Inject
+    @MyQualifier(myEnum = ViewerController.emailMB)
+    private EmailMB emailMB;
+
+    private int rowCount = 0;
+    private int limit = 5000;
+    private final String DLG_DESC = "wvDescDlg";
+
+    public static final String SESSION_KEY = "SESSION_KEY__CRUD_2D_MB";
+
+    private static final int EVENT_SIZE = 5;
+    private boolean disabledSearchButton;
+    private List<String> eventLog = new ArrayList<>(EVENT_SIZE);
+    private String calculateFormulaId;
+    private List<String> selectedFormMessages;
+    private transient StreamedContent file;
+    private transient List<Map<String, Object>> successList = new ArrayList<>();
+    private transient List<Map<String, Object>> failList = new ArrayList<>();
+    private transient List<Map<String, Object>> selectedRow;
+    private static final String FAIL_LIST = "failList";
+    private static final String SUCCESS_LIST = "successList";
+
+    private TreeNode root;
+
+    @PostConstruct
+    @Override
+    public void init() {
+    }
+
+    public List<Map<String, Object>> getFailList() {
+        return Collections.unmodifiableList(failList);
+    }
+
+    public StreamedContent getFile() {
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(
+                    UysListOfMapElement.class);
+            Marshaller marshallEmailData = context.createMarshaller();
+            marshallEmailData.setProperty(JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshallEmailData.setProperty(JAXB_ENCODING, "UTF-8");
+            StringWriter stringWriter = new StringWriter();
+
+            List<Map> list = new ArrayList<>();
+
+            for (MyField myField : formService.getMyForm().
+                    getFields().
+                    values()) {
+                StringBuilder value = new StringBuilder();
+                if (getMyObject().
+                        containsKey(myField.getKey())) {
+
+                    Object obj = getMyObject().
+                            get(myField.getKey());
+
+                    if (myField.getMyconverter() instanceof SelectOneObjectIdConverter && obj instanceof ObjectId) {
+
+                        if (SelectOneObjectIdConverter.NULL_VALUE.equals(obj)) {
+                            value.append("Lütfen Seçiniz ...");
+                        } else {
+                            Document Document = mongoDbUtil.findOne(myField.
+                                    getItemsAsMyItems().
+                                    getDb(), myField.
+                                            getItemsAsMyItems().
+                                            getTable(),
+                                    new Document(MONGO_ID, obj));
+
+                            if (Document == null) {
+                                value.append(String.format(
+                                        "no record regarding to %s", obj.
+                                                toString()));
+                            } else {
+                                for (String key : myField.getItemsAsMyItems().
+                                        getView()) {
+                                    value.append(Document.get(key).
+                                            toString());
+                                    value.append(" - ");
+                                }
+                            }
+                        }
+                    } else {
+                        value.append(getMyObject().
+                                get(myField.getKey()).
+                                toString());
+                    }
+
+                }
+                Map map = new HashMap();
+                map.put("key", myField.getName());
+                map.put("value", value.toString());
+                list.add(map);
+            }
+
+            marshallEmailData.marshal(new UysListOfMapElement(list, list, list),
+                    stringWriter);
+
+            String fileName = SIMPLE_DATE_FORMAT__5.format(new Date()).
+                    concat("_").
+                    concat(((HttpSession) FacesContext.getCurrentInstance().
+                            getExternalContext().
+                            getSession(false)).getId()).
+                    concat("_").
+                    concat(String.valueOf((int) (Math.random() * 1000000)));
+
+            String xmlFileName = baseService.getProperties().
+                    getTmpDownloadPath().
+                    concat(fileName).
+                    concat(".xml");
+
+            try (FileWriter fw = new FileWriter(xmlFileName)) {
+                fw.write(stringWriter.toString());
+            }
+
+            // start XML To PDF
+            String pdftoolpath = baseService.getProperties().
+                    getPdfTool();
+            String xslFileName = pdftoolpath.concat("uys_pdf_fop_general.xsl");
+            String pdfFileName = baseService.getProperties().
+                    getTmpDownloadPath().
+                    concat(fileName).
+                    concat(
+                            FILE_EXTENSION_PDF);
+            String cnfFileName = pdftoolpath.concat("fop.xconf");
+
+            uysApplicationMB.
+                    createPdfFile(pdfFileName, cnfFileName, xslFileName,
+                            xmlFileName, fileName);
+
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+                    FileUtils.readFileToByteArray(new File(pdfFileName)));
+//            file = new DefaultStreamedContent(byteArrayInputStream, "application/pdf", fileName.concat(FILE_EXTENSION_PDF));
+            file = DefaultStreamedContent.builder().
+                    contentType("application/pdf").
+                    name(fileName.concat(FILE_EXTENSION_PDF)).
+                    stream(() -> byteArrayInputStream).
+                    build();
+
+        } catch (IOException | JAXBException | TransformerException
+                | SAXException ex) {
+            logger.error(ex.getMessage());
+        }
+
+        return file;
+    }
+
+    public void setFile(StreamedContent file) {
+        this.file = file;
+    }
+
+    public List<Map<String, Object>> getSuccessList() {
+        return Collections.unmodifiableList(successList);
+    }
+
+    public String showEimza() {
+        List<Map> list = new ArrayList();
+        list.add(new Document(crudObject));
+
+        featureService.getEsignDoor().
+                initAndShowEsignDlg(list, formService.
+                        getMyForm(), "widgetVarToBeSignedDialog", MULTIPLE);
+
+        return null;
+    }
+
+    public String payment() {
+        Object amountObj = getMyObject().
+                get(formService.getMyForm().
+                        getPosAmountField());
+        if (amountObj instanceof Number) {
+            String amount = String.
+                    valueOf(((Number) amountObj).intValue() * 100);
+            paymentDoor.newOrder(amount);
+            dialogController.showPopup("wv-dlg-payment");
+        } else {
+            dialogController.showPopupError("no amount");
+        }
+        return null;
+    }
+
+    public String showEimza22() {
+        try {
+            localShowEimza22();
+        } catch (NullNotExpectedException ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.getMessage());
+        }
+        return null;
+    }
+
+    private void localShowEimza22() throws NullNotExpectedException {
+
+        Document query = new Document();
+
+        if (!loginController.isUserInRole(
+                formService.getMyForm().
+                        getMyProject().
+                        getAdminAndViewerRole())) {
+            if (formService.getMyForm().
+                    getLoginFkField() == null) {
+                throw new NullNotExpectedException(
+                        "login foreign key had not been set");
+            }
+            query.put(formService.getMyForm().
+                    getLoginFkField(),
+                    loginController.getLoggedUserDetail().
+                            getLoginFkSearchMapInListOfValues());
+        }
+
+        query.put(FORMS, formService.getMyForm().
+                getForm());
+
+        if (formService.getMyForm().
+                getField(PERIOD) != null) {
+            query.put(PERIOD, getSearchObjectValue(PERIOD));
+        }
+
+        List<Map> list = repositoryService.list(formService.getMyForm().
+                getDb(),
+                formService.getMyForm().
+                        getTable(), query);
+
+        if (list.isEmpty()) {
+            //FIXME messagebundle
+            throw new NullNotExpectedException(
+                    "İmzalanacak Kayıtlı Veriniz Tespit Edilemedi.");
+        }
+
+        featureService.getEsignDoor().
+                initAndShowEsignDlg(list, formService.
+                        getMyForm(), "widgetVarToBeSignedDialog", MULTIPLE);
+
+    }
+
+    public List<Map<String, Object>> getSelectedRow() {
+        if (selectedRow == null) {
+            return null;
+        }
+        return Collections.unmodifiableList(selectedRow);
+    }
+
+    public void setSelectedRow(List<Map<String, Object>> selectedRow) {
+        this.selectedRow = selectedRow;
+    }
+
+    public void createTreeNode(Document document, TreeNode folder) {
+
+        for (Map.Entry entry : document.entrySet()) {
+
+            FmsFormProperty formProperty;
+
+            if (entry.getValue() instanceof Document) {
+                formProperty = new FmsFormProperty(entry.getKey().
+                        toString(),
+                        entry.getValue(), false);
+            } else {
+                formProperty = new FmsFormProperty(entry.getKey().
+                        toString(),
+                        entry.getValue());
+            }
+
+            TreeNode childNode = new DefaultTreeNode(formProperty);
+
+            folder.getChildren().
+                    add(childNode);
+
+            if (entry.getValue() instanceof Document) {
+                Document innerDoc = (Document) entry.getValue();
+                createTreeNode(innerDoc, childNode);
+            }
+
+        }
+
+    }
+
+    // EVENT LISTENERS BEGIN
+    public void selectListener(SelectEvent event) {
+
+        try {
+            if (formService.getMyForm().
+                    isJsonViewer()) {
+                Document document = mongoDbUtil.findOne(formService.getMyForm().
+                        getDb(), formService.getMyForm().
+                                getTable(),
+                        new BasicDBObject());
+
+//                StringBuilder sb = new StringBuilder("= Form");
+//
+//                for (String key : document.keySet()) {
+//                    sb.append("\n");
+//                    sb.append("* *".concat(key).concat("*"));
+//                }
+//                asciidoctorContent = asciidoctor.convert(sb.toString(), Collections.EMPTY_MAP);
+                root = new DefaultTreeNode("Root", null);
+
+                createTreeNode(document, root);
+
+                dialogController.showPopup(DLG_CRUD_JSON);
+            } else {
+                crudObject = retrieveObjectFromDB((Map) event.getObject(), true);
+                showCrud();
+            }
+        } catch (Exception ex) {
+            logger.error("error occured", ex);
+            dialogController.showPopupError(ex.getMessage());
+        }
+    }
+
+    public void showCrud() throws FormConfigException {
+        formService.getMyForm().
+                arrangeActions(loginController.getRoleMap(),
+                        filterService.getTableFilterCurrent(), crudObject);
+
+        prepareJsfComponentMap(formService.getMyForm());
+
+        formService.getMyForm().
+                runAjaxBulk(getComponentMap(), crudObject,
+                        loginController.getRoleMap(), loginController.
+                        getLoggedUserDetail());
+
+        if (formService.getMyForm().
+                isWorkFlowActive()) {
+            formService.getMyForm().
+                    getMyActions().
+                    reset();
+            fmsFlowCtrl.init(formService.getMyForm(), crudObject, filterService.
+                    getTableFilterCurrent());
+        }
+
+        dialogController.showPopup(CRUD_OPERATION_DIALOG2);
+
+        if (formService.getMyForm().
+                isHasChildFields()) {
+            setChildRecords(crudObject.getMyObjectChilds());
+        }
+
+    }
+
+    // GETTERS & SETTERS BEGIN
+    public int getEventSize() {
+        return EVENT_SIZE;
+    }
+
+    public List<String> getEventLog() {
+        return Collections.unmodifiableList(eventLog);
+    }
+
+    public void setEventLog(List<String> eventLog) {
+        this.eventLog = eventLog;
+    }
+
+    public String clearCache() {
+        uysApplicationMB.clearCalculateFormula();
+        uysApplicationMB.clearApplicationSearchResults();
+        return null;
+    }
+
+    public String sendEmailToAll() {
+        try {
+            emailMB.localSendEmailToAll();
+        } catch (NullNotExpectedException | IOException ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.getMessage());
+        }
+        return null;
+    }
+
+    public String actionSearchObject() {
+        search();
+        resetActions();
+
+        return null;
+    }
+
+    private void resetActions() {
+        MyActions myActions = ogmCreator
+                .getMyActions(formService.getMyForm(), loginController.
+                        getRoleMap(),
+                        filterService.getTableFilterCurrent(), loginController.
+                        getLoggedUserDetail());
+        formService.getMyForm().
+                initActions(myActions);
+    }
+
+    public String resetFilter() {
+        filterService.getGuiFilterCurrent().
+                clear();
+        search();
+        resetActions();
+        return null;
+    }
+
+    private void search() {
+        try {
+            filterService.createTableFilterCurrent(formService.getMyForm());
+            //FIXME 02.10.2019 Volkan&Telman : set row count also on drawGUI phase
+
+            rowCount = findDataCount();
+
+            if (rowCount > limit) {
+                ((FmsTableDataModel) getData()).initRowCount(0);
+                dialogController.showPopupInfo(
+                        "sorgu sonucuna göre kayıt sayısı 5000 nin üzerinde. Filtre seçiminizi daraltınız",
+                        MESSAGE_DIALOG);
+            } else {
+                ((FmsTableDataModel) getData()).initRowCount(rowCount);
+            }
+
+        } catch (NullNotExpectedException ex) {
+
+        }
+    }
+
+    public String showAllNote() {
+        if (formService.getMyForm() != null) {
+            String text = formService.getMyForm().
+                    getUserNote();
+            if (text != null) {
+                dialogController.showPopupInfo(text, MESSAGE_DIALOG);
+            }
+        }
+        return null;
+    }
+
+    public Boolean getSelectedFormUserNote() {
+        return formService.getMyForm() != null
+                && formService.getMyForm().
+                        getUserNote() != null
+                && !formService.getMyForm().
+                        getUserNote().
+                        isEmpty();
+    }
+
+    public String getSelectedFormConstantNote() {
+        return formService.getMyForm() == null ? " " : formService.getMyForm().
+                getConstantNote();
+    }
+
+    public String getSelectedFormFuncNote() {
+        if (formService.getMyForm().
+                getName() != null && formService.getMyForm().
+                        getFuncNote() != null) {
+            Document commandResult = mongoDbUtil
+                    .findOne(formService.getMyForm().
+                            getDb(), formService.
+                                    getMyForm().
+                                    getFuncNote(), filterService.
+                                    getTableFilterCurrent());
+            return commandResult.getString(RETVAL);
+        } else {
+            return null;
+        }
+    }
+
+    public String getSelectedFormReadOnlyNote() {
+        return formService.getMyForm() == null ? " " : formService.getMyForm().
+                getReadOnlyNote();
+    }
+
+    public String provideOverAllCrossCheckForAll() {
+        try {
+            localProvideOverAllCrossCheckForAll();
+        } catch (NullNotExpectedException ex) {
+            dialogController.showPopupError("period is required");
+        }
+        return null;
+    }
+
+    public void localProvideOverAllCrossCheckForAll() throws
+            NullNotExpectedException {
+
+        if (filterService.getTableFilterCurrent().
+                get(PERIOD) == null) {
+            throw new NullNotExpectedException("period is required");
+        }
+
+        if (filterService.getTableFilterCurrent().
+                get(TEMPLATE) == null) {
+            throw new NullNotExpectedException("template is required");
+        }
+
+        if (filterService.getTableFilterCurrent().
+                get(formService.getMyForm().
+                        getLoginFkField()) != null
+                && !SelectOneObjectIdConverter.NULL_VALUE
+                        .equals(filterService.getTableFilterCurrent().
+                                get(
+                                        formService.getMyForm().
+                                                getLoginFkField()))) {
+            provideOverAllCrossCheck();
+        } else {
+
+            Document query = new Document("status.code", "001");
+
+            query.append(PERIOD, filterService.getTableFilterCurrent().
+                    get(
+                            PERIOD));
+            query.append(TEMPLATE, filterService.getTableFilterCurrent().
+                    get(
+                            TEMPLATE));
+
+            List<Document> cursor = mongoDbUtil.find(UYSDB,
+                    "dataBankOrganizationStatus", query);
+
+            int i = 0;
+
+            for (Document dbo : cursor) {
+                i++;
+                String message = String.valueOf(i).
+                        concat(", {").
+                        concat(
+                                formService.getMyForm().
+                                        getLoginFkField()).
+                        concat(" : ").
+                        concat(dbo.get(formService.getMyForm().
+                                getLoginFkField()).
+                                toString()).
+                        concat("}");
+                logger.info(message);
+                filterService.getTableFilterCurrent().
+                        put(formService.
+                                getMyForm().
+                                getLoginFkField(), dbo.getObjectId(
+                                        formService.getMyForm().
+                                                getLoginFkField()));
+                filterService.getTableFilterCurrent().
+                        put(TEMPLATE, dbo.
+                                getObjectId(TEMPLATE));
+                putSearchObjectValue(formService.getMyForm().
+                        getLoginFkField(),
+                        dbo.getObjectId(formService.getMyForm().
+                                getLoginFkField()));
+                putSearchObjectValue(TEMPLATE, dbo.getObjectId(TEMPLATE));
+                provideOverAllCrossCheck();
+            }
+        }
+    }
+
+    /*
+    steps :
+    1. run constraints formulas
+    2. write the results of aforementiond step to the config pre-defined collection
+    3. we are eligable to assyncronuously change the result of the step two outupt like in case of Data Change
+    4. check the result to focus on sendForm 
+     */
+    public String provideOverAllCrossCheck() {
+        ctrlService.
+                init(formService.getMyForm().
+                        getMyProject().
+                        getConfigTable());
+        try {
+            Document filterClone = new Document(filterService.
+                    getTableFilterCurrent());
+            ctrlService.crossCheck(filterClone);
+            callAdditionalAction(filterClone, formService.getMyForm().
+                    getMyActions().
+                    getCheckAllAction());
+            resetActions();
+            ((FmsTableDataModel) getData()).initRowCount(findDataCount());
+        } catch (Exception ex) {
+            logger.error("error occured", ex);
+            dialogController.showPopupError(ex.getMessage());
+        }
+        return null;
+    }
+
+    public void callAdditionalAction(Document filter, TagActionsAction fmsAction) {
+
+        ctrlService.
+                init(formService.getMyForm().
+                        getMyProject().
+                        getConfigTable());
+
+        if (fmsAction.isEnable()) {
+            if (fmsAction.getActionFunc() != null) {
+                mongoDbUtil.runCommand(fmsAction.getDb(), fmsAction.
+                        getActionFunc(), filter, loginController.getRolesAsSet());
+            }
+
+            if (fmsAction.getOperations() != null) {
+
+                List<FmsCheck> fmsChecks = fmsAction.getCheckList();
+
+                Boolean ifcase = null;
+
+                if (fmsChecks != null) {
+                    for (FmsCheck fmsCheck : fmsChecks) {
+                        ifcase = (ifcase == null) ? fmsCheck.execute() : ifcase && fmsCheck.
+                                execute();
+                    }
+                }
+
+                for (TagActionsAction.Operation operation : fmsAction.
+                        getOperations()) {
+                    if (ifcase == null || operation.getIfcase() == ifcase) {
+                        switch (operation.getOp()) {
+                            case "upsert":
+                                mongoDbUtil.upsertOne(operation.getDb(),
+                                        operation.getTable(), operation.
+                                        getFilter(), operation.getSet());
+                                break;
+                            case "update":
+                                mongoDbUtil.updateMany(operation.getDb(),
+                                        operation.getTable(), operation.
+                                        getFilter(), operation.getSet());
+                                break;
+                            case "copy":
+                                Document doc = mongoDbUtil.findOne(operation.
+                                        getDb(), operation.getTable(),
+                                        operation.getFilter());
+                                doc.remove(MONGO_ID);
+                                crudObject.clear();
+                                crudObject.putAll(doc);
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    public String chooseEditor() {
+        return null;
+    }
+
+    public String actionEmail() {
+        try {
+            emailMB.init(crudObject);
+            emailMB.actionEmail();
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.getMessage());
+        }
+        return null;
+    }
+
+    public String saveObject() {
+        try {
+            saveObject(null);
+            if (formService.getMyForm().
+                    isHasChildFields()) {
+                setChildRecords(crudObject.getMyObjectChilds());
+            }
+            refreshDataTable();
+            formService.getMyForm().
+                    arrangeActions(loginController.getRoleMap(), filterService.
+                            getTableFilterCurrent(), crudObject);
+        } catch (UserException ex) {
+            logger.error("error occured", ex);
+            dialogController.showPopupError(ex.getMessage());
+        } catch (FormConfigException | LdapException | MongoOrmFailedException
+                | MoreThenOneInListException | NullNotExpectedException
+                | RecursiveLimitExceedException
+                | NoSuchMethodException | ParseException | MessagingException
+                | ScriptException | net.sourceforge.jeval.EvaluationException ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.toString());
+        }
+        return null;
+    }
+
+    public String saveObject(MyCommandResult smControlResult)
+            throws UserException, NullNotExpectedException, FormConfigException,
+            MessagingException, LdapException, ScriptException,
+            NoSuchMethodException, ELException, MongoOrmFailedException,
+            ParseException, MoreThenOneInListException,
+            RecursiveLimitExceedException,
+            net.sourceforge.jeval.EvaluationException {
+
+        if (runEventPreSave(filterService.getTableFilterCurrent(), crudObject)) {
+            return null;
+        }
+
+        Object loginFkFieldValue = crudObject.get(formService.getMyForm().
+                getLoginFkField());
+
+        if (loginFkFieldValue instanceof MyBaseRecord) {
+            loginFkFieldValue = ((MyBaseRecord) loginFkFieldValue).getObjectId();
+        }
+
+        boolean ok = loginController.isUserInRole(formService.getMyForm().
+                getMyProject().
+                getAdminRole());
+        ok = ok || loginController.getLoggedUserDetail().
+                getDbo().
+                getObjectId().
+                equals(loginFkFieldValue);
+
+        if (!ok) {
+            for (UserDetail.EimzaPersonel ep : loginController.
+                    getLoggedUserDetail().
+                    getEimzaPersonels()) {
+                if (ep.getDelegatingMember() != null && ep.getDelegatingMember().
+                        equals(loginFkFieldValue)) {
+                    ok = true;
+                    break;
+                }
+            }
+        }
+
+        if (!ok) {
+            throw new UserException(
+                    "Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
+        }
+
+        ObjectId returnID = saveObject(formService.getMyForm(), loginController,
+                crudObject);
+
+        if (returnID != null) {
+            crudObject = retrieveObjectFromDB(new Document(MONGO_ID, returnID),
+                    true);
+
+            prepareJsfComponentMap(formService.getMyForm());
+
+            Map<String, List> map = internalCheck();
+            successList = map.get(SUCCESS_LIST);
+            failList = map.get(FAIL_LIST);
+
+            callAdditionalAction(filterService.getTableFilterCurrent(),
+                    formService.getMyForm().
+                            getMyActions().
+                            getSaveAction());
+
+            formService.getMyForm().
+                    runAjaxBulk(getComponentMap(), crudObject,
+                            loginController.getRoleMap(), loginController.
+                            getLoggedUserDetail());
+
+            dialogController.showPopup(CRUD_OPERATION_DIALOG2);
+
+        }
+
+        return null;
+    }
+
+    public String saveAsObject() {
+        try {
+
+            if (crudObject.get(MONGO_ID) == null) {
+                saveObject();
+                return null;
+            }
+
+            MyMap crud = (MyMap) crudObject.clone();
+
+            StringBuilder message = new StringBuilder();
+            if (crud.get(NOTE) != null) {
+                message.append(crud.get(NOTE).
+                        toString());
+            }
+            message.append(". kopyalanarak oluşturuldu. original ID : ");
+            message.append(crud.get(MONGO_ID).
+                    toString());
+
+            crud.remove(MONGO_ID);
+
+            for (MyField myField : formService.getMyForm().
+                    getFieldsAsList()) {
+                if (myField.getGenererate() != null) {
+                    crud.put(myField.getKey(), UUID.randomUUID().
+                            toString());
+                }
+            }
+
+            crud.put(NOTE, message.toString());
+
+            if (runEventPreSave(filterService.getTableFilterCurrent(), crud)) {
+                return null;
+            }
+
+            Object loginFkFieldValue = crud.get(formService.getMyForm().
+                    getLoginFkField());
+
+            boolean ok = loginController.isUserInRole(formService.getMyForm().
+                    getMyProject().
+                    getAdminRole());
+            ok = ok || loginController.getLoggedUserDetail().
+                    getDbo().
+                    getObjectId().
+                    equals(loginFkFieldValue);
+
+            for (UserDetail.EimzaPersonel ep : loginController.
+                    getLoggedUserDetail().
+                    getEimzaPersonels()) {
+                if (ep.getDelegatingMember() != null && ep.getDelegatingMember().
+                        equals(loginFkFieldValue)) {
+                    ok = true;
+                    break;
+                }
+            }
+
+            if (!ok) {
+                throw new Exception(
+                        "Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
+            }
+
+            ObjectId returnID = saveObject(formService.getMyForm(),
+                    loginController, crud);
+
+            crudObject = retrieveObjectFromDB(new Document(MONGO_ID, returnID),
+                    true);
+
+            prepareJsfComponentMap(formService.getMyForm());
+
+            Map<String, List> map = internalCheck();
+            successList = map.get(SUCCESS_LIST);
+            failList = map.get(FAIL_LIST);
+
+            callAdditionalAction(filterService.getTableFilterCurrent(),
+                    formService.getMyForm().
+                            getMyActions().
+                            getSaveAction());
+
+            formService.getMyForm().
+                    runAjaxBulk(getComponentMap(), crudObject,
+                            loginController.getRoleMap(), loginController.
+                            getLoggedUserDetail());
+            dialogController.showPopup(CRUD_OPERATION_DIALOG2);
+        } catch (UserException ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopup(ex.getTitle(), ex.getMessage(),
+                    MESSAGE_DIALOG);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.toString());
+        }
+        return null;
+    }
+
+    public Map requiredMap() {
+        return mapRequired;
+    }
+
+    private MyMap retrieveObjectFromDB(Map map, Boolean recall) throws
+            FormConfigException {
+
+        if (recall) {
+            map = mongoDbUtil
+                    .findOne(formService.getMyForm().
+                            getDb(),
+                            formService.getMyForm().
+                                    getTable(),
+                            new Document(MONGO_ID, map.get(MONGO_ID)));
+        }
+
+        handleChilds(map);
+
+        ctrlService.checkRecordConverterValueType(new Document(map),
+                formService.getMyForm());
+
+        MyMap myMap = prepareCrudObject(map);
+
+        refreshUploadedFileList();
+
+        List<Map> listOfCruds = new ArrayList();
+        listOfCruds.add(new Document(myMap));
+
+        featureService.getEsignDoor().
+                initEsignCtrl(formService.getMyForm(),
+                        listOfCruds, null, UNIQUE);
+
+        //FIXME  : make this snippet selectedForm dependable
+        HttpSession httpSession = (HttpSession) FacesContext.
+                getCurrentInstance().
+                getExternalContext().
+                getSession(false);
+
+        mapRequired = new HashMap();
+        if (HAYIR.equals(myMap.get("is_operated"))) {
+            mapRequired.put("period", true);
+            mapRequired.put("is_operated", true);
+            mapRequired.put("continent", false);
+            mapRequired.put("country", false);
+            mapRequired.put("stock_market", false);
+            mapRequired.put("clearing_house_name", false);
+            mapRequired.put("trading_volume_client", false);
+            mapRequired.put("trading_volume_portfolio", false);
+            httpSession.setAttribute(HTTP_SESSION_ATTR_MAP_REQURED_CONTROL,
+                    mapRequired);
+        } else {
+            httpSession.removeAttribute(HTTP_SESSION_ATTR_MAP_REQURED_CONTROL);
+        }
+
+        return myMap;
+    }
+
+    protected Map<String, List> internalCheck()
+            throws ScriptException, NoSuchMethodException,
+            MongoOrmFailedException, NullNotExpectedException,
+            FormConfigException, ParseException, MoreThenOneInListException,
+            RecursiveLimitExceedException,
+            net.sourceforge.jeval.EvaluationException {
+        Map<String, List> returnMap = new HashMap();
+        returnMap.put(SUCCESS_LIST, new ArrayList<>());
+        returnMap.put(FAIL_LIST, new ArrayList<>());
+
+        CtrlItems docConstraintItems = formService.getMyForm().
+                getConstraintItems();
+
+        if (docConstraintItems == null) {
+            return returnMap;
+        }
+
+        List<Document> constraintCursor = ctrlService
+                .createConstraintCursor(docConstraintItems, filterService.
+                        getTableFilterCurrent());
+
+        for (Document next : constraintCursor) {
+            MyConstraintFormula myConstraintFormula = new MyConstraintFormula(
+                    next);
+            Document myCrudObject = new Document(crudObject);
+            // we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
+            myCrudObject.remove(INODE);
+
+            //  try {
+            ctrlService.init(formService.getMyForm().
+                    getMyProject().
+                    getConfigTable());
+
+            List<Map> resultListOfMap = ctrlService.runConstraintCrossCheck(
+                    myConstraintFormula, true,
+                    new Object[]{filterService.getTableFilterCurrent(),
+                        loginController.getRolesAsSet(), myCrudObject},
+                    null, filterService.getTableFilterCurrent());
+
+            for (Map map : resultListOfMap) {
+                myConstraintFormula.setControlResult(new MyControlResult(map));
+                if (myConstraintFormula.getControlResult().
+                        isResult()) {
+                    returnMap.get(SUCCESS_LIST).
+                            add(myConstraintFormula);
+                } else {
+                    returnMap.get(FAIL_LIST).
+                            add(myConstraintFormula);
+                }
+            }
+//            } catch (Exception e) {
+//                throw new Exception(MessageFormat.format("exception:{0}<br/>transferOrder:{1}<br/>name:{2}<br/>constraint:{3}<br/>",
+//                        e.getMessage(),
+//                        myConstraintFormula.getTransferOrder(),
+//                        myConstraintFormula.getName(),
+//                        myConstraintFormula), e);
+//            }
+        }
+
+        return returnMap;
+    }
+
+    public String copyObject() {
+        try {
+            copyObject(formService.getMyForm(), loginController, crudObject);
+        } catch (UserException ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopup(ex.getTitle(), ex.getMessage(),
+                    MESSAGE_DIALOG);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.toString());
+        }
+        return null;
+    }
+
+    public String performCancel() {
+        try {
+            FmsForm chosenMyForm = ogmCreator.getMyFormLarge(null,
+                    formService.getMyForm().
+                            getMyProject().
+                            getConfigTable(),
+                    new Document(FORM, "ion_form_1020"),
+                    null,
+                    loginController.getRoleMap(),
+                    loginController.getLoggedUserDetail());
+
+            this.crudObject = newObject(chosenMyForm);
+
+            prepareJsfComponentMap(chosenMyForm);
+
+            dialogController.showPopup(CRUD_OPERATION_DIALOG2);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+        }
+
+        return null;
+    }
+
+    public String multipleDelete() {
+        try {
+            for (Map<String, Object> map : selectedRow) {
+                MyMap myMap = retrieveObjectFromDB(new Document(MONGO_ID, map.
+                        get("_id")), true);
+                deleteObject(loginController, formService.getMyForm(), myMap);
+                Thread.sleep(100);
+            }
+            refreshDataTable();
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.toString());
+        }
+        return null;
+    }
+
+    public void refreshDataTable() throws NullNotExpectedException {
+        ((FmsTableDataModel) getData()).initRowCount(findDataCount());
+        ((FmsTableDataModel) getData()).emptyListOfData();
+    }
+
+    public String deleteObject() {
+        try {
+            deleteObject(loginController, formService.getMyForm(), crudObject);
+            refreshDataTable();
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.toString());
+        }
+        return null;
+    }
+
+    public String getSelectFormShortName() {
+        return "Yeni Ekle";
+    }
+
+    public String newObject() {
+        try {
+
+            crudObject = newObject(formService.getMyForm());
+
+            for (MyField myField : formService.getMyForm().
+                    getFieldsAsList()) {
+
+                if (myField != null && myField.isAutoComplete()) {
+
+                    MyItems myItems = myField.getItemsAsMyItems();
+
+                    Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.
+                            getTable(), Filters.eq(MONGO_ID, myField.getKey()));
+
+                    crudObject.put(myField.getKey(), PlainRecordData.
+                            getPlainRecord(doc, myItems));
+                }
+            }
+
+            formService.getMyForm().
+                    arrangeActions(loginController.getRoleMap(), filterService.
+                            getTableFilterCurrent(), crudObject);
+
+            prepareJsfComponentMap(formService.getMyForm());
+
+            listFileData = new ArrayList<>();
+
+            formService.getMyForm().
+                    runAjaxBulk(getComponentMap(), crudObject,
+                            loginController.getRoleMap(), loginController.
+                            getLoggedUserDetail());
+
+            resetHistory();
+
+            dialogController.showPopup(CRUD_OPERATION_DIALOG2);
+
+            if (formService.getMyForm().
+                    isHasChildFields()) {
+                crudObject.setMyObjectChilds(new ArrayList<>());
+                setChildRecords(crudObject.getMyObjectChilds());
+                reset(formService.getMyForm().
+                        getChildCountDefault());
+            }
+
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.toString());
+        }
+        return null;
+    }
+
+    public boolean isDisabledSearchButton() {
+        return disabledSearchButton;
+    }
+
+    public String doNotSave() {
+
+        resetMyObject();
+
+        try {
+            loginController.logout();
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        }
+        return null;
+
+    }
+
+    public String saveAndLogout() {
+        saveObject();
+        resetMyObject();
+
+        try {
+            loginController.logout();
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        }
+        return null;
+
+    }
+
+    /* **************************** GETTER/SETTER *************************** */
+    public String getCalculateFormulaId() {
+        return calculateFormulaId;
+    }
+
+    public void setCalculateFormulaId(String calculateFormulaId) {
+        this.calculateFormulaId = calculateFormulaId;
+    }
+
+    public void setDisabledSearchButton(boolean disabledSearchButton) {
+        this.disabledSearchButton = disabledSearchButton;
+    }
+
+    public List<String> getSelectedFormMessages() {
+        return Collections.unmodifiableList(selectedFormMessages);
+    }
+
+    @Override
+    public void drawGUI(FmsForm myForm) throws Exception {
+        drawGUI(myForm, filterService.getBaseFilterCurrent());
+        formService.getMyForm().
+                runAjaxBulk(getComponentMap(), crudObject,
+                        loginController.getRoleMap(), loginController.
+                        getLoggedUserDetail());
+
+        TagEvent trigger = myForm.getEventFormSelection();
+        if (trigger != null && TagEvent.TagEventType.showWarnErrPopup.equals(
+                trigger.getType())) {
+            dialogController.showPopupInfoWithOk(trigger.getMsg(),
+                    MESSAGE_DIALOG);
+        }
+
+        if (formService.getMyForm().
+                isHasChildFields()) {
+            setChildFields(myForm.getChildFields());
+        }
+
+        filterService.bringFilters();
+
+    }
+
+    @Override
+    public void drawGUI(FmsForm myForm, Document filter) throws Exception {
+
+        crudObject = ogmCreator.getCrudObject();
+
+        super.drawGUI(myForm, filter);
+
+        fmsFlowCtrl.reset();
+
+        if (myForm.getUniqueIndexList() != null) {
+            for (Object obj : myForm.getUniqueIndexList()) {
+                Document dbo = (Document) obj;
+                mongoDbUtil.createIndexUnique(formService.getMyForm(), dbo);
+            }
+        }
+
+        selectedFormMessages = new ArrayList<>();
+
+        if (formService.getMyForm() != null) {
+            if (formService.getMyForm().
+                    getConstantNote() != null && !formService.
+                            getMyForm().
+                            getConstantNote().
+                            isEmpty()) {
+                selectedFormMessages.add(formService.getMyForm().
+                        getConstantNote());
+            }
+
+            if (formService.getMyForm().
+                    getUserConstantNoteList() instanceof List) {
+                for (String message : formService.getMyForm().
+                        getUserConstantNoteList()) {
+                    selectedFormMessages.add(message);
+                }
+            }
+
+            if (!formService.getMyForm().
+                    getMyActions().
+                    isSave() && formService.
+                            getMyForm().
+                            getReadOnlyNote() != null) {
+                selectedFormMessages.add(formService.getMyForm().
+                        getReadOnlyNote());
+            }
+            if (formService.getMyForm().
+                    getFuncNote() != null) {
+                Document commandResult = mongoDbUtil.runCommand(formService.
+                        getMyForm().
+                        getDb(), formService.getMyForm().
+                                getFuncNote(), filter);
+                String commandResultValue = commandResult.getString(RETVAL);
+                if (commandResultValue != null) {
+                    selectedFormMessages.add(commandResultValue);
+                }
+            }
+        }
+
+        if ("debug".equals(baseService.getProperties().
+                getDebugMode())) {
+            dialogController.showPopupInfo(new StringBuilder()
+                    .append("You see this message because of server properties DEBUG_MODE is set to debug.").
+                    append(formService.getMyForm() == null ? "selectedForm is null" : formService.
+                            getMyForm().
+                            printToConfigAnalyze("smth")).
+                    append("<br/>").
+                    append("<u>query :</u>").
+                    append("<br/><br/>").
+                    append(filterService.getTableFilterCurrent().
+                            toString()).
+                    toString(), MESSAGE_DIALOG);
+        }
+
+        for (MyField field : myForm.getFieldsAsList()) {
+            if (field.getComponentType().
+                    equals(ComponentType.pickList.name())) {
+                crudObject.put(field.getKey(), new DualListModel<String>(
+                        new ArrayList<String>(), new ArrayList<String>()));
+            }
+        }
+
+        search();
+
+    }
+
+    @Deprecated
+    public void processActionExternal(ActionEvent ae) {
+        try {
+            processAction(ae);
+        } catch (Exception ex) {
+            dialogController.showPopupError("Hata Oluştu");
+        }
+    }
+
+    @Deprecated
+    @Override
+    public void processAction(ActionEvent ae) throws AbortProcessingException {
+        /*
+        armActionAtrrs();
+
+        String failMessage = (String) eventAttrs.get(FAIL_MESSAGE);
+        try {
+
+            //Only java native variables can be pass through jsf attributes
+            String successMessage = (String) eventAttrs.get(SUCCESS_MESSAGE);
+
+            TimeZone timeZone = TimeZone.getTimeZone("Asia/Istanbul");
+            SIMPLE_DATE_FORMAT__3.setTimeZone(timeZone);
+
+            String projectBasedPeriodColectionName = formService.getMyForm().getField(PERIOD).getItemsAsMyItems().getTable();
+
+            successMessage = String.format(successMessage, SIMPLE_DATE_FORMAT__3.format(new Date()),
+                    uysApplicationMB.getApplicationSearchResults(
+                            new Document()
+                                    .append(FORM_DB, formService.getMyForm().getDb())
+                                    .append(COLLECTION, projectBasedPeriodColectionName)
+                                    .append(FORMS, PERIOD)
+                                    .append(MONGO_ID, getSearchObjectValue(PERIOD))).get(0).get(NAME));
+
+            String myActionType = (String) eventAttrs.get(MY_ACTION_TYPE);
+            String javaFunc = (String) eventAttrs.get(JAVA_FUNC);
+            String code = (String) eventAttrs.get(MYACTION);
+
+            if (myActionType == null) {
+                if (code == null) {
+                    dialogController.showPopupWarning("Bu olay üzerinde eylem tanımlı değil.<br/>Sistem yöneticisi ile iletişime geçiniz.", MESSAGE_DIALOG);
+                } else {
+                    Document mySearchObject = repositoryService.expandCrudObject(formService.getMyForm(), getSearchObjectAsDbo());
+
+                    for (MyField myField : formService.getMyForm().getAutosetFields()) {
+                        if (mySearchObject.get(myField.getKey()) == null
+                                || SelectOneObjectIdConverter.NULL_VALUE.equals(mySearchObject.get(myField.getKey()))) {
+                            throw new Exception(
+                                    MessageFormat.format("arama kriterlerinde {0} belirsiz.", myField.getKey()));
+                        }
+                    }
+
+                    mongoDbUtil.runCommand(formService.getMyForm().getDb(), code, mySearchObject, null);
+
+                    putSearchObjectValue(PERIOD, SelectOneObjectIdConverter.NULL_VALUE);
+
+                    armActionAtrrs();
+
+                    MyActions myActions = ogmCreator
+                            .getMyActions(formService.getMyForm(), loginController.getRoleMap(),
+                                    filterService.getTableFilterCurrent(), loginController.getLoggedUserDetail());
+
+                    formService.getMyForm().initActions(myActions);
+
+                    actionSearchObject();
+
+                    dialogController.showPopupInfo(successMessage, MESSAGE_DIALOG);
+                }
+            } else if ("java".equals(myActionType)) {
+                Method method = this.getClass().getMethod(javaFunc, new Class[]{});
+                method.invoke(this, new Object[]{});
+            }
+        } catch (Exception ex) {
+            dialogController.showPopupInfo(failMessage, MESSAGE_DIALOG);
+        }
+         */
+
+    }
+
+    public String norecord() {
+
+        try {
+            String successMessage = formService.getMyForm().
+                    getMyActions().
+                    getNorecordAction().
+                    getEnableResult().
+                    getSuccessMessage();
+
+            String code = formService.getMyForm().
+                    getMyActions().
+                    getNorecordAction().
+                    getEnableResult().
+                    getMyaction();
+            List<TagActionsAction.Operation> list = formService.getMyForm().
+                    getMyActions().
+                    getNorecordAction().
+                    getOperations();
+
+            if (code != null) {
+                Document mySearchObject = repositoryService.expandCrudObject(
+                        formService.getMyForm(), getSearchObjectAsDbo());
+
+                for (MyField myField : formService.getMyForm().
+                        getAutosetFields()) {
+                    if (mySearchObject.get(myField.getKey()) == null
+                            || SelectOneObjectIdConverter.NULL_VALUE.equals(
+                                    mySearchObject.get(myField.getKey()))) {
+                        throw new Exception(
+                                MessageFormat.format(
+                                        "arama kriterlerinde {0} belirsiz.",
+                                        myField.getKey()));
+                    }
+                }
+                mongoDbUtil.runCommand(formService.getMyForm().
+                        getDb(), code,
+                        mySearchObject, null);
+            } else if (list != null) {
+                for (TagActionsAction.Operation operation : list) {
+                    if (operation.getOp().
+                            equals("upsert")) {
+                        mongoDbUtil.upsertOne(operation.getDb(), operation.
+                                getTable(), operation.getFilter(), operation.
+                                getSet());
+                    }
+                }
+            }
+
+            resetActions();
+
+            actionSearchObject();
+
+            dialogController.showPopupInfo(successMessage, MESSAGE_DIALOG);
+
+        } catch (Exception ex) {
+            String failMessage = formService.getMyForm().
+                    getMyActions().
+                    getNorecordAction().
+                    getEnableResult().
+                    getFailMessage();
+            dialogController.showPopupInfo(failMessage, MESSAGE_DIALOG);
+        }
+        return null;
+    }
+
+    public String sendForm() {
+        try {
+            String successMessage = repositoryService
+                    .sendForm(formService.getMyForm(),
+                            (ObjectId) getSearchObjectValue(PERIOD),
+                            getSearchObjectAsDbo(), crudObject);
+            informAndReset(successMessage);
+        } catch (Exception ex) {
+            dialogController
+                    .showPopupInfo(formService.getMyForm().
+                            getMyActions().
+                            getSendFormAction().
+                            getEnableResult().
+                            getFailMessage(),
+                            MESSAGE_DIALOG);
+        }
+        return null;
+    }
+
+    private void informAndReset(String successMessage) {
+        putSearchObjectValue(PERIOD, SelectOneObjectIdConverter.NULL_VALUE);
+        resetActions();
+        actionSearchObject();
+        dialogController.showPopupInfo(successMessage, MESSAGE_DIALOG);
+    }
+
+    public void showPopupError(String creditCardMsg) {
+        dialogController.showPopupError(creditCardMsg);
+    }
+
+    public void dateChange(SelectEvent event) {
+    }
+
+    private List<String> newroles = new ArrayList<>();
+
+    public String newLdapUser() {
+        try {
+            ldapService.createUser(
+                    crudObject.get("kullanici").
+                            toString(),
+                    crudObject.get("adi").
+                            toString(),
+                    null,
+                    "to be set",
+                    "12345678"
+            );
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.getMessage());
+        }
+        return null;
+    }
+
+    public String updateLdapPswd() {
+        try {
+            ldapService.updatePswd(crudObject.get("kullanici").
+                    toString(),
+                    "12345678");
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.getMessage());
+        }
+        return null;
+    }
+
+    public String addUserToRole() {
+        try {
+            ldapService.addUserToRole(crudObject.get("kullanici").
+                    toString(),
+                    newroles);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.getMessage());
+        }
+        return null;
+    }
+
+    public String removeUserToRole() {
+        try {
+            ldapService.removeUserToRole(crudObject.get("kullanici").
+                    toString(),
+                    newroles);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+        }
+        return null;
+    }
+
+    public List<String> getNewroles() {
+        return newroles;
+    }
+
+    public void setNewroles(List<String> newroles) {
+        this.newroles = newroles;
+    }
+
+    private MyMap newObject(FmsForm myForm) throws Exception {
+
+        MyMap crudObject = ogmCreator.getCrudObject();
+
+        crudObject.clear();
+
+        for (MyField myField : myForm.getFieldsAsList()) {
+            if (myField.getGenererate() != null) {
+                crudObject.put(myField.getKey(), UUID.randomUUID().
+                        toString());
+            }
+        }
+
+        for (MyField myField : myForm.getAutosetFields()) {
+            crudObject.put(myField.getKey(), filterService.
+                    getTableFilterCurrent().
+                    get(myField.getKey()));
+        }
+
+        String userDB = baseService.getLoginDB();
+        String userTable = baseService.getLoginTable();
+        String userLdapUID = baseService.getLoginUsernameField();
+
+        if (userDB.equals(myForm.getDb()) && userTable.equals(myForm.getTable()) && myForm.
+                getField(userLdapUID) != null) {
+            crudObject.put(MONGO_LDAP_UID, generateLdapUID(null));
+        }
+
+        if (!loginController.isUserInRole(myForm.getMyProject().
+                getAdminRole())) {
+            DatabaseUser loginRecord = loginController.getLoggedUserDetail().
+                    getDbo();
+            if (loginRecord != null) {
+                crudObject.put(formService.getMyForm().
+                        getLoginFkField(),
+                        loginRecord.getObjectId());
+            }
+        }
+
+        crudObject.put(INODE, myForm);
+
+        return crudObject;
+
+    }
+
+    public String showApi() {
+        dialogController.showPopup("wvRestCurlDlg");
+        return null;
+    }
+
+    private String generateLdapUID(String memberType) {
+        String ldapUID = "Yeni Kurum tanımlamalarında \"Üye Tipi\" seçimine göre bu alan otomatik değişecektir. Lütfen Üye Tipi seçiniz ...";
+        if (memberType != null) {
+            ldapUID = memberType;
+        }
+        return ldapUID;
+    }
+
+    private void prepareJsfComponentMap(FmsForm inodeMyForm) {
+
+        setHeaderTitle(inodeMyForm.getName());
+
+        setComponentMap(new HashMap());
+
+        for (String key : inodeMyForm.getFieldsKeySet()) {
+            if (crudObject.get(key) instanceof Document) {
+                ObjectId id = (ObjectId) ((Document) crudObject.get(key)).get(
+                        MONGO_ID);
+                if (id != null) {
+                    crudObject.put(key, id);
+                }
+            }
+        }
+
+        if (crudObject.isEmpty()) {
+            return;
+        }
+
+        for (String key : inodeMyForm.getFieldsKeySet()) {
+
+            MyField fieldStructure = inodeMyForm.getField(key);
+
+            // recalculate rendered property
+            fieldStructure.calcWfRendered(crudObject, loginController.
+                    getRoleMap(), filterService.getTableFilterCurrent());
+
+            // recalculate defaultValue property
+            Object defaultValueObject = formService.getMyForm().
+                    getField(key).
+                    getDefaultValue();
+
+            if (defaultValueObject != null && crudObject.get(key) == null) {
+
+                if (defaultValueObject instanceof String) {
+                    crudObject.put(key, defaultValueObject);
+                } else if (defaultValueObject instanceof List) {
+                    crudObject.put(key, defaultValueObject);
+                } else if (defaultValueObject instanceof Number) {
+                    crudObject.put(key, defaultValueObject);
+                } else if (defaultValueObject instanceof ObjectId) {
+                    crudObject.put(key, defaultValueObject);
+                } else if (defaultValueObject instanceof Code) {
+                    String code = ((Code) defaultValueObject).getCode();
+                    Document commandResult = mongoDbUtil.runCommand(formService.
+                            getMyForm().
+                            getDb(),
+                            code, filterService.getTableFilterCurrent(),
+                            loginController.getRolesAsList());
+                    crudObject.put(key, commandResult.get(RETVAL));
+                }
+            }
+
+            if (getInputFile().
+                    equals(fieldStructure.getComponentType())) {
+                setFileLimit(fieldStructure.getFileLimit());
+                if (fieldStructure.getFileType() != null) {
+                    switch (fieldStructure.getFileType()) {
+                        case "pdf":
+                            setMongoUploadFileType("/(\\.|\\/)(pdf)$/");
+                            setInvalidFileMessage(
+                                    "Geçersiz Dosya Tipi (Sadece PDF dosyalar eklenebilir) : ");
+                            break;
+                        case "image":
+                            setMongoUploadFileType(
+                                    "/(\\.|\\/)(jpg|png|JPEG|JPG|PNG)$/");
+                            setInvalidFileMessage(
+                                    "Geçersiz Dosya Tipi (Sadece resim [jpg, png, JPEG, JPG, PNG] formatında dosyalar eklenebilir) : ");
+                            break;
+                        default:
+                            setMongoUploadFileType("/(\\.|\\/)(pdf)$/");
+                            setInvalidFileMessage(
+                                    "Geçersiz Dosya Tipi (Sadece PDF dosyalar eklenebilir) : ");
+                            break;
+                    }
+                }
+            }
+
+            if (getPickList().
+                    equals(fieldStructure.getComponentType())) {
+                List<String> targetList = new ArrayList<>();
+                if (crudObject.get(fieldStructure.getKey()) instanceof List) {
+                    targetList = (List<String>) crudObject.get(fieldStructure.
+                            getKey());
+                }
+
+                List<String> sourceList = new ArrayList<>(fieldStructure.
+                        getItemsAsMyItems().
+                        getList());
+                sourceList.removeAll(targetList);
+
+                crudObject.put(fieldStructure.getKey(),
+                        new DualListModel<String>(sourceList, targetList));
+            }
+
+            if (getChips().
+                    equals(fieldStructure.getComponentType())) {
+
+                List<SelectItem> targetList = new ArrayList<>();
+
+                List<ObjectId> sourceList;
+
+                if ((sourceList = (List<ObjectId>) crudObject.get(
+                        fieldStructure.getKey())) != null) {
+                    List<Document> docs = mongoDbUtil.find("elipsreisdb",
+                            "tedarikci", Filters.in("_id", sourceList));
+                    for (Document doc : docs) {
+                        targetList.add(new SelectItem(doc.get("_id"),
+                                (String) doc.get("ad")));
+                    }
+                }
+
+                crudObject.put(fieldStructure.getKey(), targetList);
+            }
+
+            if (!getAutoComplete().
+                    equals(fieldStructure.getComponentType())) {
+                fieldStructure.createSelectItems(
+                        filterService.getTableFilterCurrent(),
+                        crudObject,
+                        loginController.getRoleMap(),
+                        loginController.getLoggedUserDetail(),
+                        false
+                );
+            }
+
+            fieldStructure.setCrudRecord(crudObject);
+
+            addComponent(key, fieldStructure);
+        }
+
+        if (formService.getMyForm().
+                isHasChildFields()) {
+            for (MyField myChildField : inodeMyForm.getChildFields()) {
+                if (!getAutoComplete().
+                        equals(myChildField.getComponentType())) {
+                    myChildField.createSelectItems(
+                            filterService.getTableFilterCurrent(),
+                            crudObject,
+                            loginController.getRoleMap(),
+                            loginController.getLoggedUserDetail(),
+                            false
+                    );
+                }
+                addComponentChild(myChildField.getKey(), myChildField);
+            }
+        }
+
+    }
+
+    private final Map<Map, Boolean> selectionStates = new HashMap<>();
+
+    public Map<Map, Boolean> getSelectionStates() {
+        return selectionStates;
+    }
+
+    public boolean isSelected(Map rowData) {
+        return selectionStates.getOrDefault(rowData, false);
+    }
+
+    public void valueChangeListenerTableSearch(AjaxBehaviorEvent event) {
+        search();
+        resetActions();
+
+        String fieldKey = null;
+
+        if (event == null) {//it is when p:selectOneMenu is place inside ui:include
+            fieldKey = FacesContext.getCurrentInstance().
+                    getExternalContext().
+                    getRequestParameterMap().
+                    get(FIELD_KEY);
+        } else {
+            fieldKey = (String) event.getComponent().
+                    getAttributes().
+                    get(
+                            FIELD_KEY);
+        }
+
+        if (fieldKey == null) {
+            throw new MongoConfigurationException(
+                    "fieldKey attribute missed on ajax component");
+        }
+
+        Map<String, MyField> componentMap = new HashMap<>();
+
+        MyField eventField = null;
+
+        for (MyField field : filterService.getQuickFilters()) {
+            if (field.getKey().
+                    equals(fieldKey)) {
+                eventField = field;
+            }
+            componentMap.put(field.getKey(), field);
+        }
+
+        MyMap filterAsMap = new MyMap();
+
+        Document doc = filterService.getTableFilterCurrent();
+
+        for (String key : doc.keySet()) {
+            filterAsMap.put(key, doc.get(key));
+        }
+
+        if (eventField != null) {
+            ajaxAction(eventField, componentMap, filterAsMap);
+        }
+
+    }
+
+    public void someaction(final AjaxBehaviorEvent event) {
+        try {
+
+            String fieldKey = null;
+
+            if (event == null) {//it is when p:selectOneMenu is place inside ui:include
+                fieldKey = FacesContext.getCurrentInstance().
+                        getExternalContext().
+                        getRequestParameterMap().
+                        get(
+                                FIELD_KEY);
+            } else {
+                fieldKey = (String) event.getComponent().
+                        getAttributes().
+                        get(
+                                FIELD_KEY);
+            }
+
+            if (fieldKey == null) {
+                throw new MongoConfigurationException(
+                        "fieldKey attribute missed on ajax component");
+            }
+
+            MyField myField = formService.getMyForm().
+                    getField(fieldKey);
+
+            ajaxAction(myField, getComponentMap(), crudObject);
+
+        } catch (Exception ex) {
+            addMessage(null, null, ex.getMessage(), FacesMessage.SEVERITY_ERROR);
+        }
+    }
+
+    public void ajaxAction(MyField myField, Map<String, MyField> componentMap,
+            MyMap crudObject) {
+
+        String ajaxAction = myField.getAjax().
+                getAction();
+
+        if (ajaxAction == null) {
+            return;
+        }
+        HttpSession httpSession = (HttpSession) FacesContext.
+                getCurrentInstance().
+                getExternalContext().
+                getSession(false);
+
+        switch (ajaxAction) {
+            case "ypi_refresh_list_of_country_and_empty_stock_market":
+                break;
+            case "ypi_override_required_check":
+                mapRequired = new HashMap();
+                if (HAYIR.equals(crudObject.get("is_operated"))) {
+                    mapRequired.put("period", true);
+                    mapRequired.put("is_operated", true);
+                    mapRequired.put("continent", false);
+                    mapRequired.put("country", false);
+                    mapRequired.put("stock_market", false);
+                    mapRequired.put("clearing_house_name", false);
+                    mapRequired.put("trading_volume_client", false);
+                    mapRequired.put("trading_volume_portfolio", false);
+                    httpSession.setAttribute(
+                            HTTP_SESSION_ATTR_MAP_REQURED_CONTROL, mapRequired);
+                } else {
+                    httpSession.removeAttribute(
+                            HTTP_SESSION_ATTR_MAP_REQURED_CONTROL);
+                }
+                break;
+            case "uys_member_generate_ldapUID":
+                formService.getMyForm().
+                        runAjax__uys_member_generate_ldapUID(
+                                crudObject);
+                throw new UnsupportedOperationException(
+                        "review ajax functionality");
+            case "render":
+                formService.getMyForm().
+                        runAjaxRender(myField, componentMap,
+                                formService.getMyForm(), crudObject,
+                                loginController.getRoleMap(), loginController.
+                                getLoggedUserDetail(), filterService.
+                                        getTableFilterCurrent());
+                break;
+            case "render-ref":
+                formService.getMyForm().
+                        runAjaxRenderRef(myField, componentMap,
+                                formService.getMyForm(), crudObject,
+                                loginController.getRoleMap(), loginController.
+                                getLoggedUserDetail(), filterService.
+                                        getTableFilterCurrent());
+                break;
+            case "list":
+                formService.getMyForm().
+                        runAjaxList(myField, componentMap,
+                                formService.getMyForm(), crudObject,
+                                loginController.getRoleMap(), loginController.
+                                getLoggedUserDetail(), filterService.
+                                        getTableFilterCurrent());
+                break;
+            default:
+        }
+
+    }
+
+    public String showMyFieldDesc() {
+        dialogController.showPopup(DLG_DESC);
+        return null;
+    }
+
+    @Override
+    public List<Map> findLazyData(int startRow, int maxResults, Map sortMap)
+            throws NullNotExpectedException {
+
+        if (rowCount > limit) {
+            return new ArrayList<>();
+        }
+
+        FmsForm myForm = formService.getMyForm();
+        if (myForm == null || myForm.getKey() == null) {
+            return Collections.emptyList();
+        }
+
+        if (sortMap == null) {
+            sortMap = new HashMap<>();
+            if (myForm.getDefaultSortField() != null) {
+                // we use LinkedHasMap to preserve an original Map key order
+                sortMap = new LinkedHashMap(myForm.getDefaultSortField());
+            }
+        }
+
+        List<Map> list = mongoDbUtil.find(formService.getMyForm(),
+                myForm.getTable(), filterService.getTableFilterCurrent(), null,
+                startRow, maxResults,
+                sortMap,
+                null);
+
+        if (myForm.getAdditionalRows() != null) {
+            for (Document doc : myForm.getAdditionalRows()) {
+                String function = doc.getString("op");
+                String db = doc.getString("db");
+                try {
+
+                    Document filter = new Document(filterService.
+                            getTableFilterCurrent());
+
+                    Document result = mongoDbUtil.runCommand(db, function,
+                            filter);
+                    Object returnValue = result.get(RETVAL);
+
+                    if (returnValue instanceof List) {
+                        for (Document addDoc : (List<Document>) returnValue) {
+                            addDoc.put(MONGO_ID, UUID.randomUUID().
+                                    toString());
+                            list.add(mongoDbUtil.wrapIt(myForm, addDoc));
+                        }
+                    }
+                } catch (Exception ex) {
+                    logger.error(ex.getMessage());
+                }
+            }
+        }
+
+        calculateColumns(list);
+
+        // FIXME : Generalize it : Ortaklık Yapısı
+        if ("OY".equals(formService.getMyForm().
+                getForm())) {
+            double sum = 0D;
+            for (Map<String, Object> map : list) {
+                Object obj = map.get(SHARE_AMOUNT);
+                if (obj instanceof Number) {
+                    sum += ((Number) obj).doubleValue();
+                }
+            }
+            for (Map<String, Object> map : list) {
+                Object obj = map.get(SHARE_AMOUNT);
+                if (obj instanceof String) {
+                    obj = 0D;
+                }
+                if (obj != null && sum != 0D) {
+                    map.put("sharePercent",
+                            100 * ((Number) obj).doubleValue() / sum);
+                }
+            }
+
+            Map<String, Object> calculcateSum = new HashMap<>();
+            calculcateSum.put(MONGO_ID, "dummy_sum_id");
+            calculcateSum.put(formService.getMyForm().
+                    getLoginFkField(), "");
+            calculcateSum.put(PERIOD, "");
+            calculcateSum.put("partnerNameTitle", "Toplam");
+            calculcateSum.put(SHARE_AMOUNT, sum);
+            calculcateSum.put("sharePercent", 100);
+            calculcateSum.put(CALCULATE, true);
+            calculcateSum.put(STYLE, "background:paleGreen;text-align:right");
+            list.add(calculcateSum);
+        }
+
+        return list;
+
+    }
+
+    private void calculateColumns(List<Map> list) {
+
+    }
+
+    @Override
+    public int findDataCount() throws NullNotExpectedException {
+        if (!loginController.isUserInRole(
+                formService.getMyForm().
+                        getMyProject().
+                        getAdminAndViewerRole())) {
+            if (formService.getMyForm().
+                    getLoginFkField() == null) {
+                throw new NullNotExpectedException(
+                        "login foreign key had not been set");
+            }
+        }
+        return (int) mongoDbUtil
+                .count(formService.getMyForm().
+                        getDb(), formService.getMyForm().
+                                getTable(), filterService.
+                                getTableFilterCurrent());
+    }
+
+    public TreeNode getRoot() {
+        return root;
+    }
+
+    public void setRoot(TreeNode root) {
+        this.root = root;
+    }
+
+    ///
+    private MyMap selectedChildRow;
+
+    private List<MyMap> childRecords;
+
+    private List<MyField> childFields;
+
+    public List<MyField> getChildFields() {
+        return childFields;
+    }
+
+    public void setChildFields(List<MyField> childFields) {
+        this.childFields = childFields;
+    }
+
+    public void onChildCellEdit(CellEditEvent event) {
+        Object oldValue = event.getOldValue();
+        Object newValue = event.getNewValue();
+        if (newValue != null && !newValue.equals(oldValue)) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    "Cell Changed", "Old: " + oldValue + ", New:" + newValue);
+            FacesContext.getCurrentInstance().
+                    addMessage(null, msg);
+        }
+    }
+
+    public void selectChildListener(SelectEvent event) {
+
+        formService.getMyForm().
+                runAjaxBulkChild(getComponentMapChilds(), selectedChildRow,
+                        loginController.getRoleMap(), loginController.
+                        getLoggedUserDetail());
+
+        for (String fieldKey : formService.getMyForm().
+                getFieldsKeySet()) {
+            if (crudObject.get(fieldKey) == null) {
+                addMessage(null, null, formService.getMyForm().
+                        getField(fieldKey).
+                        getName().
+                        concat(" zorunlu alandır."),
+                        FacesMessage.SEVERITY_ERROR);
+                return;
+            }
+        }
+
+//        formService.getMyForm().runAjaxBulk(getComponentMap(), selectedChildRow,
+//                loginController.getRoleMap(), loginController.getLoggedUserDetail());
+        dialogController.showPopup("wv-dlg-child-row-edit");
+    }
+
+    public String saveChildRow() {
+        if (selectedChildRow != null) {
+            for (MyField myField : formService.getMyForm().
+                    getChildFields()) {
+                if (myField.getCalculateOnSave()) {
+                    String fieldKey = myField.getKey();
+                    selectedChildRow.put(fieldKey, calcService.calculateValue(
+                            selectedChildRow, myField, FacesContext.
+                                    getCurrentInstance()));
+                }
+            }
+        }
+
+        if (runEventPreSaveOnChild(filterService.getTableFilterCurrent(),
+                selectedChildRow)) {
+            return null;
+        }
+
+        saveObject();
+        dialogController.hidePopup("wv-dlg-child-row-edit");
+        return null;
+    }
+
+    public String deleteChildRow() {
+        if (selectedChildRow != null) {
+            MyMap toBeRemoved = null;
+            for (MyMap mm : childRecords) {
+                if (selectedChildRow.get("rowKey").
+                        equals(mm.get("rowKey"))) {
+                    toBeRemoved = mm;
+                }
+            }
+            childRecords.remove(toBeRemoved);
+        }
+        saveObject();
+        dialogController.hidePopup("wv-dlg-child-row-edit");
+        return null;
+    }
+
+    public String onAddNew() {
+        MyMap mymap = new MyMap();
+        mymap.put("rowKey", UUID.randomUUID());
+        if (childRecords == null) {
+            childRecords = new ArrayList<>();
+        }
+        childRecords.add(mymap);
+        return null;
+    }
+
+    public void reset(int count) {
+        for (int i = 0; i < count; i++) {
+            MyMap mymap = new MyMap();
+            mymap.put("rowKey", UUID.randomUUID());
+            childRecords.add(mymap);
+        }
+    }
+
+    public MyMap getSelectedChildRow() {
+        return selectedChildRow;
+    }
+
+    public void setSelectedChildRow(MyMap selectedChildRow) {
+        this.selectedChildRow = selectedChildRow;
+    }
+
+    public List<MyMap> getChildRecords() {
+        return childRecords;
+    }
+
+    public void setChildRecords(List<MyMap> childRecords) {
+        this.childRecords = childRecords;
+    }
+
+    /**
+     *
+     * The p:datatable selection value which points to a variable with class of
+     * type java.util.Map mismatches with org.bson.Document type on selection
+     * event that comes from mongo find results
+     *
+     * @param map
+     * @see java.util.Map
+     * @see org.bson.Document
+     */
+    private void handleChilds(Map map) {
+        if (formService.getMyForm().
+                isHasChildFields()) {
+
+            List listOfChilds = (List) map.get(MyMap.__CHILDS);
+
+            List<Map> listOfMap = new ArrayList<>();
+
+            if (listOfChilds != null) {
+                for (Object child : listOfChilds) {
+                    if (child instanceof Document) {
+                        MyMap myMap = new MyMap();
+                        for (String key : ((Document) child).keySet()) {
+                            myMap.put(key, ((Document) child).get(key));
+                        }
+                        listOfMap.add(myMap);
+                    }
+                }
+            }
+
+            map.put(MyMap.__CHILDS, listOfMap);
+
+        }
+    }
+
+    public void ajaxActionOnChildField(final AjaxBehaviorEvent event) {
+        try {
+
+            String fieldKey = null;
+
+            if (event == null) {//it is when p:selectOneMenu is place inside ui:include
+                fieldKey = FacesContext.getCurrentInstance().
+                        getExternalContext().
+                        getRequestParameterMap().
+                        get(
+                                FIELD_KEY);
+            } else {
+                fieldKey = (String) event.getComponent().
+                        getAttributes().
+                        get(
+                                FIELD_KEY);
+            }
+
+            if (fieldKey == null) {
+                throw new MongoConfigurationException(
+                        "fieldKey attribute missed on ajax component");
+            }
+
+            MyField myField = formService.getMyForm().
+                    getChildField(fieldKey);
+            String ajaxAction = myField.getAjax().
+                    getAction();
+
+            if (ajaxAction == null) {
+                return;
+            }
+            HttpSession httpSession = (HttpSession) FacesContext.
+                    getCurrentInstance().
+                    getExternalContext().
+                    getSession(false);
+
+            switch (ajaxAction) {
+                case "ypi_refresh_list_of_country_and_empty_stock_market":
+                    break;
+                case "ypi_override_required_check":
+                    mapRequired = new HashMap();
+                    if (HAYIR.equals(crudObject.get("is_operated"))) {
+                        mapRequired.put("period", true);
+                        mapRequired.put("is_operated", true);
+                        mapRequired.put("continent", false);
+                        mapRequired.put("country", false);
+                        mapRequired.put("stock_market", false);
+                        mapRequired.put("clearing_house_name", false);
+                        mapRequired.put("trading_volume_client", false);
+                        mapRequired.put("trading_volume_portfolio", false);
+                        httpSession.setAttribute(
+                                HTTP_SESSION_ATTR_MAP_REQURED_CONTROL,
+                                mapRequired);
+                    } else {
+                        httpSession.removeAttribute(
+                                HTTP_SESSION_ATTR_MAP_REQURED_CONTROL);
+                    }
+                    break;
+                case "uys_member_generate_ldapUID":
+                    formService.getMyForm().
+                            runAjax__uys_member_generate_ldapUID(crudObject);
+                    throw new UnsupportedOperationException(
+                            "review ajax functionality");
+                case "render":
+                    formService.getMyForm().
+                            runAjaxRenderChild(myField,
+                                    getComponentMapChilds(), formService.
+                                            getMyForm(),
+                                    selectedChildRow,
+                                    loginController.getRoleMap(),
+                                    loginController.
+                                            getLoggedUserDetail(),
+                                    filterService.
+                                            getTableFilterCurrent());
+                    break;
+                case "render-ref":
+                    formService.getMyForm().
+                            runAjaxRenderRef(myField,
+                                    getComponentMap(), formService.getMyForm(),
+                                    crudObject,
+                                    loginController.getRoleMap(),
+                                    loginController.
+                                            getLoggedUserDetail(),
+                                    filterService.
+                                            getTableFilterCurrent());
+                    break;
+                case "list":
+                    formService.getMyForm().
+                            runAjaxList(myField,
+                                    getComponentMap(), formService.getMyForm(),
+                                    crudObject,
+                                    loginController.getRoleMap(),
+                                    loginController.
+                                            getLoggedUserDetail(),
+                                    filterService.
+                                            getTableFilterCurrent());
+                    break;
+                default:
+                     ;
+            }
+        } catch (Exception ex) {
+            addMessage(null, null, ex.getMessage(), FacesMessage.SEVERITY_ERROR);
+        }
+    }
+
+    public void addChild() {
+        ((List<Document>) crudObject.get(MyMap.__CHILDS))
+                .add(new Document());
+    }
+
+    public String createTestData() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            crudObject = newObject(formService.getMyForm());
+            for (MyField field : formService.getMyForm().
+                    getFieldsAsList()) {
+                switch (field.getValueType()) {
+                    case "java.lang.String":
+                        crudObject.put(field.getKey(), field.getKey().
+                                concat(
+                                        " : ").
+                                concat(Integer.toString(i)));
+                        break;
+                    case "java.util.Date":
+                        crudObject.put(field.getKey(), new Date());
+                        break;
+                    default:
+                        crudObject.put(field.getKey(), i);
+                }
+
+                if (field.getMyconverter() instanceof BsonConverter) {
+                    Document doc = (Document) field.getItemsAsMyItems().
+                            getList().
+                            get(0);
+                    crudObject.put(field.getKey(), doc.getString("code"));
+                }
+
+                if (field.getComponentType().
+                        equals(ComponentType.chips.name())) {
+                    crudObject.put(field.getKey(), Arrays.asList(new SelectItem(
+                            new ObjectId())));
+                }
+            }
+            saveObject();
+        }
+        return null;
+    }
+
+}

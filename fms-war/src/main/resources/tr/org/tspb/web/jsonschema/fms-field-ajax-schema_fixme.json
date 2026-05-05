@@ -1,0 +1,21 @@
+ review databank member.json
+{
+            "key": "memberType",
+            "field": "memberType",
+            "name": "Üye Tipi",
+            "shortName": "Üye Tipi",
+            "componentType": "selectOneMenu",
+            "roleCheck": true,
+            "rendered": {
+                "boolean-value": true
+            },
+            "db": "uysdb",
+            "readonly": true,
+            "order": 40,
+            "reportOrder": 40,
+            "valueType": "java.lang.String",
+            "ajax": {
+                "action": "uys_member_generate_ldapUID",
+                "enable": true,
+                "effected_keys": []
+            },

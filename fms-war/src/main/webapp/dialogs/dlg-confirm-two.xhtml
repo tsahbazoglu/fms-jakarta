@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core"
+    >
+    <p:dialog 
+        widgetVar="specialConfirmationDialog"
+        modal="true"
+        closeOnEscape="true"
+        resizable="false"
+        header=""
+        >
+        <p:panel>
+            <h:panelGrid style="
+                         width: 100%;
+                         text-align: left;
+                         font-weight: bolder;
+                         font-size: 16px;
+                         color: grey;"> 
+                <h:outputText
+                    rendered="false"
+                    value="açıklama : &lt;/br>&lt;/br>" escape="false"/>
+                <h:inputTextarea  
+                    rendered="false"
+                    style="width: 100%;"
+                    cols="35"
+                    rows="6"
+                    />  
+                <h:outputText value="#{formService.myForm.deleteChildsOnDelete?formService.myForm.deleteChildsOnDeleteMsg
+                                       :'&lt;/br>Silmek istediğinizden emin misiniz?&lt;/br>&lt;/br>'}" 
+                              escape="false"/>
+            </h:panelGrid>
+        </p:panel>
+        <f:facet name="footer">
+            <h:panelGrid 
+                style="width:100%"
+                columns="2"
+                columnClasses="leftColumn,rightColumn"         
+                >
+                <p:button 
+                    value="Evet"
+                    onclick="yesDoDelete();return false;"  
+                    />   
+                <p:button 
+                    value="Hayır"
+                    onclick="noDoNotDelete();return false;"
+                    />
+            </h:panelGrid>
+        </f:facet>
+    </p:dialog>
+</html>

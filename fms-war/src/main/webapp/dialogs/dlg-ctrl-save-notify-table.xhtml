@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="jakarta.faces.facelets"
+    >
+    <p:dialog 
+        id="id_2d_DialogControlAndSave"
+        resizable="false"
+        widgetVar="2d_dialogControlAndSave"
+        header="#{myMessageDialog.title}"
+        showHeader="true"
+        closable="true"
+        modal="false"
+        draggable="true"
+        closeOnEscape="true" 
+        position="#{myMessageDialog.position}"
+        height="250"
+        width="80%"
+        >
+        <ui:include src="../ui-for-dlg-pnl/ui-ctrl-save-notify-table.xhtml"/>     
+    </p:dialog>
+</html>

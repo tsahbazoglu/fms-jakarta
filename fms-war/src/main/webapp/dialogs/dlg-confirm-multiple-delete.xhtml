@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core"
+    >
+    <p:dialog
+        widgetVar="wv-confirm-multiple-delete"
+        width="100px;"
+        modal="false"
+        closeOnEscape="true"
+        resizable="false"
+        header=""
+        >
+        <p:panel>
+            <h:outputText value="&lt;/br>Seçili olan kayıtları silmek istediğinizden emin misiniz?&lt;/br>&lt;/br>" escape="false"/>
+        </p:panel>
+        <f:facet name="footer">
+            <script>
+                function yesMultipleDelete() {
+                    rcMultipleDelete();
+                    PF('wv-confirm-multiple-delete').hide();
+                }
+                function notMultipleDelete() {
+                    PF('wv-confirm-multiple-delete').hide();
+                }
+            </script>
+            <h:panelGrid 
+                columns="2" 
+                style="width:100%"
+                cellspacing="10px;"
+                columnClasses="VTopHLeftW50pNowrap,VTopHLeftW50pNowrap"
+                >
+                <p:button
+                    value="Evet"
+                    onclick="yesMultipleDelete();return false;"  
+                    />   
+                <p:button 
+                    value="Hayır (esc)"
+                    onclick="notMultipleDelete();return false;"
+                    />
+            </h:panelGrid>
+        </f:facet>
+    </p:dialog>
+</html>

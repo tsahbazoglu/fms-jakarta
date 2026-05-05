@@ -1,0 +1,273 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "MyField",
+    "description": "MyField Description",
+    "type": "object",
+    "properties": {
+        "key": {
+            "type": "string"
+        },
+        "field": {
+            "type": "string"
+        },
+        "componentType": {
+            "type": "string"
+        },
+        "readonly": {
+            "type": "boolean"
+        },
+        "order": {
+            "type": "number"
+        },
+        "reportOrder": {
+            "type": "number"
+        },
+        "valueType": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "db": {
+            "type": "string"
+        },
+        "collection": {
+            "type": "string"
+        },
+        "accesscontrol": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "rendered": {
+            "type": "object",
+            "properties": {
+                "boolean-value": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "autoset": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "boolean"
+                },
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "roles": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "value": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "ajax": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "keys": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "render": {
+                                "type": "object",
+                                "properties": {
+                                    "ref": {
+                                        "type": "object"
+                                    },
+                                    "doc": {
+                                        "type": "object"
+                                    },
+                                    "func": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "refresh-items": {
+                                "type": "object",
+                                "properties": {
+                                    "db": {
+                                        "type": "string"
+                                    },
+                                    "table": {
+                                        "type": "string"
+                                    },
+                                    "query": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "roles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "key": {
+                                                    "type": "string"
+                                                },
+                                                "fms-value": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "key",
+        "field",
+        "componentType",
+        "readonly", 
+        "order",
+        "reportOrder", 
+        "valueType",
+        "name",
+        "accesscontrol"
+    ],
+    "additionalProperties": true,
+    "definitions": {
+        "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "title": "fms-field-items",
+            "description": "Fms Field Items Description",
+            "type": "object",
+            "properties": {
+                "func": {
+                    "type": "string"
+                },
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "key": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["key"]
+                    }
+                },
+                "ref": {
+                    "type": "object",
+                    "properties": {
+                        "db": {
+                            "type": "string"
+                        },
+                        "itemTable": {
+                            "type": "string"
+                        },
+                        "query": {
+                            "type": "object",
+                            "properties": {
+                                "func": {
+                                    "type": "string"
+                                },
+                                "list": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "key": {
+                                                "type": "string"
+                                            },
+                                            "string-value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "additionalProperties": false                                        
+                                    }
+                                }
+                            }
+                        },
+                        "adminQuery": {
+                            "type": "object",
+                            "properties": {
+                                "func": {
+                                    "type": "string"
+                                },
+                                "list": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "key": {
+                                                "type": "string"
+                                            },
+                                            "string-value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "additionalProperties": false                                        
+                                    }
+                                }
+                            }
+                        },
+                        "historyQuery": {
+                            "type": "object",
+                            "properties": {
+                                "func": {
+                                    "type": "string"
+                                },
+                                "list": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "key": {
+                                                "type": "string"
+                                            },
+                                            "string-value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "additionalProperties": false                                        
+                                    }
+                                }
+                            }
+                        },
+                        "v": {
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        },
+                        "sort": {
+                            "type": "object"
+                        }
+                    },
+                    "additionalProperties": false                                        
+                }
+            },
+            "required": [],
+            "additionalProperties": false    
+        }
+    }
+}

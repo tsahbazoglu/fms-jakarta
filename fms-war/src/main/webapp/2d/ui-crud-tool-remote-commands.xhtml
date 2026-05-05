@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui">
+
+    <p:outputPanel 
+        id="id-2d-action-toolbar"
+        rendered="#{not esignViewCtrl.preventedMultiTab}"
+        >
+        <p:remoteCommand 
+            name="rcTableDesc"
+            value="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
+            action="#{twoDimModifyCtrl.showAllNote}" 
+            rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
+            update="#{updateAjaxMB.msgDlg}"
+            />
+        <p:remoteCommand  
+            name="rcTableNew"
+            value="Yeni Ekle" 
+            action="#{twoDimModifyCtrl.newObject}"
+            immediate="true"
+            rendered="#{formService.myForm.myActions.create}"
+            update="#{updateAjaxMB.btnNewRecord}"
+            /> 
+        <p:remoteCommand 
+            name="rcTableCheck"
+            value="Tüm Sayfaları Kontrol Et" 
+            action="#{twoDimModifyCtrl.provideOverAllCrossCheck}" 
+            rendered="#{formService.myForm.myActions.checkAll}"
+            update="#{updateAjaxMB.btnCheckAll}"
+            />
+        <p:remoteCommand 
+            name="rcTableCheckAsAdmin"
+            value="Tüm Sayfaları Kontrol Et (Admin)" 
+            action="#{twoDimModifyCtrl.provideOverAllCrossCheckForAll}" 
+            rendered="#{formService.myForm.myActions.checkAll and roleMB[mainFrame.architectRole]}"
+            update="#{updateAjaxMB.btnCheckAllAsAdmin}"
+            />
+        <p:remoteCommand 
+            name="rcTableSend"
+            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}" 
+            actionListener="#{twoDimModifyCtrl.sendForm}" 
+            rendered="#{formService.myForm.myActions.sendForms}"
+            update="#{updateAjaxMB.btnCheckAll}"
+            />
+        <p:remoteCommand 
+            name="rcTableNotifyNoRecord"
+            value="#{formService.myForm.myActions.norecordAction.enableResult.caption}" 
+            actionListener="#{twoDimModifyCtrl.norecord}" 
+            rendered="#{formService.myForm.myActions.norecord}"
+            update="#{updateAjaxMB.btnCheckAll}"
+            />
+        <p:remoteCommand 
+            name="rcDownload"
+            value="Excele Aktar" 
+            rendered="#{formService.myForm.myActions.download}"
+            actionListener="#{downloadService.createExcellFile}"  
+            onstart="$('#id-btn-download').addClass('ui-state-disabled')"
+            oncomplete="callDownload();"
+            >
+        </p:remoteCommand>
+        <script>
+            function callDownload() {
+                setTimeout(function () {
+                    $('#id-btn-download').removeClass('ui-state-disabled');
+                    $(document.getElementById("id-tab-view:id-2d-action-form:id-cmb-download")).click();
+                }, 500);
+            }
+            function start() {
+                PF('statusDialogDownload').show();
+            }
+            function stop() {
+                PF('statusDialogDownload').hide();
+            }
+        </script>
+
+        <p:commandButton 
+            id="id-cmb-download-old"
+            rendered="#{formService.myForm.myActions.download}"
+            ajax="false"
+            action="#{downloadService.downloadExcellFile}"
+            style="display: none;"
+            /> 
+
+        <p:commandButton 
+            id="id-cmb-download"
+            ajax="false"
+            onclick="PrimeFaces.monitorDownload(start, stop);" 
+            style="display: none;"
+            >
+            <p:fileDownload value="#{downloadService.file}" />
+        </p:commandButton>      
+
+        <p:remoteCommand 
+            name="rcTableApi"
+            value="API" 
+            actionListener="#{twoDimModifyCtrl.showApi}"
+            update=":id-rest-curl-dlg"
+            rendered="false"
+            />
+        <p:remoteCommand 
+            name="rcTableApiEsign"
+            value="E-İmza Süreci" 
+            action="#{twoDimModifyCtrl.showEimza22}" 
+            rendered="#{formService.myForm.myActions.eimza2D}"
+            update=":idToBeSignedDialog,#{updateAjaxMB.msgDlg},:id_2d_DialogControlAndSave,:id_dlg_error_warning"
+            /> 
+        <p:remoteCommand 
+            name="rcTableEmail"
+            value="Toplu E-Posta Gönder" 
+            action="#{twoDimModifyCtrl.sendEmailToAll}" 
+            rendered="#{formService.myForm.myActions.emailToAll}"
+            />
+
+        <p:remoteCommand 
+            name="rcCreateTestData"
+            value="Test Veri Oluştur" 
+            action="#{twoDimModifyCtrl.createTestData}" 
+            update="#{updateAjaxMB.msgDlg}"
+            rendered="false"
+            />
+    </p:outputPanel>
+
+
+</html>

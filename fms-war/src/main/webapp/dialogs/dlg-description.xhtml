@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    >
+    <p:dialog 
+        id="id-desc-dlg"
+        header="açıklama"
+        widgetVar="wvDescDlg"
+        width="600"
+        height="400"
+        closable="true"
+        closeOnEscape="true"                     
+        position="center"
+        resizable="true"
+        >
+        <p:panel
+            id="id-desc-dlg-pnl"
+            >
+            <b>form: </b> <p:outputLabel value="#{formService.myForm.name}"/> 
+            <hr/>
+            <b>alan: </b> <p:outputLabel value="#{twoDimModifyCtrl.selectedField.name}"/> 
+            <hr/>
+            <b>açıklama: </b> <p:outputLabel value="#{twoDimModifyCtrl.selectedField.popupDescription}" escape="false"/>
+        </p:panel>
+    </p:dialog>
+</html>

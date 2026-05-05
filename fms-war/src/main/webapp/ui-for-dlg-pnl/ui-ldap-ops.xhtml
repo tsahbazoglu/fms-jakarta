@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      >
+
+    <h:form>
+        <h:panelGrid columns="1" width="100%">
+            <h:outputText value="Kullancı Adı : #{twoDimModifyCtrl.myObject['kullanici']}"/>
+            <p:commandButton
+                value="Kullanıcı Oluştur | Güncelle" 
+                action="#{twoDimModifyCtrl.newLdapUser}" 
+                style="width: 100%;"
+                oncomplete="PF('wv_dlg_ldap').hide();"
+                update=":id_dlg_ldap,#{updateAjaxMB.msgDlg}"
+                />
+            <p:commandButton
+                value="Şifre Güncelle" 
+                action="#{twoDimModifyCtrl.updateLdapPswd}" 
+                style="width: 100%;"
+                oncomplete="PF('wv_dlg_ldap').hide();"
+                update=":id_dlg_ldap,#{updateAjaxMB.msgDlg}"
+                />
+            <br/>
+            <h:outputText value="Rol Ataması"/>
+            <p:selectManyMenu value="#{twoDimModifyCtrl.newroles}" style="width:100%">
+                <f:selectItem itemValue="tdubtdub" itemLabel="TDUB Admin (tdubtdub)"/>                                    
+                <f:selectItem itemValue="TDUB_BT_ADM" itemLabel="TDUB BT Yetkilisi (TDUB_BT_ADM)"/>
+                <f:selectItem itemValue="TDUB_UYS_UZM" itemLabel="TDUB Üye İşleri Yetkilisi (TDUB_UYS_UZM)"/>
+                <f:selectItem itemValue="B_KON_KUL" itemLabel="Üye Olmayan Kullanıcı (B_KON_KUL)"/>
+                <f:selectItem itemValue="B_UYE_UZM" itemLabel="Üye Değerleme Uzmanı Kullanıcı (B_UYE_UZM)"/>
+                <f:selectItem itemValue="T_TEM_VEK" itemLabel="Kuruluş Tam Yetkili Vekil (T_TEM_VEK)"/>
+                <f:selectItem itemValue="T_TEM_BIK" itemLabel="Kuruluş IK Temsilcisi (T_TEM_BIK)"/>
+                <f:selectItem itemValue="T_TEM_CAL" itemLabel="Kuruluş Operasyon Çalışanı (T_TEM_CAL)"/>
+                <f:selectItem itemValue="T_TEM_BRB" itemLabel="Bankacılık Raporu Bildiren (T_TEM_BRB)"/>
+                <f:selectItem itemValue="T_TEM_IMD" itemLabel="Tapu Raporu İş Kabul/Uzman Atama Moderatörü (T_TEM_IMD)"/>
+                <f:selectItem itemValue="T_TEM_BRT" itemLabel="Tapu Raporu Hazırlayan (T_TEM_BRT)"/>
+            </p:selectManyMenu>
+            <p:commandButton
+                value="EKLE" 
+                action="#{twoDimModifyCtrl.addUserToRole}" 
+                style="width: 100%;"
+                oncomplete="PF('wv_dlg_ldap').hide();"
+                update="#{updateAjaxMB.btnLdapAddUserToRole}"
+                />
+            <p:commandButton
+                value="ÇIKAR" 
+                action="#{twoDimModifyCtrl.removeUserToRole}" 
+                style="width: 100%;"
+                oncomplete="PF('wv_dlg_ldap').hide();"
+                update="#{updateAjaxMB.btnLdapAddUserToRole}"
+                />
+        </h:panelGrid>
+    </h:form>
+
+</html>

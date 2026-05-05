@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:mydynamic="http://java.sun.com/jsf/composite/mydinamic"
+      >
+
+    <h:head>
+        <title></title>
+    </h:head>
+
+    <h:form id='id-form-table-childs'>
+
+        <p:growl id="msgs" showDetail="true"/>
+
+        <p:commandButton 
+            value="ekle" 
+            styleClass="ui-priority-primary"
+            action="#{twoDimModifyCtrl.onAddNew}" 
+            update="idTwoDlgTabView:id-form-table-childs:id-dt-childs"
+            />
+
+        <div class="card">
+            <p:dataTable 
+                id="id-dt-childs" 
+                var="data" 
+                value="#{twoDimModifyCtrl.childRecords}"
+                editable="true"
+                editMode="cell"
+                widgetVar="wvDataTableChilds" 
+                emptyMessage="veri girişi bulunmamaktadır"
+                lazy="false"
+                >
+                <c:forEach items="#{formService.myForm.childFields}" var="field">
+                    <p:column 
+                        headerText="#{field.name}"
+                        rendered="#{field.componentType == twoDimModifyCtrl.inputNumber and field.rendered}"                         
+                        >
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <p:outputLabel
+                                    style="#{field.style}"
+                                    value="#{data[field.key]}"
+                                    converter="#{field.myconverter}"
+                                    >
+                                    <f:convertNumber pattern="#0.000" locale="tr_TR"/>
+                                    <f:attribute name="converterInstance" value="#{field.converterInstance}"/>
+                                    <f:attribute name="minFractationDigits" value="#{field.minFractationDigits}"/>
+                                    <f:attribute name="maxFractationDigits" value="#{field.maxFractationDigits}"/>
+                                    <f:attribute name="divider" value="#{field.divider}"/>
+                                    <f:attribute name="fieldKey" value="#{field.fieldKey}"/>
+                                    <f:attribute name="crudObject" value="#{rowData}"/>
+                                    <f:attribute name="uysformat" value="#{field.uysformat}"/>
+                                    <f:attribute name="viewKey" value="#{field.viewKey}"/>
+                                    <f:attribute name="calculateOnView" value="#{field.calculateOnView}"/>
+                                    <f:attribute name="myField" value="#{field}"/>
+                                    <f:attribute name="converterFormat" value="#{field.converterFormat}"/>
+                                    <f:attribute name="sessionKey" value="#{field.sessionKey}"/>
+                                </p:outputLabel>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputNumber 
+                                    value="#{data[field.key]}" 
+                                    thousandSeparator="."
+                                    decimalSeparator="," 
+                                    style="width: 98%"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column> 
+                    <p:column 
+                        headerText="#{field.name}"
+                        rendered="#{field.componentType == twoDimModifyCtrl.inputText and field.rendered}"                         
+                        >
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText 
+                                    style="#{field.style}"
+                                    value="#{data[field.key]}"
+                                    converter="#{field.myconverter}"     
+                                    >
+                                    <f:attribute name="converterInstance" value="#{field.converterInstance}"/>
+                                    <f:attribute name="minFractationDigits" value="#{field.minFractationDigits}"/>
+                                    <f:attribute name="maxFractationDigits" value="#{field.maxFractationDigits}"/>
+                                    <f:attribute name="divider" value="#{field.divider}"/>
+                                    <f:attribute name="fieldKey" value="#{field.fieldKey}"/>
+                                    <f:attribute name="crudObject" value="#{rowData}"/>
+                                    <f:attribute name="uysformat" value="#{field.uysformat}"/>
+                                    <f:attribute name="viewKey" value="#{field.viewKey}"/>
+                                    <f:attribute name="calculateOnView" value="#{field.calculateOnView}"/>
+                                    <f:attribute name="myField" value="#{field}"/>
+                                    <f:attribute name="converterFormat" value="#{field.converterFormat}"/>
+                                    <f:attribute name="sessionKey" value="#{field.sessionKey}"/>
+                                </h:outputText>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText value="#{data[field.key]}" style="width: 98%"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column> 
+                    <p:column 
+                        headerText="#{field.name}"
+                        rendered="#{field.componentType == twoDimModifyCtrl.inputTextarea and field.rendered}"                         
+                        >
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText 
+                                    style="#{field.style}"
+                                    value="#{data[field.key]}"
+                                    converter="#{field.myconverter}"     
+                                    >
+                                    <f:attribute name="converterInstance" value="#{field.converterInstance}"/>
+                                    <f:attribute name="minFractationDigits" value="#{field.minFractationDigits}"/>
+                                    <f:attribute name="maxFractationDigits" value="#{field.maxFractationDigits}"/>
+                                    <f:attribute name="divider" value="#{field.divider}"/>
+                                    <f:attribute name="fieldKey" value="#{field.fieldKey}"/>
+                                    <f:attribute name="crudObject" value="#{rowData}"/>
+                                    <f:attribute name="uysformat" value="#{field.uysformat}"/>
+                                    <f:attribute name="viewKey" value="#{field.viewKey}"/>
+                                    <f:attribute name="calculateOnView" value="#{field.calculateOnView}"/>
+                                    <f:attribute name="myField" value="#{field}"/>
+                                    <f:attribute name="converterFormat" value="#{field.converterFormat}"/>
+                                    <f:attribute name="sessionKey" value="#{field.sessionKey}"/>
+                                </h:outputText>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputTextarea value="#{data[field.key]}" style="width: 98%"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column> 
+                    <p:column 
+                        headerText="#{field.name}"
+                        rendered="#{field.componentType == twoDimModifyCtrl.selectOneMenu and field.rendered}"                         
+                        >
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText 
+                                    style="#{field.style}"
+                                    value="#{data[field.key]}"
+                                    converter="#{field.myconverter}"     
+                                    >
+                                    <f:attribute name="converterInstance" value="#{field.converterInstance}"/>
+                                    <f:attribute name="minFractationDigits" value="#{field.minFractationDigits}"/>
+                                    <f:attribute name="maxFractationDigits" value="#{field.maxFractationDigits}"/>
+                                    <f:attribute name="divider" value="#{field.divider}"/>
+                                    <f:attribute name="fieldKey" value="#{field.fieldKey}"/>
+                                    <f:attribute name="crudObject" value="#{rowData}"/>
+                                    <f:attribute name="uysformat" value="#{field.uysformat}"/>
+                                    <f:attribute name="viewKey" value="#{field.viewKey}"/>
+                                    <f:attribute name="calculateOnView" value="#{field.calculateOnView}"/>
+                                    <f:attribute name="myField" value="#{field}"/>
+                                    <f:attribute name="converterFormat" value="#{field.converterFormat}"/>
+                                    <f:attribute name="sessionKey" value="#{field.sessionKey}"/>
+                                </h:outputText>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu 
+                                    value="#{data[field.key]}"
+                                    >
+                                    <f:selectItems 
+                                        value="#{field.selectItemsCurrent}" 
+                                        var="item" 
+                                        itemValue="#{item.value}" 
+                                        itemLabel="#{item.label}"/>
+                                </p:selectOneMenu>                              
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column 
+                        headerText="#{field.name}"
+                        rendered="#{field.componentType == twoDimModifyCtrl.inputDate and field.rendered}"
+                        >
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText  
+                                    style="#{field.style}"
+                                    value="#{data[field.key]}"
+                                    >
+                                    <f:attribute name="datePattern" value="#{field.datePattern}"/>
+                                </h:outputText>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:calendar 
+                                    value="#{data[field.key]}"
+                                    locale="tr"
+                                    showOn="button"
+                                    mask="true"
+                                    pattern="#{field.datePattern}"
+                                    />
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                </c:forEach>
+
+                <p:ajax event="cellEdit" 
+                        listener="#{twoDimModifyCtrl.onChildCellEdit}" 
+                        update="idTwoDlgTabView:id-form-table-childs:msgs"/>
+            </p:dataTable>
+
+        </div>
+
+
+        <p:contextMenu for="idDataTableChilds" widgetVar="cMenu">
+            <p:menuitem value="Edit Cell" icon="pi pi-search"
+                        onclick="PF('cellProducts').showCellEditor();return false;"/>
+            <p:menuitem value="Hide Menu" icon="pi pi-times" onclick="PF('cMenu').hide()"/>
+        </p:contextMenu>
+
+
+    </h:form>
+
+
+</html>

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="jakarta.faces.facelets"
+    >
+
+    <p:dialog 
+        id="id-dlg-payment"
+        widgetVar="wv-dlg-payment"
+        width="475"
+        height="530"
+        resizable="true"
+        header="Ödeme Sayfası"
+        closable="true"
+        closeOnEscape="true" 
+        modal="false"
+        draggable="true"
+        position="center"
+        visible="false"
+        >
+
+        <h:panelGroup>
+            <ui:include src="ccbank.html"/>
+        </h:panelGroup>
+
+    </p:dialog>
+
+</html>

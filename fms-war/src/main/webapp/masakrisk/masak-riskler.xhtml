@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"   
+
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <title></title>
+    </h:head>
+
+    <style>
+        .TopStyle{
+            vertical-align: top;
+        }
+        /*        
+                table, th, td {
+                    border: 1px solid gray;
+                    text-align: center;
+                    border-collapse: collapse;
+                }
+        */
+
+
+        .preformatted {
+            white-space: pre-wrap;
+            /*word-break: break-all;*/
+        }
+
+    </style>
+
+    <h:form>
+        <p:dataTable 
+            value="#{masakMB.risks}" 
+            var="risk"
+            tableStyle="width:auto"
+            styleClass="fixed-size"
+            style="width:100%;"
+            >
+
+            <p:column headerText="Risk Kodu" footerText="Risk Kodu" style="width: 5%;">     
+                <p:outputLabel value="#{risk.code}"/>
+            </p:column>
+
+            <p:column headerText="Risk Faktörü" footerText="Risk Faktörü" style="width: 90%;" >
+                <p:outputLabel value="#{risk.name}" rendered="#{risk.caption}"
+                               style="font-size: 24px;font-weight: bolder;"/> 
+
+                <p:commandLink value="#{risk.name}" rendered="#{not risk.caption}" 
+                               action="#{mainFrame.masaktedbirler}" 
+                               update="idCenterTop,idCenterCenter,#{updateAjaxMB.msgDlg}"
+                               styleClass="preformatted"
+                               >
+
+                    <f:setPropertyActionListener target="#{masakMB.selectedRisk}" value="#{risk}" />
+                </p:commandLink>
+            </p:column>
+
+            <p:column headerText="Kaydedilme Durumu" footerText="Kaydedilme Durumu" style="width: 5%;">     
+                <p:selectBooleanCheckbox 
+                    rendered="#{not risk.caption}" 
+                    disabled="true" 
+                    value="#{risk.exist}"/>
+            </p:column>
+        </p:dataTable>
+    </h:form>
+
+
+</html>

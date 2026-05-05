@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    >
+
+    <p:dialog 
+        id="id-rest-curl-dlg"
+        header="Rest Curl"
+        widgetVar="wvRestCurlDlg"
+        width="800"
+        height="600"
+        closable="true"
+        closeOnEscape="true"                     
+        position="center"
+        resizable="true"
+        >
+        <p:panel
+            id="id-rest-curl-dlg-pnl"
+            >
+            <br/>
+            <b>Create</b>
+            <p>
+                <b>curl --header "Content-Type: application/json" \</b>
+                <br/>
+                <b>--request POST \</b>
+                <br/>
+                <b>--data</b> '{ "_id" : null, "olusturmaTarihi" : 201901011200, "isSahibiSoyad" : "coşgun", "isSahibiTCK" : "213123123", "durumId" : "0", "ilgiliTalepNo" : null, "ilceId" :"5bf3ff67838fc9164d9dd980", "tdubTalepNo" : null, "tapuId" : null, "talepNo" : "21312312", "isTipi" : "Yeni Talep", "atananKurulus" : null, "aciklama" : null, "atanmaTarihi" : null, "isSahibiEmail" : "sadasdad@sadad.com", "durum" : "Açık", "ilgiliTalepId" : null, "il" : "Ankara", "isTipiId" : "0", "isSahibiAd" : "cihan", "kaynakTipi" : "Tapu", "ilId" : "5bf3c10f838fc9164d9dd967", "isSahibiTelNo" : "213123 2131231", "ilce" : "Altındağ", "atananKurulusId" : null, "tdubTalepId" : null, "kaynakTipiId" : "0", "forms" : "f038", "talepId" : "5c497566cf21b834569abc8b", "project-key" : "tdub_iys", "form-key" : "f038" }' \
+                <br/>
+                <b>http://localhost:9898/api/crud/create</b>
+            </p>
+
+            <br/>
+            <b>Update</b>
+            <p>
+                <b>curl --header "Content-Type: application/json" \</b>
+                <br/>
+                <b>--request POST \</b>
+                <br/>
+                <b>--data</b> '{ "_id" : null, "olusturmaTarihi" : 201901011200, "isSahibiSoyad" : "coşgun", "isSahibiTCK" : "213123123", "durumId" : "0", "ilgiliTalepNo" : null, "ilceId" :"5bf3ff67838fc9164d9dd980", "tdubTalepNo" : null, "tapuId" : null, "talepNo" : "21312312", "isTipi" : "Yeni Talep", "atananKurulus" : null, "aciklama" : null, "atanmaTarihi" : null, "isSahibiEmail" : "sadasdad@sadad.com", "durum" : "Açık", "ilgiliTalepId" : null, "il" : "Ankara", "isTipiId" : "0", "isSahibiAd" : "cihan", "kaynakTipi" : "Tapu", "ilId" : "5bf3c10f838fc9164d9dd967", "isSahibiTelNo" : "213123 2131231", "ilce" : "Altındağ", "atananKurulusId" : null, "tdubTalepId" : null, "kaynakTipiId" : "0", "forms" : "f038", "talepId" : "5c497566cf21b834569abc8b", "project-key" : "tdub_iys", "form-key" : "f038" }' \
+                <br/>
+                <b>http://localhost:9898/api/crud/update</b>
+            </p>
+
+            <br/>
+            <b>Delete</b>
+            <p>
+                <b>curl --header "Content-Type: application/json" \</b>
+                <br/>
+                <b>--request POST \</b>
+                <br/>
+                <b>--data</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
+                <br/>
+                <b>http://localhost:9898/api/crud/delete</b>
+            </p>
+
+            <br/>
+            <b>Find One</b>
+            <p>
+                <b>curl --header "Content-Type: application/json" \</b>
+                <br/>
+                <b>--request POST \</b>
+                <br/>
+                <b>--data</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
+                <br/>
+                <b>http://localhost:9898/api/crud/one</b>
+            </p>
+
+            <br/>
+            <b>Count</b>
+            <p>
+                <b>curl --header "Content-Type: application/json" \</b>
+                <br/>
+                <b>--request POST \</b>
+                <br/>
+                <b>--data</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
+                <br/>
+                <b>http://localhost:9898/api/crud/count</b>
+            </p>
+
+            <br/>
+            <b>Find Multi (Max = 50)</b>
+            <p>
+                <b>curl --header "Content-Type: application/json" \</b>
+                <br/>
+                <b>--request POST \</b>
+                <br/>
+                <b>--data</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
+                <br/>
+                <b>http://localhost:9898/api/crud/fifty</b>
+            </p>
+
+        </p:panel>
+    </p:dialog>
+
+
+</html>

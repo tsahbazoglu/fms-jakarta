@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core"
+      xmlns:mydynamic="http://java.sun.com/jsf/composite/mydinamic"
+      xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid">
+
+    <h:form id="id-2d-form-history-quick-filter">
+        <p:panel header="Filtreler">
+            <p:panelGrid layout="grid" columns="2" columnClasses="ui-g-6,ui-g-6">
+                <p:commandButton 
+                    icon="pi pi-filter"
+                    title="ara"
+                    action="#{twoDimViewCtrl.actionSearchObject}"
+                    update="#{updateAjaxMB.action2DHistory},id-tab-view:id-2d-form-history-quick-filter:id-filter-history-vertical-panel-grid"
+                    />
+                <p:commandButton 
+                    icon="pi pi-times"
+                    title="sıfırla"
+                    action="#{twoDimViewCtrl.resetFilter}"
+                    update="#{updateAjaxMB.action2DHistory},id-tab-view:id-2d-form-history-quick-filter:id-filter-history-vertical-panel-grid"
+                    />
+            </p:panelGrid>
+
+            <p:panelGrid columns="1" style="width:90%;" layout="grid" id="id-filter-history-vertical-panel-grid">
+                <c:forEach items="#{filterService.quickFilters}" var="columnMap">
+                    <p:outputPanel>
+                        <p:outputLabel value="#{columnMap.shortName}" style="white-space: pre-wrap"/> 
+                        <br/>
+                        <p:outputPanel>
+                            <mydynamic:uysDateTimeEntry 
+                                myvalue="#{filterService.guiFilterHistory[columnMap.field]}" 
+                                label="#{columnMap.label}" 
+                                rendered="#{columnMap.componentType eq twoDimViewCtrl.inputDate}"
+                                myconverter="#{columnMap.myconverter}"
+                                mypattern="#{columnMap.datePattern}"
+                                dateChange="#{twoDimViewCtrl.dateChange}"
+                                />
+                            <p:selectOneMenu 
+                                value="#{filterService.guiFilterHistory[columnMap.field]}"
+                                rendered="#{columnMap!=null and columnMap.componentType eq twoDimViewCtrl.selectOneMenu}"
+                                converter="#{columnMap.myconverter}"
+                                filter="true" 
+                                filterMatchMode="contains"   
+                                caseSensitive="true"
+                                style="width:140px;"                            
+                                >
+                                <p:ajax 
+                                    listener="#{twoDimViewCtrl.valueChangeListenerTableSearch}"
+                                    update="#{updateAjaxMB.action2DHistory}"
+                                    />
+                                <f:selectItem
+                                    itemValue="#{columnMap.myconverter.nullValue}" 
+                                    itemLabel="Seçiniz ..."
+                                    />
+                                <f:selectItem
+                                    itemValue="#{columnMap.myconverter.selectAllItem}" 
+                                    itemLabel="Tümü"
+                                    />
+                                <f:selectItems value="#{columnMap.selectItemsHistory}"/>  
+                                <f:attribute name="myField" value="#{columnMap}"/>
+                                <f:attribute name="myKey" value="#{columnMap.field}"/>  
+                            </p:selectOneMenu>
+                            <p:selectOneMenu 
+                                value="#{filterService.guiFilterHistory[columnMap.field]}"
+                                rendered="#{columnMap!=null and columnMap.componentType eq twoDimViewCtrl.selectOneRadio}"
+                                converter="#{columnMap.myconverter}"
+                                >
+                                <f:selectItem
+                                    itemValue="#{columnMap.myconverter.nullValue}" 
+                                    itemLabel="Seçiniz ..."
+                                    />
+                                <f:selectItem
+                                    itemValue="#{columnMap.myconverter.selectAllItem}" 
+                                    itemLabel="Tümü"
+                                    />
+                                <p:ajax 
+                                    listener="#{twoDimViewCtrl.valueChangeListenerTableSearch}" 
+                                    update="#{updateAjaxMB.action2DHistory}"
+                                    />
+                                <f:selectItems value="#{columnMap.selectItemsHistory}"/>  
+                                <f:attribute name="myKey" value="#{columnMap.field}"/>  
+                            </p:selectOneMenu>
+                            <p:autoComplete 
+                                dropdown="true" 
+                                value="#{filterService.guiFilterHistory[columnMap.field]}"
+                                completeMethod="#{columnMap.completeMethod}" 
+                                rendered="#{twoDimViewCtrl.autoComplete eq  columnMap.componentType and columnMap.rendered}"
+                                converter="documentConverter"
+                                var="item" 
+                                itemLabel="#{item.name}"
+                                itemValue="#{item}"
+                                forceSelection="true"
+                                minQueryLength="3"    
+                                inputStyle="width:170px;"                            
+                                />
+                            <p:inputText 
+                                rendered="#{columnMap!=null 
+                                            and (columnMap.componentType eq twoDimViewCtrl.inputText 
+                                            or columnMap.componentType eq twoDimViewCtrl.inputMask 
+                                            or columnMap.componentType eq  twoDimViewCtrl.inputTextarea)}"
+                                value="#{filterService.guiFilterHistory[columnMap.field]}" 
+                                style="white-space: pre;font-family: monospace;width: 140px;"
+                                onkeypress="myClick(event);"
+                                >
+                            </p:inputText> 
+                        </p:outputPanel>
+                    </p:outputPanel>
+                </c:forEach>
+            </p:panelGrid> 
+        </p:panel>
+    </h:form>
+</html>

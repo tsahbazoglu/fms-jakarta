@@ -1,0 +1,89 @@
+package tr.org.tspb.service;
+
+import com.mongodb.client.model.Filters;
+import tr.org.tspb.common.services.LoginController;
+import tr.org.tspb.util.stereotype.MyServices;
+import jakarta.inject.Inject;
+import org.bson.Document;
+import static tr.org.tspb.constants.ProjectConstants.FORM_KEY;
+import tr.org.tspb.datamodel.dao.FmsForm;
+import tr.org.tspb.datamodel.dao.MyProject;
+import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
+import tr.org.tspb.constants.exceptions.NullNotExpectedException;
+import tr.org.tspb.common.qualifier.MyLoginQualifier;
+import tr.org.tspb.common.services.BaseService;
+import tr.org.tspb.constants.ProjectConstants;
+import static tr.org.tspb.constants.ProjectConstants.CFG_TABLE_PROJECT;
+import tr.org.tspb.datamodel.dao.MyActions;
+import tr.org.tspb.constants.exceptions.FormConfigException;
+import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
+import tr.org.tspb.factory.cp.OgmCreatorIntr;
+
+/**
+ *
+ * @author Telman Şahbazoğlu
+ */
+@MyServices
+public class ModelService extends CommonSrv {
+
+    @Inject
+    @MyLoginQualifier
+    private LoginController loginController;
+
+    @Inject
+    @OgmCreatorQualifier
+    private OgmCreatorIntr ogmCreator;
+
+    @Inject
+    private BaseService baseService;
+
+    private String projectAndFormKey;
+
+    private FmsForm selectedForm;
+
+    public FmsForm createForm(String projectAndFormKey) throws
+            NullNotExpectedException, MongoOrmFailedException,
+            FormConfigException {
+
+        String[] selectedFormInfos = projectAndFormKey.split("[,]");
+        String formKey = selectedFormInfos[0];
+        String projectKey = selectedFormInfos[1];
+
+        MyProject myProject = ogmCreator
+                .getMyProject(mongoDbUtil
+                        .findOne(ProjectConstants.CONFIG_DB, CFG_TABLE_PROJECT,
+                                Filters.eq(FORM_KEY, projectKey)),
+                        baseService.getTagLogin());
+
+        FmsForm myForm = ogmCreator
+                .getMyFormLarge(myProject, myProject.getConfigTable(),
+                        new Document(FORM_KEY, formKey), new Document(),
+                        loginController.getRoleMap(), loginController.
+                        getLoggedUserDetail());
+
+        MyActions myActions = ogmCreator
+                .getMyActions(myForm, loginController.getRoleMap(),
+                        new Document(), loginController.getLoggedUserDetail());
+
+        myForm.initActions(myActions);
+
+        return myForm;
+    }
+
+    public FmsForm getSelectedForm() {
+        return selectedForm;
+    }
+
+    public void setSelectedForm(FmsForm selectedForm) {
+        this.selectedForm = selectedForm;
+    }
+
+    public String getProjectAndFormKey() {
+        return projectAndFormKey;
+    }
+
+    public void setProjectAndFormKey(String projectAndFormKey) {
+        this.projectAndFormKey = projectAndFormKey;
+    }
+
+}

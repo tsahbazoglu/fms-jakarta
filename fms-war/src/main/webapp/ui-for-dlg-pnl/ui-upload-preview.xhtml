@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core">
+
+
+    <p:toolbar>
+        <f:facet name="left">
+            <p:commandButton 
+                value="Veri Tabanına Aktarımı Onaylıyorum" 
+                action="#{fmsBulkUpload.bulkLoadExcell}"
+                update="#{updateAjaxMB.btnBulkLoad}"
+                /> 
+
+        </f:facet>
+    </p:toolbar>
+
+    <style type="text/css">            
+        .css-new{
+            background-color: #fffff !important;
+            background-image: none !important;
+            color: #000000 !important;
+        }
+        .css-update{
+            background-color: #f38b8b !important;
+            background-image: none !important;
+            color: #000000 !important;
+        }
+    </style>
+
+    <br/>
+
+    <p:dataTable 
+        value="#{fmsBulkUpload.listOfToBeUpsertAsDocumentRecursive}" 
+        var="x" 
+        style="white-space: nowrap;" 
+        rowStyleClass="#{x.style}"
+        resizableColumns="true"
+        >
+        <c:forEach items="#{formService.myForm.uploadMerge.importAndAppendedFields}" var="field">
+            <p:column headerText="#{formService.myForm.fields[field.key].name}">
+                <p:outputLabel
+                    value="#{x[field.key]}"
+                    converter="#{field.myconverter}"
+                    >
+                    <f:attribute name="converterInstance" value="#{field.converterInstance}"/>
+                    <f:attribute name="minFractationDigits" value="#{field.minFractationDigits}"/>
+                    <f:attribute name="maxFractationDigits" value="#{field.maxFractationDigits}"/>
+                    <f:attribute name="divider" value="#{field.divider}"/>
+                    <f:attribute name="fieldKey" value="#{field.fieldKey}"/>
+                    <f:attribute name="crudObject" value="#{x}"/>
+                    <f:attribute name="uysformat" value="#{field.uysformat}"/>
+                    <f:attribute name="viewKey" value="#{field.viewKey}"/>
+                    <f:attribute name="calculateOnView" value="#{field.calculateOnView}"/>
+                    <f:attribute name="myField" value="#{field}"/>
+                    <f:attribute name="converterFormat" value="#{field.converterFormat}"/>
+                    <f:attribute name="sessionKey" value="#{field.sessionKey}"/>
+
+                </p:outputLabel>
+            </p:column>
+        </c:forEach>
+        <p:column headerText="Eylem">
+            <p:outputLabel value="#{x.style eq 'css-new'  ? 'EKLE' : 'GÜNCELLE'}"/>
+        </p:column>
+    </p:dataTable>
+</html>

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:form>
+        <p:toolbar>
+            <f:facet name="left">
+                <p:commandButton 
+                    value="E-imzalı belgeyi indirmek için tıklayınız." 
+                    ajax="false" 
+                    icon="ui-icon-arrowthick-1-s"
+                    actionListener="#{esignController.createDownloadFile}"
+                    >
+                    <p:fileDownload value="#{esignController.file}"/>
+                </p:commandButton>
+                <p:commandButton 
+                    value="MetaData Hatasını Düzelt" 
+                    action="#{esignController.correctMetada}"
+                    rendered="#{roleMB['databankarchitect']}"
+                    >
+                </p:commandButton>
+            </f:facet>
+        </p:toolbar>
+    </h:form>
+
+    <h:panelGrid>
+        <p:outputLabel 
+            value='db.fs.files.findOne(ObjectId("#{esignController.eimzaFileID}"))'
+            rendered="#{roleMB['databankarchitect']}"
+            />
+        <p:outputLabel 
+            value='id : #{esignController.eimzaFileID}'
+            />
+
+        <p:dataTable 
+            value="#{esignController.signedDocInfo}" 
+            var="mymap"
+            >
+            <f:facet name="header">E-İmzalama Bilgileri</f:facet>
+            <p:column>
+                <f:facet name="header" >Alan</f:facet>
+                <h:outputText value="#{mymap.key}"/> 
+            </p:column>
+            <p:column>
+                <f:facet name="header" >Değer</f:facet>
+                <h:outputText value="#{mymap.value}"/> 
+            </p:column>
+        </p:dataTable>
+
+        <p:dataTable 
+            value="#{esignController.signedDocContentFields}" 
+            var="mymap"
+            >
+            <f:facet name="header">E-İmzalanan Belge</f:facet>
+            <p:column>
+                <f:facet name="header" >Alan</f:facet>
+                <h:outputText value="#{mymap.key}"/> 
+            </p:column>
+            <p:column>
+                <f:facet name="header" >Değer</f:facet>
+                <h:outputText value="#{mymap.value}"/> 
+            </p:column>
+        </p:dataTable>
+
+        <p:dataTable value="#{esignController.signedEimzaAttachments}" var="x">
+            <f:facet name="header">
+                <h:outputText value="E-İmzalanan Belge Ekleri"/> 
+            </f:facet>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Dosya Adı"/> 
+                </f:facet>
+                <h:outputText value="#{x.fileName}" />
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="İndir"/> 
+                </f:facet>
+                <h:outputLink 
+                    value="#{application.contextPath}/esignFileDownlodServlet/#{esignController.eimzaFileID}#{x.id}"
+                    style="
+                    text-decoration:none;
+                    font-size: 14px;
+                    color:#112978;
+                    font-weight:bold;"
+                    >
+                    <h:outputText value="indir" />
+                </h:outputLink>                    
+            </p:column>
+        </p:dataTable>
+    </h:panelGrid>
+
+</html>

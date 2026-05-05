@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:composite="jakarta.faces.composite"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title></title>
+    </h:head>
+
+    <composite:interface>
+        <composite:attribute name="myconverter" required="true"/>
+        <composite:attribute name="label" required="true"/>
+        <composite:attribute name="myvalue" required="true"/>
+        <composite:attribute name="myreadonly"/>
+        <composite:attribute name="myrequired"/>
+    </composite:interface>
+
+    <composite:implementation>
+        <p:inputTextarea
+            readonly="#{cc.attrs.myreadonly}"
+            style="width: 100%;font-family: monospace;word-break: break-all;" 
+            converter="#{cc.attrs.myconverter}" 
+            value="#{cc.attrs.myvalue}">
+            <f:attribute name="label" value="#{cc.attrs.label}"/>
+            <f:attribute name="trequired" value="#{cc.attrs.myrequired}"/>
+        </p:inputTextarea>
+    </composite:implementation>
+</html>

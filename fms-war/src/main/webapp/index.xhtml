@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      >
+
+    <f:view contracts="#{templateThemeHandler.layout}" locale="tr">
+
+        <ui:composition template="/template.xhtml">
+
+            <ui:define name="action-panel">
+                <ui:include 
+                    src="#{mainFrame.currEnumPage.pageActionPanel}"
+                    rendered="#{mainFrame.renderedDesktop}"
+                    />
+            </ui:define>
+
+            <ui:define name="current-content">
+                <ui:include 
+                    src="#{mainFrame.currEnumPage.pageObjectListPath}"   
+                    rendered="#{mainFrame.renderedDesktop}"
+                    />
+            </ui:define>
+
+            <ui:define name="history-content">
+                <ui:include 
+                    src="#{mainFrame.currEnumPage.pageHistoryObjectListPath}"
+                    rendered="#{mainFrame.renderedDesktop}"
+                    /> 
+            </ui:define>
+
+            <ui:define name="esignHistory">
+                <ui:include src="#{mainFrame.currEnumPage.esignHistory}"/> 
+            </ui:define>
+
+            <ui:define name="upload-page">
+                <ui:include src="#{mainFrame.currEnumPage.uploadPage}"/>
+            </ui:define>
+
+            <ui:define name="form-pop-ups">
+                <ui:include src="#{mainFrame.currEnumPage.dialogs}"/> 
+            </ui:define>
+
+        </ui:composition>
+
+    </f:view>
+
+
+</html>

@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      >
+
+    <p:dialog  
+        resizable="false"
+        closeOnEscape="false"
+        closable="false"
+        modal="true"
+        widgetVar="wv_are_you_escape"
+        >        
+        <p:panel>
+            <br/>
+            <p:outputLabel value="Kayıt edilmeyen veri değişiklikleri tespit edildi"/>
+            <br/>
+            <br/>
+            <br/>
+        </p:panel>
+        <f:facet name="footer">
+            <h:panelGrid 
+                style="width:100%"
+                columns="2"
+                columnClasses="leftColumn,rightColumn"         
+                > 
+                <p:button 
+                    value="Kaydet" 
+                    onclick="falseAndCloseAll();return false;"/>
+                <p:button 
+                    value="Kaydetmeden Kapat" 
+                    onclick="justClose();return false;"/>
+            </h:panelGrid>
+        </f:facet>
+    </p:dialog>
+
+</html>

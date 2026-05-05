@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"   
+
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <title></title>
+    </h:head>
+
+    <style>
+        .preformatted {
+            white-space: pre-wrap;
+            /*word-break: break-all;*/
+        }
+    </style>
+
+    <h:form>
+
+        <p:remoteCommand
+            name="rcSave"
+            action="#{masakMB.save}"
+            update="#{updateAjaxMB.msgDlg}"
+            />
+
+        <p:dataTable 
+            value="#{masakMB.selectedRisk.tedbirs}" 
+            var="tedbir" 
+            tableStyle="width:auto"
+            styleClass="fixed-size"
+            >
+
+            <p:column headerText="Tedbir Kodu" footerText="Tedbir Kodu">
+                <p:outputLabel value="#{tedbir.code}" />
+            </p:column>
+
+            <p:column headerText="Tedbir Açıklama" footerText="Tedbir Açıklama" style="width: 500px;" >
+                <p:outputLabel value="#{tedbir.name}" styleClass="preformatted"/>
+            </p:column>
+
+            <p:column headerText="Uygulanıyor mu?" footerText="Uygulanıyor mu?">
+                <p:selectBooleanCheckbox value="#{tedbir.check}"/>                                
+            </p:column>
+
+            <p:column headerText="Kontrol Tipi" footerText="Kontrol Tipi?" rendered="false" style="width: 50px;">
+                <p:selectOneMenu value="#{tedbir.kontrolTipi}">
+                    <f:selectItem itemValue="null" itemLabel="Lütfen Seçiniz"/>
+                    <f:selectItem itemValue="kt000" itemLabel="Tespit Edici"/>
+                    <f:selectItem itemValue="kt001" itemLabel="Risk Azaltıcı"/>
+                    <f:selectItem itemValue="kt002" itemLabel="Önleyici"/>
+                </p:selectOneMenu>
+            </p:column>
+
+            <p:column headerText="Uygulama Yönetimi" footerText="Uygulama Yönetimi" style="width: 50px;">
+                <p:selectOneMenu value="#{tedbir.uygulamaYonetimi}">
+                    <f:selectItem itemValue="null" itemLabel="Lütfen Seçiniz"/>
+                    <f:selectItem itemValue="uy000" itemLabel="Manuel"/>
+                    <f:selectItem itemValue="uy001" itemLabel="Yarı sistematik"/>
+                    <f:selectItem itemValue="uy002" itemLabel="Sistematik"/>
+                </p:selectOneMenu> 
+            </p:column>
+        </p:dataTable>
+    </h:form>
+
+
+</html>

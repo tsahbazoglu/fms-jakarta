@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <p:tree value="#{twoDimModifyCtrl.root}" var="node" style="width: 500px;">
+        <p:treeNode>
+            <p:panel>
+                <h:outputText value="#{node.key}"/>
+                <h:inputText value="#{node.value}" rendered="#{node.renderValue}"/>
+            </p:panel>
+        </p:treeNode>
+    </p:tree>
+    <h:outputText value="#{twoDimModifyCtrl.asciidoctorContent}" escape="false"/>
+</html>

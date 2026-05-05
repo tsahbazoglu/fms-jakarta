@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <p:scrollPanel styleClass="td-8">
+        <h:panelGroup 
+            id="id-diagram-panel"
+            style="height: 100%;"
+            >
+            <p:diagram 
+                id="id-diagram"
+                value="#{workFlowCtrl.model}" 
+                style="height:700px;"
+                styleClass="ui-widget-content" 
+                var="data"
+                >
+                <f:facet name="element">
+                    <h:outputText value="#{data.code} : #{data.name}"/>
+                </f:facet>
+            </p:diagram>
+        </h:panelGroup>
+    </p:scrollPanel>
+</html>
