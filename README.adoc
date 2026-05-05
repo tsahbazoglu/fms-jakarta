@@ -4,7 +4,7 @@
 :sectnums:
 :sectnumlevels: 3
 :docinfo: shared
-:server-path: ~/apps/glassfish7/glassfish
+:server-path: ~/apps/glassfish8/glassfish
 :project_version: 1.0.0
 :project_path: ~/github/fms-jakarta
 
