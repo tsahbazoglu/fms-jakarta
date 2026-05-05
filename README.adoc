@@ -45,10 +45,10 @@ asadmin list-components;
 asadmin undeploy fms-ear-{project_version}
             
 asadmin stop-domain
-rm -rf {server-path}/domain1/osgi-cache
-rm -rf {server-path}/domain1/generated
-rm -rf {server-path}/domain1/applications/fms-ear-{project_version}
-rm -rf {server-path}/domain1/lib/*.jar
+rm -rf {server-path}/domains/domain1/osgi-cache
+rm -rf {server-path}/domains/domain1/generated
+rm -rf {server-path}/domains/domain1/applications/fms-ear-{project_version}
+rm -rf {server-path}/domains/domain1/lib/*.jar
 asadmin start-domain --debug
 ----
 
