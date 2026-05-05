@@ -69,15 +69,12 @@ cd ~/github/fms
 ----
 
 ----
-mvn clean install \
--Ddependency.scope=compile
+mvn clean install -Ddependency.scope=compile
 ----
 
 === Standalone compile + E-sign Support
 ----
-mvn clean install \
--PesignSupport \
--Ddependency.scope=compile
+mvn clean install -PesignSupport -Ddependency.scope=compile
 ----
 
 === Library Migration (GlassFish)
