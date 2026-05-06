@@ -276,7 +276,6 @@ cp lib/*.jar {server-path}/domains/domain1/lib
 # Remove project-specific libraries from the local path to prevent JAR confusion
 
 # FMS Jars
-
 rm -rf {server-path}/domains/domain1/lib/fms-common-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/fms-constants-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/fms-converter-1.0.0.jar
