@@ -97,14 +97,13 @@ To accelerate the deployment phase, we first perform a standalone compile with `
 [source,js,subs="attributes,verbatim,quotes"]
 ----       
 cd {project_path}
-----
-
-----
 mvn clean install -Ddependency.scope=compile
 ----
 
 === Standalone compile + E-sign Support
+[source,js,subs="attributes,verbatim,quotes"]
 ----
+cd {project_path}
 mvn clean install -PesignSupport -Ddependency.scope=compile
 ----
 
