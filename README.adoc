@@ -425,7 +425,7 @@ When using the `outsider` module, ensure the CDI alternatives in `beans.xml` are
 ====
     
 ----
-<artifactId>outsider</artifactId>
+<artifactId>fms-outsider</artifactId>
 ----
 
 ~/github/fms/outsider/src/main/resources/META-INF/beans.xml::

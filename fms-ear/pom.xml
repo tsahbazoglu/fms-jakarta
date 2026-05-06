@@ -116,59 +116,59 @@
         <!--fms jars-->
         <dependency>
             <groupId>tr.org.tspb</groupId>
-            <artifactId>fgtpswd</artifactId>
+            <artifactId>fms-fgtpswd</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>logger</artifactId>
+            <artifactId>fms-logger</artifactId>
         </dependency> 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>constants</artifactId>
+            <artifactId>fms-constants</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>datamodel</artifactId>
+            <artifactId>fms-datamodel</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>fms-common</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>util</artifactId>
+            <artifactId>fms-util</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>service</artifactId>
+            <artifactId>fms-service</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>factory</artifactId>
+            <artifactId>fms-factory</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>notification</artifactId>
+            <artifactId>fms-notification</artifactId>
         </dependency>    
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>page</artifactId>
+            <artifactId>fms-page</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>table</artifactId>
+            <artifactId>fms-table</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>pivot</artifactId>
+            <artifactId>fms-pivot</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>outsider</artifactId>
+            <artifactId>fms-outsider</artifactId>
         </dependency> 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>converter</artifactId>
+            <artifactId>fms-converter</artifactId>
         </dependency>                                          
                                                       
         <!--web and ejb-->          

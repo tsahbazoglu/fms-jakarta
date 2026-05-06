@@ -8,7 +8,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>util</artifactId>
+    <artifactId>fms-util</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
     
@@ -43,12 +43,12 @@
         <!--fms jars-->        
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>constants</artifactId>
+            <artifactId>fms-constants</artifactId>
             <scope>provided</scope> 
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>datamodel</artifactId>
+            <artifactId>fms-datamodel</artifactId>
             <scope>provided</scope> 
         </dependency>               
     </dependencies>    

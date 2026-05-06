@@ -56,52 +56,52 @@
         </dependency>  
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>fms-common</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>service</artifactId>
+            <artifactId>fms-service</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>outsider</artifactId>
+            <artifactId>fms-outsider</artifactId>
             <scope>provided</scope>
         </dependency>      
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>fgtpswd</artifactId>
+            <artifactId>fms-fgtpswd</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>constants</artifactId>
+            <artifactId>fms-constants</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>datamodel</artifactId>
+            <artifactId>fms-datamodel</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>util</artifactId>
+            <artifactId>fms-util</artifactId>
             <scope>provided</scope>
         </dependency> 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>page</artifactId>
+            <artifactId>fms-page</artifactId>
             <scope>provided</scope>
         </dependency>        
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>table</artifactId>
+            <artifactId>fms-table</artifactId>
             <scope>provided</scope>
         </dependency> 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>pivot</artifactId>
+            <artifactId>fms-pivot</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -15,10 +15,10 @@
     <modules>
        
         <module>common</module>
+        <module>constants</module>
         <module>factory</module>
         <module>notification</module>
         <module>datamodel</module>
-        <module>constants</module>
         <module>util</module>
         <module>outsider</module>
         <module>converter</module>
@@ -319,85 +319,85 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>fgtpswd</artifactId>
+                <artifactId>fms-fgtpswd</artifactId>
                 <version>${fms.fgtpswd.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>constants</artifactId>
+                <artifactId>fms-constants</artifactId>
                 <version>${fms.constants.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>common</artifactId>
+                <artifactId>fms-common</artifactId>
                 <version>${fms.common.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>outsider</artifactId>
+                <artifactId>fms-outsider</artifactId>
                 <version>${fms.outsider.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>service</artifactId>
+                <artifactId>fms-service</artifactId>
                 <version>${fms.service.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>pivot</artifactId>
+                <artifactId>fms-pivot</artifactId>
                 <version>${fms.pivot.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>page</artifactId>
+                <artifactId>fms-page</artifactId>
                 <version>${fms.page.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>table</artifactId>
+                <artifactId>fms-table</artifactId>
                 <version>${fms.table.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>logger</artifactId>
+                <artifactId>fms-logger</artifactId>
                 <version>${fms.logger.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>workflow</artifactId>
+                <artifactId>fms-workflow</artifactId>
                 <version>${fms.workflow.version}</version>
             </dependency>   
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>datamodel</artifactId>
+                <artifactId>fms-datamodel</artifactId>
                 <version>${fms.datamodel.version}</version>
             </dependency> 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>notification</artifactId>
+                <artifactId>fms-notification</artifactId>
                 <version>${fms.notification.version}</version>
             </dependency>   
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>util</artifactId>
+                <artifactId>fms-util</artifactId>
                 <version>${fms.util.version}</version>
             </dependency>    
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>converter</artifactId>
+                <artifactId>fms-converter</artifactId>
                 <version>${fms.converter.version}</version>
             </dependency> 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>factory</artifactId>
+                <artifactId>fms-factory</artifactId>
                 <version>${fms.factory.version}</version>
             </dependency> 
           
