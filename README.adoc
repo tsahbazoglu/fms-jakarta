@@ -145,24 +145,27 @@ rm -rf {server-path}/domains/domain1/lib/util-1.0.0.jar
 # Restart the domain to refresh the ClassLoader
 
 asadmin stop-domain;
-asadmin start-domain --debug;              
+asadmin start-domain --debug;  
+
+ls -lrt {server-path}/domains/domain1/lib            
 ----
 
 === Optimized Build (Provided Scope)
 
+[NOTE]
+====
 Once libraries are in the server path, use the `provided` scope for faster iteration:
+====
 
 [source,js,subs="attributes,verbatim,quotes"]
 ----        
 cd {project_path}
-----
-
-----
 mvn clean install -Ddependency.scope=provided            
 ----
 
 === Optimized Build + E-sign Support
-----        
+----     
+cd {project_path}
 mvn clean install -PesignSupport -Ddependency.scope=provided            
 ----
 
@@ -250,35 +253,6 @@ mvn compile war:exploded -pl fms-war -am && touch fms-ear/target/fms-ear-1.0.0/.
 mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/fms-web-1.0.0.war/
 
 
-## Troubleshouting
-
-EsignController.java:1021
-
-Signer signer = bsd.getSignerList().get(0);
-
-Caused by: java.lang.RuntimeException: Lisans kontrolu basarisiz. class tr.gov.tubitak.uekae.esya.api.common.lcns.LV cannot access class sun.security.pkcs.PKCS7 (in module java.base) because module java.base does not export sun.security.pkcs to unnamed module @598c28a
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.Signer.<init>(Signer.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.BES.<init>(BES.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.EST.<init>(EST.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESC.<init>(ESC.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESXLong.<init>(ESXLong.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESignatureType.createSigner(ESignatureType.java)
-	... 57 more
-
-# if domain stopped
-asadmin create-jvm-options --offline --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
-
-# if domain started
-asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
-
-glassfish7/glassfish/domains/domain1/config/domain.xml
-<java-config>
-<jvm-options>--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED</jvm-options>
-
-
-asadmin stop-domain
-export AS_JAVA_WMOPTS="--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED"
-asadmin start-domain --debug
  
 ----
 
@@ -312,7 +286,6 @@ All installation process had been documented and dockerized in fms-docker reposi
 |pswd     | 123
 |===
 
-
 == License
 
 All code found in this repository is licensed under LGPL v3
@@ -336,4 +309,52 @@ GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License 
 along with Form Management System. If not, see http://www.gnu.org/licenses/.
+----
+
+
+== Troubleshouting
+
+source::
+----
+EsignController.java:1021
+
+Signer signer = bsd.getSignerList().get(0);
+----
+
+error log::
+----
+Caused by: java.lang.RuntimeException: Lisans kontrolu basarisiz. class tr.gov.tubitak.uekae.esya.api.common.lcns.LV cannot access class sun.security.pkcs.PKCS7 (in module java.base) because module java.base does not export sun.security.pkcs to unnamed module @598c28a
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.Signer.<init>(Signer.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.BES.<init>(BES.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.EST.<init>(EST.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESC.<init>(ESC.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESXLong.<init>(ESXLong.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESignatureType.createSigner(ESignatureType.java)
+	... 57 more
+----
+
+solution(via asadmin)::
+[source,js,subs="attributes,verbatim,quotes"]
+----
+# if domain stopped
+asadmin create-jvm-options --offline --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
+
+# if domain started
+asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
+----
+
+solution(via domain.xml)::
+----
+asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
+# asadmin create-jvm-options --add-exports=java.base/sun.security.x509=ALL-UNNAMED
+# asadmin create-jvm-options --add-opens=java.base/sun.security.pkcs=ALL-UNNAMED
+# asadmin create-jvm-options --add-opens=java.base/sun.security.x509=ALL-UNNAMED
+
+{server-path}/domains/domain1/config/domain.xml
+<java-config>
+<jvm-options>--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED</jvm-options>
+
+asadmin stop-domain
+export AS_JAVA_WMOPTS="--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED"
+asadmin start-domain --debug
 ----
