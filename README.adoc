@@ -164,6 +164,7 @@ mvn clean install -Ddependency.scope=provided
 ----
 
 === Optimized Build + E-sign Support
+[source,js,subs="attributes,verbatim,quotes"]
 ----     
 cd {project_path}
 mvn clean install -PesignSupport -Ddependency.scope=provided            
@@ -343,17 +344,16 @@ asadmin create-jvm-options --offline --add-exports=java.base/sun.security.pkcs=A
 asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
 asadmin create-jvm-options --add-opens=java.base/sun.security.pkcs=ALL-UNNAMED
 
+asadmin create-jvm-options --add-exports=java.base/sun.security.x509=ALL-UNNAMED
+asadmin create-jvm-options --add-opens=java.base/sun.security.x509=ALL-UNNAMED
+
 asadmin stop-domain;asadmin start-domain --debug
 
 ----
 
 solution(via domain.xml)::
+[source,js,subs="attributes,verbatim,quotes"]
 ----
-asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
-# asadmin create-jvm-options --add-exports=java.base/sun.security.x509=ALL-UNNAMED
-# asadmin create-jvm-options --add-opens=java.base/sun.security.pkcs=ALL-UNNAMED
-# asadmin create-jvm-options --add-opens=java.base/sun.security.x509=ALL-UNNAMED
-
 {server-path}/domains/domain1/config/domain.xml
 <java-config>
 <jvm-options>--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED</jvm-options>
