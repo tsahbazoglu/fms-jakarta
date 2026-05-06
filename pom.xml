@@ -411,7 +411,7 @@
                 <dependencies>
                     <dependency>
                         <groupId>${project.groupId}</groupId>
-                        <artifactId>esign-core</artifactId>
+                        <artifactId>fms-esign-core</artifactId>
                         <version>${fms.esign.version}</version>
                         <exclusions>
                             <exclusion>

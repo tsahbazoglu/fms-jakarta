@@ -192,7 +192,7 @@
             <dependencies>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>esign-core</artifactId>
+                    <artifactId>fms-esign-core</artifactId>
                 </dependency>                 
             </dependencies>
         </profile>
