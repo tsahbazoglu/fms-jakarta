@@ -882,22 +882,22 @@ cp lib/*.jar ~/apps/glassfish8/glassfish/domains/domain1/lib
 
 # Remove project-specific libraries from the local path to prevent JAR confusion
 
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/common-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/constants-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/converter-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/datamodel-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/esign-core-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/esign-util-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/factory-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fgtpswd-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/logger-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/notification-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/outsider-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/page-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/pivot-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/service-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/table-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/util-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-common-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-constants-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-converter-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-datamodel-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-esign-core-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-esign-util-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-factory-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-fgtpswd-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-logger-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-notification-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-outsider-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-page-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-pivot-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-service-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-table-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-util-1.0.0.jar
 //
 rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-cmssignature-2.3.11.8.jar
 rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-infra-2.3.11.8.jar
@@ -972,7 +972,7 @@ mvn clean install -PesignSupport -Ddependency.scope=provided</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>&lt;artifactId&gt;outsider&lt;/artifactId&gt;</pre>
+<pre>&lt;artifactId&gt;fms-outsider&lt;/artifactId&gt;</pre>
 </div>
 </div>
 <div class="dlist">
@@ -1232,7 +1232,7 @@ asadmin start-domain --debug</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2026-05-06 17:02:12 +0300
+Last updated 2026-05-06 17:24:13 +0300
 </div>
 </div>
 </body>
