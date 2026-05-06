@@ -7,6 +7,7 @@
 :server-path: ~/apps/glassfish8/glassfish
 :project_version: 1.0.0
 :project_path: ~/github/fms-jakarta
+:ma3api-version: 2.3.11.8
 
 = FMS : Form Management System
 telman şahbazoğlu <tsahbazoglu@tspb.org.tr>
@@ -140,6 +141,21 @@ rm -rf {server-path}/domains/domain1/lib/pivot-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/service-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/table-1.0.0.jar
 rm -rf {server-path}/domains/domain1/lib/util-1.0.0.jar
+//
+rm -rf {server-path}/domains/domain1/lib/ma3api-cmssignature-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-infra-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-crypto-sunprovider-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-common-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-smartcard-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-signature-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-crypto-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-crypto-gnuprovider-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-asn-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-certvalidation-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-certstore-{ma3api-version}.jar
+//
+rm -rf {server-path}/domains/domain1/lib/muhurdar-utils-1.0.0-SNAPSHOT.jar
+rm -rf {server-path}/domains/domain1/lib/muhurdar-servlet-1.0.0-SNAPSHOT.jar
 
 # Restart the domain to refresh the ClassLoader
 
@@ -162,7 +178,7 @@ cd {project_path}
 mvn clean install -Ddependency.scope=provided            
 ----
 
-=== Optimized Build + E-sign Support
+=== Optimized Build + E-sign Support (Provided Scope)
 [source,js,subs="attributes,verbatim,quotes"]
 ----     
 cd {project_path}
@@ -345,6 +361,9 @@ asadmin create-jvm-options --add-opens=java.base/sun.security.pkcs=ALL-UNNAMED
 
 asadmin create-jvm-options --add-exports=java.base/sun.security.x509=ALL-UNNAMED
 asadmin create-jvm-options --add-opens=java.base/sun.security.x509=ALL-UNNAMED
+
+asadmin create-jvm-options --add-opens=java.base/sun.security.util=ALL-UNNAMED
+
 
 asadmin stop-domain;asadmin start-domain --debug
 

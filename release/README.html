@@ -448,18 +448,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Content</div>
 <ul class="sectlevel1">
 <li><a href="#_asccidoc">1. Asccidoc</a></li>
-<li><a href="#_start_server">2. Start Server</a></li>
-<li><a href="#_log_server">3. Log Server</a></li>
-<li><a href="#_compile">4. Compile</a>
+<li><a href="#_asccidoc_variables">2. Asccidoc Variables</a>
 <ul class="sectlevel2">
-<li><a href="#_clean_glassfish">4.1. Clean Glassfish</a></li>
-<li><a href="#_standalone_compile">4.2. Standalone Compile</a></li>
-<li><a href="#_standalone_compile_esign">4.3. Standalone compile + Esign</a></li>
-<li><a href="#_copy_libs_to_glassfish">4.4. Copy Libs to Glassfish</a></li>
-<li><a href="#_compile_as_provided">4.5. Compile As Provided</a></li>
-<li><a href="#_compile_as_provided_esign">4.6. Compile  As Provided + Esign</a></li>
-<li><a href="#_regular_deployment_production">4.7. Regular deployment (Production)</a></li>
-<li><a href="#_directory_deployment_dev">4.8. Directory deployment (Dev)</a></li>
+<li><a href="#_environment_requirements">2.1. Environment Requirements</a>
+<ul class="sectlevel3">
+<li><a href="#_setup_instructions">2.1.1. Setup Instructions</a></li>
+</ul>
+</li>
+<li><a href="#_clean_glassfish">2.2. Clean Glassfish</a></li>
+</ul>
+</li>
+<li><a href="#_log_server">3. Log Server</a></li>
+<li><a href="#_compilation_and_deployment">4. Compilation and Deployment</a>
+<ul class="sectlevel2">
+<li><a href="#_standalone_compile">4.1. Standalone Compile</a></li>
+<li><a href="#_standalone_compile_e_sign_support">4.2. Standalone compile + E-sign Support</a></li>
+<li><a href="#_library_migration_glassfish">4.3. Library Migration (GlassFish)</a></li>
+<li><a href="#_optimized_build_provided_scope">4.4. Optimized Build (Provided Scope)</a></li>
+<li><a href="#_optimized_build_e_sign_support_provided_scope">4.5. Optimized Build + E-sign Support (Provided Scope)</a></li>
+<li><a href="#_production_deployment">4.6. Production deployment</a></li>
+<li><a href="#_directory_deployment_dev">4.7. Directory deployment (Dev)</a></li>
 </ul>
 </li>
 <li><a href="#_mongorestore_wo_index">5. MongoRestore W/O Index</a></li>
@@ -467,6 +475,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_install">7. Install</a></li>
 <li><a href="#_live_site">8. Live Site</a></li>
 <li><a href="#_license">9. License</a></li>
+<li><a href="#_troubleshouting">10. Troubleshouting</a></li>
 </ul>
 </div>
 </div>
@@ -482,25 +491,103 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_start_server">2. Start Server</h2>
+<h2 id="_asccidoc_variables">2. Asccidoc Variables</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">java -version
+<pre>:server-path: ~/apps/glassfish7/glassfish
+:project-version: 1.0.0</pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_environment_requirements">2.1. Environment Requirements</h3>
+<div class="paragraph">
+<p>To set up the project according to the environment requirements, please ensure the following variables are configured:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Server Path:</strong> The application is configured to deploy to <code>~/apps/glassfish8/glassfish</code>.</p>
+</li>
+<li>
+<p><strong>Project Version:</strong> The current stable version of this project is <code>{project-version}</code>.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_setup_instructions">2.1.1. Setup Instructions</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Operation System</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 25.10
+Release:	25.10
+Codename:	questing</pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Java</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>java -version
+openjdk version "17.0.18" 2026-01-20
+OpenJDK Runtime Environment (build 17.0.18+8-Ubuntu-125.10.1)
+OpenJDK 64-Bit Server VM (build 17.0.18+8-Ubuntu-125.10.1, mixed mode, sharing)</pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Maven</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mvn -v
+Apache Maven 3.9.9
+Maven home: /usr/share/maven
+Java version: 17.0.18, vendor: Ubuntu, runtime: /usr/lib/jvm/java-17-openjdk-amd64
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "6.17.0-22-generic", arch: "amd64", family: "unix"</pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Java Server</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Ensure GlassFish 7 is installed at the specified `:server-path:`.
+Verify that your local environment variables match the project versioning requirements.
+Run the Maven build to synchronize the configuration with your local server instance.</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_clean_glassfish">2.2. Clean Glassfish</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">asadmin list-components;
 
-export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
-
-export SERVER_HOME=~/apps/glassfish7/glassfish
-
-export MONGODB_HOME=~/apps/mongodb-linux-x86_64-3.2.3
-export PATH=$PATH:$SERVER_HOME/bin:$MONGODB_HOME/bin
-mongod --dbpath ~/fmsdb --fork --logpath  ~/fmsdb.log  --logappend
+asadmin undeploy fms-ear-1.0.0
 
 asadmin stop-domain
-
-asadmin start-domain --debug
-
-asadmin stop-domain</code></pre>
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/osgi-cache
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/generated
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/applications/fms-ear-1.0.0
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/*.jar
+asadmin start-domain --debug</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -510,147 +597,123 @@ asadmin stop-domain</code></pre>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">tail -f ~/apps/glassfish7/glassfish/domains/domain1/logs/server.log</code></pre>
+<pre class="highlight"><code class="language-js" data-lang="js">tail -f ~/apps/glassfish8/glassfish/domains/domain1/logs/server.log</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_compile">4. Compile</h2>
+<h2 id="_compilation_and_deployment">4. Compilation and Deployment</h2>
 <div class="sectionbody">
-<div class="dlist">
-<dl>
-<dt class="hdlist1">1.0.0</dt>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>java -version
-
-cd /home/telman/github/fms
-
-export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
-
-/home/telman/Downloads/apache-maven-3.6.3/bin/./mvn clean install -DskipTests=true</pre>
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">2.0.0</dt>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>mvn help:evaluate -Dexpression=deployment.notes -q -DforceStdout
-
-mvn help:evaluate -Dexpression=deployment.notes -DforceStdout -pl .</pre>
-</div>
+<div class="paragraph">
+<p>To accelerate the deployment phase, we first perform a standalone compile with <code>compile</code> scope to extract and migrate core libraries to the GlassFish global library directory. Subsequent builds use the <code>provided</code> scope to create a lightweight EAR file, significantly reducing deployment time during active development.</p>
 </div>
 <div class="sect2">
-<h3 id="_clean_glassfish">4.1. Clean Glassfish</h3>
+<h3 id="_standalone_compile">4.1. Standalone Compile</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">asadmin list-components;
-
-asadmin undeploy fms-ear-1.0.0
-
-asadmin stop-domain
-rm -rf ~/apps/glassfish7/glassfish/domain1/osgi-cache
-rm -rf ~/apps/glassfish7/glassfish/domain1/generated
-rm -rf ~/apps/glassfish7/glassfish/domain1/applications/fms-ear-1.0.0
-
-rm -rf ~/apps/glassfish7/glassfish/domain1/lib/*.jar
-
-asadmin start-domain --debug</code></pre>
+<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
+mvn clean install -Ddependency.scope=compile</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_standalone_compile">4.2. Standalone Compile</h3>
+<h3 id="_standalone_compile_e_sign_support">4.2. Standalone compile + E-sign Support</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>mvn clean install \
--Ddependency.scope=compile</pre>
+<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
+mvn clean install -PesignSupport -Ddependency.scope=compile</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_standalone_compile_esign">4.3. Standalone compile + Esign</h3>
+<h3 id="_library_migration_glassfish">4.3. Library Migration (GlassFish)</h3>
+<div class="paragraph">
+<p>Extract the libraries from the EAR and move them to the domain library folder to avoid redundant bundling:</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre>mvn clean install \
--PesignSupport \
--Ddependency.scope=compile</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_copy_libs_to_glassfish">4.4. Copy Libs to Glassfish</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms/fms-ear/target/
+<pre class="highlight"><code class="language-js" data-lang="js"># Navigate to deployment target
 
-# ls -lrt
-# jar -tf fms-ear-1.0.0.ear
-# jar -tf fms-ear-1.0.0.ear | grep slf4j
-# jar -tf fms-ear-1.0.0.ear | grep guava
-
+cd ~/github/fms-jakarta/fms-ear/target/
 jar -xvf fms-ear-1.0.0.ear
 
-cp lib/*.jar ~/apps/glassfish7/glassfish/domains/domain1/lib
+# Deploy fresh libraries
 
-ls -lrt ~/apps/glassfish7/glassfish/domains/domain1/lib
-ls -lrt ~/apps/glassfish7/glassfish/domains/domain1/lib | grep outsider
+cp lib/*.jar ~/apps/glassfish8/glassfish/domains/domain1/lib
 
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/common-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/constants-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/converter-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/datamodel-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/esign-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/esign-util-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/factory-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/fgtpswd-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/logger-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/notification-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/outsider-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/page-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/pivot-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/service-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/table-1.0.0.jar
-rm -rf ~/apps/glassfish7/glassfish/domains/domain1/lib/util-1.0.0.jar
+# Remove project-specific libraries from the local path to prevent JAR confusion
 
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/common-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/constants-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/converter-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/datamodel-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/esign-core-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/esign-util-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/factory-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fgtpswd-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/logger-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/notification-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/outsider-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/page-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/pivot-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/service-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/table-1.0.0.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/util-1.0.0.jar
+//
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-cmssignature-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-infra-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-crypto-sunprovider-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-common-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-smartcard-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-signature-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-crypto-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-crypto-gnuprovider-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-asn-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-certvalidation-2.3.11.8.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-certstore-2.3.11.8.jar
+//
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/muhurdar-utils-1.0.0-SNAPSHOT.jar
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/muhurdar-servlet-1.0.0-SNAPSHOT.jar
+
+# Restart the domain to refresh the ClassLoader
 
 asadmin stop-domain;
-asadmin start-domain --debug;</code></pre>
+asadmin start-domain --debug;
+
+ls -lrt ~/apps/glassfish8/glassfish/domains/domain1/lib</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_compile_as_provided">4.5. Compile As Provided</h3>
+<h3 id="_optimized_build_provided_scope">4.4. Optimized Build (Provided Scope)</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Once libraries are in the server path, use the <code>provided</code> scope for faster iteration:</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre>cd ~/github/fms</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>mvn clean install \
--Ddependency.scope=provided</pre>
+<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
+mvn clean install -Ddependency.scope=provided</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_compile_as_provided_esign">4.6. Compile  As Provided + Esign</h3>
+<h3 id="_optimized_build_e_sign_support_provided_scope">4.5. Optimized Build + E-sign Support (Provided Scope)</h3>
 <div class="listingblock">
 <div class="content">
-<pre>mvn clean install \
--PesignSupport \
--Ddependency.scope=provided</pre>
+<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
+mvn clean install -PesignSupport -Ddependency.scope=provided</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -660,7 +723,9 @@ asadmin start-domain --debug;</code></pre>
 <div class="title">Note</div>
 </td>
 <td class="content">
-ATTENTION
+<div class="paragraph">
+<p>When using the <code>outsider</code> module, ensure the CDI alternatives in <code>beans.xml</code> are correctly configured for your specific <code>EsignDoor</code> implementation.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -690,40 +755,26 @@ ATTENTION
 &lt;/beans&gt;</pre>
 </div>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-Do not forget to replace with you own EsginDoor implementation.
-</td>
-</tr>
-</table>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_regular_deployment_production">4.7. Regular deployment (Production)</h3>
+<h3 id="_production_deployment">4.6. Production deployment</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">asadmin list-components;
 
 asadmin undeploy fms-ear-1.0.0;
 
-asadmin deploy /home/telman/github/fms/fms-ear/target/fms-ear-1.0.0.ear;
-
-asadmin deploy fms-ear-1.0.0.ear;</code></pre>
+asadmin deploy ~/github/fms-jakarta/fms-ear/target/fms-ear-1.0.0.ear;</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_directory_deployment_dev">4.8. Directory deployment (Dev)</h3>
+<h3 id="_directory_deployment_dev">4.7. Directory deployment (Dev)</h3>
 <div class="listingblock">
 <div class="content">
-<pre>asadmin list-components;
+<pre class="highlight"><code class="language-js" data-lang="js">asadmin list-components;
 
-asadmin deploy --force=true --upload=false --name fms-app /home/telman/github/fms/fms-ear/target/fms-ear-{project_version}
+asadmin deploy --force=true --upload=false --name fms-app ~/github/fms-jakarta/fms-ear/target/fms-ear-1.0.0
 
 asadmin undeploy fms-app
 
@@ -765,38 +816,7 @@ fms-ear/target/fms-ear-1.0.0/fms-web-1.0.0.war/1d/1dActionPanel.xhtml
 
 mvn compile war:exploded -pl fms-war -am &amp;&amp; touch fms-ear/target/fms-ear-1.0.0/.reload
 
-mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/fms-web-1.0.0.war/
-
-
-## Troubleshouting
-
-EsignController.java:1021
-
-Signer signer = bsd.getSignerList().get(0);
-
-Caused by: java.lang.RuntimeException: Lisans kontrolu basarisiz. class tr.gov.tubitak.uekae.esya.api.common.lcns.LV cannot access class sun.security.pkcs.PKCS7 (in module java.base) because module java.base does not export sun.security.pkcs to unnamed module @598c28a
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.Signer.&lt;init&gt;(Signer.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.BES.&lt;init&gt;(BES.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.EST.&lt;init&gt;(EST.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESC.&lt;init&gt;(ESC.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESXLong.&lt;init&gt;(ESXLong.java)
-	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESignatureType.createSigner(ESignatureType.java)
-	... 57 more
-
-# if domain stopped
-asadmin create-jvm-options --offline --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
-
-# if domain started
-asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
-
-glassfish7/glassfish/domains/domain1/config/domain.xml
-&lt;java-config&gt;
-&lt;jvm-options&gt;--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED&lt;/jvm-options&gt;
-
-
-asadmin stop-domain
-export AS_JAVA_WMOPTS="--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED"
-asadmin start-domain --debug</pre>
+mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/fms-web-1.0.0.war/</code></pre>
 </div>
 </div>
 </div>
@@ -895,11 +915,84 @@ along with Form Management System. If not, see http://www.gnu.org/licenses/.</pr
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_troubleshouting">10. Troubleshouting</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">source</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>EsignController.java:1021
+
+Signer signer = bsd.getSignerList().get(0);</pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">error log</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Caused by: java.lang.RuntimeException: Lisans kontrolu basarisiz. class tr.gov.tubitak.uekae.esya.api.common.lcns.LV cannot access class sun.security.pkcs.PKCS7 (in module java.base) because module java.base does not export sun.security.pkcs to unnamed module @598c28a
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.Signer.&lt;init&gt;(Signer.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.BES.&lt;init&gt;(BES.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.EST.&lt;init&gt;(EST.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESC.&lt;init&gt;(ESC.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESXLong.&lt;init&gt;(ESXLong.java)
+	at CommonLibs//tr.gov.tubitak.uekae.esya.api.cmssignature.signature.ESignatureType.createSigner(ESignatureType.java)
+	... 57 more</pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">solution(via asadmin)</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js"># if domain stopped
+asadmin create-jvm-options --offline --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
+
+# if domain started
+asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
+asadmin create-jvm-options --add-opens=java.base/sun.security.pkcs=ALL-UNNAMED
+
+asadmin create-jvm-options --add-exports=java.base/sun.security.x509=ALL-UNNAMED
+asadmin create-jvm-options --add-opens=java.base/sun.security.x509=ALL-UNNAMED
+
+asadmin create-jvm-options --add-opens=java.base/sun.security.util=ALL-UNNAMED
+
+
+asadmin stop-domain;asadmin start-domain --debug</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">solution(via domain.xml)</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">~/apps/glassfish8/glassfish/domains/domain1/config/domain.xml
+&lt;java-config&gt;
+&lt;jvm-options&gt;--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED&lt;/jvm-options&gt;
+
+asadmin stop-domain
+export AS_JAVA_WMOPTS="--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED"
+asadmin start-domain --debug</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2026-05-04 20:19:36 +0300
+Last updated 2026-05-06 15:34:56 +0300
 </div>
 </div>
 </body>
