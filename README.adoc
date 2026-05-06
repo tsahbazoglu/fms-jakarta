@@ -341,6 +341,10 @@ asadmin create-jvm-options --offline --add-exports=java.base/sun.security.pkcs=A
 
 # if domain started
 asadmin create-jvm-options --add-exports=java.base/sun.security.pkcs=ALL-UNNAMED
+asadmin create-jvm-options --add-opens=java.base/sun.security.pkcs=ALL-UNNAMED
+
+asadmin stop-domain;asadmin start-domain --debug
+
 ----
 
 solution(via domain.xml)::

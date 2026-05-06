@@ -94,7 +94,7 @@
         <fms.workflow.version>1.0.0</fms.workflow.version>    
      
         <slf4j.version>2.0.17</slf4j.version>   
-        <jakartaee>10.0.0</jakartaee>
+        <jakartaee>11.0.0</jakartaee>
         
         <!--<dependency.scope>provided</dependency.scope>-->
         <dependency.scope>compile</dependency.scope>
@@ -112,7 +112,12 @@
                 <version>${jakartaee}</version>
                 <scope>provided</scope>
             </dependency>
-          
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.1.0-M1</version>
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongodb-driver-sync</artifactId>
@@ -126,8 +131,7 @@
                 <classifier>jakarta</classifier>
                 <type>jar</type>
                 <scope>${dependency.scope}</scope>
-            </dependency> 
-            
+            </dependency>
             <dependency>
                 <groupId>org.webjars.npm</groupId>
                 <artifactId>primeflex</artifactId>
@@ -433,7 +437,12 @@
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
-        </dependency>       
+        </dependency> 
+        
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>      
     </dependencies>
     
     <build>
