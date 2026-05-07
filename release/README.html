@@ -448,35 +448,36 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Content</div>
 <ul class="sectlevel1">
 <li><a href="#_asccidoc">1. Asccidoc</a></li>
-<li><a href="#_asccidoc_variables">2. Asccidoc Variables</a>
+<li><a href="#_readme_customizaiton">2. Readme Customizaiton</a></li>
+<li><a href="#_asccidoc_variables">3. Asccidoc Variables</a>
 <ul class="sectlevel2">
-<li><a href="#_environment_requirements">2.1. Environment Requirements</a>
+<li><a href="#_environment_requirements">3.1. Environment Requirements</a>
 <ul class="sectlevel3">
-<li><a href="#_setup_instructions">2.1.1. Setup Instructions</a></li>
-<li><a href="#_mavenize_tubi̇tak_ma3api">2.1.2. Mavenize TUBİTAK MA3API</a></li>
+<li><a href="#_setup_instructions">3.1.1. Setup Instructions</a></li>
+<li><a href="#_mavenize_tubi̇tak_ma3api">3.1.2. Mavenize TUBİTAK MA3API</a></li>
 </ul>
 </li>
-<li><a href="#_clean_glassfish">2.2. Clean Glassfish</a></li>
+<li><a href="#_clean_glassfish">3.2. Clean Glassfish</a></li>
 </ul>
 </li>
-<li><a href="#_log_server">3. Log Server</a></li>
-<li><a href="#_compilation_and_deployment">4. Compilation and Deployment</a>
+<li><a href="#_log_server">4. Log Server</a></li>
+<li><a href="#_compilation_and_deployment">5. Compilation and Deployment</a>
 <ul class="sectlevel2">
-<li><a href="#_standalone_compile">4.1. Standalone Compile</a></li>
-<li><a href="#_standalone_compile_e_sign_support">4.2. Standalone compile + E-sign Support</a></li>
-<li><a href="#_library_migration_glassfish">4.3. Library Migration (GlassFish)</a></li>
-<li><a href="#_optimized_build_provided_scope">4.4. Optimized Build (Provided Scope)</a></li>
-<li><a href="#_optimized_build_e_sign_support_provided_scope">4.5. Optimized Build + E-sign Support (Provided Scope)</a></li>
-<li><a href="#_production_deployment">4.6. Production deployment</a></li>
-<li><a href="#_directory_deployment_dev">4.7. Directory deployment (Dev)</a></li>
+<li><a href="#_standalone_compile">5.1. Standalone Compile</a></li>
+<li><a href="#_standalone_compile_e_sign_support">5.2. Standalone compile + E-sign Support</a></li>
+<li><a href="#_library_migration_glassfish">5.3. Library Migration (GlassFish)</a></li>
+<li><a href="#_optimized_build_provided_scope">5.4. Optimized Build (Provided Scope)</a></li>
+<li><a href="#_optimized_build_e_sign_support_provided_scope">5.5. Optimized Build + E-sign Support (Provided Scope)</a></li>
+<li><a href="#_production_deployment">5.6. Production deployment</a></li>
+<li><a href="#_directory_deployment_dev">5.7. Directory deployment (Dev)</a></li>
 </ul>
 </li>
-<li><a href="#_mongorestore_wo_index">5. MongoRestore W/O Index</a></li>
-<li><a href="#_about">6. About</a></li>
-<li><a href="#_install">7. Install</a></li>
-<li><a href="#_live_site">8. Live Site</a></li>
-<li><a href="#_license">9. License</a></li>
-<li><a href="#_troubleshouting">10. Troubleshouting</a></li>
+<li><a href="#_mongorestore_wo_index">6. MongoRestore W/O Index</a></li>
+<li><a href="#_about">7. About</a></li>
+<li><a href="#_install">8. Install</a></li>
+<li><a href="#_live_site">9. Live Site</a></li>
+<li><a href="#_license">10. License</a></li>
+<li><a href="#_troubleshouting">11. Troubleshouting</a></li>
 </ul>
 </div>
 </div>
@@ -492,7 +493,38 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_asccidoc_variables">2. Asccidoc Variables</h2>
+<h2 id="_readme_customizaiton">2. Readme Customizaiton</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Bash(for Linux users)</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>asciidoctor -b html5 -r asciidoctor-diagram -D release \
+  -a server-path=/mnt/c/Cihan/Apps/glassfish8 \
+  -a project_path='C:\git_ssh\fms-jakarta' \
+  *.adoc</pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">PowerShell(for Windows users)</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>asciidoctor -b html5 -r asciidoctor-diagram -D release `
+  -a server-path=/mnt/c/Cihan/Apps/glassfish8 `
+  -a project_path="C:\git_ssh\fms-jakarta" `
+  *.adoc</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_asccidoc_variables">3. Asccidoc Variables</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
@@ -501,22 +533,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_environment_requirements">2.1. Environment Requirements</h3>
+<h3 id="_environment_requirements">3.1. Environment Requirements</h3>
 <div class="paragraph">
 <p>To set up the project according to the environment requirements, please ensure the following variables are configured:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Server Path:</strong> The application is configured to deploy to <code>~/apps/glassfish8/glassfish</code>.</p>
+<p><strong>Server Path:</strong> The application is configured to deploy to <strong>/mnt/c/Cihan/Apps/glassfish8</strong>.</p>
 </li>
 <li>
-<p><strong>Project Version:</strong> The current stable version of this project is <code>{project-version}</code>.</p>
+<p><strong>Project Version:</strong> The current stable version of this project is <strong>1.0.0</strong>.</p>
 </li>
 </ul>
 </div>
 <div class="sect3">
-<h4 id="_setup_instructions">2.1.1. Setup Instructions</h4>
+<h4 id="_setup_instructions">3.1.1. Setup Instructions</h4>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Operation System</dt>
@@ -574,7 +606,7 @@ Run the Maven build to synchronize the configuration with your local server inst
 </div>
 </div>
 <div class="sect3">
-<h4 id="_mavenize_tubi̇tak_ma3api">2.1.2. Mavenize TUBİTAK MA3API</h4>
+<h4 id="_mavenize_tubi̇tak_ma3api">3.1.2. Mavenize TUBİTAK MA3API</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -719,100 +751,17 @@ mvn install:install-file \
 -DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-asic \
 -Dversion=2.3.11.8 -Dpackaging=jar
 
-
 # Others (must)
 ls -lrt akiscif-3.3.20.jar
 mvn install:install-file -Dfile=akiscif-3.3.20.jar \
 -DgroupId=tr.gov.tubitak.esya -DartifactId=akiscif \
--Dversion=3.3.20 -Dpackaging=jar
-
-
-# Others
-
-
-
-mvn install:install-file -Dfile=wsdl4j-1.6.2.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=wsdl4j \
--Dversion=2.2.15 -Dpackaging=jar-1.6.2.jar
-
-mvn install:install-file -Dfile=sqlite-jdbc-3.7.2.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=sqlite-jdbc \
--Dversion=2.2.15 -Dpackaging=jar-3.7.2.jar
-
-mvn install:install-file -Dfile=slf4j-api-1.6.6.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=slf4j-api \
--Dversion=2.2.15 -Dpackaging=jar-1.6.6.jar
-
-mvn install:install-file -Dfile=pscjni-0.0.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=pscjni \
--Dversion=2.2.15 -Dpackaging=jar-0.0.1.jar
-
-mvn install:install-file -Dfile=junit-4.11.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=junit \
--Dversion=2.2.15 -Dpackaging=jar-4.11.jar
-
-mvn install:install-file -Dfile=jna-4.2.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=jna \
--Dversion=2.2.15 -Dpackaging=jar-4.2.1.jar
-
-mvn install:install-file -Dfile=jcifs-1.3.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=jcifs \
--Dversion=2.2.15 -Dpackaging=jar-1.3.1.jar
-
-mvn install:install-file -Dfile=jaxrpc-api-1.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=jaxrpc-api \
--Dversion=2.2.15 -Dpackaging=jar-1.1.jar
-
-mvn install:install-file -Dfile=hamcrest-core-1.3.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=hamcrest-core \
--Dversion=2.2.15 -Dpackaging=jar-1.3.jar
-
-mvn install:install-file -Dfile=gtijni-0.0.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=gtijni \
--Dversion=2.2.15 -Dpackaging=jar-0.0.1.jar
-
-mvn install:install-file -Dfile=cryptolib-0.0.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=cryptolib \
--Dversion=2.2.15 -Dpackaging=jar-0.0.1.jar
-
-mvn install:install-file -Dfile=commons-logging-1.1.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=commons-logging \
--Dversion=2.2.15 -Dpackaging=jar-1.1.1.jar
-
-mvn install:install-file -Dfile=commons-discovery-0.2.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=commons-discovery \
--Dversion=2.2.15 -Dpackaging=jar-0.2.jar
-
-mvn install:install-file -Dfile=ccid-1.1.5.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ccid \
--Dversion=2.2.15 -Dpackaging=jar-1.1.5.jar
-
-mvn install:install-file -Dfile=axis-1.4.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=axis \
--Dversion=2.2.15 -Dpackaging=jar-1.4.jar
-
-mvn install:install-file -Dfile=Assd_api-0.0.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=Assd_api \
--Dversion=2.2.15 -Dpackaging=jar-0.0.1.jar
-
-mvn install:install-file -Dfile=asn1rt-6.6.4.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=asn1rt \
--Dversion=2.2.15 -Dpackaging=jar-6.6.4.jar
-
-mvn install:install-file -Dfile=armeabi-0.0.1.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=armeabi \
--Dversion=2.2.15 -Dpackaging=jar-0.0.1.jar
-
-
-cd ~/git/muhurdar-agent
-
-mvn help:describe -DgroupId=com.zenjava -DartifactId=javafx-maven-plugin</code></pre>
+-Dversion=3.3.20 -Dpackaging=jar</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_clean_glassfish">2.2. Clean Glassfish</h3>
+<h3 id="_clean_glassfish">3.2. Clean Glassfish</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">asadmin list-components;
@@ -820,10 +769,10 @@ mvn help:describe -DgroupId=com.zenjava -DartifactId=javafx-maven-plugin</code><
 asadmin undeploy fms-ear-1.0.0
 
 asadmin stop-domain
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/osgi-cache
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/generated
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/applications/fms-ear-1.0.0
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/*.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/osgi-cache
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/generated
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/applications/fms-ear-1.0.0
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/*.jar
 asadmin start-domain --debug</code></pre>
 </div>
 </div>
@@ -831,41 +780,41 @@ asadmin start-domain --debug</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_log_server">3. Log Server</h2>
+<h2 id="_log_server">4. Log Server</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">tail -f ~/apps/glassfish8/glassfish/domains/domain1/logs/server.log</code></pre>
+<pre class="highlight"><code class="language-js" data-lang="js">tail -f /mnt/c/Cihan/Apps/glassfish8/domains/domain1/logs/server.log</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_compilation_and_deployment">4. Compilation and Deployment</h2>
+<h2 id="_compilation_and_deployment">5. Compilation and Deployment</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>To accelerate the deployment phase, we first perform a standalone compile with <code>compile</code> scope to extract and migrate core libraries to the GlassFish global library directory. Subsequent builds use the <code>provided</code> scope to create a lightweight EAR file, significantly reducing deployment time during active development.</p>
 </div>
 <div class="sect2">
-<h3 id="_standalone_compile">4.1. Standalone Compile</h3>
+<h3 id="_standalone_compile">5.1. Standalone Compile</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
+<pre class="highlight"><code class="language-js" data-lang="js">cd C:\git_ssh\fms-jakarta
 mvn clean install -Ddependency.scope=compile</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_standalone_compile_e_sign_support">4.2. Standalone compile + E-sign Support</h3>
+<h3 id="_standalone_compile_e_sign_support">5.2. Standalone compile + E-sign Support</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
+<pre class="highlight"><code class="language-js" data-lang="js">cd C:\git_ssh\fms-jakarta
 mvn clean install -PesignSupport -Ddependency.scope=compile</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_library_migration_glassfish">4.3. Library Migration (GlassFish)</h3>
+<h3 id="_library_migration_glassfish">5.3. Library Migration (GlassFish)</h3>
 <div class="paragraph">
 <p>Extract the libraries from the EAR and move them to the domain library folder to avoid redundant bundling:</p>
 </div>
@@ -873,60 +822,64 @@ mvn clean install -PesignSupport -Ddependency.scope=compile</code></pre>
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js"># Navigate to deployment target
 
-cd ~/github/fms-jakarta/fms-ear/target/
+cd C:\git_ssh\fms-jakarta/fms-ear/target/
 jar -xvf fms-ear-1.0.0.ear
 
 # Deploy fresh libraries
 
-cp lib/*.jar ~/apps/glassfish8/glassfish/domains/domain1/lib
+cp lib/*.jar /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib
 
 # Remove project-specific libraries from the local path to prevent JAR confusion
 
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-common-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-constants-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-converter-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-datamodel-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-esign-core-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-esign-util-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-factory-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-fgtpswd-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-logger-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-notification-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-outsider-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-page-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-pivot-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-service-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-table-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-util-1.0.0.jar
-//
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-cmssignature-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-infra-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-crypto-sunprovider-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-common-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-smartcard-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-signature-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-crypto-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-crypto-gnuprovider-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-asn-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-certvalidation-2.3.11.8.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-certstore-2.3.11.8.jar
-//
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/akiscif-3.3.20.jar
-//
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/muhurdar-utils-1.0.0-SNAPSHOT.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/muhurdar-servlet-1.0.0-SNAPSHOT.jar
+# FMS Jars
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-common-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-constants-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-converter-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-datamodel-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-factory-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-fgtpswd-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-logger-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-notification-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-outsider-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-page-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-pivot-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-service-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-table-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-util-1.0.0.jar
+
+# Esign Jars
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-esign-core-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/fms-esign-util-1.0.0.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/muhurdar-utils-1.0.0-SNAPSHOT.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/muhurdar-servlet-1.0.0-SNAPSHOT.jar
+
+# MA3API Jars
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-cmssignature-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-infra-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-crypto-sunprovider-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-common-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-smartcard-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-signature-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-crypto-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-crypto-gnuprovider-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-asn-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-certvalidation-2.3.11.8.jar
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/ma3api-certstore-2.3.11.8.jar
+
+# MA3API Additional Jars
+rm -rf /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib/akiscif-3.3.20.jar
 
 # Restart the domain to refresh the ClassLoader
 
 asadmin stop-domain;
 asadmin start-domain --debug;
 
-ls -lrt ~/apps/glassfish8/glassfish/domains/domain1/lib</code></pre>
+ls -lrt /mnt/c/Cihan/Apps/glassfish8/domains/domain1/lib</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_optimized_build_provided_scope">4.4. Optimized Build (Provided Scope)</h3>
+<h3 id="_optimized_build_provided_scope">5.4. Optimized Build (Provided Scope)</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -943,16 +896,16 @@ ls -lrt ~/apps/glassfish8/glassfish/domains/domain1/lib</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
+<pre class="highlight"><code class="language-js" data-lang="js">cd C:\git_ssh\fms-jakarta
 mvn clean install -Ddependency.scope=provided</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_optimized_build_e_sign_support_provided_scope">4.5. Optimized Build + E-sign Support (Provided Scope)</h3>
+<h3 id="_optimized_build_e_sign_support_provided_scope">5.5. Optimized Build + E-sign Support (Provided Scope)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
+<pre class="highlight"><code class="language-js" data-lang="js">cd C:\git_ssh\fms-jakarta
 mvn clean install -PesignSupport -Ddependency.scope=provided</code></pre>
 </div>
 </div>
@@ -997,24 +950,24 @@ mvn clean install -PesignSupport -Ddependency.scope=provided</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_production_deployment">4.6. Production deployment</h3>
+<h3 id="_production_deployment">5.6. Production deployment</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">asadmin list-components;
 
 asadmin undeploy fms-ear-1.0.0;
 
-asadmin deploy ~/github/fms-jakarta/fms-ear/target/fms-ear-1.0.0.ear;</code></pre>
+asadmin deploy C:\git_ssh\fms-jakarta/fms-ear/target/fms-ear-1.0.0.ear;</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_directory_deployment_dev">4.7. Directory deployment (Dev)</h3>
+<h3 id="_directory_deployment_dev">5.7. Directory deployment (Dev)</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">asadmin list-components;
 
-asadmin deploy --force=true --upload=false --name fms-app ~/github/fms-jakarta/fms-ear/target/fms-ear-1.0.0
+asadmin deploy --force=true --upload=false --name fms-app C:\git_ssh\fms-jakarta/fms-ear/target/fms-ear-1.0.0
 
 asadmin undeploy fms-app
 
@@ -1063,7 +1016,7 @@ mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/f
 </div>
 </div>
 <div class="sect1">
-<h2 id="_mongorestore_wo_index">5. MongoRestore W/O Index</h2>
+<h2 id="_mongorestore_wo_index">6. MongoRestore W/O Index</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
@@ -1073,7 +1026,7 @@ mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/f
 </div>
 </div>
 <div class="sect1">
-<h2 id="_about">6. About</h2>
+<h2 id="_about">7. About</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>FMS (Form Management System) project is aimed to accelerate development and deployment process of widely used form types like registration forms, tables and pivot input.</p>
@@ -1090,7 +1043,7 @@ mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/f
 </div>
 </div>
 <div class="sect1">
-<h2 id="_install">7. Install</h2>
+<h2 id="_install">8. Install</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>All installation process had been documented and dockerized in fms-docker repository</p>
@@ -1101,7 +1054,7 @@ mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/f
 </div>
 </div>
 <div class="sect1">
-<h2 id="_live_site">8. Live Site</h2>
+<h2 id="_live_site">9. Live Site</h2>
 <div class="sectionbody">
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1126,7 +1079,7 @@ mvn war:exploded -pl fms-war -DwebappDirectory=../fms-ear/target/fms-ear-1.0.0/f
 </div>
 </div>
 <div class="sect1">
-<h2 id="_license">9. License</h2>
+<h2 id="_license">10. License</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>All code found in this repository is licensed under LGPL v3</p>
@@ -1156,7 +1109,7 @@ along with Form Management System. If not, see http://www.gnu.org/licenses/.</pr
 </div>
 </div>
 <div class="sect1">
-<h2 id="_troubleshouting">10. Troubleshouting</h2>
+<h2 id="_troubleshouting">11. Troubleshouting</h2>
 <div class="sectionbody">
 <div class="dlist">
 <dl>
@@ -1217,7 +1170,7 @@ asadmin stop-domain;asadmin start-domain --debug</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">~/apps/glassfish8/glassfish/domains/domain1/config/domain.xml
+<pre class="highlight"><code class="language-js" data-lang="js">/mnt/c/Cihan/Apps/glassfish8/domains/domain1/config/domain.xml
 &lt;java-config&gt;
 &lt;jvm-options&gt;--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED&lt;/jvm-options&gt;
 
@@ -1232,7 +1185,7 @@ asadmin start-domain --debug</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2026-05-06 17:24:13 +0300
+Last updated 2026-05-07 14:32:56 +0300
 </div>
 </div>
 </body>

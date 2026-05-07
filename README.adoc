@@ -23,6 +23,24 @@ v1.0.0, 2018-03-06
 asciidoctor -b html5 -r asciidoctor-diagram -D release *.adoc 
 ----
 
+== Readme Customizaiton
+
+Bash(for Linux users)::
+----
+asciidoctor -b html5 -r asciidoctor-diagram -D release \
+  -a server-path=/mnt/c/Cihan/Apps/glassfish8 \
+  -a project_path='C:\git_ssh\fms-jakarta' \
+  *.adoc
+----
+
+PowerShell(for Windows users)::
+----
+asciidoctor -b html5 -r asciidoctor-diagram -D release `
+  -a server-path=/mnt/c/Cihan/Apps/glassfish8 `
+  -a project_path="C:\git_ssh\fms-jakarta" `
+  *.adoc
+----
+
 == Asccidoc Variables
 ----    
 :server-path: ~/apps/glassfish7/glassfish
@@ -33,8 +51,9 @@ asciidoctor -b html5 -r asciidoctor-diagram -D release *.adoc
 
 To set up the project according to the environment requirements, please ensure the following variables are configured:
     
-*   **Server Path:** The application is configured to deploy to `{server-path}`.
-*   **Project Version:** The current stable version of this project is `{project-version}`.
+*   **Server Path:** The application is configured to deploy to *{server-path}*.
+
+*   **Project Version:** The current stable version of this project is *{project_version}*.
 
 ==== Setup Instructions
 
