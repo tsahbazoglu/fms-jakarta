@@ -13,6 +13,8 @@ import tr.org.tspb.datamodel.dao.FmsForm;
  */
 public interface EsignDoor extends Serializable {
 
+    String getXhtmlPath();
+
     public static final String ENVIRONMENT = "ENVIRONMENT";
 
     public void eimzaContextInstance(Properties properties);

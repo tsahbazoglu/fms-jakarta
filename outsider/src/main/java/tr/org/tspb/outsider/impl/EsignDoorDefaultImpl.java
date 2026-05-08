@@ -19,6 +19,11 @@ import tr.org.tspb.outsider.qualifier.DefaultEsignDoor;
 public class EsignDoorDefaultImpl implements EsignDoor {
 
     @Override
+    public String getXhtmlPath() {
+        return "../ui-for-dlg-pnl/ui-esign-to-be-signed-kamusm.xhtml";
+    }
+
+    @Override
     public void eimzaContextInstance(Properties properties) {
         //
     }

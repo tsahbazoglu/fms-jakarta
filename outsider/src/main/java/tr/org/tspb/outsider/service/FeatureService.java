@@ -18,13 +18,15 @@ import tr.org.tspb.outsider.qualifier.KamuSmEsignDoor;
 public class FeatureService implements Serializable {
 
     @Inject
-    //@DefaultEsignDoor
-    //@OyasEsignDoor
-    @KamuSmEsignDoor
+    @KamuSmEsignDoor // Or [@OyasEsignDoor,@DefaultEsignDoor] depending on your toggle
     private EsignDoor esignDoor;
 
     public EsignDoor getEsignDoor() {
         return esignDoor;
+    }
+
+    public String getEsignIncludePath() {
+        return esignDoor.getXhtmlPath();
     }
 
 }

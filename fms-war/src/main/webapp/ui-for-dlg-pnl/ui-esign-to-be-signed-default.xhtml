@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <div style="text-align: center; padding: 20px;">
+        <i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #fbc02d;"></i>
+        <h2 style="margin-top: 15px;">E-İmza Desteği Aktif Değil</h2>
+        <p>Elektronik imza modülü şu anda devre dışı bırakılmıştır.</p>
+        <p>Lütfen sistem yöneticiniz ile iletişime geçiniz.</p>
+
+        <p:commandButton value="Kapat" 
+                         type="button" 
+                         onclick="PF('widgetVarToBeSignedDialog').hide();" 
+                         styleClass="ui-button-secondary" 
+                         style="margin-top: 20px;"/>
+    </div>
+
+</ui:composition>
