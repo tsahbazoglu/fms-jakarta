@@ -37,12 +37,12 @@ public enum EnumPage {
     ),
     GENERAL_1D(
             "/1d/1dObject.xhtml",
-            "/1d/1dObjects.xhtml",
+            "/1d/page-form-content.xhtml",
             "Admin",
             "İşlemler | Dönem",
             "/1d/1dSelectObject.xhtml",
-            "/1d/1dHistoryObjects.xhtml",
-            "/1d/1dActionPanel.xhtml",
+            "/1d/page-form-history.xhtml",
+            "/1d/page-form-header.xhtml",
             "/common/esignHistory.xhtml",
             null,
             "/1d/ui-upload-one.xhtml"

@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"       
+      >
+
+    <h:head>
+        <title></title>
+    </h:head>
+
+    <div class="ui-g">
+        <div class="ui-g-12 ui-md-12 ui-lg-7">
+            <p:panel>
+                <div style="height: 35px;">
+                    <p:outputLabel value="#{formService.myForm.name}"/>        
+                </div>
+            </p:panel>
+           
+        </div>
+        <div class="ui-g-12 ui-md-12 ui-lg-5">
+            <p:outputPanel>
+                <div style="height: 122px;font-size:14px;">
+                    <p:scrollPanel style="width:500px;height:155px">
+                        <p:dataList 
+                            value="#{crudOneDim.selectedFormMessages}"
+                            var="mymessage"  
+                            >
+                            <p:outputLabel value="#{mymessage}" style="white-space: pre-wrap"/>
+                        </p:dataList>
+                    </p:scrollPanel>
+                </div>
+            </p:outputPanel>
+        </div>
+    </div>
+
+</html>

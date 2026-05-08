@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core"
+      >
+    <p:panel>
+        <div style="height: 35px;">
+            <h:panelGrid 
+                columns="15"   
+                rendered="#{not esignViewCtrl.preventedMultiTab}">
+                <p:button 
+                    icon="pi pi-save"
+                    id="mySaveButton"
+                    onclick="rcOneDimSave();return false;"
+                    title="Kaydet"
+                    rendered="#{formService.myForm.myActions.save}"
+                    />  
+                <p:commandButton 
+                    onclick="PF('widget_1d_delete_confirmation').show();return false;"
+                    value="Sil" 
+                    transient="true"
+                    rendered="#{formService.myForm.myActions.delete}"
+                    icon="ui-icon-trash"
+                    /> 
+                <p:commandButton 
+                    id ="buttonDelete1dObjectId"
+                    style="display: none;"
+                    value="Direk Sil" 
+                    action="#{crudOneDim.deleteObject}" 
+                    rendered="#{formService.myForm.myActions.delete}"
+                    icon="ui-icon-trash"
+                    update="#{updateAjaxMB.msgDlg}"
+                    /> 
+                <p:commandButton 
+                    id ="buttonCopyObject"
+                    value="Kopyala" 
+                    action="#{crudOneDim.copyObject}" 
+                    rendered="false"/>
+                <p:commandButton 
+                    value="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
+                    action="#{crudOneDim.showAllNote}" 
+                    style="white-space: nowrap;"
+                    rendered="#{crudOneDim.selectedFormUserNote}"
+                    update="#{updateAjaxMB.msgDlg}"
+                    />
+                <h:outputText 
+                    value="Tarihçe Etkin(siz)leştir" 
+                    style="white-space: nowrap;" 
+                    rendered="#{mainFrame.adminRole}"
+                    />
+                <h:selectBooleanCheckbox  
+                    value="#{crudOneDim.enableHistoryOnSave}" 
+                    rendered="#{mainFrame.adminRole}"
+                    readonly="true"/>
+                <!--            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
+                            </span>-->
+                <p:commandButton
+                    id="buttonEimza"
+                    value="E-İmza Süreci" 
+                    action="#{crudOneDim.showEimza}" 
+                    rendered="#{formService.myForm.myActions.esign}"
+                    update="id-tab-view:idToBeSignedDialog,#{updateAjaxMB.msgDlg}"/> 
+                <!--update=":idToBeSignedDialog,# {updateAjaxMB.msgDlg},:id_dlg_error_warning"/>--> 
+
+                <h:selectOneMenu 
+                    value="#{crudOneDim.transparentProperties['emailType']}" 
+                    rendered="#{formService.myForm.myActions.email}">
+                    <f:selectItems value="#{crudOneDim.emailTypes}"/>
+                </h:selectOneMenu> 
+                <p:commandButton 
+                    id="buttonSendEmailId"
+                    value="Email Önizleme"
+                    action="#{crudOneDim.actionEmail}"
+                    rendered="#{formService.myForm.myActions.email}"/> 
+                <h:form>
+                    <p:commandButton 
+                        id="id_downlod_button"
+                        value="Islak imza formatında indirmek için tıklayınız."
+                        ajax="false"
+                        icon="ui-icon-arrowthick-1-s"
+                        rendered="#{formService.myForm.myActions.customDownload}">
+                        <p:fileDownload value="#{crudOneDim.file}"/>
+                    </p:commandButton> 
+                </h:form>
+                <p:commandButton 
+                    value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}" 
+                    actionListener="#{twoDimModifyCtrl.sendForm}" 
+                    rendered="#{formService.myForm.myActions.sendForms}"
+                    style="white-space: nowrap;"
+                    />
+            </h:panelGrid>
+        </div>
+    </p:panel>
+</html>
