@@ -48,7 +48,7 @@ import tr.org.tspb.datamodel.wf.MyRule;
 import tr.org.tspb.datamodel.wf.MyTransition;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
 import tr.org.tspb.factory.cp.OgmCreatorIntr;
-import tr.org.tspb.outsider.FmsWorkFlow;
+import tr.org.tspb.outsider.intr.FmsWorkFlow;
 import tr.org.tspb.outsider.qualifier.MyWorkFlowQualifier;
 import tr.org.tspb.util.qualifier.KeepOpenQualifier;
 import tr.org.tspb.util.tools.MongoDbUtilIntr;

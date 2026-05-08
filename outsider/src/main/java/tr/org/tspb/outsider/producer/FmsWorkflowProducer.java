@@ -6,7 +6,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.inject.Produces;
 //
 import tr.org.tspb.outsider.impl.FmsWorkflowDefaultImpl;
-import tr.org.tspb.outsider.FmsWorkFlow;
+import tr.org.tspb.outsider.intr.FmsWorkFlow;
 
 /**
  *

@@ -79,7 +79,7 @@ import tr.org.tspb.util.stereotype.MyController;
 import tr.org.tspb.service.FilterService;
 import tr.org.tspb.service.FormService;
 import tr.org.tspb.datamodel.pojo.DatabaseUser;
-import tr.org.tspb.outsider.service.FeatureService;
+import tr.org.tspb.outsider.intr.EsignDoor;
 import tr.org.tspb.table.MasakMB;
 
 /**
@@ -214,9 +214,6 @@ public class MainFrame implements Serializable {
     private Logger logger;
 
     @Inject
-    private FeatureService featureService;
-
-    @Inject
     AppScopeSrvCtrl appScopeSrvCtrl;
 
     @Inject
@@ -225,6 +222,9 @@ public class MainFrame implements Serializable {
     @Inject
     private MasakMB masakMB;
 
+    @Inject
+    private EsignDoor esignDoor;
+
     public MainFrame() {
 
     }
@@ -232,7 +232,7 @@ public class MainFrame implements Serializable {
     @PostConstruct
     public void init() {
 
-        featureService.getEsignDoor().
+        esignDoor.
                 eimzaContextInstance(baseService.
                         getEsignProperties());
 
@@ -1100,7 +1100,7 @@ public class MainFrame implements Serializable {
         // check and activate esign
         if (myFormLarge.getMyActions().
                 isEsign()) {
-            featureService.getEsignDoor().
+            esignDoor.
                     initEsignCtrlV3(myFormLarge);
         }
 
@@ -1178,7 +1178,7 @@ public class MainFrame implements Serializable {
         // check and create esign
         if (myFormLarge.getMyActions().
                 isEsign()) {
-            featureService.getEsignDoor().
+            esignDoor.
                     initEsignCtrlV3(myFormLarge);
         }
 
@@ -1226,7 +1226,7 @@ public class MainFrame implements Serializable {
         // check and activate esign
         if (myFormLarge.getMyActions().
                 isEsign()) {
-            featureService.getEsignDoor().
+            esignDoor.
                     initEsignCtrlV3(myFormLarge);
         }
 
@@ -1287,11 +1287,9 @@ public class MainFrame implements Serializable {
      * @return CARD | PFX
      */
     public String getImzaType() {
-        featureService.getEsignDoor().
-                eimzaContextInstance(baseService.
-                        getEsignProperties());
-        return featureService.getEsignDoor().
-                getSignType();
+        esignDoor.eimzaContextInstance(baseService.
+                getEsignProperties());
+        return esignDoor.getSignType();
     }
 
     /**
@@ -1300,11 +1298,9 @@ public class MainFrame implements Serializable {
      * @return
      */
     public String getImzaTest() {
-        featureService.getEsignDoor().
-                eimzaContextInstance(baseService.
-                        getEsignProperties());
-        return featureService.getEsignDoor().
-                isTest() ? "TRUE" : "FALSE";
+        esignDoor.eimzaContextInstance(baseService.
+                getEsignProperties());
+        return esignDoor.isTest() ? "TRUE" : "FALSE";
     }
 
     public String getLogoLarge() {

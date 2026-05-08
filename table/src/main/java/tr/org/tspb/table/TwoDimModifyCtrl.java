@@ -69,7 +69,7 @@ import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.datamodel.dao.MyMap;
-import tr.org.tspb.outsider.FmsWorkFlow;
+import tr.org.tspb.outsider.intr.FmsWorkFlow;
 import tr.org.tspb.datamodel.pojo.UserDetail;
 import tr.org.tspb.converter.base.BsonConverter;
 import tr.org.tspb.datamodel.dao.CtrlItems;
@@ -81,15 +81,15 @@ import tr.org.tspb.datamodel.dao.FmsFormProperty;
 import tr.org.tspb.datamodel.dao.TagEvent;
 import tr.org.tspb.datamodel.dp.nullobj.PlainRecordData;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
-import tr.org.tspb.outsider.PaymentDoor;
+import tr.org.tspb.outsider.intr.PaymentDoor;
 import tr.org.tspb.outsider.qualifier.DefaultPaymentDoor;
 import tr.org.tspb.util.qualifier.KeepOpenQualifier;
 import tr.org.tspb.util.tools.MongoDbUtilIntr;
 import tr.org.tspb.factory.cp.OgmCreatorIntr;
 import tr.org.tspb.datamodel.pojo.ComponentType;
 import tr.org.tspb.datamodel.pojo.DatabaseUser;
-import tr.org.tspb.outsider.service.FeatureService;
 import tr.org.tspb.datamodel.tags.FmsCheck;
+import tr.org.tspb.outsider.intr.EsignDoor;
 
 /*
  * @author Telman Şahbazoğlu
@@ -111,9 +111,6 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     // ilgili producer tarafında eklenmeli
     // eğer produce tarafında eklenmediyse buradada eklenMemeli
     private FmsWorkFlow fmsFlowCtrl;
-
-    @Inject
-    private FeatureService featureService;
 
     @Inject
     @DefaultPaymentDoor
@@ -150,6 +147,9 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     private static final String SUCCESS_LIST = "successList";
 
     private TreeNode root;
+
+    @Inject
+    private EsignDoor esignDoor;
 
     @PostConstruct
     @Override
@@ -284,9 +284,8 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         List<Map> list = new ArrayList();
         list.add(new Document(crudObject));
 
-        featureService.getEsignDoor().
-                initAndShowEsignDlg(list, formService.
-                        getMyForm(), "widgetVarToBeSignedDialog", MULTIPLE);
+        esignDoor.initAndShowEsignDlg(list, formService.
+                getMyForm(), "widgetVarToBeSignedDialog", MULTIPLE);
 
         return null;
     }
@@ -354,9 +353,8 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
                     "İmzalanacak Kayıtlı Veriniz Tespit Edilemedi.");
         }
 
-        featureService.getEsignDoor().
-                initAndShowEsignDlg(list, formService.
-                        getMyForm(), "widgetVarToBeSignedDialog", MULTIPLE);
+        esignDoor.initAndShowEsignDlg(list, formService.
+                getMyForm(), "widgetVarToBeSignedDialog", MULTIPLE);
 
     }
 
@@ -983,9 +981,8 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         List<Map> listOfCruds = new ArrayList();
         listOfCruds.add(new Document(myMap));
 
-        featureService.getEsignDoor().
-                initEsignCtrl(formService.getMyForm(),
-                        listOfCruds, null, UNIQUE);
+        esignDoor.initEsignCtrl(formService.getMyForm(),
+                listOfCruds, null, UNIQUE);
 
         //FIXME  : make this snippet selectedForm dependable
         HttpSession httpSession = (HttpSession) FacesContext.

@@ -1,4 +1,4 @@
-package tr.org.tspb.outsider;
+package tr.org.tspb.outsider.intr;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,8 +12,6 @@ import tr.org.tspb.datamodel.dao.FmsForm;
  * @author Telman Şahbazoğlu
  */
 public interface EsignDoor extends Serializable {
-
-    String getXhtmlPath();
 
     public static final String ENVIRONMENT = "ENVIRONMENT";
 

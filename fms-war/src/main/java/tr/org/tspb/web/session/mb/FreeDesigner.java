@@ -29,7 +29,6 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
-import org.primefaces.model.SortOrder;
 import tr.org.tspb.util.stereotype.MyController;
 import tr.org.tspb.common.qualifier.MyLoginQualifier;
 import tr.org.tspb.service.RepositoryService;
@@ -40,10 +39,10 @@ import tr.org.tspb.datamodel.dao.MyBaseRecord;
 import tr.org.tspb.datamodel.dao.refs.PlainRecord;
 import tr.org.tspb.datamodel.dp.nullobj.PlainRecordData;
 import tr.org.tspb.datamodel.pojo.PostSaveResult;
-import tr.org.tspb.outsider.service.FeatureService;
 import tr.org.tspb.util.tools.DocumentRecursive;
 import tr.org.tspb.datamodel.uys.freedesign.MyLicense;
 import tr.org.tspb.datamodel.uys.freedesign.MyRecord;
+import tr.org.tspb.outsider.intr.EsignDoor;
 
 /**
  *
@@ -58,6 +57,9 @@ public class FreeDesigner implements Serializable {
     private LoginController loginController;
 
     @Inject
+    private EsignDoor esignDoor;
+
+    @Inject
     DlgCtrl dialogController;
 
     @Inject
@@ -65,9 +67,6 @@ public class FreeDesigner implements Serializable {
 
     @Inject
     private AppScopeSrvCtrl appScopeSrvCtrl;
-
-    @Inject
-    private FeatureService featureService;
 
     @Inject
     private BaseService baseService;
@@ -251,8 +250,7 @@ public class FreeDesigner implements Serializable {
             this.actionsMap.put("esign", Boolean.TRUE);
         }
 
-        featureService.getEsignDoor().
-                initAndFindEsigns(selectedForm, null);
+        esignDoor.initAndFindEsigns(selectedForm, null);
 
     }
 
@@ -266,10 +264,9 @@ public class FreeDesigner implements Serializable {
                     MESSAGE_DIALOG);
         } else {
 
-            featureService.getEsignDoor().
-                    iniAndShowEsignDlgV1(new TreeMap<Integer, String>(),
-                            listOfCruds, selectedForm,
-                            "widgetVarToBeSignedDialog", UNIQUE);
+            esignDoor.iniAndShowEsignDlgV1(new TreeMap<Integer, String>(),
+                    listOfCruds, selectedForm,
+                    "widgetVarToBeSignedDialog", UNIQUE);
 
         }
 

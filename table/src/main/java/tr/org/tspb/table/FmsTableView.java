@@ -17,7 +17,7 @@ import tr.org.tspb.datamodel.dao.MyFieldReportComparator;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
 import tr.org.tspb.factory.cp.OgmCreatorIntr;
-import tr.org.tspb.outsider.service.FeatureService;
+import tr.org.tspb.outsider.intr.EsignDoor;
 
 /**
  *
@@ -26,13 +26,13 @@ import tr.org.tspb.outsider.service.FeatureService;
 public abstract class FmsTableView extends AbstractViewer {
 
     @Inject
-    private FeatureService featureService;
-
-    @Inject
     @OgmCreatorQualifier
     private OgmCreatorIntr ogmCreator;
 
     private List<MyField> objectsColumnDataModel = new ArrayList<>();
+
+    @Inject
+    private EsignDoor esignDoor;
 
     /**
      * @return the objectsColumnDataModel
@@ -92,8 +92,7 @@ public abstract class FmsTableView extends AbstractViewer {
 
         setData(new FmsTableDataModel(this));
 
-        featureService.getEsignDoor().
-                initEsignCtrlV2(formService.getMyForm(), null, MULTIPLE);
+        esignDoor.initEsignCtrlV2(formService.getMyForm(), null, MULTIPLE);
 
     }
 

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import tr.org.tspb.datamodel.dao.FmsForm;
-import tr.org.tspb.outsider.EsignDoor;
+import tr.org.tspb.outsider.intr.EsignDoor;
 import tr.org.tspb.outsider.qualifier.DefaultEsignDoor;
 
 /**
@@ -17,11 +17,6 @@ import tr.org.tspb.outsider.qualifier.DefaultEsignDoor;
 @Dependent
 @DefaultEsignDoor
 public class EsignDoorDefaultImpl implements EsignDoor {
-
-    @Override
-    public String getXhtmlPath() {
-        return "../ui-for-dlg-pnl/ui-esign-to-be-signed-kamusm.xhtml";
-    }
 
     @Override
     public void eimzaContextInstance(Properties properties) {

@@ -56,6 +56,7 @@ import tr.org.tspb.constants.exceptions.UserException;
 import tr.org.tspb.factory.cp.OgmCreatorIntr;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
 import tr.org.tspb.datamodel.pojo.MyConstraintFormula;
+import tr.org.tspb.outsider.intr.EsignDoor;
 import tr.org.tspb.service.DownloadService;
 
 /**
@@ -69,6 +70,9 @@ public class PivotModifierCtrl extends PivotImpl {
     @Inject
     @OgmCreatorQualifier
     private OgmCreatorIntr ogmCreator;
+
+    @Inject
+    private EsignDoor esignDoor;
 
     private List<MyConstraintFormula> successList;
     private List<MyConstraintFormula> failList = new ArrayList<>();
@@ -397,9 +401,8 @@ public class PivotModifierCtrl extends PivotImpl {
                 }
             });
 
-            featureService.getEsignDoor().
-                    initAndShowEsignDlg(list, formService.getMyForm(),
-                            "eimzaDialogND", null);
+            esignDoor.initAndShowEsignDlg(list, formService.getMyForm(),
+                    "eimzaDialogND", null);
 
         }
 

@@ -3,7 +3,7 @@ package tr.org.tspb.outsider.impl;
 import org.bson.Document;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.datamodel.dao.MyMap;
-import tr.org.tspb.outsider.FmsWorkFlow;
+import tr.org.tspb.outsider.intr.FmsWorkFlow;
 
 /**
  *

@@ -38,8 +38,6 @@ import com.mongodb.MongoConfigurationException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.model.Filters;
 import java.io.InputStream;
-import org.bson.BsonObjectId;
-import org.bson.BsonString;
 import org.bson.types.Code;
 import org.bson.types.ObjectId;
 import org.primefaces.event.SelectEvent;
@@ -74,7 +72,7 @@ import tr.org.tspb.constants.exceptions.LdapException;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
 import tr.org.tspb.constants.exceptions.UserException;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
-import tr.org.tspb.outsider.ReportDoor;
+import tr.org.tspb.outsider.intr.ReportDoor;
 import tr.org.tspb.outsider.qualifier.DefaultReportDoor;
 import tr.org.tspb.datamodel.pojo.ComponentType;
 import tr.org.tspb.datamodel.pojo.UserDetail;
@@ -89,8 +87,8 @@ import tr.org.tspb.factory.cp.OgmCreatorIntr;
 import tr.org.tspb.datamodel.pojo.DatabaseUser;
 import tr.org.tspb.datamodel.pojo.PostSaveResult;
 import tr.org.tspb.datamodel.pojo.PreSaveResult;
+import tr.org.tspb.outsider.intr.EsignDoor;
 import tr.org.tspb.service.CalcService;
-import tr.org.tspb.outsider.service.FeatureService;
 
 /**
  *
@@ -101,7 +99,7 @@ import tr.org.tspb.outsider.service.FeatureService;
 public class CrudOneDim implements ValueChangeListener, Serializable {
 
     @Inject
-    private FeatureService featureService;
+    private EsignDoor esignDoor;
 
     @Inject
     @DefaultReportDoor
@@ -302,12 +300,11 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                     "İmzalanacak Kayıtlı Veriniz Tespit Edilemedi.",
                     MESSAGE_DIALOG);
         } else {
-            featureService.getEsignDoor().
-                    iniAndShowEsignDlgV1(
-                            new TreeMap<Integer, String>(), listOfCruds,
-                            formService.
-                                    getMyForm(), "widgetVarToBeSignedDialog",
-                            UNIQUE);
+            esignDoor.iniAndShowEsignDlgV1(
+                    new TreeMap<Integer, String>(), listOfCruds,
+                    formService.
+                            getMyForm(), "widgetVarToBeSignedDialog",
+                    UNIQUE);
         }
 
     }
@@ -567,9 +564,8 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
         List<Map> listOfCruds = new ArrayList();
         listOfCruds.add(new Document(crudObject));
 
-        featureService.getEsignDoor().
-                initAndFindEsignsV1(formService.
-                        getMyForm(), null, listOfCruds, UNIQUE);
+        esignDoor.initAndFindEsignsV1(formService.
+                getMyForm(), null, listOfCruds, UNIQUE);
 
     }
 

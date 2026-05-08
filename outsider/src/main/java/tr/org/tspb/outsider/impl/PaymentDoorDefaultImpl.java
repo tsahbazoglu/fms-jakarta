@@ -1,7 +1,7 @@
 package tr.org.tspb.outsider.impl;
 
 import jakarta.enterprise.context.SessionScoped;
-import tr.org.tspb.outsider.PaymentDoor;
+import tr.org.tspb.outsider.intr.PaymentDoor;
 import tr.org.tspb.outsider.qualifier.DefaultPaymentDoor;
 
 /**

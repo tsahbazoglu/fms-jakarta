@@ -1,4 +1,4 @@
-package tr.org.tspb.outsider;
+package tr.org.tspb.outsider.intr;
 
 import java.io.Serializable;
 
