@@ -32,5 +32,10 @@
             <artifactId>fms-constants</artifactId>   
             <scope>provided</scope> 
         </dependency>
+        <dependency>
+            <groupId>tr.org.tspb</groupId>
+            <artifactId>fms-util</artifactId>
+            <scope>provided</scope> 
+        </dependency>
     </dependencies>    
 </project>
