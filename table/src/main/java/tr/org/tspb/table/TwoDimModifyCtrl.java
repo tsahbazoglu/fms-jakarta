@@ -781,6 +781,9 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
                 | ScriptException | net.sourceforge.jeval.EvaluationException ex) {
             logger.error(ex.getMessage());
             dialogController.showPopupError(ex.toString());
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.toString());
         }
         return null;
     }

@@ -535,7 +535,7 @@ public class CalcService extends CommonSrv {
 
         String calculateEngine = field.getCalculateEngine();
 
-        Document b = new Document(crudObject);
+        Document crudObjasDocument = new Document(crudObject);
 
         try {
             Object value;
@@ -543,7 +543,7 @@ public class CalcService extends CommonSrv {
                 String db = myFrom.getDb();
                 String codeString = field.getCalculate();
                 Document commandResult = mongoDbUtil.runCommand(db, codeString,
-                        b);
+                        crudObjasDocument);
                 value = commandResult.get("retval");
             } else if ("clientSideJS".equals(calculateEngine) && calculateOnClient != null) {
                 calculateOnClient = calculateOnClient.replace(DIEZ, DOLAR);
@@ -551,17 +551,12 @@ public class CalcService extends CommonSrv {
                 String jsScriptString = "calculate=" + calculateOnClient;
                 jsEngine.eval(jsScriptString);
                 Invocable inv = (Invocable) jsEngine;
-                value = inv.invokeFunction("calculate", b.toJson());
+                value = inv.invokeFunction("calculate", crudObjasDocument.toJson());
             } else {
-                //FIXME should be rewritten to clean up org.bson.types.Code all over the code 
-                Code code = new Code(field.getCalculate());
-                b.put("calculate", code);
-
-                String codeString = "function(bsonObject){return bsonObject.calculate()}";
-                String db = myFrom.getDb();
-
-                Document commandResult = mongoDbUtil.runCommand(db, codeString,
-                        b);
+                String dbName = myFrom.getDb();
+                Document commandResult = mongoDbUtil.runCommand(dbName,
+                        field.getCalculate(),
+                        crudObjasDocument);
 
                 value = commandResult.get("retval");
             }
