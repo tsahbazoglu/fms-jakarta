@@ -20,11 +20,11 @@ import tr.org.tspb.outsider.qualifier.KamuSmEsignDoor;
 public class EsignProducer implements Serializable {
 
     @Inject
-    @KamuSmEsignDoor // Change this to one of [@KamuSmEsignDoor,@OyasEsignDoor,@Default] to switch globally
+    @KamuSmEsignDoor // Change this to one of [@KamuSmEsignDoor,@OyasEsignDoor,@DefaultEsignDoor] to switch globally
     private Instance<EsignControllerIntr> esignController;
 
     @Inject
-    @KamuSmEsignDoor // Change this to one of [@KamuSmEsignDoor,@OyasEsignDoor,@Default] to switch globally
+    @KamuSmEsignDoor // Change this to one of [@KamuSmEsignDoor,@OyasEsignDoor,@DefaultEsignDoor] to switch globally
     private Instance<EsignDoor> esignDoor;
 
     @Produces
