@@ -177,4 +177,10 @@ public interface EsignControllerIntr extends Serializable, FmsOnFlyData {
 
     void warn(String clazzName, String errMsg, Exception ex);
 
+    String getPinCode();
+
+    void setPinCode(String pinCode);
+
+    void esignPermissionCheckForSigner();
+
 }
