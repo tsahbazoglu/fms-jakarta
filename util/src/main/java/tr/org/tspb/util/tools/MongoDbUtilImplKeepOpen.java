@@ -726,6 +726,23 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
             return executeVirtualAggregate(database, pipelineStages,
                     finalDoc);
 
+        } else if ("AGGREGATE_AND_MERGE".equals(strategy)) {
+
+            String targetCollectionName = pipelineMeta.getString("collection");
+
+            List<Document> executablePipeline = new ArrayList<>();
+
+            executablePipeline.addAll(pipelineStages);
+
+            MongoCollection<Document> collection
+                    = database.getCollection(targetCollectionName);
+
+            collection.aggregate(executablePipeline).
+                    maxTime(5, TimeUnit.SECONDS).
+                    // Trigger the aggregation and force execution by calling toCollection() or a consumer
+                    first();
+
+            return null;
         } else {
             String targetCollectionName = pipelineMeta.getString("collection");
 
