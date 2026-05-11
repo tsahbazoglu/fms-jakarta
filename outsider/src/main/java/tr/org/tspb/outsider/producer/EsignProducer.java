@@ -10,7 +10,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.inject.Produces;
 import tr.org.tspb.outsider.intr.EsignDoor;
 //
-import tr.org.tspb.outsider.qualifier.KamuSmEsignDoor;
+import tr.org.tspb.outsider.qualifier.OyasEsignDoor;
 
 /**
  *
@@ -20,11 +20,11 @@ import tr.org.tspb.outsider.qualifier.KamuSmEsignDoor;
 public class EsignProducer implements Serializable {
 
     @Inject
-    @KamuSmEsignDoor // Change this to one of [@KamuSmEsignDoor,@OyasEsignDoor,@DefaultEsignDoor] to switch globally
+    @OyasEsignDoor // Change this to one of [@KamuSmEsignDoor,@OyasEsignDoor,@DefaultEsignDoor] to switch globally
     private Instance<EsignControllerIntr> esignController;
 
     @Inject
-    @KamuSmEsignDoor // Change this to one of [@KamuSmEsignDoor,@OyasEsignDoor,@DefaultEsignDoor] to switch globally
+    @OyasEsignDoor // Change this to one of [@KamuSmEsignDoor,@OyasEsignDoor,@DefaultEsignDoor] to switch globally
     private Instance<EsignDoor> esignDoor;
 
     @Produces
