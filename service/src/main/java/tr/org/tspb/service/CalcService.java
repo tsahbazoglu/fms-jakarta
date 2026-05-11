@@ -551,14 +551,20 @@ public class CalcService extends CommonSrv {
                 String jsScriptString = "calculate=" + calculateOnClient;
                 jsEngine.eval(jsScriptString);
                 Invocable inv = (Invocable) jsEngine;
-                value = inv.invokeFunction("calculate", crudObjasDocument.toJson());
+                value = inv.invokeFunction("calculate", crudObjasDocument.
+                        toJson());
             } else {
                 String dbName = myFrom.getDb();
                 Document commandResult = mongoDbUtil.runCommand(dbName,
                         field.getCalculate(),
                         crudObjasDocument);
 
+                if (commandResult == null) {
+                    return null;
+                }
+
                 value = commandResult.get("retval");
+
             }
 
             return value;

@@ -540,26 +540,35 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     @Override
     public Document trigger(Document projectSpaceMap, TagEvent trigger,
             List roles) {
-        if (trigger != null) {
-            String function = trigger.getOp();
 
-            if (function != null) {
-                final Document command = new Document();
-                //command.put("$eval", String.format(replaceFuncCode(function.getCode()), replaceParams(projectSpaceMap)));
-                Document result = runCommand(trigger.getDb(), function,
-                        projectSpaceMap, roles);
-
-                Object returnValue = result.get(RETVAL);
-
-                if (returnValue instanceof Document) {
-                    return (Document) returnValue;
-                }
-            }
+        if (trigger == null) {
+            return new Document();
         }
+
+        String function = trigger.getOp();
+
+        if (function == null) {
+            return new Document();
+        }
+
+        Document result = runCommand(trigger.getDb(), function,
+                projectSpaceMap, roles);
+
+        if (result == null) {
+            return new Document();
+        }
+
+        Object returnValue = result.get(RETVAL);
+
+        if (returnValue instanceof Document doc) {
+            return doc;
+        }
+
         return new Document();
 
     }
 
+    @Override
     public List<String> replaceParams(Object... objects) {
 
         List<String> params = new ArrayList<>();
