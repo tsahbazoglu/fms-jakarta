@@ -381,7 +381,7 @@ public class RepositoryService implements Serializable {
 
         for (GridFSFile gridFSDBFile : files) {
             Map<String, String> fileInfoPresent = new HashMap<>();
-            fileInfoPresent.put(FILE_ID, gridFSDBFile.getId().
+            fileInfoPresent.put(FILE_ID, gridFSDBFile.getObjectId().
                     toString());
             fileInfoPresent.put(FILE_NAME, gridFSDBFile.getFilename());
             fileInfoPresent.put(FILE_SIZE, String.valueOf(gridFSDBFile.

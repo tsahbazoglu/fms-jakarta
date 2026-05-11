@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/constants/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/constants/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/converter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/converter/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/datamodel/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/datamodel/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/factory/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/factory/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/fgtpswd/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/fgtpswd/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/fms-ear/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/fms-ear/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/fms-ejb/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/fms-ejb/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/fms-war/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/fms-war/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/logger/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/logger/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/notification/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/notification/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/outsider/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/outsider/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/page/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/page/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pivot/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pivot/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/table/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/table/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/util/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/util/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/workflow/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/workflow/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

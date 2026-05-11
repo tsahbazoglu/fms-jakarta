@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="fms-notification" />
+        <module name="fms-table" />
+        <module name="fms-common" />
+        <module name="fms-datamodel" />
+        <module name="fms-workflow" />
+        <module name="fms-factory" />
+        <module name="fms-logger" />
+        <module name="fms-outsider" />
+        <module name="fms-service" />
+        <module name="fms-util" />
+        <module name="fms-fgtpswd" />
+        <module name="fms-ear" />
+        <module name="fms-web" />
+        <module name="fms-pivot" />
+        <module name="fms-ejb" />
+        <module name="fms-page" />
+        <module name="fms-converter" />
+        <module name="fms-constants" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
