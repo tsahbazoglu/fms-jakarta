@@ -399,7 +399,7 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>fms-factory</artifactId>
                 <version>${fms.factory.version}</version>
-            </dependency> 
+            </dependency>
           
         </dependencies>
     </dependencyManagement>
@@ -442,7 +442,13 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>      
+        </dependency>  
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>fms-esign-web</artifactId>
+            <version>1.0.0</version>
+        </dependency>     
     </dependencies>
     
     <build>
@@ -497,6 +503,12 @@
                             <artifactId>fms-web</artifactId>
                             <contextRoot>/</contextRoot>
                         </webModule>
+                        <jarModule>
+                            <groupId>tr.org.tspb</groupId>
+                            <artifactId>fms-esign-web</artifactId>
+                            <bundleDir>/</bundleDir> 
+                            <excluded>true</excluded>
+                        </jarModule>
                     </modules>   
                     <unpackTypes>war,ejb</unpackTypes>                 
                 </configuration>
