@@ -25,7 +25,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.model.Filters;
 import com.google.gson.reflect.TypeToken;
+
 import java.io.InputStream;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.primefaces.event.FileUploadEvent;
@@ -143,51 +145,37 @@ public abstract class FmsTable extends FmsTableView {
 
     public boolean runEventPreSave(Map query, MyMap crud) {
 
-        if (formService.getMyForm().
-                getEventPreSave() == null) {
+        if (formService.getMyForm().getEventPreSave() == null) {
             return false;
         }
 
-        String eventPreSaveDB = formService.getMyForm().
-                getEventPreSave().
-                getDb();
+        String eventPreSaveDB = formService.getMyForm().getEventPreSave().getDb();
 
         if (eventPreSaveDB == null) {
             //FIXME messagebundle
-            dialogController.showPopupInfoWithOk("<ul>"
-                    + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>"
-                    + "<li>Konfigürasyon Hatası : db tanımlı değil.</li>"
-                    + "</ul>", MESSAGE_DIALOG);
+            dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>Konfigürasyon Hatası : db tanımlı değil.</li>" + "</ul>", MESSAGE_DIALOG);
             return true;
         }
 
         Document myCrudObject = new Document(crud);
         myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
 
-        String code = formService.getMyForm().
-                getEventPreSave().
-                getJsFunction();
-        Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code,
-                query, myCrudObject);
+        String code = formService.getMyForm().getEventPreSave().getJsFunction();
+        Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code, query, myCrudObject);
         Object result = commandResult.get(RETVAL);
 
         if (Boolean.TRUE.equals(result)) {
             //FIXME messagebundle
-            dialogController.showPopupInfoWithOk("<ul>"
-                    + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>"
-                    + "<li>\"Birlik Temsilcisi\" yalnız bir defa seçilebilmektedir. <br/>Daha önce seçim yaptınız.</li>"
-                    + "</ul>", MESSAGE_DIALOG);
+            dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>\"Birlik Temsilcisi\" yalnız bir defa seçilebilmektedir. <br/>Daha önce seçim yaptınız.</li>" + "</ul>", MESSAGE_DIALOG);
             return true;
         }
 
         if (result instanceof Document) {
             Document resultJSON = (Document) result;
             if ("facesMessage".equals(resultJSON.get("gui"))) {
-                String mssssage = resultJSON.get("facesMessage").
-                        toString();
+                String mssssage = resultJSON.get("facesMessage").toString();
                 FacesMessage.Severity severity;
-                switch (resultJSON.get("facesMessageSeverity").
-                        toString()) {
+                switch (resultJSON.get("facesMessageSeverity").toString()) {
                     case "error":
                         severity = FacesMessage.SEVERITY_ERROR;
                         break;
@@ -201,12 +189,9 @@ public abstract class FmsTable extends FmsTableView {
                         severity = FacesMessage.SEVERITY_INFO;
                         break;
                 }
-                FacesContext.getCurrentInstance().
-                        addMessage(null, new FacesMessage(severity, mssssage,
-                                "*"));
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, mssssage, "*"));
             } else {
-                String mssssage = resultJSON.get("popupMessage").
-                        toString();
+                String mssssage = resultJSON.get("popupMessage").toString();
                 dialogController.showPopupInfoWithOk(mssssage, MESSAGE_DIALOG);
             }
             return true;
@@ -217,8 +202,7 @@ public abstract class FmsTable extends FmsTableView {
 
     public boolean runEventPreSaveOnChild(Map query, MyMap crud) {
 
-        TagEvent event = formService.getMyForm().
-                getEventPreSaveOnChild();
+        TagEvent event = formService.getMyForm().getEventPreSaveOnChild();
 
         if (event == null) {
             return false;
@@ -228,10 +212,7 @@ public abstract class FmsTable extends FmsTableView {
 
         if (eventPreSaveDB == null) {
             //FIXME messagebundle
-            dialogController.showPopupInfoWithOk("<ul>"
-                    + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>"
-                    + "<li>Konfigürasyon Hatası : db tanımlı değil.</li>"
-                    + "</ul>", MESSAGE_DIALOG);
+            dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>Konfigürasyon Hatası : db tanımlı değil.</li>" + "</ul>", MESSAGE_DIALOG);
             return true;
         }
 
@@ -239,27 +220,21 @@ public abstract class FmsTable extends FmsTableView {
         myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
 
         String code = event.getJsFunction();
-        Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code,
-                query, myCrudObject);
+        Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code, query, myCrudObject);
         Object result = commandResult.get(RETVAL);
 
         if (Boolean.TRUE.equals(result)) {
             //FIXME messagebundle
-            dialogController.showPopupInfoWithOk("<ul>"
-                    + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>"
-                    + "<li>\"Birlik Temsilcisi\" yalnız bir defa seçilebilmektedir. <br/>Daha önce seçim yaptınız.</li>"
-                    + "</ul>", MESSAGE_DIALOG);
+            dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>\"Birlik Temsilcisi\" yalnız bir defa seçilebilmektedir. <br/>Daha önce seçim yaptınız.</li>" + "</ul>", MESSAGE_DIALOG);
             return true;
         }
 
         if (result instanceof Document) {
             Document resultJSON = (Document) result;
             if ("facesMessage".equals(resultJSON.get("gui"))) {
-                String mssssage = resultJSON.get("facesMessage").
-                        toString();
+                String mssssage = resultJSON.get("facesMessage").toString();
                 FacesMessage.Severity severity;
-                switch (resultJSON.get("facesMessageSeverity").
-                        toString()) {
+                switch (resultJSON.get("facesMessageSeverity").toString()) {
                     case "error":
                         severity = FacesMessage.SEVERITY_ERROR;
                         break;
@@ -273,12 +248,9 @@ public abstract class FmsTable extends FmsTableView {
                         severity = FacesMessage.SEVERITY_INFO;
                         break;
                 }
-                FacesContext.getCurrentInstance().
-                        addMessage(null, new FacesMessage(severity, mssssage,
-                                "*"));
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, mssssage, "*"));
             } else {
-                String mssssage = resultJSON.get("popupMessage").
-                        toString();
+                String mssssage = resultJSON.get("popupMessage").toString();
                 dialogController.showPopupInfoWithOk(mssssage, MESSAGE_DIALOG);
             }
             return true;
@@ -349,31 +321,23 @@ public abstract class FmsTable extends FmsTableView {
                     Document metadata = new Document();
 
                     if (crudObject.get("_id") instanceof ObjectId) {
-                        metadata.put(CRUD_OBJECT_ID, (ObjectId) crudObject.get(
-                                "_id"));
+                        metadata.put(CRUD_OBJECT_ID, (ObjectId) crudObject.get("_id"));
                     } else {
                         // null points to the fact that this record(file) is not related yet.
                         // we will use this NULL state during the search over all other forms
                         metadata.put(CRUD_OBJECT_ID, null);
                     }
 
-                    metadata.put(SELECT_FORM_KEY, formService.getMyForm().
-                            getKey());
-                    metadata.put("selectFormName", formService.getMyForm().
-                            getName());
-                    metadata.put("username", loginController.
-                            getLoggedUserDetail().
-                            getUsername());
+                    metadata.put(SELECT_FORM_KEY, formService.getMyForm().getKey());
+                    metadata.put("selectFormName", formService.getMyForm().getName());
+                    metadata.put("username", loginController.getLoggedUserDetail().getUsername());
 
-                    String uploadTable = baseService.getProperties().
-                            getUploadTable();
+                    String uploadTable = baseService.getProperties().getUploadTable();
 
                     String fileName = uploadedFile.getFileName();
 
                     try (InputStream inputStream = uploadedFile.getInputStream()) {
-                        ObjectId fileId = mongoDbUtil.createFile(uploadTable,
-                                fileName,
-                                inputStream, metadata);
+                        ObjectId fileId = mongoDbUtil.createFile(uploadTable, fileName, inputStream, metadata);
                     }
                 }
                 case "FILESISTEM" -> {
@@ -406,36 +370,36 @@ public abstract class FmsTable extends FmsTableView {
     }
 
     private String deleteFile(String objectId) {
-        if (formService.getMyForm().
-                getMyActions().
-                isDelete()) {
-            mongoDbUtil.removeFile(baseService.getProperties().
-                    getUploadTable(), new ObjectId(objectId));
+        if (formService.getMyForm().getMyActions().isDelete()) {
+            mongoDbUtil.removeFile(baseService.getProperties().getUploadTable(), new ObjectId(objectId));
             refreshUploadedFileList();
         }
         return null;
     }
 
     protected void refreshUploadedFileList() {
+        Object idValue = this.crudObject.get(MONGO_ID);
+        logger.info("refreshUploadedFileList for  : "+idValue);
+
         ObjectId objectId = null;
 
-        if (crudObject.get(MONGO_ID) instanceof ObjectId) {
-            objectId = (ObjectId) crudObject.get(MONGO_ID);
-        } else if (crudObject.get(MONGO_ID) instanceof MyBaseRecord) {
-            objectId = ((MyBaseRecord) crudObject.get(MONGO_ID)).getObjectId();
+        if (idValue instanceof ObjectId id) {
+            objectId = id;
+        } else if (idValue instanceof MyBaseRecord record) {
+            objectId = record.getObjectId();
         }
 
-        listFileData = repositoryService.findGridFsFileList(objectId);
+        if (objectId == null) {
+            listFileData = new ArrayList<>();
+        } else {
+            logger.info("get file list for record : "+objectId);
+            listFileData = repositoryService.findGridFsFileList(objectId);
+        }
         refreshUploadedFileListAll();
     }
 
-    public List<Map<String, String>> getListFileData() {
-        return listFileData;
-    }
-
     public void refreshUploadedFileListAll() {
-        this.fileListAll = repositoryService.findGridFsFileList(formService.
-                getMyForm());
+        this.fileListAll = repositoryService.findGridFsFileList(formService.getMyForm());
     }
 
     public void resetMyObject() {
@@ -466,24 +430,22 @@ public abstract class FmsTable extends FmsTableView {
         return Collections.unmodifiableList(listFileData);
     }
 
+    public List<Map<String, String>> getListFileData() {
+        return listFileData;
+    }
+
     public List<Map<String, String>> getFileListAll() {
         return Collections.unmodifiableList(fileListAll);
     }
 
-    public ObjectId saveObjectFromPaymentService(Document operatedObject,
-            String username,
-            FmsForm myForm, String ip) throws Exception {
+    public ObjectId saveObjectFromPaymentService(Document operatedObject, String username, FmsForm myForm, String ip) throws Exception {
         if (!"payment-service-user".equals(username)) {
             throw new RuntimeException("Upsss ...");
         }
-        return saveOneDimensionObject(operatedObject, username, myForm, ip,
-                "payment-service-no-session");
+        return saveOneDimensionObject(operatedObject, username, myForm, ip, "payment-service-no-session");
     }
 
-    public ObjectId saveOneDimensionObject(Document operatedObject,
-            String username, FmsForm myForm, String ip, String sessionId)
-            throws MessagingException, NullNotExpectedException, LdapException,
-            FormConfigException, MongoOrmFailedException, UserException {
+    public ObjectId saveOneDimensionObject(Document operatedObject, String username, FmsForm myForm, String ip, String sessionId) throws MessagingException, NullNotExpectedException, LdapException, FormConfigException, MongoOrmFailedException, UserException {
 
         FmsForm inode = (FmsForm) operatedObject.get(INODE);
         operatedObject.remove(INODE);//just to sutisfy the icefaces
@@ -493,27 +455,20 @@ public abstract class FmsTable extends FmsTableView {
 
         ctrlService.checkRecordConverterValueType(operatedObject, myForm);
 
-        if (myForm.isHasAttachedFiles() && (listFileData == null || listFileData.
-                isEmpty())) {
-            for (MyField field : myForm.getFields().
-                    values()) {
-                if (field.isRequired() && getInputFile().
-                        equals(field.getComponentType())) {
+        if (myForm.isHasAttachedFiles() && (listFileData == null || listFileData.isEmpty())) {
+            for (MyField field : myForm.getFields().values()) {
+                if (field.isRequired() && getInputFile().equals(field.getComponentType())) {
                     FacesMessage facesMessageRequired = new FacesMessage(//
                             FacesMessage.SEVERITY_ERROR, //
-                            MessageFormat.format("[{0}] {1}", field.
-                                    getShortName(), MessageBundleLoaderv1.
-                                            getMessage("requiredMessage")),//
+                            MessageFormat.format("[{0}] {1}", field.getShortName(), MessageBundleLoaderv1.getMessage("requiredMessage")),//
                             "*");
-                    FacesContext.getCurrentInstance().
-                            addMessage(null, facesMessageRequired);
+                    FacesContext.getCurrentInstance().addMessage(null, facesMessageRequired);
                     throw new UserException("<br/><br/> Dosya Eksik");
                 }
             }
         }
 
-        operatedObject = repositoryService.expandCrudObject(myForm,
-                operatedObject);
+        operatedObject = repositoryService.expandCrudObject(myForm, operatedObject);
 
         operatedObject.put(OPERATOR_LDAP_UID, username);
         operatedObject.put(FORMS, myForm.getForm());
@@ -522,8 +477,7 @@ public abstract class FmsTable extends FmsTableView {
             operatedObject.putAll(myForm.getFindAndSaveFilter());
         }
 
-        Document uysAdditionalMetaData = (Document) operatedObject.get(
-                ADMIN_METADATA);
+        Document uysAdditionalMetaData = (Document) operatedObject.get(ADMIN_METADATA);
         if (uysAdditionalMetaData == null) {
             uysAdditionalMetaData = new Document();
             operatedObject.put(ADMIN_METADATA, uysAdditionalMetaData);
@@ -538,9 +492,7 @@ public abstract class FmsTable extends FmsTableView {
         for (MyField myField : inode.getAutosetFields()) {
             Object value = operatedObject.get(myField.getKey());
             if (value == null) {
-                operatedObject.put(myField.getKey(), filterService.
-                        getTableFilterCurrent().
-                        get(myField.getKey()));
+                operatedObject.put(myField.getKey(), filterService.getTableFilterCurrent().get(myField.getKey()));
             }
         }
 
@@ -551,8 +503,7 @@ public abstract class FmsTable extends FmsTableView {
             }
             Object fieldValue = operatedObject.get(fieldKey);
             Object defaultValue = fieldStriucture.getDefaultValue();
-            if (defaultValue != null && (fieldValue == null || "".equals(
-                    fieldValue))) {
+            if (defaultValue != null && (fieldValue == null || "".equals(fieldValue))) {
                 operatedObject.put(fieldKey, defaultValue);
             }
         }
@@ -560,9 +511,7 @@ public abstract class FmsTable extends FmsTableView {
         for (String fieldKey : myForm.getFieldsKeySet()) {
             MyField myField = myForm.getField(fieldKey);
             if (myField.getCalculateOnSave()) {
-                operatedObject.put(fieldKey, calcService.calculateValue(
-                        operatedObject, myField, FacesContext.
-                                getCurrentInstance()));
+                operatedObject.put(fieldKey, calcService.calculateValue(operatedObject, myField, FacesContext.getCurrentInstance()));
             }
         }
 
@@ -574,8 +523,7 @@ public abstract class FmsTable extends FmsTableView {
 
             Bson query = Filters.eq(MONGO_ID, operatedObject.get(MONGO_ID));
 
-            mongoDbUtil.updateOne(inode.getDb(), inode.getTable(), query,
-                    operatedObject);
+            mongoDbUtil.updateOne(inode.getDb(), inode.getTable(), query, operatedObject);
 
             result = mongoDbUtil.findOne(inode.getDb(), inode.getTable(), query);
         } else {
@@ -584,16 +532,13 @@ public abstract class FmsTable extends FmsTableView {
             // for ease retrieving the just inserted object we add an additonal retrieve InsertId to object
             // it can be easly removed later.
 
-            String toBeRetrivedValue = String.format("s:%s_r:%s_t:%s_u:%s_c:%s",
-                    sessionId,//
+            String toBeRetrivedValue = String.format("s:%s_r:%s_t:%s_u:%s_c:%s", sessionId,//
                     new RandomString(32).nextString(),//
                     new Date().getTime(),//
                     username,//
-                    myForm.getTable()
-            );
+                    myForm.getTable());
 
-            Document record = new Document(operatedObject).append(
-                    UYS_EASY_FIND_KEY, toBeRetrivedValue);
+            Document record = new Document(operatedObject).append(UYS_EASY_FIND_KEY, toBeRetrivedValue);
 
             try {
 
@@ -612,8 +557,7 @@ public abstract class FmsTable extends FmsTableView {
                 throw new FormConfigException(ex.getMessage(), ex);
             }
 
-            result = mongoDbUtil.findOne(inode.getDb(), inode.getTable(),
-                    new Document(UYS_EASY_FIND_KEY, toBeRetrivedValue));
+            result = mongoDbUtil.findOne(inode.getDb(), inode.getTable(), new Document(UYS_EASY_FIND_KEY, toBeRetrivedValue));
 
             operatedObject.append(MONGO_ID, record.get(MONGO_ID));
 
@@ -622,22 +566,20 @@ public abstract class FmsTable extends FmsTableView {
         for (String fieldKey : myForm.getFieldsKeySet()) {
             MyField myField = myForm.getField(fieldKey);
             if (myField.getCalculateAfterSave()) {
-                result.put(fieldKey, calcService.calculateValue(operatedObject,
-                        myField, FacesContext.getCurrentInstance()));
+                result.put(fieldKey, calcService.calculateValue(operatedObject, myField, FacesContext.getCurrentInstance()));
             }
         }
 
         if (enableHistoryOnSave) {
             try {
-                MongoDbVersion.instance(mongoDbUtil).
-                        archive(//
-                                inode.getDb(),//
-                                inode.getVersionCollection(),//
-                                myForm.getKey(),//
-                                result, //
-                                ip, //
-                                operatorLdapUID,//
-                                inode.getVersionFields());
+                MongoDbVersion.instance(mongoDbUtil).archive(//
+                        inode.getDb(),//
+                        inode.getVersionCollection(),//
+                        myForm.getKey(),//
+                        result, //
+                        ip, //
+                        operatorLdapUID,//
+                        inode.getVersionFields());
             } catch (Exception ex) {
                 logger.error("error occured", ex);
             }
@@ -651,10 +593,7 @@ public abstract class FmsTable extends FmsTableView {
                 listOfFileIDs.add(new ObjectId((String) map.get(FILE_ID)));
             }
 
-            mongoDbUtil.updateMany(baseService.getProperties().
-                    getUploadTable(), "fs.files",
-                    new Document(MONGO_ID, new Document(DOLAR_IN, listOfFileIDs)),
-                    new Document(METADATA_CRUD_OBJECT_ID, result.get(MONGO_ID)));
+            mongoDbUtil.updateMany(baseService.getProperties().getUploadTable(), "fs.files", new Document(MONGO_ID, new Document(DOLAR_IN, listOfFileIDs)), new Document(METADATA_CRUD_OBJECT_ID, result.get(MONGO_ID)));
 
             if ("iondb".equals(myForm.getDb()) && !myForm.isHasAttachedFiles()) {
                 /*
@@ -663,52 +602,35 @@ public abstract class FmsTable extends FmsTableView {
                  kayderken daha önceden eklenen ekleri sil. aksi takdirde bunlar eimzaya yansıyor
                  */
 
-                mongoDbUtil.removeFile(baseService.getProperties().
-                        getUploadTable(),
-                        new BasicDBObject()
-                                .append(METADATA_CRUD_OBJECT_ID, result.get(
-                                        MONGO_ID)).
-                                append("metadata.username", username));
+                mongoDbUtil.removeFile(baseService.getProperties().getUploadTable(), new BasicDBObject().append(METADATA_CRUD_OBJECT_ID, result.get(MONGO_ID)).append("metadata.username", username));
             }
         }
         //end : provide uploaded file relation
 
         try {
-            PostSaveResult postSaveResult = repositoryService.runEventPostSave(
-                    operatedObject, myForm, null);
+            PostSaveResult postSaveResult = repositoryService.runEventPostSave(operatedObject, myForm, null);
             //FIXME messagebundle
             if (postSaveResult.getMsg() != null) {
-                dialogController.showPopupInfoWithOk(postSaveResult.getMsg(),
-                        MESSAGE_DIALOG);
+                dialogController.showPopupInfoWithOk(postSaveResult.getMsg(), MESSAGE_DIALOG);
             }
         } catch (Exception ex) {
             logger.error("error occured", ex);
             StringBuilder dlgSb = new StringBuilder();
-            dlgSb.append(
-                    "Kayıt Sonrası tetikleyici çalıştırılıyor iken bir hata oluştu. ");
+            dlgSb.append("Kayıt Sonrası tetikleyici çalıştırılıyor iken bir hata oluştu. ");
             dlgSb.append("<br/><br/>");
             dlgSb.append("Lütfen bu durumu sistem yöneticisine bildiriniz.");
 //            dialogController.showPopupError(dlgSb.toString());
-            FacesContext.getCurrentInstance().
-                    addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_FATAL,
-                                    "Hata",
-                                    dlgSb.toString().
-                                            replace("<br/>", "")));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Hata", dlgSb.toString().replace("<br/>", "")));
         }
 
-        if (formService.getMyForm().
-                getMyNotifies() != null) {
-            for (MyNotifies myNotifies : formService.getMyForm().
-                    getMyNotifies().
-                    getList()) {
+        if (formService.getMyForm().getMyNotifies() != null) {
+            for (MyNotifies myNotifies : formService.getMyForm().getMyNotifies().getList()) {
                 myNotifies.reEnable(crudObject);
                 myNotifies.reTo(crudObject);
                 myNotifies.reSubject(crudObject);
                 myNotifies.reContent(crudObject);
                 if (myNotifies.isEnable() && myNotifies.isEmail()) {
-                    mailService.sendMail(myNotifies.getSubject(), myNotifies.
-                            getContent(), myNotifies.getTo());
+                    mailService.sendMail(myNotifies.getSubject(), myNotifies.getContent(), myNotifies.getTo());
                 }
             }
         }
@@ -716,18 +638,15 @@ public abstract class FmsTable extends FmsTableView {
         return (ObjectId) result.get(MONGO_ID);
     }
 
-    protected String deleteObject(LoginController loginMB, FmsForm myForm,
-            MyMap crudObject) throws Exception {
+    protected String deleteObject(LoginController loginMB, FmsForm myForm, MyMap crudObject) throws Exception {
         String collection = myForm.getTable();
 
         ObjectId objectID = (ObjectId) crudObject.get(MONGO_ID);
         if (objectID != null) {
 
-            Document toBeDeleted = repositoryService.expandCrudObject(myForm,
-                    new Document(crudObject));
+            Document toBeDeleted = repositoryService.expandCrudObject(myForm, new Document(crudObject));
 
-            mongoDbUtil.trigger(toBeDeleted, myForm.getEventPreDelete(),
-                    loginController.getRolesAsList());
+            mongoDbUtil.trigger(toBeDeleted, myForm.getEventPreDelete(), loginController.getRolesAsList());
 
             if (myForm.getDeleteChildsOnDelete()) {
                 deleteChilds(myForm, objectID);
@@ -735,16 +654,12 @@ public abstract class FmsTable extends FmsTableView {
                 checkChilds(myForm, objectID);
             }
 
-            mongoDbUtil.deleteMany(myForm.getDb(), collection, new Document(
-                    MONGO_ID, objectID));
+            mongoDbUtil.deleteMany(myForm.getDb(), collection, new Document(MONGO_ID, objectID));
 
-            mongoDbUtil.trigger(repositoryService.expandCrudObject(myForm,
-                    new Document(crudObject)), myForm.getEventPostDelete(),
-                    loginController.getRolesAsList());
+            mongoDbUtil.trigger(repositoryService.expandCrudObject(myForm, new Document(crudObject)), myForm.getEventPostDelete(), loginController.getRolesAsList());
 
             for (Map entry : listFileData) {
-                deleteFile(entry.get("fileID").
-                        toString());
+                deleteFile(entry.get("fileID").toString());
             }
 
             crudObject = ogmCreator.getCrudObject();
@@ -758,85 +673,55 @@ public abstract class FmsTable extends FmsTableView {
     private void checkChilds(FmsForm myForm, ObjectId objectID) throws Exception {
         List<ChildFilter> childFilters = myForm.getChilds();
         for (ChildFilter childFilter : childFilters) {
-            if (mongoDbUtil.findOne(childFilter.getDb(), childFilter.getTable(),
-                    Filters.eq(childFilter.getFieldKey(), objectID)) != null) {
+            if (mongoDbUtil.findOne(childFilter.getDb(), childFilter.getTable(), Filters.eq(childFilter.getFieldKey(), objectID)) != null) {
                 throw new Exception(childFilter.print(objectID));
             }
         }
     }
 
-    private void deleteChilds(FmsForm myForm, ObjectId objectID) throws
-            Exception {
+    private void deleteChilds(FmsForm myForm, ObjectId objectID) throws Exception {
         List<ChildFilter> childFilters = myForm.getChilds();
         for (ChildFilter childFilter : childFilters) {
-            mongoDbUtil.deleteMany(childFilter.getDb(), childFilter.getTable(),
-                    new Document(childFilter.getFieldKey(), objectID));
+            mongoDbUtil.deleteMany(childFilter.getDb(), childFilter.getTable(), new Document(childFilter.getFieldKey(), objectID));
         }
     }
 
-    public String copyObject(FmsForm myForm, LoginController loginMB,
-            MyMap crudObject) throws Exception {
+    public String copyObject(FmsForm myForm, LoginController loginMB, MyMap crudObject) throws Exception {
 
         Document operatedObject = new Document(crudObject);
 
         operatedObject.remove(MONGO_ID);
 
-        if (!(loginController.isUserInRole(formService.getMyForm().
-                getMyProject().
-                getAdminRole()) //
-                || crudObject.get(formService.getMyForm().
-                        getLoginFkField()) == null
-                || loginMB.getLoggedUserDetail().
-                        getDbo().
-                        getObjectId().
-                        equals(operatedObject.get(formService.getMyForm().
-                                getLoginFkField())))) {
-            throw new Exception(
-                    "Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
+        if (!(loginController.isUserInRole(formService.getMyForm().getMyProject().getAdminRole()) //
+                || crudObject.get(formService.getMyForm().getLoginFkField()) == null || loginMB.getLoggedUserDetail().getDbo().getObjectId().equals(operatedObject.get(formService.getMyForm().getLoginFkField())))) {
+            throw new Exception("Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
         }
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) facesContext.
-                getExternalContext().
-                getRequest();
-        String sessionId = ((HttpSession) facesContext.getExternalContext().
-                getSession(false)).getId();
+        HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+        String sessionId = ((HttpSession) facesContext.getExternalContext().getSession(false)).getId();
 
-        saveOneDimensionObject(operatedObject, loginMB.getLoggedUserDetail().
-                getUsername(), formService.getMyForm(), request.getRemoteAddr(),
-                sessionId);
+        saveOneDimensionObject(operatedObject, loginMB.getLoggedUserDetail().getUsername(), formService.getMyForm(), request.getRemoteAddr(), sessionId);
 
         crudObject.put(STATE, "saved");
         return null;
     }
 
-    public ObjectId saveObject(FmsForm myForm, LoginController loginMB,
-            MyMap crudObject)
-            throws UserException, MessagingException, NullNotExpectedException,
-            LdapException, FormConfigException, MongoOrmFailedException {
+    public ObjectId saveObject(FmsForm myForm, LoginController loginMB, MyMap crudObject) throws UserException, MessagingException, NullNotExpectedException, LdapException, FormConfigException, MongoOrmFailedException {
 
-        Object loginFkFieldValue = crudObject.get(formService.getMyForm().
-                getLoginFkField());
+        Object loginFkFieldValue = crudObject.get(formService.getMyForm().getLoginFkField());
 
         if (loginFkFieldValue instanceof MyBaseRecord) {
             loginFkFieldValue = ((MyBaseRecord) loginFkFieldValue).getObjectId();
         }
 
-        boolean ok = loginController.isUserInRole(formService.getMyForm().
-                getMyProject().
-                getAdminRole());
+        boolean ok = loginController.isUserInRole(formService.getMyForm().getMyProject().getAdminRole());
 
-        ok = ok || loginController.getLoggedUserDetail().
-                getDbo().
-                getObjectId().
-                equals(loginFkFieldValue);
+        ok = ok || loginController.getLoggedUserDetail().getDbo().getObjectId().equals(loginFkFieldValue);
 
         if (!ok) {
-            for (UserDetail.EimzaPersonel ep : loginController.
-                    getLoggedUserDetail().
-                    getEimzaPersonels()) {
-                if (ep.getDelegatingMember() != null && ep.getDelegatingMember().
-                        equals(loginFkFieldValue)) {
+            for (UserDetail.EimzaPersonel ep : loginController.getLoggedUserDetail().getEimzaPersonels()) {
+                if (ep.getDelegatingMember() != null && ep.getDelegatingMember().equals(loginFkFieldValue)) {
                     ok = true;
                     break;
                 }
@@ -844,23 +729,16 @@ public abstract class FmsTable extends FmsTableView {
         }
 
         if (!ok) {
-            throw new UserException(
-                    "Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
+            throw new UserException("Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
         }
 
         Document operatedObject = new Document(crudObject);
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) facesContext.
-                getExternalContext().
-                getRequest();
-        String sessionId = ((HttpSession) facesContext.getExternalContext().
-                getSession(false)).getId();
+        HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+        String sessionId = ((HttpSession) facesContext.getExternalContext().getSession(false)).getId();
 
-        ObjectId returnID = saveOneDimensionObject(operatedObject, loginMB.
-                getLoggedUserDetail().
-                getUsername(),
-                formService.getMyForm(), request.getRemoteAddr(), sessionId);
+        ObjectId returnID = saveOneDimensionObject(operatedObject, loginMB.getLoggedUserDetail().getUsername(), formService.getMyForm(), request.getRemoteAddr(), sessionId);
         crudObject.put(STATE, "saved");
 
         return returnID;
@@ -897,43 +775,33 @@ public abstract class FmsTable extends FmsTableView {
 
         for (String key : (Set<String>) rowData.keySet()) {
 
-            MyField myField = formService.getMyForm().
-                    getField(key);
+            MyField myField = formService.getMyForm().getField(key);
 
             if (myField != null && myField.isAutoComplete()) {
 
                 MyItems myItems = myField.getItemsAsMyItems();
 
-                Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.
-                        getTable(), Filters.eq(MONGO_ID, rowData.get(key)));
+                Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.getTable(), Filters.eq(MONGO_ID, rowData.get(key)));
 
-                crudObject.
-                        put(key, PlainRecordData.getPlainRecord(doc, myItems));
+                crudObject.put(key, PlainRecordData.getPlainRecord(doc, myItems));
             }
         }
 
-        if (formService.getMyForm().
-                getVersionCollection() != null) {
+        if (formService.getMyForm().getVersionCollection() != null) {
 
             ObjectId objectId = null;
 
             if (crudObject.get(MONGO_ID) instanceof ObjectId) {
                 objectId = (ObjectId) crudObject.get(MONGO_ID);
             } else if (crudObject.get(MONGO_ID) instanceof MyBaseRecord) {
-                objectId = ((MyBaseRecord) crudObject.get(MONGO_ID)).
-                        getObjectId();
+                objectId = ((MyBaseRecord) crudObject.get(MONGO_ID)).getObjectId();
             }
 
-            Map<String, List> map = MongoDbVersion.instance(mongoDbUtil).
-                    fetch(//
-                            formService.getMyForm(),//
-                            formService.getMyForm().
-                                    getDb(), //
-                            formService.getMyForm().
-                                    getVersionCollection(), //
-                            objectId,
-                            formService.getMyForm().
-                                    getVersionFields());
+            Map<String, List> map = MongoDbVersion.instance(mongoDbUtil).fetch(//
+                    formService.getMyForm(),//
+                    formService.getMyForm().getDb(), //
+                    formService.getMyForm().getVersionCollection(), //
+                    objectId, formService.getMyForm().getVersionFields());
 
             historyColumnModel = map.get(COLUMN_LIST);
             versionHistory = map.get(ROW_LIST);
