@@ -6,7 +6,7 @@
       xmlns:p="http://primefaces.org/ui"   
       >
 
-    <script>
+    <script type="text/javascript">
         function yesDoDelete() {
             PF('specialConfirmationDialog').hide();
             rc_2d_delete();
@@ -26,6 +26,14 @@
             <ui:include src="ui-crud-tool-buttons.xhtml"/>
         </div>
     </p:panel>
+
+    <p:messages
+            showDetail="true"
+            showSummary="true"
+            closable="true"
+    >
+        <p:autoUpdate/>
+    </p:messages>
 
     <ui:include src="ui-crud-row-list.xhtml"/>
 

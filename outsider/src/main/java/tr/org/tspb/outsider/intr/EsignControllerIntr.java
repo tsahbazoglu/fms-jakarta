@@ -48,6 +48,8 @@ public interface EsignControllerIntr extends Serializable, FmsOnFlyData {
 
     void esignShowDialog1() throws Exception;
 
+    String errorMessageTest();
+
     int findDataCount() throws NullNotExpectedException;
 
     List<Map> findLazyData(int first, int pageSize, Map sortMap1) throws
