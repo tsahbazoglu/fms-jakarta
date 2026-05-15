@@ -24,6 +24,8 @@ public interface EsignControllerIntr extends Serializable, FmsOnFlyData {
 
     public String getXhtmlPath();
 
+    public String getXhtmlPathEsignUserGuide();
+
     boolean checkPermissionForEsign(List<Map> list) throws Exception;
 
     String cleanFullTextSearch();
