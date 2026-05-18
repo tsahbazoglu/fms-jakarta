@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 //
+import com.mongodb.client.model.*;
 import jakarta.inject.Inject;
 //
 import com.mongodb.BasicDBObject;
@@ -45,14 +46,12 @@ import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
-import com.mongodb.client.model.Collation;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.UpdateOptions;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
+
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -108,7 +107,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     private final Map<String, Document> MAP_OF_RECORD = new HashMap<>();
 
     public MongoDbUtilImplKeepOpen(String mongoAdminUser, String mongoAdminPswd,
-            ServerAddress serverAddress) {
+                                   ServerAddress serverAddress) {
         this.mongoAdminUser = mongoAdminUser;
         this.mongoAdminPswd = mongoAdminPswd;
         this.serverAddress = serverAddress;
@@ -151,7 +150,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
                             "mongodb://" + host + ":" + port + "/?replicaSet=rs0")).
                     writeConcern(WriteConcern.JOURNALED).
                     codecRegistry(allInOne) // .applyToConnectionPoolSettings(builder -> builder.maxWaitTime(10, TimeUnit.SECONDS))
-                    .
+                            .
                     build();
         }
 
@@ -168,7 +167,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     private static boolean isThereTable(MongoClient mongoClient, String db,
-            String collectionName) {
+                                        String collectionName) {
         boolean result = false;
         MongoIterable<String> collection = mongoClient.getDatabase(db).
                 listCollectionNames();
@@ -187,7 +186,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public void remove(String db, String collectionName,
-            Map<String, Object> searchMap)
+                       Map<String, Object> searchMap)
             throws RuntimeException {
         mongoClient.getDatabase(db).
                 getCollection(collectionName, null).
@@ -196,7 +195,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public void deleteOne(String database, String collectionName,
-            Document document) {
+                          Document document) {
         mongoClient.getDatabase(database).
                 getCollection(collectionName).
                 deleteOne(document);
@@ -221,7 +220,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public List<Document> aggregate(String db, String table,
-            List<Document> aggregateList) {
+                                    List<Document> aggregateList) {
 
         AggregateIterable<Document> output = mongoClient.getDatabase(db).
                 getCollection(table).
@@ -238,7 +237,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public MongoCollection getCollection(String db, String collectionName,
-            Document indexObject, boolean unique) {
+                                         Document indexObject, boolean unique) {
 
         MongoCollection dbCollection;
 
@@ -270,7 +269,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     public void createIndex(String db, String collectionName,
-            Document indexObject) {
+                            Document indexObject) {
         ListIndexesIterable<Document> indexes = mongoClient.getDatabase(db).
                 getCollection(collectionName).
                 listIndexes();
@@ -310,7 +309,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public void createIndexUnique(String db, String collectionName,
-            Document indexObject) {
+                                  Document indexObject) {
         mongoClient.getDatabase(db).
                 getCollection(collectionName).
                 createIndex(indexObject, new IndexOptions().unique(true));
@@ -318,7 +317,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public void copyFiles(String fromDbName, String toDbName,
-            Bson fromSearch)
+                          Bson fromSearch)
             throws IOException {
 
         MongoDatabase fromDb = mongoClient.getDatabase(fromDbName);
@@ -423,12 +422,12 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public List<Map<String, Object>> find(FmsForm myForm, String collectionName,
-            Map<String, Object> searchMap,
-            Map<String, Object> returnMap,
-            int skip,
-            int limit,
-            Map<String, Object> sortMap,
-            String searchPrefix) throws NullNotExpectedException {
+                                          Map<String, Object> searchMap,
+                                          Map<String, Object> returnMap,
+                                          int skip,
+                                          int limit,
+                                          Map<String, Object> sortMap,
+                                          String searchPrefix) throws NullNotExpectedException {
 
         List<Map<String, Object>> listMaps = new ArrayList<>();
 
@@ -487,7 +486,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public boolean insertIntoMongo(String db, String collectionName,
-            List<Map> mongoListOfMap) {
+                                   List<Map> mongoListOfMap) {
 
         List<Document> list = new ArrayList<>();
         for (Map map : mongoListOfMap) {
@@ -539,7 +538,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public Document trigger(Document projectSpaceMap, TagEvent trigger,
-            List roles) {
+                            List roles) {
 
         if (trigger == null) {
             return new Document();
@@ -621,7 +620,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public Document findOneWithProjection(String database, String collection,
-            Bson filter, Bson projection) {
+                                          Bson filter, Bson projection) {
         try {
             Document document = mongoClient.getDatabase(database).
                     getCollection(collection).
@@ -636,7 +635,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public boolean runActionAsDbTableFilterResult(Document actionDoc,
-            RoleMap roleMap, Map filter) {
+                                                  RoleMap roleMap, Map filter) {
         String detectedRole = "none";
 
         for (String role : actionDoc.keySet()) {
@@ -734,6 +733,38 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
             return executeVirtualAggregate(database, pipelineStages,
                     finalDoc);
+        } else if ("AGGREGATE_AND_GET".equals(strategy)) {
+
+            Document finalDoc = new Document();
+            reviewedArgs.forEach(finalDoc::putAll);
+
+            Document pipelineStagesMatch = pipelineMeta.get("match", Document.class);
+
+            MongoPlaceholderUtil.resolve(pipelineStagesMatch, finalDoc);
+
+            List<Bson> executablePipeline = new ArrayList<>();
+
+            executablePipeline.add(Aggregates.match(pipelineStagesMatch));
+            if (pipelineStages != null) {
+                executablePipeline.addAll(pipelineStages);
+            }
+
+            String targetCollectionName = pipelineMeta.getString("collection");
+
+            MongoCollection<Document> collection
+                    = database.getCollection(targetCollectionName);
+
+            Document result = collection.aggregate(executablePipeline)
+                    .maxTime(5, TimeUnit.SECONDS)
+                    .hint(new Document("_id", 1)) // Optional: add hint if performance is an issue
+                    .first();
+
+            if (result != null && result.containsKey("result")) {
+                Object obj = result.get("result");
+                return new Document(RETVAL, obj);
+            }
+
+            return result;
 
         } else if ("AGGREGATE_AND_MERGE".equals(strategy)) {
 
@@ -748,7 +779,6 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
             collection.aggregate(executablePipeline).
                     maxTime(5, TimeUnit.SECONDS).
-                    // Trigger the aggregation and force execution by calling toCollection() or a consumer
                     first();
 
             return null;
@@ -800,7 +830,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     private Document executeVirtualAggregate(MongoDatabase database,
-            List<Document> pipelineStages, Document args) {
+                                             List<Document> pipelineStages, Document args) {
 
         List<Document> argAslistOfDocuemnt = new ArrayList<>();
         argAslistOfDocuemnt.add((Document) sanitizeValue(args));
@@ -834,7 +864,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
         if (obj instanceof Map<?, ?> map) {
             Document doc = new Document((Map<String, Object>) map);
             doc.replaceAll((k, v) -> (v instanceof PlainRecord vpr) ? vpr.
-                    getObjectId() : v);
+                                                                      getObjectId() : v);
             return doc;
         }
 
@@ -856,7 +886,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public void updatePush(String database, String collection, Bson filter,
-            Document record) {
+                           Document record) {
 
         for (String key : record.keySet()) {
             if (record.get(key) instanceof Object[]) {
@@ -884,7 +914,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public void upsertOne(String database, String collection, Bson filter,
-            Document record) {
+                          Document record) {
 
         for (String key : record.keySet()) {
             if (record.get(key) instanceof Object[]) {
@@ -959,7 +989,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public void updateOne(String database, String collection, Bson filter,
-            Document record) {
+                          Document record) {
 
         for (String key : record.keySet()) {
             if (record.get(key) instanceof Object[]) {
@@ -1024,7 +1054,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     public void updateMany(FmsForm myForm, Bson filter, Document record,
-            UpdateOptions uo) {
+                           UpdateOptions uo) {
         updateMany(myForm.getDb(), myForm.getTable(), filter, record, uo);
     }
 
@@ -1033,29 +1063,29 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     public void updateMany(String database, String collection,
-            Bson filter, Document record, UpdateOptions uo) {
+                           Bson filter, Document record, UpdateOptions uo) {
         mongoClient.getDatabase(database).
                 getCollection(collection).
                 updateMany(filter, new Document(DOLAR_SET, record), uo);
     }
 
     public void updateMany(String database, String collection,
-            Bson filter, Document record) {
+                           Bson filter, Document record) {
         mongoClient.getDatabase(database).
                 getCollection(collection).
                 updateMany(filter, new Document(DOLAR_SET, record));
     }
 
     public List<DocumentRecursive> findListAsName(String myFormDb,
-            String myFormTable,
-            FmsForm myForm, Document searcheDBObject, Integer limit) {
+                                                  String myFormTable,
+                                                  FmsForm myForm, Document searcheDBObject, Integer limit) {
         List<Document> cursor = createCursor(myFormDb, myFormTable,
                 searcheDBObject, limit);
         return cursorToListAsName(cursor, myForm);
     }
 
     private List<DocumentRecursive> cursorToListAsName(List<Document> cursor,
-            FmsForm myForm) {
+                                                       FmsForm myForm) {
         List<DocumentRecursive> list = new ArrayList<>();
 
         for (Document document : cursor) {
@@ -1067,7 +1097,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     private static void armBsonRefs(Document document, FmsForm myForm,
-            Map manualDbRefs) {
+                                    Map manualDbRefs) {
         Set<String> keySet = new HashSet<>(document.keySet());
         for (String key : keySet) {
             Object keyValue = document.get(key);
@@ -1082,13 +1112,13 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
                         myDb = myForm.getDb();
                     }
                     String myColl = myField.getRefCollection() == null ? myField.
-                            getItemsAsMyItems().
-                            getTable() : myField.getRefCollection();
+                                                                         getItemsAsMyItems().
+                                                                         getTable() : myField.getRefCollection();
                     def.put(FORM_DB, myDb == null ? myForm.getDb() : myDb);
                     def.put(COLLECTION_NAME, myColl);
                     def.put(MONGO_ID, keyValue);
                     def.put("viewKeys", myField.getViewKey() == null ? Arrays.
-                            asList(NAME) : myField.getViewKey());
+                                                                       asList(NAME) : myField.getViewKey());
                     manualDbRefs.put(key, def);
                 } else {
                     document.remove(key);
@@ -1121,7 +1151,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
             IOException {
         GridFSBucket gridFS = createGridFSConnection(db);
         MyFile myFile = new MyFile(gridFS, gridFS.find(Filters.eq("_id",
-                objectId)).
+                        objectId)).
                 first())
                 .withBytes();
         return myFile;
@@ -1132,7 +1162,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
             throws IOException {
         GridFSBucket gridFS = createGridFSConnection(db);
         MyFile myFile = new MyFile(gridFS, gridFS.find(Filters.eq("_id",
-                objectId)).
+                        objectId)).
                 first());
         return myFile;
     }
@@ -1162,8 +1192,8 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
                                             gridFSFile));
                                 } catch (IOException ex) {
                                     java.util.logging.Logger.getLogger(
-                                            MongoDbUtilImplKeepOpen.class.
-                                                    getName()).
+                                                    MongoDbUtilImplKeepOpen.class.
+                                                            getName()).
                                             log(Level.SEVERE, null, ex);
                                 }
                             });
@@ -1185,7 +1215,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     public List<FmsFile> findFilesAsFmsFileNoContent(String db,
-            BasicDBObject basicDBObject, int skip, int limit) {
+                                                     BasicDBObject basicDBObject, int skip, int limit) {
 
         GridFSBucket gridFS = createGridFSConnection(db);
 
@@ -1209,7 +1239,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public List<MyFile> findFileList(String db, BasicDBObject basicDBObject,
-            int skip, int limit) {
+                                     int skip, int limit) {
 
         GridFSBucket gridFS = createGridFSConnection(db);
 
@@ -1245,7 +1275,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public ObjectId createFile(String dbName, String filename, File file,
-            Document externalMetadata) throws IOException {
+                               Document externalMetadata) throws IOException {
         // 1. Get the bucket for the database
         GridFSBucket gridFSBucket = GridFSBuckets.create(mongoClient.
                 getDatabase(dbName));
@@ -1271,7 +1301,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public ObjectId createFile(String dbName, String filename,
-            InputStream inputStream, Document externalMetadata) {
+                               InputStream inputStream, Document externalMetadata) {
         // 1. Get the bucket
         GridFSBucket gridFSBucket = GridFSBuckets.create(mongoClient.
                 getDatabase(dbName));
@@ -1368,7 +1398,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public List<Document> findWithProjection(String database, String collection,
-            Bson filter, Bson projection) {
+                                             Bson filter, Bson projection) {
         FindIterable<Document> list = mongoClient.getDatabase(database).
                 getCollection(collection).
                 find(filter).
@@ -1381,7 +1411,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     public List<Document> findWithProjection(String database, String collection,
-            Bson filter, Bson sort, Number limit, Bson projection) {
+                                             Bson filter, Bson sort, Number limit, Bson projection) {
         FindIterable<Document> list = mongoClient.getDatabase(database).
                 getCollection(collection).
                 find(filter).
@@ -1404,8 +1434,8 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public List<Document> findProjectLookup(String database, String collection,
-            Bson filter, Bson sort, Number limit, Bson projection,
-            MyLookup myLookup, Document resultProjection) {
+                                            Bson filter, Bson sort, Number limit, Bson projection,
+                                            MyLookup myLookup, Document resultProjection) {
 
         List<Document> documents = findWithProjection(database, collection,
                 filter, sort, limit, projection);
@@ -1464,7 +1494,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     public List<Document> find(String database, String collection, Bson filter,
-            Bson sort, Number limit) {
+                               Bson sort, Number limit) {
         FindIterable<Document> list = mongoClient
                 .getDatabase(database).
                 getCollection(collection).
@@ -1486,7 +1516,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
     }
 
     public List<Document> findSkipLimit(String database, String collection,
-            Bson filter, Number skip, Number limit) {
+                                        Bson filter, Number skip, Number limit) {
         FindIterable<Document> list = mongoClient.getDatabase(database).
                 getCollection(collection).
                 find(filter);
@@ -1508,7 +1538,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public List<Document> createCursor(String myFormDb, String myFormTable,
-            Document searcheDBObject, Integer limit) {
+                                       Document searcheDBObject, Integer limit) {
         FindIterable<Document> cursor = mongoClient.getDatabase(myFormDb).
                 getCollection(myFormTable).
                 find(searcheDBObject);
@@ -1524,7 +1554,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
     @Override
     public List<Document> createCursor(String myFormDb, String myFormTable,
-            Bson searcheDBObject, Integer limit) {
+                                       Bson searcheDBObject, Integer limit) {
         FindIterable<Document> cursor = mongoClient.getDatabase(myFormDb).
                 getCollection(myFormTable).
                 find(searcheDBObject);
