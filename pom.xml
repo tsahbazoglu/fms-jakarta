@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project 
-    xmlns="http://maven.apache.org/POM/4.0.0" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>       
-        
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
     <groupId>tr.org.tspb</groupId>
     <artifactId>fms</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>${project.groupId} : ${project.artifactId} : ${project.version}</name>
-    
+
     <modules>
-       
+
         <module>common</module>
         <module>constants</module>
         <module>factory</module>
@@ -28,14 +28,14 @@
         <module>pivot</module>
         <module>logger</module>
         <module>table</module>
-        <module>page</module> 
+        <module>page</module>
         <module>fms-ejb</module>
         <module>fms-war</module>
         <module>fms-ear</module>
     </modules>
-    
+
     <repositories>
-        
+
         <!--        
         https://backstage.forgerock.com/knowledge/kb/article/a15127846
         
@@ -43,24 +43,24 @@
         See Maven Release Notes - CVE-2021-26291 for further information.
         https://maven.apache.org/docs/3.8.1/release-notes.html#cve-2021-26291
         -->
-        
+
         <repository>
             <id>KamuSM</id>
             <url>http://nexus.ozguryazilim.com.tr/content/repositories/KamuSM</url>
         </repository>
         <repository>
-            <id>prime-repo</id>  
-            <name>PrimeFaces Maven Repository</name>  
-            <url>https://repository.primefaces.org</url>  
-            <layout>default</layout>  
+            <id>prime-repo</id>
+            <name>PrimeFaces Maven Repository</name>
+            <url>https://repository.primefaces.org</url>
+            <layout>default</layout>
         </repository>
-                
+
         <repository>
             <id>jasperreports</id>
             <url>https://jasperreports.sourceforge.net/maven2</url>
         </repository>
-         
-    </repositories>   
+
+    </repositories>
 
     <properties>
         <jdk.source>17</jdk.source>
@@ -72,39 +72,41 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.release>17</maven.compiler.release>
-             
-        <fms.version>1.0.0</fms.version>   
-        <fms.constants.version>1.0.0</fms.constants.version>   
-        <fms.common.version>1.0.0</fms.common.version>   
-        <fms.converter.version>1.0.0</fms.converter.version>   
+
+        <fms.version>1.0.0</fms.version>
+        <fms.constants.version>1.0.0</fms.constants.version>
+        <fms.common.version>1.0.0</fms.common.version>
+        <fms.converter.version>1.0.0</fms.converter.version>
         <fms.datamodel.version>1.0.0</fms.datamodel.version>
-        <fms.esign.version>1.0.0</fms.esign.version> 
-        <fms.factory.version>1.0.0</fms.factory.version>   
-        <fms.logger.version>1.0.0</fms.logger.version>    
-        <fms.notification.version>1.0.0</fms.notification.version>    
-        <fms.outsider.version>1.0.0</fms.outsider.version>   
-        <fms.printer.version>1.0.0</fms.printer.version>  
-        <fms.fgtpswd.version>1.0.0</fms.fgtpswd.version>  
-        <fms.pivot.version>1.0.0</fms.pivot.version>   
-        <fms.page.version>1.0.0</fms.page.version>   
-        <fms.service.version>1.0.0</fms.service.version>   
-        <fms.table.version>1.0.0</fms.table.version>   
-        <fms.util.version>1.0.0</fms.util.version>    
-        <fms.webclient.version>1.0.0</fms.webclient.version>    
-        <fms.workflow.version>1.0.0</fms.workflow.version>    
-     
-        <slf4j.version>2.0.17</slf4j.version>   
+        <fms.esign.version>1.0.0</fms.esign.version>
+        <fms.factory.version>1.0.0</fms.factory.version>
+        <fms.logger.version>1.0.0</fms.logger.version>
+        <fms.notification.version>1.0.0</fms.notification.version>
+        <fms.outsider.version>1.0.0</fms.outsider.version>
+        <fms.printer.version>1.0.0</fms.printer.version>
+        <fms.fgtpswd.version>1.0.0</fms.fgtpswd.version>
+        <fms.pivot.version>1.0.0</fms.pivot.version>
+        <fms.page.version>1.0.0</fms.page.version>
+        <fms.service.version>1.0.0</fms.service.version>
+        <fms.table.version>1.0.0</fms.table.version>
+        <fms.util.version>1.0.0</fms.util.version>
+        <fms.webclient.version>1.0.0</fms.webclient.version>
+        <fms.workflow.version>1.0.0</fms.workflow.version>
+
+        <slf4j.version>2.0.17</slf4j.version>
         <jakartaee>11.0.0</jakartaee>
-        
+
         <!--<dependency.scope>provided</dependency.scope>-->
         <dependency.scope>compile</dependency.scope>
-               
-        
+
+        <esign.backend.artifact>fms-esign-core-oyas-backend</esign.backend.artifact>
+        <esign.ui.artifact>fms-esign-core-oyas-ui</esign.ui.artifact>
+
     </properties>
-        
-   
+
+
     <dependencyManagement>
-        <dependencies>            
+        <dependencies>
             <!-- provided -->
             <dependency>
                 <groupId>jakarta.platform</groupId>
@@ -139,13 +141,13 @@
                 <!--<version>4.0.0</version>-->
                 <scope>compile</scope>
             </dependency>
-                      
+
             <dependency>
                 <groupId>org.primefaces.themes</groupId>
                 <artifactId>all-themes</artifactId>
                 <version>1.1.0</version>
                 <scope>${dependency.scope}</scope>
-            </dependency> 
+            </dependency>
 
             <!--
             <dependency>
@@ -155,7 +157,7 @@
                 <scope>${dependency.scope}</scope>
             </dependency>
             -->
-            
+
             <dependency>
                 <groupId>org.graalvm.js</groupId>
                 <artifactId>js-scriptengine</artifactId>
@@ -187,16 +189,16 @@
                 <version>5.5.1</version>
                 <type>jar</type>
                 <scope>${dependency.scope}</scope>
-            </dependency> 
+            </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>fop</artifactId>
                 <version>2.11</version>
                 <type>jar</type>
                 <scope>${dependency.scope}</scope>
-            </dependency> 
+            </dependency>
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>            
+                <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>2.25.4</version>
                 <scope>${dependency.scope}</scope>
@@ -231,27 +233,27 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
                 <scope>${dependency.scope}</scope>
-            </dependency>  
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-jdk14</artifactId>
                 <version>${slf4j.version}</version>
                 <scope>${dependency.scope}</scope>
-            </dependency>    
+            </dependency>
             <dependency>
                 <groupId>dk.brics.automaton</groupId>
                 <artifactId>automaton</artifactId>
                 <version>1.11-8</version>
                 <type>jar</type>
                 <scope>${dependency.scope}</scope>
-            </dependency>  
+            </dependency>
             <dependency>
                 <groupId>net.sourceforge.jeval</groupId>
                 <artifactId>jeval</artifactId>
                 <version>0.9.4</version>
                 <type>jar</type>
                 <scope>${dependency.scope}</scope>
-            </dependency>      
+            </dependency>
             <dependency>
                 <groupId>com.github.oxo42</groupId>
                 <artifactId>stateless4j</artifactId>
@@ -270,7 +272,7 @@
                 <artifactId>org.everit.json.schema</artifactId>
                 <version>1.3.0</version>
                 <scope>${dependency.scope}</scope>
-            </dependency>  
+            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
@@ -283,7 +285,7 @@
                 <version>19.0</version>
                 <type>jar</type>
                 <scope>${dependency.scope}</scope>
-            </dependency>         
+            </dependency>
             <dependency>
                 <groupId>com.github.xmlet</groupId>
                 <artifactId>htmlApiFaster</artifactId>
@@ -295,15 +297,15 @@
                     </exclusion>
                 </exclusions>
                 <scope>${dependency.scope}</scope>
-            </dependency> 
+            </dependency>
             <dependency>
                 <groupId>com.github.xmlet</groupId>
-                <artifactId>htmlflow</artifactId>                
+                <artifactId>htmlflow</artifactId>
                 <version>4.6</version>
                 <type>jar</type>
                 <scope>${dependency.scope}</scope>
-            </dependency>  
-              
+            </dependency>
+
             <!--fms jars-->
             <!--
            <dependency>
@@ -374,83 +376,94 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>fms-workflow</artifactId>
                 <version>${fms.workflow.version}</version>
-            </dependency>   
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>fms-datamodel</artifactId>
                 <version>${fms.datamodel.version}</version>
-            </dependency> 
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>fms-notification</artifactId>
                 <version>${fms.notification.version}</version>
-            </dependency>   
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>fms-util</artifactId>
                 <version>${fms.util.version}</version>
-            </dependency>    
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>fms-converter</artifactId>
                 <version>${fms.converter.version}</version>
-            </dependency> 
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>fms-factory</artifactId>
                 <version>${fms.factory.version}</version>
             </dependency>
-          
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>${esign.backend.artifact}</artifactId>
+                <version>${fms.esign.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.mongodb</groupId>
+                        <artifactId>mongo-java-driver</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>${esign.ui.artifact}</artifactId>
+                <version>${fms.esign.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <profiles>
         <profile>
-            <id>esignSupport</id>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>${project.groupId}</groupId>
-                        <artifactId>fms-esign-core</artifactId>
-                        <version>${fms.esign.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>org.slf4j</groupId>
-                                <artifactId>slf4j-api</artifactId>
-                            </exclusion>
-                            <exclusion>
-                                <groupId>com.google.guava</groupId>
-                                <artifactId>guava</artifactId>
-                            </exclusion>
-                            <exclusion>
-                                <groupId>org.mongodb</groupId>
-                                <artifactId>mongo-java-driver</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
+            <id>esignOyas</id>
+            <properties>
+                <esign.backend.artifact>fms-esign-core-oyas-backend</esign.backend.artifact>
+                <esign.ui.artifact>fms-esign-core-oyas-ui</esign.ui.artifact>
+            </properties>
+        </profile>
+        <profile>
+            <id>esignKamusm</id>
+            <properties>
+                <esign.backend.artifact>fms-esign-core-kamusm-backend</esign.backend.artifact>
+                <esign.ui.artifact>fms-esign-core-kamusm-ui</esign.ui.artifact>
+            </properties>
         </profile>
     </profiles>
-    
+
     <dependencies>
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
-        </dependency> 
-        
+        </dependency>
+
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>  
-        
+        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>fms-esign-web</artifactId>
-            <version>1.0.0</version>
-        </dependency>     
+            <artifactId>${esign.ui.artifact}</artifactId>
+        </dependency>
+
     </dependencies>
-    
+
     <build>
         <pluginManagement>
             <plugins>
@@ -461,10 +474,10 @@
                     <configuration>
                         <source>${jdk.source}</source>
                         <target>${jdk.target}</target>
-                        <encoding>${encoding}</encoding>                                              
+                        <encoding>${encoding}</encoding>
                     </configuration>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
@@ -473,20 +486,20 @@
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
                 </plugin>
-            
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ejb-plugin</artifactId>
                     <version>3.3.0</version>
                     <configuration>
-                        <ejbVersion>4.0</ejbVersion> 
+                        <ejbVersion>4.0</ejbVersion>
                         <generateClient>false</generateClient>
                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
-                   
-        <plugins>   
+
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
@@ -505,18 +518,18 @@
                         </webModule>
                         <jarModule>
                             <groupId>tr.org.tspb</groupId>
-                            <artifactId>fms-esign-web</artifactId>
-                            <bundleDir>/</bundleDir> 
+                            <artifactId>${esign.ui.artifact}</artifactId>
+                            <bundleDir>/</bundleDir>
                             <excluded>true</excluded>
                         </jarModule>
-                    </modules>   
-                    <unpackTypes>war,ejb</unpackTypes>                 
+                    </modules>
+                    <unpackTypes>war,ejb</unpackTypes>
                 </configuration>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>                
-            </plugin>  
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -547,7 +560,6 @@
                     </execution>
                 </executions>
             </plugin>
-             
         </plugins>
     </build>
 
@@ -560,6 +572,6 @@
             </plugin>
         </plugins>
     </reporting>
-    
+
 </project>
 

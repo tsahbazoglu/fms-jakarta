@@ -92,152 +92,6 @@ Verify that your local environment variables match the project versioning requir
 Run the Maven build to synchronize the configuration with your local server instance.
 ----
 
-==== Mavenize TUBİTAK MA3API
-
-* https://yazilim.kamusm.gov.tr
-
-* http://www.kamusm.gov.tr/hizmetler/test_sistemi/
-
-* wget https://yazilim.kamusm.gov.tr/sites/default/files/public/ma3api-java-{ma3api-version}.zip
-
-*unzip ma3api-java-{ma3api-version}.zip -d kamusm-{ma3api-version}*
-  
-*cd kamusm-{ma3api-version}/lib*
-
-[source,js,subs="attributes,verbatim,quotes"]
-----
-
-# MA3API
-
-ls -lrt ma3api-xmlsignature-{ma3api-version}.jar
-mvn install:install-file -Dfile=ma3api-xmlsignature-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-xmlsignature \
--Dversion={ma3api-version} -Dpackaging=jar                 
-
-ls -lrt ma3api-turkcellmssprovider-{ma3api-version}.jar
-mvn install:install-file -Dfile=ma3api-turkcellmssprovider-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-turkcellmssprovider \
--Dversion={ma3api-version} -Dpackaging=jar           
-
-ls -lrt ma3api-smartcard-android-ccid-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-smartcard-android-ccid-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-smartcard-android-ccid \
--Dversion={ma3api-version} -Dpackaging=jar          
-
-ls -lrt ma3api-smartcard-android-acs-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-smartcard-android-acs-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-smartcard-android-acs \
--Dversion={ma3api-version} -Dpackaging=jar          
-
-ls -lrt ma3api-smartcard-android-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-smartcard-android-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-smartcard-android \
--Dversion={ma3api-version} -Dpackaging=jar            
-
-ls -lrt ma3api-smartcard-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-smartcard-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-smartcard \
--Dversion={ma3api-version} -Dpackaging=jar                  
-
-ls -lrt ma3api-signature-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-signature-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-signature \
--Dversion={ma3api-version} -Dpackaging=jar                      
-
-ls -lrt ma3api-pades-asn-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-pades-asn-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-pades-asn \
--Dversion={ma3api-version} -Dpackaging=jar                  
-
-ls -lrt ma3api-pades-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-pades-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-pades \
--Dversion={ma3api-version} -Dpackaging=jar                     
-
-ls -lrt ma3api-mssclient-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-mssclient-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-mssclient \
--Dversion={ma3api-version} -Dpackaging=jar                 
-
-ls -lrt ma3api-infra-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-infra-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-infra \
--Dversion={ma3api-version} -Dpackaging=jar                      
-
-ls -lrt ma3api-crypto-sunprovider-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-crypto-sunprovider-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-crypto-sunprovider \
--Dversion={ma3api-version} -Dpackaging=jar             
-
-ls -lrt ma3api-crypto-gnuprovider-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-crypto-gnuprovider-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-crypto-gnuprovider \
--Dversion={ma3api-version} -Dpackaging=jar              
-
-ls -lrt ma3api-crypto-{ma3api-version}.jar
-mvn install:install-file -Dfile=ma3api-crypto-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-crypto \
--Dversion={ma3api-version} -Dpackaging=jar                      
-
-ls -lrt ma3api-common-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-common-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-common \
--Dversion={ma3api-version} -Dpackaging=jar                     
-
-ls -lrt ma3api-cmssignature-{ma3api-version}.jar
-mvn install:install-file -Dfile=ma3api-cmssignature-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-cmssignature \
--Dversion={ma3api-version} -Dpackaging=jar                 
-
-ls -lrt ma3api-certvalidation-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-certvalidation-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-certvalidation \
--Dversion={ma3api-version} -Dpackaging=jar                 
-
-ls -lrt ma3api-certstore-{ma3api-version}.jar
-mvn install:install-file -Dfile=ma3api-certstore-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-certstore \
--Dversion={ma3api-version} -Dpackaging=jar                                 
-
-ls -lrt ma3api-aveamssprovider-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-aveamssprovider-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-aveamssprovider \
--Dversion={ma3api-version} -Dpackaging=jar                                     
-
-ls -lrt ma3api-asn-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-asn-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-asn \
--Dversion={ma3api-version} -Dpackaging=jar                        
-
-ls -lrt ma3api-asic-{ma3api-version}.jar
-mvn install:install-file \
--Dfile=ma3api-asic-{ma3api-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-asic \
--Dversion={ma3api-version} -Dpackaging=jar  
-
-# Others (must)
-ls -lrt akiscif-{akiscif-version}.jar
-mvn install:install-file -Dfile=akiscif-{akiscif-version}.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=akiscif \
--Dversion={akiscif-version} -Dpackaging=jar                                                         
-   
-----
-
 === Clean Glassfish
 [source,js,subs="attributes,verbatim,quotes"]
 ----        
@@ -249,6 +103,9 @@ asadmin stop-domain
 rm -rf {server-path}/domains/domain1/osgi-cache
 rm -rf {server-path}/domains/domain1/generated
 rm -rf {server-path}/domains/domain1/applications/fms-ear-{project_version}
+asadmin start-domain --debug
+
+asadmin stop-domain
 rm -rf {server-path}/domains/domain1/lib/*.jar
 asadmin start-domain --debug
 ----
@@ -274,47 +131,41 @@ mvn clean install -Ddependency.scope=compile
 [source,js,subs="attributes,verbatim,quotes"]
 ----
 cd {project_path}
-mvn clean install -PesignSupport -Ddependency.scope=compile
+
+mvn clean install -PesignOyas -Ddependency.scope=compile
+
+mvn clean install -PesignKamusm -Ddependency.scope=compile
+
 ----
 
 === Library Migration (GlassFish)
 
 Extract the libraries from the EAR and move them to the domain library folder to avoid redundant bundling:
 
+==== Navigate to deployment target
 [source,js,subs="attributes,verbatim,quotes"]
 ----  
-# Navigate to deployment target
-
 cd {project_path}/fms-ear/target/
+
 jar -xvf fms-ear-{project_version}.ear
 
-# Deploy fresh libraries
+ls -lrt lib/*.jar
+----
 
+==== Deploy fresh libraries
+[source,js,subs="attributes,verbatim,quotes"]
+----
 cp lib/*.jar {server-path}/domains/domain1/lib
+----
 
-# Remove project-specific libraries from the local path to prevent JAR confusion
-
+==== Remove project-specific libraries from the local path to prevent JAR confusion
+[source,js,subs="attributes,verbatim,quotes"]
+----
 # FMS Jars
-rm -rf {server-path}/domains/domain1/lib/fms-common-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-constants-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-converter-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-datamodel-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-factory-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-fgtpswd-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-logger-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-notification-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-outsider-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-page-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-pivot-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-service-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-table-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-util-1.0.0.jar
+rm -rf {server-path}/domains/domain1/lib/fms-*
 
-# Esign Jars
-rm -rf {server-path}/domains/domain1/lib/fms-esign-core-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/fms-esign-util-1.0.0.jar
-rm -rf {server-path}/domains/domain1/lib/muhurdar-utils-1.0.0-SNAPSHOT.jar
-rm -rf {server-path}/domains/domain1/lib/muhurdar-servlet-1.0.0-SNAPSHOT.jar
+# Muhurdar Jars
+rm -rf {server-path}/domains/domain1/lib/muhurdar-*
 
 # MA3API Jars
 rm -rf {server-path}/domains/domain1/lib/ma3api-cmssignature-{ma3api-version}.jar
@@ -331,9 +182,11 @@ rm -rf {server-path}/domains/domain1/lib/ma3api-certstore-{ma3api-version}.jar
 
 # MA3API Additional Jars
 rm -rf {server-path}/domains/domain1/lib/akiscif-3.3.20.jar
+----
 
-# Restart the domain to refresh the ClassLoader
-
+==== Restart the domain to refresh the ClassLoader
+[source,js,subs="attributes,verbatim,quotes"]
+----
 asadmin stop-domain;
 asadmin start-domain --debug;  
 
@@ -357,31 +210,11 @@ mvn clean install -Ddependency.scope=provided
 [source,js,subs="attributes,verbatim,quotes"]
 ----     
 cd {project_path}
-mvn clean install -PesignSupport -Ddependency.scope=provided            
-----
 
-[NOTE]
-====
-When using the `outsider` module, ensure the CDI alternatives in `beans.xml` are correctly configured for your specific `EsignDoor` implementation.
-====
-    
-----
-<artifactId>fms-outsider</artifactId>
-----
+mvn clean install -PesignOyas -Ddependency.scope=provided
 
-~/github/fms/outsider/src/main/resources/META-INF/beans.xml::
-----
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
-       version="4.0"
-       bean-discovery-mode="annotated">
-    <alternatives>
-        <class>tr.org.tspb.outsider.impl.EsignDoorDefaultImpl</class>
-        <!--<class>tr.org.tspb.esign.gateway.EsignDoorMuhurdarImpl</class>-->
-    </alternatives>
-</beans>
+mvn clean install -PesignKamusm -Ddependency.scope=provided
+
 ----
 
 === Production deployment

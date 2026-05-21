@@ -454,7 +454,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_environment_requirements">3.1. Environment Requirements</a>
 <ul class="sectlevel3">
 <li><a href="#_setup_instructions">3.1.1. Setup Instructions</a></li>
-<li><a href="#_mavenize_tubi̇tak_ma3api">3.1.2. Mavenize TUBİTAK MA3API</a></li>
 </ul>
 </li>
 <li><a href="#_clean_glassfish">3.2. Clean Glassfish</a></li>
@@ -465,7 +464,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_standalone_compile">5.1. Standalone Compile</a></li>
 <li><a href="#_standalone_compile_e_sign_support">5.2. Standalone compile + E-sign Support</a></li>
-<li><a href="#_library_migration_glassfish">5.3. Library Migration (GlassFish)</a></li>
+<li><a href="#_library_migration_glassfish">5.3. Library Migration (GlassFish)</a>
+<ul class="sectlevel3">
+<li><a href="#_navigate_to_deployment_target">5.3.1. Navigate to deployment target</a></li>
+<li><a href="#_deploy_fresh_libraries">5.3.2. Deploy fresh libraries</a></li>
+<li><a href="#_remove_project_specific_libraries_from_the_local_path_to_prevent_jar_confusion">5.3.3. Remove project-specific libraries from the local path to prevent JAR confusion</a></li>
+<li><a href="#_restart_the_domain_to_refresh_the_classloader">5.3.4. Restart the domain to refresh the ClassLoader</a></li>
+</ul>
+</li>
 <li><a href="#_optimized_build_provided_scope">5.4. Optimized Build (Provided Scope)</a></li>
 <li><a href="#_optimized_build_e_sign_support_provided_scope">5.5. Optimized Build + E-sign Support (Provided Scope)</a></li>
 <li><a href="#_production_deployment">5.6. Production deployment</a></li>
@@ -605,160 +611,6 @@ Run the Maven build to synchronize the configuration with your local server inst
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_mavenize_tubi̇tak_ma3api">3.1.2. Mavenize TUBİTAK MA3API</h4>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://yazilim.kamusm.gov.tr" class="bare">https://yazilim.kamusm.gov.tr</a></p>
-</li>
-<li>
-<p><a href="http://www.kamusm.gov.tr/hizmetler/test_sistemi/" class="bare">http://www.kamusm.gov.tr/hizmetler/test_sistemi/</a></p>
-</li>
-<li>
-<p>wget <a href="https://yazilim.kamusm.gov.tr/sites/default/files/public/ma3api-java-2.3.11.8.zip" class="bare">https://yazilim.kamusm.gov.tr/sites/default/files/public/ma3api-java-2.3.11.8.zip</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>unzip ma3api-java-2.3.11.8.zip -d kamusm-2.3.11.8</strong></p>
-</div>
-<div class="paragraph">
-<p><strong>cd kamusm-2.3.11.8/lib</strong></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js"># MA3API
-
-ls -lrt ma3api-xmlsignature-2.3.11.8.jar
-mvn install:install-file -Dfile=ma3api-xmlsignature-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-xmlsignature \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-turkcellmssprovider-2.3.11.8.jar
-mvn install:install-file -Dfile=ma3api-turkcellmssprovider-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-turkcellmssprovider \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-smartcard-android-ccid-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-smartcard-android-ccid-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-smartcard-android-ccid \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-smartcard-android-acs-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-smartcard-android-acs-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-smartcard-android-acs \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-smartcard-android-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-smartcard-android-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-smartcard-android \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-smartcard-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-smartcard-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-smartcard \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-signature-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-signature-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-signature \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-pades-asn-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-pades-asn-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-pades-asn \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-pades-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-pades-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-pades \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-mssclient-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-mssclient-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-mssclient \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-infra-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-infra-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-infra \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-crypto-sunprovider-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-crypto-sunprovider-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-crypto-sunprovider \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-crypto-gnuprovider-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-crypto-gnuprovider-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-crypto-gnuprovider \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-crypto-2.3.11.8.jar
-mvn install:install-file -Dfile=ma3api-crypto-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-crypto \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-common-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-common-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-common \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-cmssignature-2.3.11.8.jar
-mvn install:install-file -Dfile=ma3api-cmssignature-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-cmssignature \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-certvalidation-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-certvalidation-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-certvalidation \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-certstore-2.3.11.8.jar
-mvn install:install-file -Dfile=ma3api-certstore-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-certstore \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-aveamssprovider-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-aveamssprovider-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-aveamssprovider \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-asn-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-asn-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-asn \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-ls -lrt ma3api-asic-2.3.11.8.jar
-mvn install:install-file \
--Dfile=ma3api-asic-2.3.11.8.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=ma3api-asic \
--Dversion=2.3.11.8 -Dpackaging=jar
-
-# Others (must)
-ls -lrt akiscif-3.3.20.jar
-mvn install:install-file -Dfile=akiscif-3.3.20.jar \
--DgroupId=tr.gov.tubitak.esya -DartifactId=akiscif \
--Dversion=3.3.20 -Dpackaging=jar</code></pre>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_clean_glassfish">3.2. Clean Glassfish</h3>
@@ -772,6 +624,9 @@ asadmin stop-domain
 rm -rf ~/apps/glassfish8/glassfish/domains/domain1/osgi-cache
 rm -rf ~/apps/glassfish8/glassfish/domains/domain1/generated
 rm -rf ~/apps/glassfish8/glassfish/domains/domain1/applications/fms-ear-1.0.0
+asadmin start-domain --debug
+
+asadmin stop-domain
 rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/*.jar
 asadmin start-domain --debug</code></pre>
 </div>
@@ -809,7 +664,10 @@ mvn clean install -Ddependency.scope=compile</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
-mvn clean install -PesignSupport -Ddependency.scope=compile</code></pre>
+
+mvn clean install -PesignOyas -Ddependency.scope=compile
+
+mvn clean install -PesignKamusm -Ddependency.scope=compile</code></pre>
 </div>
 </div>
 </div>
@@ -818,40 +676,35 @@ mvn clean install -PesignSupport -Ddependency.scope=compile</code></pre>
 <div class="paragraph">
 <p>Extract the libraries from the EAR and move them to the domain library folder to avoid redundant bundling:</p>
 </div>
+<div class="sect3">
+<h4 id="_navigate_to_deployment_target">5.3.1. Navigate to deployment target</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js"># Navigate to deployment target
+<pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta/fms-ear/target/
 
-cd ~/github/fms-jakarta/fms-ear/target/
 jar -xvf fms-ear-1.0.0.ear
 
-# Deploy fresh libraries
+ls -lrt lib/*.jar</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_deploy_fresh_libraries">5.3.2. Deploy fresh libraries</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">cp lib/*.jar ~/apps/glassfish8/glassfish/domains/domain1/lib</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_remove_project_specific_libraries_from_the_local_path_to_prevent_jar_confusion">5.3.3. Remove project-specific libraries from the local path to prevent JAR confusion</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js"># FMS Jars
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-*
 
-cp lib/*.jar ~/apps/glassfish8/glassfish/domains/domain1/lib
-
-# Remove project-specific libraries from the local path to prevent JAR confusion
-
-# FMS Jars
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-common-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-constants-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-converter-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-datamodel-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-factory-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-fgtpswd-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-logger-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-notification-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-outsider-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-page-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-pivot-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-service-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-table-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-util-1.0.0.jar
-
-# Esign Jars
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-esign-core-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/fms-esign-util-1.0.0.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/muhurdar-utils-1.0.0-SNAPSHOT.jar
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/muhurdar-servlet-1.0.0-SNAPSHOT.jar
+# Muhurdar Jars
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/muhurdar-*
 
 # MA3API Jars
 rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-cmssignature-2.3.11.8.jar
@@ -867,14 +720,19 @@ rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-certvalidation-2.3
 rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/ma3api-certstore-2.3.11.8.jar
 
 # MA3API Additional Jars
-rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/akiscif-3.3.20.jar
-
-# Restart the domain to refresh the ClassLoader
-
-asadmin stop-domain;
+rm -rf ~/apps/glassfish8/glassfish/domains/domain1/lib/akiscif-3.3.20.jar</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_restart_the_domain_to_refresh_the_classloader">5.3.4. Restart the domain to refresh the ClassLoader</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">asadmin stop-domain;
 asadmin start-domain --debug;
 
 ls -lrt ~/apps/glassfish8/glassfish/domains/domain1/lib</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -906,46 +764,10 @@ mvn clean install -Ddependency.scope=provided</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">cd ~/github/fms-jakarta
-mvn clean install -PesignSupport -Ddependency.scope=provided</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>When using the <code>outsider</code> module, ensure the CDI alternatives in <code>beans.xml</code> are correctly configured for your specific <code>EsignDoor</code> implementation.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>&lt;artifactId&gt;fms-outsider&lt;/artifactId&gt;</pre>
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">~/github/fms/outsider/src/main/resources/META-INF/beans.xml</dt>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
-       version="4.0"
-       bean-discovery-mode="annotated"&gt;
-    &lt;alternatives&gt;
-        &lt;class&gt;tr.org.tspb.outsider.impl.EsignDoorDefaultImpl&lt;/class&gt;
-        &lt;!--&lt;class&gt;tr.org.tspb.esign.gateway.EsignDoorMuhurdarImpl&lt;/class&gt;--&gt;
-    &lt;/alternatives&gt;
-&lt;/beans&gt;</pre>
+
+mvn clean install -PesignOyas -Ddependency.scope=provided
+
+mvn clean install -PesignKamusm -Ddependency.scope=provided</code></pre>
 </div>
 </div>
 </div>
@@ -1185,7 +1007,7 @@ asadmin start-domain --debug</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2026-05-07 14:32:56 +0300
+Last updated 2026-05-21 16:37:38 +0300
 </div>
 </div>
 </body>

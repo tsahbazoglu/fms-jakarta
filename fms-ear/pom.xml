@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>fms</artifactId>
         <groupId>tr.org.tspb</groupId>
         <version>1.0.0</version>
     </parent>
-    
+
     <artifactId>fms-ear</artifactId>
     <version>1.0.0</version>
     <packaging>ear</packaging>
@@ -21,11 +22,11 @@
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <classifier>jakarta</classifier>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>org.webjars.npm</groupId>
-            <artifactId>primeflex</artifactId>            
-        </dependency>         
+            <artifactId>primeflex</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.primefaces.themes</groupId>
             <artifactId>all-themes</artifactId>
@@ -33,19 +34,19 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>    
+        </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.jeval</groupId>
-            <artifactId>jeval</artifactId>              
-        </dependency> 
+            <artifactId>jeval</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-        </dependency>  
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
@@ -58,7 +59,7 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-      
+
         <dependency>
             <groupId>org.graalvm.js</groupId>
             <artifactId>js-scriptengine</artifactId>
@@ -86,7 +87,7 @@
         <dependency>
             <groupId>com.github.xmlet</groupId>
             <artifactId>htmlApiFaster</artifactId>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>org.everit.json</groupId>
             <artifactId>org.everit.json.schema</artifactId>
@@ -102,17 +103,17 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>  
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-        </dependency>  
-        
+        </dependency>
+
         <!--        <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
         </dependency>  -->
-        
+
         <!--fms jars-->
         <dependency>
             <groupId>tr.org.tspb</groupId>
@@ -121,7 +122,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>fms-logger</artifactId>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>fms-constants</artifactId>
@@ -149,7 +150,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>fms-notification</artifactId>
-        </dependency>    
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>fms-page</artifactId>
@@ -165,38 +166,33 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>fms-outsider</artifactId>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>fms-converter</artifactId>
-        </dependency>                                          
-                                                      
-        <!--web and ejb-->          
+        </dependency>
+
+
+        <!--web and ejb-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <version>1.0.0</version>
             <artifactId>fms-ejb</artifactId>
             <type>ejb</type>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <version>1.0.0</version>
             <artifactId>fms-web</artifactId>
             <type>war</type>
-        </dependency>      
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${esign.backend.artifact}</artifactId>
+        </dependency>
+
     </dependencies>
-    
-    <profiles>
-        <profile>
-            <id>esignSupport</id>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>fms-esign-core</artifactId>
-                </dependency>                 
-            </dependencies>
-        </profile>
-    </profiles>
-    
+
+
 </project>
- 
+
