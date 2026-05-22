@@ -429,39 +429,16 @@
         </dependencies>
     </dependencyManagement>
 
-    <profiles>
-        <profile>
-            <id>esignOyas</id>
-            <properties>
-                <esign.backend.artifact>fms-esign-core-oyas-backend</esign.backend.artifact>
-                <esign.ui.artifact>fms-esign-core-oyas-ui</esign.ui.artifact>
-            </properties>
-        </profile>
-        <profile>
-            <id>esignKamusm</id>
-            <properties>
-                <esign.backend.artifact>fms-esign-core-kamusm-backend</esign.backend.artifact>
-                <esign.ui.artifact>fms-esign-core-kamusm-ui</esign.ui.artifact>
-            </properties>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>${esign.ui.artifact}</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -516,12 +493,6 @@
                             <artifactId>fms-web</artifactId>
                             <contextRoot>/</contextRoot>
                         </webModule>
-                        <jarModule>
-                            <groupId>tr.org.tspb</groupId>
-                            <artifactId>${esign.ui.artifact}</artifactId>
-                            <bundleDir>/</bundleDir>
-                            <excluded>true</excluded>
-                        </jarModule>
                     </modules>
                     <unpackTypes>war,ejb</unpackTypes>
                 </configuration>
@@ -572,6 +543,99 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <profiles>
+        <profile>
+            <id>esignOyas</id>
+            <properties>
+                <esign.backend.artifact>fms-esign-core-oyas-backend</esign.backend.artifact>
+                <esign.ui.artifact>fms-esign-core-oyas-ui</esign.ui.artifact>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>${esign.ui.artifact}</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-ear-plugin</artifactId>
+                            <version>3.4.0</version>
+                            <configuration>
+                                <version>10</version>
+                                <defaultLibBundleDir>lib</defaultLibBundleDir>
+                                <!--<skinnyWars>true</skinnyWars>-->
+                                <!--<outputFileNameMapping>@{artifactId}@-@{version}@@{dashClassifier? }@.@{extension}@</outputFileNameMapping>-->
+                                <outputFileNameMapping>@{artifactId}@-@{version}@.@{extension}@</outputFileNameMapping>
+                                <modules>
+                                    <webModule>
+                                        <groupId>${project.groupId}</groupId>
+                                        <artifactId>fms-web</artifactId>
+                                        <contextRoot>/</contextRoot>
+                                    </webModule>
+                                    <jarModule>
+                                        <groupId>tr.org.tspb</groupId>
+                                        <artifactId>${esign.ui.artifact}</artifactId>
+                                        <bundleDir>/</bundleDir>
+                                        <excluded>true</excluded>
+                                    </jarModule>
+                                </modules>
+                                <unpackTypes>war,ejb</unpackTypes>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>esignKamusm</id>
+            <properties>
+                <esign.backend.artifact>fms-esign-core-kamusm-backend</esign.backend.artifact>
+                <esign.ui.artifact>fms-esign-core-kamusm-ui</esign.ui.artifact>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>${esign.ui.artifact}</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-ear-plugin</artifactId>
+                            <version>3.4.0</version>
+                            <configuration>
+                                <version>10</version>
+                                <defaultLibBundleDir>lib</defaultLibBundleDir>
+                                <!--<skinnyWars>true</skinnyWars>-->
+                                <!--<outputFileNameMapping>@{artifactId}@-@{version}@@{dashClassifier? }@.@{extension}@</outputFileNameMapping>-->
+                                <outputFileNameMapping>@{artifactId}@-@{version}@.@{extension}@</outputFileNameMapping>
+                                <modules>
+                                    <webModule>
+                                        <groupId>${project.groupId}</groupId>
+                                        <artifactId>fms-web</artifactId>
+                                        <contextRoot>/</contextRoot>
+                                    </webModule>
+                                    <jarModule>
+                                        <groupId>tr.org.tspb</groupId>
+                                        <artifactId>${esign.ui.artifact}</artifactId>
+                                        <bundleDir>/</bundleDir>
+                                        <excluded>true</excluded>
+                                    </jarModule>
+                                </modules>
+                                <unpackTypes>war,ejb</unpackTypes>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
 

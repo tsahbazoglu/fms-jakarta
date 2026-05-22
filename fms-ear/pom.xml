@@ -186,12 +186,28 @@
             <artifactId>fms-web</artifactId>
             <type>war</type>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>${esign.backend.artifact}</artifactId>
-        </dependency>
-
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>esignOyas</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>${esign.backend.artifact}</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>esignKamusm</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>${esign.backend.artifact}</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 
 </project>

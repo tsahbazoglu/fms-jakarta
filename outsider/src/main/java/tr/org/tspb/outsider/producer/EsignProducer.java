@@ -1,5 +1,7 @@
 package tr.org.tspb.outsider.producer;
 
+import tr.org.tspb.outsider.impl.NoOpEsignController;
+import tr.org.tspb.outsider.impl.NoOpEsignDoor;
 import tr.org.tspb.outsider.intr.EsignControllerIntr;
 import java.io.Serializable;
 //
@@ -31,12 +33,18 @@ public class EsignProducer implements Serializable {
     @Named("esignController")
     @SessionScoped
     public EsignControllerIntr produceActiveController() {
+        if (esignController.isUnsatisfied()) {
+            return new NoOpEsignController();
+        }
         return esignController.get();
     }
 
     @Produces
     @SessionScoped
     public EsignDoor produceEsignDoor() {
+        if (esignDoor.isUnsatisfied()) {
+            return new NoOpEsignDoor();
+        }
         return esignDoor.get();
     }
 
