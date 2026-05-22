@@ -32,6 +32,7 @@ import jakarta.inject.Inject;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.enterprise.inject.spi.CDI;
 //
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoConfigurationException;
@@ -47,6 +48,7 @@ import org.bson.conversions.Bson;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.slf4j.Logger;
+import tr.org.tspb.outsider.impl.NoOpEsignDoor;
 import tr.org.tspb.util.tools.MongoDbVersion;
 import tr.org.tspb.util.stereotype.MyController;
 import tr.org.tspb.common.qualifier.MyQualifier;
@@ -222,7 +224,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
 
     public String deleteFile() {
         mongoDbUtil.removeFile(baseService.getProperties().
-                getUploadTable(),
+                        getUploadTable(),
                 new ObjectId(toBeDeletedFileID));
         refreshUploadedFileList();
         return null;
@@ -249,15 +251,21 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
     public Boolean getSelectedFormUserNote() {
         return formService.getMyForm() != null
                 && formService.getMyForm().
-                        getUserNote() != null
+                getUserNote() != null
                 && !formService.getMyForm().
-                        getUserNote().
-                        isEmpty();
+                getUserNote().
+                isEmpty();
     }
 
     public String showEimza() {
-
         try {
+            if (Boolean.TRUE.equals(esignDoor.disabled())) {
+                FacesContext.getCurrentInstance().
+                        addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "",
+                                "eSign module is not activated"));
+                return null;
+            }
             showEimzaInternal();
         } catch (UserException ue) {
             logger.error("error occured", ue);
@@ -271,6 +279,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
 
     private void showEimzaInternal() throws UserException {
 
+
         chekAttachedFiles(formService.getMyForm());
 
         Document dBObject = new Document();
@@ -278,9 +287,9 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                 getForm());
         dBObject.put(formService.getMyForm().
                 getLoginFkField(), filterService.
-                        getTableFilterCurrent().
-                        get(formService.getMyForm().
-                                getLoginFkField()));
+                getTableFilterCurrent().
+                get(formService.getMyForm().
+                        getLoginFkField()));
 
         if (formService.getMyForm().
                 getField(PERIOD) != null) {
@@ -292,7 +301,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
         List<Map> listOfCruds = repositoryService
                 .list(formService.getMyForm().
                         getDb(), formService.getMyForm().
-                                getTable(), dBObject);
+                        getTable(), dBObject);
 
         if (listOfCruds.isEmpty()) {
             //FIXME messagebundle
@@ -311,7 +320,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
 
     public String getSelectedFormConstantNote() {
         return formService.getMyForm() == null ? " " : formService.getMyForm().
-                getConstantNote();
+                                                       getConstantNote();
     }
 
     public void drawGUI(FmsForm myForm) throws Exception {
@@ -319,7 +328,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
         formService.getMyForm().
                 runAjaxBulk(getComponentMap(), crudObject,
                         loginController.getRoleMap(), loginController.
-                        getLoggedUserDetail());
+                                getLoggedUserDetail());
 
     }
 
@@ -411,7 +420,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
     }
 
     private void armDefaultValues(String key, FmsForm myForm,
-            Document modifiedSearchObject)
+                                  Document modifiedSearchObject)
             throws tr.org.tspb.constants.exceptions.FormConfigException {
         if (crudObject.get(key) == null) {
 
@@ -427,7 +436,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                 String code = ((Code) defaultValueObject).getCode();
                 try {
                     Document commandResult = mongoDbUtil.runCommand(myForm.
-                            getDb(), code, modifiedSearchObject,
+                                    getDb(), code, modifiedSearchObject,
                             loginController.getRolesAsSet());
                     crudObject.put(key, commandResult.getString(RETVAL));
                 } catch (Exception ex) {
@@ -461,7 +470,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                     getDbo();
             if (loginRecord != null) {
                 crudObject.put(formService.getMyForm().
-                        getLoginFkField(),
+                                getLoginFkField(),
                         loginRecord.getObjectId());
             }
         }
@@ -510,8 +519,8 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                 } else if (defaultValueObject instanceof Code) {
                     String code = ((Code) defaultValueObject).getCode();
                     Document commandResult = mongoDbUtil.runCommand(formService.
-                            getMyForm().
-                            getDb(),
+                                    getMyForm().
+                                    getDb(),
                             code, filterService.getTableFilterCurrent(),
                             loginController.getRolesAsList());
                     crudObject.put(key, commandResult.get(RETVAL));
@@ -606,7 +615,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
             formService.getMyForm().
                     runAjaxBulk(getComponentMap(), crudObject,
                             loginController.getRoleMap(), loginController.
-                            getLoggedUserDetail());
+                                    getLoggedUserDetail());
 
         } catch (UserException ex) {
             logger.error("error occured", ex);
@@ -630,14 +639,13 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
      * This function is responsible on updating the SelectItems on SelectOneMenu
      * component
      *
-     *
      * @param form
      * @param observerKey
      * @param observableKey
      * @param observableValue
      */
     public void updateSelectItems(Document form, String observerKey,
-            String observableKey, Object observableValue) {
+                                  String observableKey, Object observableValue) {
 
         String observerClientId = SelectOneObjectIdConverter.mapClientIdPerMongoKey.
                 get(observerKey);
@@ -660,7 +668,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                 list.add(new SelectItem(SelectOneObjectIdConverter.NULL_VALUE,
                         SELECT_PLEASE));
                 searchDBObject.put(observableKey.concat(DOT).
-                        concat(MONGO_ID),
+                                concat(MONGO_ID),
                         observableValue);
             } else {
                 list.add(new SelectItem(SelectOneStringConverter.NULL_VALUE,
@@ -670,7 +678,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
 
             List<Document> cursor = mongoDbUtil
                     .find((String) form.get(FORM_DB), (String) form.get(
-                            COLLECTION), searchDBObject, new Document(NAME, 1),
+                                    COLLECTION), searchDBObject, new Document(NAME, 1),
                             null);
 
             for (Document object : cursor) {
@@ -782,7 +790,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
     }
 
     public ObjectId saveObject(FmsForm myForm, LoginController loginMB,
-            MyMap crudObject) throws UserException, MessagingException,
+                               MyMap crudObject) throws UserException, MessagingException,
             NullNotExpectedException,
             LdapException, FormConfigException {
 
@@ -822,8 +830,8 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                 getSession(false)).getId();
 
         ObjectId returnID = saveOneDimensionObject(operatedObject, loginMB.
-                getLoggedUserDetail().
-                getUsername(),
+                        getLoggedUserDetail().
+                        getUsername(),
                 formService.getMyForm(), request.getRemoteAddr(), sessionId);
         crudObject.put(STATE, "saved");
 
@@ -831,7 +839,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
     }
 
     private ObjectId saveOneDimensionObject(Document operatedObject,
-            String username, FmsForm myForm, String ip, String sessionId)
+                                            String username, FmsForm myForm, String ip, String sessionId)
             throws MessagingException, NullNotExpectedException, LdapException,
             FormConfigException, UserException {
 
@@ -981,7 +989,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
             }
 
             mongoDbUtil.updateMany(baseService.getProperties().
-                    getUploadTable(),
+                            getUploadTable(),
                     "fs.files",
                     new Document(MONGO_ID, new Document(DOLAR_IN, listOfFileIDs)),
                     new Document(METADATA_CRUD_OBJECT_ID, result.get(MONGO_ID)));
@@ -994,9 +1002,9 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                  */
 
                 mongoDbUtil.removeFile(baseService.getProperties().
-                        getUploadTable(),
+                                getUploadTable(),
                         new BasicDBObject().append(METADATA_CRUD_OBJECT_ID,
-                                result.get(MONGO_ID))//
+                                        result.get(MONGO_ID))//
                                 .
                                 append("metadata.username", username));
             }
@@ -1048,7 +1056,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                             FacesMessage.SEVERITY_ERROR, //
                             MessageFormat.format("[{0}] {1}", field.
                                     getShortName(), MessageBundleLoaderv1.
-                                            getMessage("requiredMessage")),//
+                                    getMessage("requiredMessage")),//
                             "*");
                     FacesContext.getCurrentInstance().
                             addMessage(null,
@@ -1112,7 +1120,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
     }
 
     protected void addMessage(String componentId, String summary, String message,
-            FacesMessage.Severity severity) {
+                              FacesMessage.Severity severity) {
         FacesContext.getCurrentInstance().
                 addMessage(componentId,
                         new FacesMessage(severity, summary, message));

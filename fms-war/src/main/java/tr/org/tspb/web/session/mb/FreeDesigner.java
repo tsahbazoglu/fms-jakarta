@@ -1,9 +1,12 @@
 package tr.org.tspb.web.session.mb;
 
 import com.mongodb.client.model.Filters;
+import jakarta.faces.application.FacesMessage;
 import tr.org.tspb.util.service.DlgCtrl;
 import tr.org.tspb.common.services.LoginController;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import tr.org.tspb.common.qualifier.ViewerController;
 import tr.org.tspb.common.qualifier.MyQualifier;
 import java.io.Serializable;
@@ -137,7 +140,7 @@ public class FreeDesigner implements Serializable {
     Map searchedMap = new HashMap();
 
     public List load(String sortColumnName, boolean sortAscending,
-            int startRow, int maxResults, FmsForm myForm) {
+                     int startRow, int maxResults, FmsForm myForm) {
 
         searchedMap.put(FIELD_GROUP, FIELD_GROUP_COMMON);
 
@@ -169,7 +172,7 @@ public class FreeDesigner implements Serializable {
 
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().
-                        getName()).
+                                getName()).
                         log(Level.SEVERE, null, ex);
             }
         }
@@ -191,8 +194,8 @@ public class FreeDesigner implements Serializable {
 
             @Override
             public List<MyRecord> load(int first, int pageSize,
-                    Map<String, SortMeta> sortBy,
-                    Map<String, FilterMeta> filterBy) {
+                                       Map<String, SortMeta> sortBy,
+                                       Map<String, FilterMeta> filterBy) {
                 return FreeDesigner.this.load(null, false, first, pageSize,
                         selectedForm);
             }
@@ -256,6 +259,14 @@ public class FreeDesigner implements Serializable {
 
     public String showEimza() {
 
+        if (Boolean.TRUE.equals(esignDoor.disabled())) {
+            FacesContext.getCurrentInstance().
+                    addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "",
+                            "eSign module is not activated"));
+            return null;
+        }
+
         List<Map> listOfCruds = repositoryService.listAsLoggedUser(selectedForm);
 
         if (listOfCruds.isEmpty()) {
@@ -292,7 +303,7 @@ public class FreeDesigner implements Serializable {
             }
         } catch (Exception ex) {
             Logger.getLogger(this.getClass().
-                    getName()).
+                            getName()).
                     log(Level.SEVERE, null, ex);
 
         }
@@ -469,7 +480,7 @@ public class FreeDesigner implements Serializable {
 
             repositoryService
                     .updateMany(baseService.getProperties().
-                            getUploadTable(), "fs.files", searchMap, updateMap,
+                                    getUploadTable(), "fs.files", searchMap, updateMap,
                             true);
         }
 

@@ -2,6 +2,7 @@ package tr.org.tspb.table;
 
 import static jakarta.xml.bind.Marshaller.JAXB_ENCODING;
 import static jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
 //
 import java.io.ByteArrayInputStream;
@@ -242,6 +243,8 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     }
 
     public String showEimza() {
+
+
         List<Map> list = new ArrayList();
         list.add(new Document(crudObject));
 
@@ -263,6 +266,13 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     }
 
     public String showEimza22() {
+        if (Boolean.TRUE.equals(esignDoor.disabled())) {
+            FacesContext.getCurrentInstance().
+                    addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "",
+                            "eSign module is not activated"));
+            return null;
+        }
         try {
             localShowEimza22();
         } catch (NullNotExpectedException ex) {

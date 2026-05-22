@@ -16,6 +16,11 @@ public class NoOpEsignDoor implements EsignDoor, Serializable {
     }
 
     @Override
+    public Boolean disabled() {
+        return Boolean.TRUE;
+    }
+
+    @Override
     public boolean isTest() {
         return false;
     }

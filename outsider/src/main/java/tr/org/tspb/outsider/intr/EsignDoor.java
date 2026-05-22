@@ -17,6 +17,8 @@ public interface EsignDoor extends Serializable {
 
     public void eimzaContextInstance(Properties properties);
 
+    public Boolean disabled();
+
     public boolean isTest();
 
     public String getSignType();
