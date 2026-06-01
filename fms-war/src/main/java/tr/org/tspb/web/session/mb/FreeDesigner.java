@@ -196,7 +196,8 @@ public class FreeDesigner implements Serializable {
             public List<MyRecord> load(int first, int pageSize,
                                        Map<String, SortMeta> sortBy,
                                        Map<String, FilterMeta> filterBy) {
-                return FreeDesigner.this.load(null, false, first, pageSize,
+                return FreeDesigner.this.load(null, false,
+                        first, pageSize,
                         selectedForm);
             }
 
@@ -212,12 +213,33 @@ public class FreeDesigner implements Serializable {
 
             @Override
             public int count(Map<String, FilterMeta> map) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                try {
+                    // Match the count filter setup found in your init() method
+                    Map countSearchMap = new HashMap();
+                    countSearchMap.put(FIELD_GROUP, FIELD_GROUP_COMMON);
+
+                    // If your global search() method has appended criteria to searchedMap, include them:
+                    if (searchedMap != null) {
+                        countSearchMap.putAll(searchedMap);
+                    }
+
+                    // Dynamically ask MongoDB for total matching rows
+                    long totalCount = repositoryService.count(
+                            selectedForm.getDb(),
+                            selectedForm.getTable(),
+                            countSearchMap
+                    );
+
+                    return (int) totalCount;
+                } catch (Exception e) {
+                    Logger.getLogger(FreeDesigner.class.getName()).log(Level.SEVERE, "Error calculating lazy record count", e);
+                    return 0;
+                }
             }
 
         };
 
-        myRecords.setRowCount(3000000);
+//        myRecords.setRowCount(3000000);
 
     }
 
