@@ -456,7 +456,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_setup_instructions">3.1.1. Setup Instructions</a></li>
 </ul>
 </li>
-<li><a href="#_clean_glassfish">3.2. Clean Glassfish</a></li>
+<li><a href="#_glassfish_setting">3.2. Glassfish Setting</a></li>
+<li><a href="#_clean_glassfish">3.3. Clean Glassfish</a></li>
 </ul>
 </li>
 <li><a href="#_log_server">4. Log Server</a></li>
@@ -534,7 +535,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>:server-path: ~/apps/glassfish7/glassfish
+<pre>:server-path: ~/apps/glassfish8/glassfish
 :project-version: 1.0.0</pre>
 </div>
 </div>
@@ -605,7 +606,7 @@ OS name: "linux", version: "6.17.0-22-generic", arch: "amd64", family: "unix"</p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>Ensure GlassFish 7 is installed at the specified `:server-path:`.
+<pre>Ensure GlassFish 8 is installed at the specified `:server-path:`.
 Verify that your local environment variables match the project versioning requirements.
 Run the Maven build to synchronize the configuration with your local server instance.</pre>
 </div>
@@ -613,7 +614,229 @@ Run the Maven build to synchronize the configuration with your local server inst
 </div>
 </div>
 <div class="sect2">
-<h3 id="_clean_glassfish">3.2. Clean Glassfish</h3>
+<h3 id="_glassfish_setting">3.2. Glassfish Setting</h3>
+<div class="listingblock">
+<div class="content">
+<pre>asadmin create-jms-resource \
+--user admin --restype jakarta.jms.Queue \
+--description "FMS Email Queue" \
+--property Name=fmsEmailQueue \
+jms/fmsEmailQueue;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>asadmin create-jms-resource \
+--restype jakarta.jms.QueueConnectionFactory \
+--description "FMS Email Queue Connection Factory" \
+jms/fmsEmailQueueConnectionFactory;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>asadmin create-custom-resource \
+--user admin \
+--restype javax.naming.directory.Directory \
+--factoryclass com.sun.jndi.ldap.LdapCtxFactory \
+--property \
+java.naming.security.credentials=test:\
+java.naming.security.principal="cn\=admin":\
+URL="ldap\://openldap\:389" \
+ldap/openldap;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>asadmin delete-custom-resource fms/environment --user admin
+
+asadmin create-custom-resource \
+--user admin \
+--restype java.lang.String \
+--factoryclass org.glassfish.resources.custom.factory.PrimitivesAndStringFactory \
+--property value=TEST \
+fms/environment;
+
+asadmin set resources.custom-resource.fms/environment.property.value=PRODUCT
+asadmin get resources.custom-resource.fms/environment.property.*</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>asadmin create-custom-resource \
+--user admin \
+--restype java.lang.String \
+--factoryclass org.glassfish.resources.custom.factory.PrimitivesAndStringFactory \
+--property value=mongodb \
+fms/mongourl;</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">asadmin create-custom-resource \
+--user admin \
+--restype java.lang.String \
+--factoryclass org.glassfish.resources.custom.factory.PrimitivesAndStringFactory \
+--property value="<strong>YOUR LDAP PASSWORD</strong>"" \
+fms/mongoadmin;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">asadmin delete-mail-resource mail/fmsExternal;
+
+asadmin create-mail-resource \
+--user admin \
+--mailhost <strong><strong>.</strong></strong>.<strong><strong>.</strong></strong> \
+--mailuser "<strong>smth@smth.smth</strong>" \
+--fromaddress "<strong>smth@smth.smth</strong>" \
+--storeprotocol POP3 \
+--storeprotocolclass com.sun.mail.pop3.POP3Store \
+--property \
+mail.smtp.connectiontimeout=10000:\
+mail.smtp.timeout=10000:\
+mail.smtp.port=25 \
+mail/fmsExternal;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">asadmin delete-mail-resource mail/fmsInternal;
+
+asadmin create-mail-resource \
+--user admin \
+--mailhost <strong><strong>.</strong></strong>.<strong><strong>.</strong></strong> \
+--mailuser "<strong>smth@smth.smth</strong>" \
+--fromaddress "<strong>smth@smth.smth</strong>" \
+--storeprotocol POP3 \
+--storeprotocolclass com.sun.mail.pop3.POP3Store \
+--property \
+mail.smtp.connectiontimeout=10000:\
+mail.smtp.timeout=10000:\
+mail.smtp.port=25 \
+mail/fmsInternal;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>asadmin create-custom-resource \
+--user admin \
+--restype javax.naming.directory.Directory \
+--factoryclass com.sun.jndi.ldap.LdapCtxFactory \
+--property \
+java.naming.security.credentials=test:\
+java.naming.security.principal="cn\=admin":\
+URL="ldap\://openldap\:389" \
+ldap/openldap
+
+asadmin get resources.custom-resource.ldap/openldap.*</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>asadmin create-auth-realm \
+--user admin \
+--classname com.sun.enterprise.security.auth.realm.ldap.LDAPRealm \
+--property \
+jaas-context=ldapRealm:\
+directory="ldap\://openldap\:389":\
+base-dn="dc\=tspb,dc\=org,dc\=tr":\
+assign-groups="ou\=Roles,dc\=tspb,dc\=org,dc\=tr" \
+OpenLdap</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo nano /etc/hosts
+
+192.168.100.*** openldap
+192.168.100.*** mongodb tspb</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">mongosh configdb
+
+db.properties.insert({
+ "key" : "product",
+ "PDFTOOL" : "/home/fms/pdftool/",
+ "EXPORT_PATH" : "/home/fms/export/",
+ "MAIN_PROJECT_CODE" : "fms",
+ "WELCOME_PAGE" : "Türkiye Sermaye Piyasaları Birliği&lt;br/&gt;Üye Yönetim Sistemi",
+ "DEBUG_MODE" : "none",
+ "ICON" : "favicon_tspb.png",
+ "TITLE_ACRONYM" : "TSPB",
+ "TITLE" : "Türkiye Sermaye Piyasaları Birliği",
+ "COPYRIGHT" : "Copyright © 2012 Türkiye Sermaye Piyasaları Birliği",
+ "LOGO_LARGE" : "/images_tspb/logo-large.png",
+ "LOGO_SMALL" : "/images_tspb/logo-small.png",
+ "EIMZA_LICENCE_PATH" : "file://home/fms/eimza_prod_files/lisans.xml",
+ "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
+ "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
+ "EIMZA_TYPE" : "CARD",
+ "LDAP_ADMIN" : "cn=admin,dc=tspb,dc=org,dc=tr",
+ "LDAP_PASSWORD" : "<strong>YOUR LDAP PASSWORD</strong>",
+ "LDAP_URL" : "ldap://openldap:389",
+ "LDAP_USERS_DN" : "ou=Users,dc=tspb,dc=org,dc=tr",
+ "LDAP_ROLES_DN" : "ou=Roles,dc=tspb,dc=org,dc=tr",
+ "SEND_EMAIL_DISABLED" : "FALSE",
+ "DELEGATE_DB_NAME" : "uysdb",
+ "DELEGATE_TABLE_NAME" : "member_eimza_info",
+ "DELEGATED_MEMBER_FIELD_NAME" : "member",
+ "DELEGATING_MEMBER_FIELD_NAME" : "member",
+ "DELEGATING_FORM_FIELD_NAME" : "member",
+ "LOGIN" : {
+     "db" : "uysdb",
+     "collection" : "common",
+     "query" : { "forms" : "users" },
+     "ldapUID" : "ldapUID"
+ }
+})
+
+db.properties.insert({
+ "key" : "test",
+ "PDFTOOL" : "/home/fms/pdftool/",
+ "EXPORT_PATH" : "/home/fms/export/",
+ "MAIN_PROJECT_CODE" : "fms",
+ "WELCOME_PAGE" : "Türkiye Sermaye Piyasaları Birliği&lt;br/&gt;Üye Yönetim Sistemi",
+ "DEBUG_MODE" : "none",
+ "ICON" : "favicon_tspb.png",
+ "TITLE_ACRONYM" : "TSPB",
+ "TITLE" : "Türkiye Sermaye Piyasaları Birliği",
+ "COPYRIGHT" : "Copyright © 2012 Türkiye Sermaye Piyasaları Birliği",
+ "LOGO_LARGE" : "/images_tspb/logo-large.png",
+ "LOGO_SMALL" : "/images_tspb/logo-small.png",
+ "EIMZA_LICENCE_PATH" : "file://home/fms/eimza_prod_files/lisans.xml",
+ "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
+ "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
+ "EIMZA_TYPE" : "CARD",
+ "LDAP_ADMIN" : "cn=admin,dc=tspb,dc=org,dc=tr",
+ "LDAP_PASSWORD" : "<strong>YOUR LDAP PASSWORD</strong>",
+ "LDAP_URL" : "ldap://openldap:389",
+ "LDAP_USERS_DN" : "ou=Users,dc=tspb,dc=org,dc=tr",
+ "LDAP_ROLES_DN" : "ou=Roles,dc=tspb,dc=org,dc=tr",
+ "SEND_EMAIL_DISABLED" : "FALSE",
+ "DELEGATE_DB_NAME" : "uysdb",
+ "DELEGATE_TABLE_NAME" : "member_eimza_info",
+ "DELEGATED_MEMBER_FIELD_NAME" : "member",
+ "DELEGATING_MEMBER_FIELD_NAME" : "member",
+ "DELEGATING_FORM_FIELD_NAME" : "member",
+ "LOGIN" : {
+     "db" : "uysdb",
+     "collection" : "common",
+     "query" : { "forms" : "users" },
+     "ldapUID" : "ldapUID"
+ }
+})</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>db.ppolicy.updateOne({ uid: 'DENEME_KURUM'},{$set:{expirationDay:365}})</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_clean_glassfish">3.3. Clean Glassfish</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-js" data-lang="js">asadmin list-components;
@@ -1008,7 +1231,7 @@ asadmin start-domain --debug</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2026-05-22 14:57:35 +0300
+Last updated 2026-06-12 10:21:24 +0300
 </div>
 </div>
 </body>
