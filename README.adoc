@@ -14,7 +14,8 @@
 :your-email: "*smth@smth.smth*"
 :your-mailhost: ***.***.***.***
 :ldap-password: "*YOUR LDAP PASSWORD*"
-
+:base-dn: dc\=*your_domain*,dc\=org,dc\=tr
+:base-dn-text: dc=*your_domain*,dc=org,dc=tr
 
 = FMS : Form Management System
 telman şahbazoğlu <tsahbazoglu@tspb.org.tr>
@@ -73,9 +74,9 @@ Codename:	questing
 Java::
 ----
 java -version
-openjdk version "17.0.18" 2026-01-20
-OpenJDK Runtime Environment (build 17.0.18+8-Ubuntu-125.10.1)
-OpenJDK 64-Bit Server VM (build 17.0.18+8-Ubuntu-125.10.1, mixed mode, sharing)
+openjdk version "25.0.3" 2026-04-21
+OpenJDK Runtime Environment (build 25.0.3+9-2-26.04.2-Ubuntu)
+OpenJDK 64-Bit Server VM (build 25.0.3+9-2-26.04.2-Ubuntu, mixed mode, sharing)
 ----
 
 Maven::
@@ -208,6 +209,7 @@ ldap/openldap
 asadmin get resources.custom-resource.ldap/openldap.*
 ----
 
+[source,js,subs="attributes,verbatim,quotes"]
 ----
 asadmin create-auth-realm \
 --user admin \
@@ -215,8 +217,8 @@ asadmin create-auth-realm \
 --property \
 jaas-context=ldapRealm:\
 directory="ldap\://openldap\:389":\
-base-dn="dc\=tspb,dc\=org,dc\=tr":\
-assign-groups="ou\=Roles,dc\=tspb,dc\=org,dc\=tr" \
+base-dn="{base-dn}":\
+assign-groups="ou\=Roles,{base-dn}" \
 OpenLdap
 ----
 
@@ -248,11 +250,11 @@ db.properties.insert({
  "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
  "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
  "EIMZA_TYPE" : "CARD",
- "LDAP_ADMIN" : "cn=admin,dc=tspb,dc=org,dc=tr",
+ "LDAP_ADMIN" : "cn=admin,{base-dn-text}",
  "LDAP_PASSWORD" : {ldap-password},
  "LDAP_URL" : "ldap://openldap:389",
- "LDAP_USERS_DN" : "ou=Users,dc=tspb,dc=org,dc=tr",
- "LDAP_ROLES_DN" : "ou=Roles,dc=tspb,dc=org,dc=tr",
+ "LDAP_USERS_DN" : "ou=Users,{base-dn-text}",
+ "LDAP_ROLES_DN" : "ou=Roles,{base-dn-text}",
  "SEND_EMAIL_DISABLED" : "FALSE",
  "DELEGATE_DB_NAME" : "uysdb",
  "DELEGATE_TABLE_NAME" : "member_eimza_info",
@@ -284,11 +286,11 @@ db.properties.insert({
  "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
  "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
  "EIMZA_TYPE" : "CARD",
- "LDAP_ADMIN" : "cn=admin,dc=tspb,dc=org,dc=tr",
+ "LDAP_ADMIN" : "cn=admin,{base-dn-text}",
  "LDAP_PASSWORD" : {ldap-password},
  "LDAP_URL" : "ldap://openldap:389",
- "LDAP_USERS_DN" : "ou=Users,dc=tspb,dc=org,dc=tr",
- "LDAP_ROLES_DN" : "ou=Roles,dc=tspb,dc=org,dc=tr",
+ "LDAP_USERS_DN" : "ou=Users,{base-dn-text}",
+ "LDAP_ROLES_DN" : "ou=Roles,{base-dn-text}",
  "SEND_EMAIL_DISABLED" : "FALSE",
  "DELEGATE_DB_NAME" : "uysdb",
  "DELEGATE_TABLE_NAME" : "member_eimza_info",
@@ -460,7 +462,7 @@ asadmin set server.admin-service.das-config.dynamic-reload-poll-interval-in-seco
 
 mvn compile
 mvn compile -pl fms-web
-touch /home/telman/github/fms/fms-ear/target/fms-ear-1.0.0/.reload
+touch ~/github/fms/fms-ear/target/fms-ear-1.0.0/.reload
 
 web.xml
 

@@ -579,9 +579,9 @@ Codename:	questing</pre>
 <div class="listingblock">
 <div class="content">
 <pre>java -version
-openjdk version "17.0.18" 2026-01-20
-OpenJDK Runtime Environment (build 17.0.18+8-Ubuntu-125.10.1)
-OpenJDK 64-Bit Server VM (build 17.0.18+8-Ubuntu-125.10.1, mixed mode, sharing)</pre>
+openjdk version "25.0.3" 2026-04-21
+OpenJDK Runtime Environment (build 25.0.3+9-2-26.04.2-Ubuntu)
+OpenJDK 64-Bit Server VM (build 25.0.3+9-2-26.04.2-Ubuntu, mixed mode, sharing)</pre>
 </div>
 </div>
 <div class="dlist">
@@ -733,15 +733,15 @@ asadmin get resources.custom-resource.ldap/openldap.*</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>asadmin create-auth-realm \
+<pre class="highlight"><code class="language-js" data-lang="js">asadmin create-auth-realm \
 --user admin \
 --classname com.sun.enterprise.security.auth.realm.ldap.LDAPRealm \
 --property \
 jaas-context=ldapRealm:\
 directory="ldap\://openldap\:389":\
-base-dn="dc\=tspb,dc\=org,dc\=tr":\
-assign-groups="ou\=Roles,dc\=tspb,dc\=org,dc\=tr" \
-OpenLdap</pre>
+base-dn="dc\=<strong>your_domain</strong>,dc\=org,dc\=tr":\
+assign-groups="ou\=Roles,dc\=<strong>your_domain</strong>,dc\=org,dc\=tr" \
+OpenLdap</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -773,11 +773,11 @@ db.properties.insert({
  "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
  "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
  "EIMZA_TYPE" : "CARD",
- "LDAP_ADMIN" : "cn=admin,dc=tspb,dc=org,dc=tr",
+ "LDAP_ADMIN" : "cn=admin,dc=<strong>your_domain</strong>,dc=org,dc=tr",
  "LDAP_PASSWORD" : "<strong>YOUR LDAP PASSWORD</strong>",
  "LDAP_URL" : "ldap://openldap:389",
- "LDAP_USERS_DN" : "ou=Users,dc=tspb,dc=org,dc=tr",
- "LDAP_ROLES_DN" : "ou=Roles,dc=tspb,dc=org,dc=tr",
+ "LDAP_USERS_DN" : "ou=Users,dc=<strong>your_domain</strong>,dc=org,dc=tr",
+ "LDAP_ROLES_DN" : "ou=Roles,dc=<strong>your_domain</strong>,dc=org,dc=tr",
  "SEND_EMAIL_DISABLED" : "FALSE",
  "DELEGATE_DB_NAME" : "uysdb",
  "DELEGATE_TABLE_NAME" : "member_eimza_info",
@@ -809,11 +809,11 @@ db.properties.insert({
  "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
  "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
  "EIMZA_TYPE" : "CARD",
- "LDAP_ADMIN" : "cn=admin,dc=tspb,dc=org,dc=tr",
+ "LDAP_ADMIN" : "cn=admin,dc=<strong>your_domain</strong>,dc=org,dc=tr",
  "LDAP_PASSWORD" : "<strong>YOUR LDAP PASSWORD</strong>",
  "LDAP_URL" : "ldap://openldap:389",
- "LDAP_USERS_DN" : "ou=Users,dc=tspb,dc=org,dc=tr",
- "LDAP_ROLES_DN" : "ou=Roles,dc=tspb,dc=org,dc=tr",
+ "LDAP_USERS_DN" : "ou=Users,dc=<strong>your_domain</strong>,dc=org,dc=tr",
+ "LDAP_ROLES_DN" : "ou=Roles,dc=<strong>your_domain</strong>,dc=org,dc=tr",
  "SEND_EMAIL_DISABLED" : "FALSE",
  "DELEGATE_DB_NAME" : "uysdb",
  "DELEGATE_TABLE_NAME" : "member_eimza_info",
@@ -1024,7 +1024,7 @@ asadmin set server.admin-service.das-config.dynamic-reload-poll-interval-in-seco
 
 mvn compile
 mvn compile -pl fms-web
-touch /home/telman/github/fms/fms-ear/target/fms-ear-1.0.0/.reload
+touch ~/github/fms/fms-ear/target/fms-ear-1.0.0/.reload
 
 web.xml
 
@@ -1231,7 +1231,7 @@ asadmin start-domain --debug</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2026-06-12 10:21:24 +0300
+Last updated 2026-06-12 10:40:52 +0300
 </div>
 </div>
 </body>
