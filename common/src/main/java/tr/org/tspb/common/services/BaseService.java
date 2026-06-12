@@ -221,7 +221,7 @@ public class BaseService extends AbstractSrv {
             welcomePageContent = document.getProperty("WELCOME_PAGE", "");
             //
             delegateDbName = document.getProperty(
-                    ProjectConstants.DELEGATE_DB_NAME, "iondb");
+                    ProjectConstants.DELEGATE_DB_NAME, "uysdb");
             delegateTableName = document.getProperty(
                     ProjectConstants.DELEGATE_TABLE_NAME, "member_eimza_info");
             pdfTool = document.getProperty(

@@ -751,6 +751,12 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
             String targetCollectionName = pipelineMeta.getString("collection");
 
+            String predeifnedDbName = pipelineMeta.getString("db");
+
+            if (predeifnedDbName != null) {
+                database = mongoClient.getDatabase(predeifnedDbName);
+            }
+
             MongoCollection<Document> collection
                     = database.getCollection(targetCollectionName);
 
