@@ -769,45 +769,9 @@ db.properties.insert({
  "COPYRIGHT" : "Copyright © 2012 Türkiye Sermaye Piyasaları Birliği",
  "LOGO_LARGE" : "/images_tspb/logo-large.png",
  "LOGO_SMALL" : "/images_tspb/logo-small.png",
- "EIMZA_LICENCE_PATH" : "file://home/fms/eimza_prod_files/lisans.xml",
- "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
- "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
- "EIMZA_TYPE" : "CARD",
- "LDAP_ADMIN" : "cn=admin,dc=<strong>your_domain</strong>,dc=org,dc=tr",
- "LDAP_PASSWORD" : "<strong>YOUR LDAP PASSWORD</strong>",
- "LDAP_URL" : "ldap://openldap:389",
- "LDAP_USERS_DN" : "ou=Users,dc=<strong>your_domain</strong>,dc=org,dc=tr",
- "LDAP_ROLES_DN" : "ou=Roles,dc=<strong>your_domain</strong>,dc=org,dc=tr",
- "SEND_EMAIL_DISABLED" : "FALSE",
- "DELEGATE_DB_NAME" : "uysdb",
- "DELEGATE_TABLE_NAME" : "member_eimza_info",
- "DELEGATED_MEMBER_FIELD_NAME" : "member",
- "DELEGATING_MEMBER_FIELD_NAME" : "member",
- "DELEGATING_FORM_FIELD_NAME" : "member",
- "LOGIN" : {
-     "db" : "uysdb",
-     "collection" : "common",
-     "query" : { "forms" : "users" },
-     "ldapUID" : "ldapUID"
- }
-})
-
-db.properties.insert({
- "key" : "test",
- "PDFTOOL" : "/home/fms/pdftool/",
- "EXPORT_PATH" : "/home/fms/export/",
- "MAIN_PROJECT_CODE" : "fms",
- "WELCOME_PAGE" : "Türkiye Sermaye Piyasaları Birliği&lt;br/&gt;Üye Yönetim Sistemi",
- "DEBUG_MODE" : "none",
- "ICON" : "favicon_tspb.png",
- "TITLE_ACRONYM" : "TSPB",
- "TITLE" : "Türkiye Sermaye Piyasaları Birliği",
- "COPYRIGHT" : "Copyright © 2012 Türkiye Sermaye Piyasaları Birliği",
- "LOGO_LARGE" : "/images_tspb/logo-large.png",
- "LOGO_SMALL" : "/images_tspb/logo-small.png",
- "EIMZA_LICENCE_PATH" : "file://home/fms/eimza_prod_files/lisans.xml",
- "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
- "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
+ "EIMZA_LICENCE_PATH" : "file:/<strong>Esign Config Files Path</strong>/lisans.xml",
+ "EIMZA_CONFIG_PATH"  : "file:/<strong>Esign Config Files Path</strong>/esya-signature-config.xml",
+ "EIMZA_POLICY_PATH"  : "file:/<strong>Esign Config Files Path</strong>/certval-policy.xml",
  "EIMZA_TYPE" : "CARD",
  "LDAP_ADMIN" : "cn=admin,dc=<strong>your_domain</strong>,dc=org,dc=tr",
  "LDAP_PASSWORD" : "<strong>YOUR LDAP PASSWORD</strong>",
@@ -1231,7 +1195,7 @@ asadmin start-domain --debug</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2026-06-12 10:40:52 +0300
+Last updated 2026-06-12 10:48:06 +0300
 </div>
 </div>
 </body>
