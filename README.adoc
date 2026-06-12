@@ -269,41 +269,6 @@ db.properties.insert({
  }
 })
 
-db.properties.insert({
- "key" : "test",
- "PDFTOOL" : "/home/fms/pdftool/",
- "EXPORT_PATH" : "/home/fms/export/",
- "MAIN_PROJECT_CODE" : "fms",
- "WELCOME_PAGE" : "Türkiye Sermaye Piyasaları Birliği<br/>Üye Yönetim Sistemi",
- "DEBUG_MODE" : "none",
- "ICON" : "favicon_tspb.png",
- "TITLE_ACRONYM" : "TSPB",
- "TITLE" : "Türkiye Sermaye Piyasaları Birliği",
- "COPYRIGHT" : "Copyright © 2012 Türkiye Sermaye Piyasaları Birliği",
- "LOGO_LARGE" : "/images_tspb/logo-large.png",
- "LOGO_SMALL" : "/images_tspb/logo-small.png",
- "EIMZA_LICENCE_PATH" : "file://home/fms/eimza_prod_files/lisans.xml",
- "EIMZA_CONFIG_PATH" : "file://home/fms/eimza_prod_files/esya-signature-config.xml",
- "EIMZA_POLICY_PATH" : "file://home/fms/eimza_prod_files/certval-policy.xml",
- "EIMZA_TYPE" : "CARD",
- "LDAP_ADMIN" : "cn=admin,{base-dn-text}",
- "LDAP_PASSWORD" : {ldap-password},
- "LDAP_URL" : "ldap://openldap:389",
- "LDAP_USERS_DN" : "ou=Users,{base-dn-text}",
- "LDAP_ROLES_DN" : "ou=Roles,{base-dn-text}",
- "SEND_EMAIL_DISABLED" : "FALSE",
- "DELEGATE_DB_NAME" : "uysdb",
- "DELEGATE_TABLE_NAME" : "member_eimza_info",
- "DELEGATED_MEMBER_FIELD_NAME" : "member",
- "DELEGATING_MEMBER_FIELD_NAME" : "member",
- "DELEGATING_FORM_FIELD_NAME" : "member",
- "LOGIN" : {
-     "db" : "uysdb",
-     "collection" : "common",
-     "query" : { "forms" : "users" },
-     "ldapUID" : "ldapUID"
- }
-})
 ----
 
 ----
