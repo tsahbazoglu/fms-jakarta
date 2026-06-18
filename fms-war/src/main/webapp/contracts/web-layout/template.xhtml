@@ -6,131 +6,150 @@
       xmlns:ui="jakarta.faces.facelets"
       xmlns:p="http://primefaces.org/ui">
 
-    <h:head>
-        <f:facet name="first">
-            <meta http-equiv="X-UA-Compatible" content="IE=Edge" /> 
-            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0"/>
-            <meta name="apple-mobile-web-app-status-bar-style" content="yes"/> 
-        </f:facet>
+<h:head>
+    <f:facet name="first">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
+    </f:facet>
 
-        <title><ui:insert name="title">#{mainFrame.companyTitle}</ui:insert></title>
+    <title><ui:insert name="title">#{mainFrame.companyTitle}</ui:insert></title>
 
-        <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css" />
+    <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
-        <h:outputScript name="js/fms-core.js" library="web-layout"/>
-        <h:outputStylesheet name="css/noneie.css" library="web-layout"/>
-        <h:outputStylesheet name="css/fms-core.css" library="web-layout"/>
+    <h:outputScript name="js/fms-core.js" library="web-layout"/>
+    <h:outputStylesheet name="css/noneie.css" library="web-layout"/>
+    <h:outputStylesheet name="css/fms-core.css" library="web-layout"/>
 
-        <h:outputScript library="telmangrid" name="handsontable/handsontable.full.js"/>
-        <h:outputStylesheet library="telmangrid" name="handsontable/handsontable.full.css"/>
-        <h:outputStylesheet library="telmangrid" name="handsontable/fms.handsontable.override.css"/>
-        <h:outputScript library="telmangrid" name="handsontable/init3dHandson.v1.js"/>
+    <h:outputScript library="telmangrid" name="handsontable/handsontable.full.js"/>
+    <h:outputStylesheet library="telmangrid" name="handsontable/handsontable.full.css"/>
+    <h:outputStylesheet library="telmangrid" name="handsontable/fms.handsontable.override.css"/>
+    <h:outputScript library="telmangrid" name="handsontable/init3dHandson.v1.js"/>
 
-        <style>
-            body {
-                margin: 0;
-                padding: 0;
-                min-height: 100vh;
-                background-color: var(--surface-ground);
-                font-family: var(--font-family);
-            }
-            .ui-tabs .ui-tabs-panel {
-                padding: 0 !important;
-            }
-            /* Ensure the layout takes full height */
-            .main-wrapper {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-        </style>
-    </h:head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: var(--surface-ground);
+            font-family: var(--font-family);
+        }
 
-    <h:body>
-        <div class="main-wrapper p-2 md:p-4">
+        .ui-tabs .ui-tabs-panel {
+            padding: 0 !important;
+        }
 
-            <div class="grid">
+        /* Ensure the layout takes full height */
+        .main-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</h:head>
 
-                <div class="col-12 lg:col-4">
-                    <div class="surface-card p-3 shadow-1 border-round mb-3">
-                        <h:form id="iceformTop">
-                            <ui:include src="top.xhtml"/>
-                        </h:form>
-                        <div class="my-1"></div>
-                        <h:form id="menuForm"> 
-                            <ui:include src="menu.xhtml"/> 
-                        </h:form> 
-                    </div>
+<h:body>
+    <div class="main-wrapper p-2 md:p-4">
+
+        <div class="grid">
+
+            <div class="col-12 lg:col-4">
+                <div class="surface-card p-3 shadow-1 border-round mb-3">
+                    <h:form id="iceformTop">
+                        <ui:include src="top.xhtml"/>
+                    </h:form>
+                    <div class="my-1"></div>
+                    <h:form id="menuForm">
+                        <ui:include src="menu.xhtml"/>
+                    </h:form>
                 </div>
+            </div>
 
-                <div class="col-12 lg:col-8">
-                    <p:outputPanel id="idCenterCenter" styleClass="surface-card p-2 md:p-1 shadow-1 border-round">
+            <div class="col-12 lg:col-8">
+                <p:outputPanel id="idCenterCenter" styleClass="surface-card p-2 md:p-1 shadow-1 border-round">
 
-                        <p:outputPanel id="id-dlgs">
-                            <ui:insert name="form-pop-ups">define form-pop-ups</ui:insert>
-                        </p:outputPanel>
+                    <p:outputPanel id="id-dlgs">
+                        <ui:insert name="form-pop-ups">define form-pop-ups</ui:insert>
+                    </p:outputPanel>
 
-                        <div class="mb-3">
-                            <ui:insert name="action-panel">define action-panel</ui:insert>
-                        </div>
+                    <div class="mb-3">
+                        <ui:insert name="action-panel">define action-panel</ui:insert>
+                    </div>
 
-                        <p:tabView id="id-tab-view" styleClass="mt-2">
-                            <p:tab id="id-tab-data-input" title="Veriler">
-                                <div class="grid flex-column md:flex-row mt-2">
+                    <p:tabView id="id-tab-view" styleClass="mt-2">
+                        <p:tab id="id-tab-data-input" title="Veriler">
+                            <div class="grid flex-column md:flex-row mt-2">
 
-                                    <div class="col-12 #{mainFrame.historyRendered ? 'md:col-6' : 'md:col-12'}">
-                                        <div class="p-2 border-bottom-1 surface-border mb-2">
-                                            <h:outputText value="Veri Girişi" styleClass="text-xl font-bold" />
-                                            <p:tooltip for="@previous" value="güncellenebilir veriler bu sekmede yer almaktadır" position="top"/>
-                                        </div>
-                                        <ui:insert name="current-content">define current-content</ui:insert>
+                                <div class="col-12 #{mainFrame.historyRendered ? 'md:col-6' : 'md:col-12'}">
+                                    <div class="p-2 border-bottom-1 surface-border mb-2">
+                                        <h:outputText value="Veri Girişi" styleClass="text-xl font-bold"/>
+                                        <p:tooltip for="@previous"
+                                                   value="güncellenebilir veriler bu sekmede yer almaktadır"
+                                                   position="top"/>
                                     </div>
-
-                                    <h:panelGroup rendered="#{mainFrame.historyRendered}" layout="block" styleClass="col-12 md:col-6 border-left-none md:border-left-1 surface-border">
-                                        <div class="p-2 border-bottom-1 surface-border mb-2">
-                                            <h:outputText value="Tüm Veriler" styleClass="text-xl font-bold" />
-                                            <p:tooltip for="@previous" value="tüm veriler bu sekmede yer almaktadır" position="top"/>
-                                        </div>
-                                        <ui:insert name="history-content">define history-content</ui:insert>
-                                    </h:panelGroup>
+                                    <ui:insert name="current-content">define current-content</ui:insert>
                                 </div>
-                            </p:tab>
 
-                            <p:tab id="id-tab-attachments" title="Ekli Dosyalar" rendered="#{formService.myForm.hasAttachedFiles}">   
-                                <div class="p-3">
-                                    <ui:insert name="upload-page">define upload-page</ui:insert>
-                                </div>
-                            </p:tab>
+                                <h:panelGroup rendered="#{mainFrame.historyRendered}" layout="block"
+                                              styleClass="col-12 md:col-6 border-left-none md:border-left-1 surface-border">
+                                    <div class="p-2 border-bottom-1 surface-border mb-2">
+                                        <h:outputText value="Tüm Veriler" styleClass="text-xl font-bold"/>
+                                        <p:tooltip for="@previous" value="tüm veriler bu sekmede yer almaktadır"
+                                                   position="top"/>
+                                    </div>
+                                    <ui:insert name="history-content">define history-content</ui:insert>
+                                </h:panelGroup>
+                            </div>
+                        </p:tab>
 
-                            <p:tab id="id-tab-esign" title="E-İmzalı Bildirimler" rendered="#{formService.myForm.esignable}">
-                                <div class="p-3">
-                                    <ui:insert name="esignHistory">EsignPanel</ui:insert>
-                                </div>
-                            </p:tab>
-                        </p:tabView>
-                    </p:outputPanel> 
+                        <p:tab id="id-tab-attachments" title="Ekli Dosyalar"
+                               rendered="#{formService.myForm.hasAttachedFiles}">
+                            <div class="p-3">
+                                <ui:insert name="upload-page">define upload-page</ui:insert>
+                            </div>
+                        </p:tab>
+
+                        <p:tab id="id-tab-esign" title="E-İmzalı Bildirimler"
+                               rendered="#{formService.myForm.esignable}">
+                            <div class="p-3">
+                                <ui:insert name="esignHistory">EsignPanel</ui:insert>
+                            </div>
+                        </p:tab>
+                    </p:tabView>
+                </p:outputPanel>
+            </div>
+
+            <div class="col-12 mt-auto">
+                <div class="surface-section p-3 text-right border-top-1 surface-border">
+                    <p:outputLabel
+                            id="id-copyright-info"
+                            value="#{mainFrame.copyrightInfo}"
+                            styleClass="text-sm text-500"/>
+                    <br/>
+                    <p:outputLabel
+                            id="id-version"
+                            value="#{mainFrame.version}"
+                            styleClass="text-sm text-500"/>
                 </div>
+            </div>
 
-                <div class="col-12 mt-auto">
-                    <div class="surface-section p-3 text-right border-top-1 surface-border">
-                        <h:outputText value="#{mainFrame.copyrightInfo}" styleClass="text-sm text-500"/>
-                    </div>
-                </div>
+        </div>
+    </div>
 
-            </div> </div>
+    <ui:include src="../../dialogs/dlg-message-code.xhtml"/>
+    <ui:include src="../../dialogs/dlg-message.xhtml"/>
+    <ui:include src="../../dialogs/dlg-user-info.xhtml"/>
 
-        <ui:include src="../../dialogs/dlg-message-code.xhtml"/>
-        <ui:include src="../../dialogs/dlg-message.xhtml"/>
-        <ui:include src="../../dialogs/dlg-user-info.xhtml"/>
+    <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
+    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+              showHeader="false">
+        <p:graphicImage url="/images/ajax-loader.gif"/>
+    </p:dialog>
 
-        <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
-            <p:graphicImage url="/images/ajax-loader.gif"/>
-        </p:dialog> 
-
-        <p:dialog widgetVar="statusDialogDownload" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
-            <p:graphicImage url="/images/downloading.gif" width="80"/>
-        </p:dialog>
-    </h:body>
+    <p:dialog widgetVar="statusDialogDownload" modal="true" draggable="false" closable="false" resizable="false"
+              showHeader="false">
+        <p:graphicImage url="/images/downloading.gif" width="80"/>
+    </p:dialog>
+</h:body>
 </html>

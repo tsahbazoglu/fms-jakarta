@@ -2,6 +2,7 @@ package tr.org.tspb.web.session.mb;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
 //
+import java.io.InputStream;
 import java.io.Serializable;
 import java.io.File;
 import java.io.IOException;
@@ -666,7 +667,7 @@ public class MainFrame implements Serializable {
                     text("Create Jasper Scripts").
                     __().
                     __() //head
-                    .
+                            .
                     body().
                     div().
                     attrClass("container").
@@ -690,9 +691,9 @@ public class MainFrame implements Serializable {
                     __().
                     __().
                     __() //body
-                    .
+                            .
                     __() //html
-                    .
+                            .
                     toString();
 
             throw new RuntimeException(String.format(html, loginController.
@@ -902,9 +903,9 @@ public class MainFrame implements Serializable {
                     __().
                     __().
                     __() //body
-                    .
+                            .
                     __() //html
-                    .
+                            .
                     toString();
 
             throw new RuntimeException(html);
@@ -914,7 +915,7 @@ public class MainFrame implements Serializable {
 
         if (myFormXs.getLoginFkField() == null
                 && !loginController.isUserInRole(myFormXs.getMyProject().
-                        getAdminAndViewerRole())) {
+                getAdminAndViewerRole())) {
             throw new RuntimeException("login foreign key had not been set"
                     .concat(myFormXs.printToConfigAnalyze("smth")));
         }
@@ -946,14 +947,14 @@ public class MainFrame implements Serializable {
                     __().
                     __().
                     __() //body
-                    .
+                            .
                     __() //html
-                    .
+                            .
                     toString();
 
             throw new RuntimeException(String.format(html, loginController.
-                    getLoggedUserDetail().
-                    getUsername(),
+                            getLoggedUserDetail().
+                            getUsername(),
                     myFormXs.getName()));
         }
 
@@ -1392,10 +1393,10 @@ public class MainFrame implements Serializable {
     public boolean getRenderedDesktop() {
         if (formService.getMyForm() != null
                 && formService.getMyForm().
-                        getMyActions() != null
+                getMyActions() != null
                 && formService.getMyForm().
-                        getMyActions().
-                        isEsign()) {
+                getMyActions().
+                isEsign()) {
 
             if (loginController.isUserInRole(formService.getMyForm().
                     getMyProject().
@@ -1477,6 +1478,45 @@ public class MainFrame implements Serializable {
      */
     public boolean isHasSetToRelatedForm() {
         return hasSetToRelatedForm;
+    }
+
+
+    public String getVersion() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+
+        Object servletContext = facesContext.getExternalContext().getContext();
+
+        String version = "n/a";
+
+        try (InputStream is = ((jakarta.servlet.ServletContext) servletContext)
+                .getResourceAsStream("/WEB-INF/classes/git.properties")) {
+
+            if (is != null) {
+                Properties prop = new Properties();
+                prop.load(is);
+                version = String.format("version: %s, branch: %s, time: %s",
+                        prop.getProperty("git.build.version"),
+                        prop.getProperty("git.branch"),
+                        prop.getProperty("git.build.time"));
+            } else {
+                // File missing case
+                facesContext.addMessage(null, new FacesMessage(
+                        FacesMessage.SEVERITY_WARN,
+                        "Configuration Warning",
+                        "Version info file (git.properties) was not found."
+                ));
+            }
+
+        } catch (IOException ex) {
+            // Stream read failure case
+            facesContext.addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Error",
+                    "Failed to load system version information."
+            ));
+        }
+
+        return version;
     }
 
 }
