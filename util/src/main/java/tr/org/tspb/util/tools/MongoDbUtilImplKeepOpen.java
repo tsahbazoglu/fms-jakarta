@@ -760,17 +760,17 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
             MongoCollection<Document> collection
                     = database.getCollection(targetCollectionName);
 
-            Document result = collection.aggregate(executablePipeline)
+            Document response = collection.aggregate(executablePipeline)
                     .maxTime(5, TimeUnit.SECONDS)
                     .hint(new Document("_id", 1)) // Optional: add hint if performance is an issue
                     .first();
 
-            if (result != null && result.containsKey("result")) {
-                Object obj = result.get("result");
+            if (response != null && response.containsKey("result")) {
+                Object obj = response.get("result");
                 return new Document(RETVAL, obj);
             }
 
-            return result;
+            return response;
 
         } else if ("AGGREGATE_AND_MERGE".equals(strategy)) {
 

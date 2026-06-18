@@ -23,7 +23,7 @@ public interface FmsForm {
 
     public List<MyField> getChildFields();
 
-    public List<Document> getAdditionalRows();
+    public List<AdditionalRow> getAdditionalRows();
 
     public boolean isChildAdd();
 

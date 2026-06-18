@@ -2,6 +2,11 @@ package tr.org.tspb.table;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
 //
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -379,7 +384,7 @@ public abstract class FmsTable extends FmsTableView {
 
     protected void refreshUploadedFileList() {
         Object idValue = this.crudObject.get(MONGO_ID);
-        logger.info("refreshUploadedFileList for  : "+idValue);
+        logger.info("refreshUploadedFileList for  : " + idValue);
 
         ObjectId objectId = null;
 
@@ -392,7 +397,7 @@ public abstract class FmsTable extends FmsTableView {
         if (objectId == null) {
             listFileData = new ArrayList<>();
         } else {
-            logger.info("get file list for record : "+objectId);
+            logger.info("get file list for record : " + objectId);
             listFileData = repositoryService.findGridFsFileList(objectId);
         }
         refreshUploadedFileListAll();
@@ -656,7 +661,48 @@ public abstract class FmsTable extends FmsTableView {
 
             mongoDbUtil.deleteMany(myForm.getDb(), collection, new Document(MONGO_ID, objectID));
 
-            mongoDbUtil.trigger(repositoryService.expandCrudObject(myForm, new Document(crudObject)), myForm.getEventPostDelete(), loginController.getRolesAsList());
+            TagEvent postDelete = myForm.getEventPostDelete();
+            if (postDelete != null && TagEvent.TagEventType.externalApi.equals(postDelete.getType())) {
+
+                String memberIdAsStr= ((ObjectId)crudObject.get("member")).toHexString();
+                String periodIdAsStr= ((ObjectId)crudObject.get("period")).toHexString();
+
+                Map<String, Object> requestPayload = new HashMap<>();
+                requestPayload.put("member", memberIdAsStr);
+                requestPayload.put("period", periodIdAsStr);
+                requestPayload.put("table", myForm.getTable());
+
+                String TARGET_URL = "http://localhost:8080" + postDelete.getUri();
+
+                // 2. Instantiate the native Jakarta REST client worker engine
+                try (Client client = ClientBuilder.newClient()) {
+                    // 3. Dispatch the HTTP POST execution payload over the wire
+                    Response response = client.target(TARGET_URL)
+                            .request(MediaType.APPLICATION_JSON)
+                            .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                            .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+                    // 4. Validate output response signals cleanly
+                    if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                        String jsonResponse = response.readEntity(String.class);
+                        System.out.println("Success response signature received from service: " + jsonResponse);
+                    } else {
+                        System.err.println("Failed to execute. HTTP Status Code: " + response.getStatus());
+                        System.err.println("Error output detail: " + response.readEntity(String.class));
+                    }
+                    response.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            } else {
+                mongoDbUtil.trigger(
+                        repositoryService.expandCrudObject(myForm, new Document(crudObject)),
+                        myForm.getEventPostDelete(),
+                        loginController.getRolesAsList()
+                );
+            }
+
 
             for (Map entry : listFileData) {
                 deleteFile(entry.get("fileID").toString());

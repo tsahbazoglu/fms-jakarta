@@ -1,7 +1,6 @@
 package tr.org.tspb.datamodel.pojo;
 
 import org.bson.Document;
-import org.bson.types.Code;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
 
@@ -14,14 +13,14 @@ public class ExcellColumnDef {
     private final String type;
     private final boolean cache;
     private final int cellType;
-    private final Code converter;
+    private final FmsWorkbookColumnConverter converter;
     private final MyField toMyField;
 
     public ExcellColumnDef(FmsForm myForm, Document dbo) {
         this.type = dbo.getString("type");
         this.cache = Boolean.TRUE.equals(dbo.get("cache"));
         this.cellType = resolveCellType();
-        this.converter = new Code(dbo.getString("converter"));
+        this.converter = initConverterFromDocument(dbo);
 
         String toFieldKey = dbo.getString("to");
 
@@ -33,7 +32,21 @@ public class ExcellColumnDef {
         }
     }
 
-    public Code getConverter() {
+    private FmsWorkbookColumnConverter initConverterFromDocument(Document fielDocument) {
+        Document converterDbo = fielDocument.get("converter", Document.class);
+
+        if (converterDbo == null) {
+            return null;
+        }
+
+        return new FmsWorkbookColumnConverter.Builder()
+                .type(converterDbo.getString("type"))
+                .uri(converterDbo.getString("uri"))
+                .op(converterDbo.getString("op"))
+                .build();
+    }
+
+    public FmsWorkbookColumnConverter getConverter() {
         return converter;
     }
 

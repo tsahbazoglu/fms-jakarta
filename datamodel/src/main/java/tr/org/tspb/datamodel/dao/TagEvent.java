@@ -2,6 +2,7 @@ package tr.org.tspb.datamodel.dao;
 
 import java.util.List;
 import org.bson.Document;
+
 import static tr.org.tspb.constants.ProjectConstants.COLLECTION;
 import static tr.org.tspb.constants.ProjectConstants.MESSAGE;
 import static tr.org.tspb.constants.ProjectConstants.TYPE;
@@ -19,11 +20,11 @@ public class TagEvent {
     private String msg;
     private String jsFunction;
     private Document cacheQuery;
+    private String uri;
+
 
     public enum TagEventType {
-        showWarnErrPopup,
-        application,
-        nothing
+        showWarnErrPopup, application, nothing, externalApi
     }
 
     public static TagEvent value(Document docEvent, Document registredFunctions) {
@@ -35,6 +36,7 @@ public class TagEvent {
         TagEvent tagEvent = new TagEvent();
 
         tagEvent.db = docEvent.getString("db");
+        tagEvent.uri = docEvent.getString("uri");
         String type = docEvent.getString(TYPE);
 
         if (type != null) {
@@ -45,9 +47,11 @@ public class TagEvent {
                 case "application":
                     tagEvent.type = TagEventType.showWarnErrPopup;
                     break;
+                case "external_api":
+                    tagEvent.type = TagEventType.externalApi;
+                    break;
                 default:
-                    throw new RuntimeException(type.concat(
-                            " is not supported event type"));
+                    throw new RuntimeException(type.concat(" is not supported event type"));
             }
         } else {
             tagEvent.type = TagEventType.nothing;
@@ -61,9 +65,7 @@ public class TagEvent {
             StringBuilder sb = new StringBuilder();
             sb.append("<ul>");
             for (String string : ul) {
-                sb.append("<li>").
-                        append(string).
-                        append("</li>");
+                sb.append("<li>").append(string).append("</li>");
             }
             sb.append("</ul>");
             tagEvent.msg = sb.toString();
@@ -109,6 +111,10 @@ public class TagEvent {
 
     public String getJsFunction() {
         return jsFunction;
+    }
+
+    public String getUri() {
+        return uri;
     }
 
 }

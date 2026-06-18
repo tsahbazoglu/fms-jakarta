@@ -1,6 +1,7 @@
 package tr.org.tspb.datamodel.dao;
 
 import com.mongodb.MongoConfigurationException;
+import org.xmlet.htmlapifaster.A;
 import tr.org.tspb.datamodel.pojo.RoleMap;
 import static tr.org.tspb.constants.ProjectConstants.*;
 import tr.org.tspb.datamodel.wf.MyRule;
@@ -120,7 +121,7 @@ public class MyForm extends FmsFormAbstract {
     private List<String> userConstantNoteList = new ArrayList<>();
     private List<String> ajaxFields = new ArrayList<>();
     private List<MyRule> workflowSteps = new ArrayList<>();
-    private List<Document> additionalRows = new ArrayList<>();
+    private List<AdditionalRow> additionalRows = new ArrayList<>();
     private String workflowStartStep = "s0";
     private String schemaVersion;
     private Object actions;
@@ -1144,7 +1145,7 @@ public class MyForm extends FmsFormAbstract {
         return deleteChildsOnDeleteMsg;
     }
 
-    public List<Document> getAdditionalRows() {
+    public List<AdditionalRow> getAdditionalRows() {
         return additionalRows;
     }
 
@@ -1200,8 +1201,25 @@ public class MyForm extends FmsFormAbstract {
                     "selectAllOnPleaseSelect", false);
             this.myForm.childCountDefault = dbObjectForm.getInteger(
                     "child-count-default", 5);
-            this.myForm.additionalRows = dbObjectForm.getList("additional-rows",
-                    Document.class);
+
+            List<Document> rawAdditionalRowsList = dbObjectForm.getList("additional-rows", Document.class);
+            if (rawAdditionalRowsList != null) {
+                for (Document d : rawAdditionalRowsList) {
+                    Document descDbo = (Document) d.get("desc");
+                    List<String> descMethods = (descDbo != null) ? descDbo.getList("method", String.class) : null;
+
+                    AdditionalRow rowInstance = new AdditionalRow.Builder()
+                            .type(d.getString("type"))
+                            .uri(d.getString("uri"))
+                            .method(d.getString("method"))
+                            .db(d.getString("db"))
+                            .op(d.getString("op"))
+                            .desc(descMethods) // Safe evaluation handled directly inside the builder method logic
+                            .build();
+
+                    this.myForm.additionalRows.add(rowInstance);
+                }
+            }
         }
 
         public Builder maskWorkflowRelation() {

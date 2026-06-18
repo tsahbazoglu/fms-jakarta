@@ -2,6 +2,8 @@ package tr.org.tspb.service;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
 //
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -27,6 +29,9 @@ import java.io.Reader;
 //
 import jakarta.faces.model.SelectItem;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 //
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -150,7 +155,7 @@ public class RepositoryService implements Serializable {
             if (object instanceof String //
                     && !((String) object).startsWith("function")//
                     && pattern.matcher((CharSequence) object).
-                            matches()) {
+                    matches()) {
 
                 if (object.toString().
                         startsWith("[")) {
@@ -169,8 +174,8 @@ public class RepositoryService implements Serializable {
 
             if (ComponentType.chips.name().
                     equals(fmsForm.getField(key) == null ? null : fmsForm.
-                            getField(key).
-                            getComponentType())) {
+                                                                  getField(key).
+                                                                  getComponentType())) {
                 List<SelectItem> list = (List<SelectItem>) object;
                 List<ObjectId> targetList = new ArrayList<>();
                 if (list != null) {
@@ -185,8 +190,47 @@ public class RepositoryService implements Serializable {
         return operatedObject;
     }
 
+
+    public PostSaveResult runEventPostSaveByGivenTagEvent(String uri, Document operatedObject)
+            throws MongoOrmFailedException {
+
+        String memberIdAsStr = operatedObject.getObjectId("member").toHexString();
+        String periodIdAsStr = operatedObject.getObjectId("period").toHexString();
+        String tableName = operatedObject.getString("table");
+
+        Map<String, Object> requestPayload = new HashMap<>();
+        requestPayload.put("member", memberIdAsStr);
+        requestPayload.put("period", periodIdAsStr);
+        requestPayload.put("table", tableName);
+
+        String TARGET_URL = "http://localhost:8080" +uri;
+
+        // 2. Instantiate the native Jakarta REST client worker engine
+        try (Client client = ClientBuilder.newClient()) {
+            // 3. Dispatch the HTTP POST execution payload over the wire
+            Response response = client.target(TARGET_URL)
+                    .request(MediaType.APPLICATION_JSON)
+                    .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                    .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+            // 4. Validate output response signals cleanly
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                String jsonResponse = response.readEntity(String.class);
+                System.out.println("Success response signature received from service: " + jsonResponse);
+            } else {
+                System.err.println("Failed to execute. HTTP Status Code: " + response.getStatus());
+                System.err.println("Error output detail: " + response.readEntity(String.class));
+            }
+            response.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return PostSaveResult.getNullSingleton();
+    }
+
+
     public PostSaveResult runEventPostSave(Document operatedObject,
-            FmsForm myForm, MyMap crudObject) throws MongoOrmFailedException {
+                                           FmsForm myForm, MyMap crudObject) throws MongoOrmFailedException {
 
         TagEvent tagEvent = myForm.getEventPostSave();
 
@@ -207,6 +251,38 @@ public class RepositoryService implements Serializable {
                 case showWarnErrPopup:
                     return new PostSaveResult(true, tagEvent.getMsg(),
                             PostSaveResult.MessageGuiType.facesMessage, null);
+                case externalApi:
+
+                    String memberIdAsStr = operatedObject.getObjectId("member").toHexString();
+                    String periodIdAsStr = operatedObject.getObjectId("period").toHexString();
+
+                    Map<String, Object> requestPayload = new HashMap<>();
+                    requestPayload.put("member", memberIdAsStr);
+                    requestPayload.put("period", periodIdAsStr);
+                    requestPayload.put("table", myForm.getTable());
+
+                    String TARGET_URL = "http://localhost:8080" + tagEvent.getUri();
+
+                    // 2. Instantiate the native Jakarta REST client worker engine
+                    try (Client client = ClientBuilder.newClient()) {
+                        // 3. Dispatch the HTTP POST execution payload over the wire
+                        Response response = client.target(TARGET_URL)
+                                .request(MediaType.APPLICATION_JSON)
+                                .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                                .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+                        // 4. Validate output response signals cleanly
+                        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                            String jsonResponse = response.readEntity(String.class);
+                            System.out.println("Success response signature received from service: " + jsonResponse);
+                        } else {
+                            System.err.println("Failed to execute. HTTP Status Code: " + response.getStatus());
+                            System.err.println("Error output detail: " + response.readEntity(String.class));
+                        }
+                        response.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 default:
                     Document result = mongoDbUtil.trigger(operatedObject,
                             tagEvent, loginController.getRolesAsList());
@@ -219,7 +295,7 @@ public class RepositoryService implements Serializable {
     }
 
     public PreSaveResult runEventPreSave(Map query, FmsForm myForm,
-            MyMap crudObject) throws MongoOrmFailedException {
+                                         MyMap crudObject) throws MongoOrmFailedException {
 
         if (myForm.getEventPreSave() == null) {
             return PreSaveResult.getNullSingleton();
@@ -277,27 +353,27 @@ public class RepositoryService implements Serializable {
     }
 
     public List<DocumentRecursive> findList(FmsForm myForm,
-            Document searcheDBObject, Integer limit) {
+                                            Document searcheDBObject, Integer limit) {
         return findList(myForm.getDb(), myForm.getTable(), myForm,
                 searcheDBObject, limit);
     }
 
     public List<DocumentRecursive> findList(String myFormDb, String myFormTable,
-            FmsForm myForm, Document searcheDBObject, Integer limit) {
+                                            FmsForm myForm, Document searcheDBObject, Integer limit) {
         List<Document> cursor = mongoDbUtil.createCursor(myFormDb, myFormTable,
                 searcheDBObject, limit);
         return cursorToList(cursor, myForm);
     }
 
     public List<DocumentRecursive> findList(String myFormDb, String myFormTable,
-            FmsForm myForm, Bson searcheDBObject, Integer limit) {
+                                            FmsForm myForm, Bson searcheDBObject, Integer limit) {
         List<Document> cursor = mongoDbUtil.createCursor(myFormDb, myFormTable,
                 searcheDBObject, limit);
         return cursorToList(cursor, myForm);
     }
 
     public List<DocumentRecursive> cursorToList(List<Document> cursor,
-            FmsForm myForm) {
+                                                FmsForm myForm) {
         List<DocumentRecursive> list = new ArrayList<>();
 
         for (Document dbObject : cursor) {
@@ -326,8 +402,8 @@ public class RepositoryService implements Serializable {
                             myDb = myForm.getDb();
                         }
                         myColl = field.getRefCollection() == null ? field.
-                                getItemsAsMyItems().
-                                getTable() : field.getRefCollection();
+                                                                    getItemsAsMyItems().
+                                                                    getTable() : field.getRefCollection();
                     } else {
                         myDb = field.getDb();
                         myColl = field.getRefCollection();
@@ -358,7 +434,7 @@ public class RepositoryService implements Serializable {
 
             files = mongoDbUtil.findFiles(baseService.getProperties().
                     getUploadTable(), new BasicDBObject()
-                            .append(METADATA_CRUD_OBJECT_ID, myCommonRecordID));
+                    .append(METADATA_CRUD_OBJECT_ID, myCommonRecordID));
             for (GridFSFile gridFSDBFile : files) {
                 Map<String, String> fileInfoPresent = new HashMap<>();
                 String idAsStr = gridFSDBFile.getObjectId().
@@ -373,11 +449,11 @@ public class RepositoryService implements Serializable {
 
         files = mongoDbUtil.findFiles(baseService.getProperties().
                 getUploadTable(), new BasicDBObject()//
-                        .append(METADATA_CRUD_OBJECT_ID, null)//
+                .append(METADATA_CRUD_OBJECT_ID, null)//
                         .
-                        append(METADATA_USERNAME, loginController.
-                                getLoggedUserDetail().
-                                getUsername()));
+                append(METADATA_USERNAME, loginController.
+                        getLoggedUserDetail().
+                        getUsername()));
 
         for (GridFSFile gridFSDBFile : files) {
             Map<String, String> fileInfoPresent = new HashMap<>();
@@ -406,15 +482,15 @@ public class RepositoryService implements Serializable {
                         getAdminRole())) {
             files = mongoDbUtil.findFiles(baseService.getProperties().
                     getUploadTable(), new BasicDBObject()//
-                            .append(METADATA_SELECTED_FORM_KEY, myForm.getKey()));
+                    .append(METADATA_SELECTED_FORM_KEY, myForm.getKey()));
         } else {
             files = mongoDbUtil.findFiles(baseService.getProperties().
                     getUploadTable(), new BasicDBObject()//
-                            .append(METADATA_SELECTED_FORM_KEY, myForm.getKey())//
+                    .append(METADATA_SELECTED_FORM_KEY, myForm.getKey())//
                             .
-                            append(METADATA_USERNAME, loginController.
-                                    getLoggedUserDetail().
-                                    getUsername()));
+                    append(METADATA_USERNAME, loginController.
+                            getLoggedUserDetail().
+                            getUsername()));
         }
 
         for (GridFSFile gridFSDBFile : files) {
@@ -431,8 +507,8 @@ public class RepositoryService implements Serializable {
             fileInfoPresent.put(FILE_STATE,
                     gridFSDBFile.getMetadata().
                             get(CRUD_OBJECT_ID) != null
-                    ? ""
-                    : "Bu ek hiçbir kayıt ile ilişkilendirilmemiş. Günlük Sistem Bakımında otomotik silinecek");
+                            ? ""
+                            : "Bu ek hiçbir kayıt ile ilişkilendirilmemiş. Günlük Sistem Bakımında otomotik silinecek");
             fileInfoPresent.put(FILE_COLOR, "#ECA0A0");
             returnList.add(fileInfoPresent);
         }
@@ -446,10 +522,10 @@ public class RepositoryService implements Serializable {
 
             tuikData.createMeta(
                     (ObjectId) appScopeSrvCtrl.cacheMemberByLdapUID(tuikData.
-                            getLdapUID()).
+                                    getLdapUID()).
                             get(MONGO_ID),
                     (ObjectId) appScopeSrvCtrl.cachePeriodByValue(
-                            ((Number) tuikData.getPeriodValue()).intValue()).
+                                    ((Number) tuikData.getPeriodValue()).intValue()).
                             get(MONGO_ID),
                     myForm.getKey()
             );
@@ -622,7 +698,7 @@ public class RepositoryService implements Serializable {
 
             try (Reader reader = new BufferedReader(new InputStreamReader(
                     attachmentStream, Charset.forName(StandardCharsets.UTF_8.
-                            name())))) {
+                    name())))) {
                 int c = 0;
                 while ((c = reader.read()) != -1) {
                     textBuilder.append((char) c);
@@ -637,7 +713,7 @@ public class RepositoryService implements Serializable {
     }
 
     public DatabaseUser getDatabaseUser(MyProject myProject,
-            ModuleItem moduleItem, String username) {
+                                        ModuleItem moduleItem, String username) {
 
         String loginDB = myProject.getLoginDetailDb();
         String loginTable = myProject.getLoginDetailTable();
@@ -681,7 +757,7 @@ public class RepositoryService implements Serializable {
             myForm = ogmCreator.getMyFormXsmall(myProject,
                     new Document(FORM_KEY, formKey),
                     loginController.getRoleMap(), loginController.
-                    getLoggedUserDetail());
+                            getLoggedUserDetail());
             cacheMyFormLarge.put(cacheKey, myForm);
         }
 
@@ -714,7 +790,7 @@ public class RepositoryService implements Serializable {
     }
 
     public FmsForm getMyFormLargeWithTableFilter(MyProject myProject,
-            String formKey)
+                                                 String formKey)
             throws NullNotExpectedException, MongoOrmFailedException {
 
         return ogmCreator.getMyFormLarge(myProject,
@@ -727,7 +803,7 @@ public class RepositoryService implements Serializable {
     }
 
     public FmsForm getMyFormLargeWithBaseFilter(MyProject myProject,
-            String formKey)
+                                                String formKey)
             throws NullNotExpectedException, MongoOrmFailedException {
 
         StringBuilder sb = new StringBuilder();
@@ -790,7 +866,7 @@ public class RepositoryService implements Serializable {
     }
 
     public void updateMany(String db, String table, Map searchMap,
-            Map<String, Object> record, boolean b) {
+                           Map<String, Object> record, boolean b) {
 
         mongoDbUtil.updateMany(db, table,
                 new Document(searchMap),
@@ -800,7 +876,7 @@ public class RepositoryService implements Serializable {
     }
 
     public void updateMany(String db, String table, Map searchMap,
-            Map<String, Object> record) {
+                           Map<String, Object> record) {
 
         mongoDbUtil.updateMany(db, table,
                 new Document(searchMap),
@@ -809,7 +885,7 @@ public class RepositoryService implements Serializable {
     }
 
     public Map oneAsUserOrDefault(String db, String table,
-            Map<String, Object> searchMap) {
+                                  Map<String, Object> searchMap) {
         Map map = oneAsUser(db, table, searchMap);
         if (map == null) {
             map = new HashMap(searchMap);
@@ -909,7 +985,7 @@ public class RepositoryService implements Serializable {
     }
 
     public List<Map> findSkipLimitAsLoggedUser(String db, String table,
-            Map searchedMap, int startRow, int maxResults) {
+                                               Map searchedMap, int startRow, int maxResults) {
 
         UserDetail userDetail = loginController.getLoggedUserDetail();
 
@@ -935,10 +1011,11 @@ public class RepositoryService implements Serializable {
         mongoDbUtil.removeFile(baseService.getProperties().
                 getUploadTable(), new ObjectId(toBeDeletedFileID));
     }
+
     public static final String JOIN_ID = "joinId";
 
     public void updateManyMyLicenseAsUser(FmsForm myForm, Map searchForUpdate,
-            MyLicense myLicense, int joinId) {
+                                          MyLicense myLicense, int joinId) {
 
         ObjectId memberId = loginController.getLoggedUserDetail().
                 getDbo().
@@ -962,7 +1039,7 @@ public class RepositoryService implements Serializable {
     }
 
     public void updateManyMyRecordAsUser(FmsForm myForm, Map searchForUpdate,
-            MyRecord myRecord, int joinId) {
+                                         MyRecord myRecord, int joinId) {
 
         ObjectId memberId = loginController.getLoggedUserDetail().
                 getDbo().
@@ -1015,7 +1092,7 @@ public class RepositoryService implements Serializable {
     }
 
     public MyFile findFileAsMyFileInputStream(String ion_uploaded_files,
-            String objectID) throws IOException {
+                                              String objectID) throws IOException {
         return mongoDbUtil.findFileAsMyFileInputStream(baseService.
                 getProperties().
                 getUploadTable(), new ObjectId(objectID));
@@ -1028,7 +1105,7 @@ public class RepositoryService implements Serializable {
     }
 
     public String sendForm(FmsForm fmsForm, ObjectId period, Document filterDoc,
-            MyMap crudObject) throws Exception {
+                           MyMap crudObject) throws Exception {
 
         String failMessage = fmsForm.getMyActions().
                 getSendFormAction().
@@ -1057,11 +1134,11 @@ public class RepositoryService implements Serializable {
                         Filters.eq(FORMS, PERIOD),
                         Filters.eq(MONGO_ID, period));
                 periodName = mongoDbUtil.findOne(
-                        periodField.getItemsAsMyItems().
-                                getDb(),
-                        periodField.getItemsAsMyItems().
-                                getTable(),
-                        filter).
+                                periodField.getItemsAsMyItems().
+                                        getDb(),
+                                periodField.getItemsAsMyItems().
+                                        getTable(),
+                                filter).
                         getString(NAME);
             }
 
@@ -1096,7 +1173,7 @@ public class RepositoryService implements Serializable {
                     for (MyField myField : fmsForm.getAutosetFields()) {
                         if (mySearchObject.get(myField.getKey()) == null
                                 || SelectOneObjectIdConverter.NULL_VALUE.equals(
-                                        mySearchObject.get(myField.getKey()))) {
+                                mySearchObject.get(myField.getKey()))) {
                             throw new Exception(
                                     MessageFormat.format(
                                             "arama kriterlerinde {0} belirsiz.",
@@ -1122,7 +1199,7 @@ public class RepositoryService implements Serializable {
     }
 
     public void callAdditionalAction(FmsForm form, Document filter,
-            TagActionsAction fmsAction, MyMap crudObject) {
+                                     TagActionsAction fmsAction, MyMap crudObject) {
 
         ctrlService.init(form.getMyProject().
                 getConfigTable());
@@ -1142,7 +1219,7 @@ public class RepositoryService implements Serializable {
                 if (fmsChecks != null) {
                     for (FmsCheck fmsCheck : fmsChecks) {
                         ifcase = (ifcase == null) ? fmsCheck.execute() : ifcase && fmsCheck.
-                                execute();
+                                                                                   execute();
                     }
                 }
 
@@ -1153,16 +1230,16 @@ public class RepositoryService implements Serializable {
                             case "upsert":
                                 mongoDbUtil.upsertOne(operation.getDb(),
                                         operation.getTable(), operation.
-                                        getFilter(), operation.getSet());
+                                                getFilter(), operation.getSet());
                                 break;
                             case "update":
                                 mongoDbUtil.updateMany(operation.getDb(),
                                         operation.getTable(), operation.
-                                        getFilter(), operation.getSet());
+                                                getFilter(), operation.getSet());
                                 break;
                             case "copy":
                                 Document doc = mongoDbUtil.findOne(operation.
-                                        getDb(), operation.getTable(),
+                                                getDb(), operation.getTable(),
                                         operation.getFilter());
                                 doc.remove(MONGO_ID);
                                 crudObject.clear();

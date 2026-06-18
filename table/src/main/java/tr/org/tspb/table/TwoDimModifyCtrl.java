@@ -5,6 +5,11 @@ import static jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
 //
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -48,6 +53,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.TreeNode;
+import tr.org.tspb.datamodel.dao.*;
 import tr.org.tspb.datamodel.gui.FmsTableDataModel;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
 import tr.org.tspb.datamodel.pojo.MyConstraintFormula;
@@ -67,19 +73,9 @@ import tr.org.tspb.common.qualifier.MyCtrlServiceQualifier;
 import tr.org.tspb.common.qualifier.MyQualifier;
 import tr.org.tspb.common.qualifier.ViewerController;
 import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
-import tr.org.tspb.datamodel.dao.MyField;
-import tr.org.tspb.datamodel.dao.FmsForm;
-import tr.org.tspb.datamodel.dao.MyMap;
 import tr.org.tspb.outsider.intr.FmsWorkFlow;
 import tr.org.tspb.datamodel.pojo.UserDetail;
 import tr.org.tspb.converter.base.BsonConverter;
-import tr.org.tspb.datamodel.dao.CtrlItems;
-import tr.org.tspb.datamodel.dao.TagActionsAction;
-import tr.org.tspb.datamodel.dao.MyActions;
-import tr.org.tspb.datamodel.dao.MyBaseRecord;
-import tr.org.tspb.datamodel.dao.MyItems;
-import tr.org.tspb.datamodel.dao.FmsFormProperty;
-import tr.org.tspb.datamodel.dao.TagEvent;
 import tr.org.tspb.datamodel.dp.nullobj.PlainRecordData;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
 import tr.org.tspb.outsider.intr.PaymentDoor;
@@ -1590,28 +1586,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
         List<Map> list = mongoDbUtil.find(formService.getMyForm(), myForm.getTable(), filterService.getTableFilterCurrent(), null, startRow, maxResults, sortMap, null);
 
-        if (myForm.getAdditionalRows() != null) {
-            for (Document doc : myForm.getAdditionalRows()) {
-                String function = doc.getString("op");
-                String db = doc.getString("db");
-                try {
-
-                    Document filter = new Document(filterService.getTableFilterCurrent());
-
-                    Document result = mongoDbUtil.runCommand(db, function, filter);
-                    Object returnValue = result.get(RETVAL);
-
-                    if (returnValue instanceof List) {
-                        for (Document addDoc : (List<Document>) returnValue) {
-                            addDoc.put(MONGO_ID, UUID.randomUUID().toString());
-                            list.add(mongoDbUtil.wrapIt(myForm, addDoc));
-                        }
-                    }
-                } catch (Exception ex) {
-                    logger.error(ex.getMessage());
-                }
-            }
-        }
+        additionalRows(myForm, list);
 
         calculateColumns(list);
 
@@ -1648,6 +1623,123 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
         return list;
 
+    }
+
+    private void additionalRows(FmsForm myForm, List<Map> list) {
+        List<AdditionalRow> additionalRows = myForm.getAdditionalRows();
+
+        for (AdditionalRow additionalRow : additionalRows) {
+
+            if (!"external_api".equals(additionalRow.getType())) {
+                continue;
+            }
+
+            try {
+                Document filter = new Document(filterService.getTableFilterCurrent());
+
+                // 1. Unpack Member array collection paths safely
+                List<String> memberIds = new ArrayList<>();
+                if (filter.get("member") != null) {
+                    Object memberObj = filter.get("member");
+                    if (memberObj instanceof Document && ((Document) memberObj).containsKey("$in")) {
+                        List<?> rawList = ((Document) memberObj).getList("$in", Object.class);
+                        for (Object item : rawList) {
+                            memberIds.add(item instanceof ObjectId ? ((ObjectId) item).toHexString() : item.toString());
+                        }
+                    } else {
+                        memberIds.add(memberObj instanceof ObjectId ? ((ObjectId) memberObj).toHexString() : memberObj.toString());
+                    }
+                }
+
+// 2. Unpack Period array collection paths safely
+                List<String> periodIds = new ArrayList<>();
+                if (filter.get("period") != null) {
+                    Object periodObj = filter.get("period");
+                    if (periodObj instanceof Document && ((Document) periodObj).containsKey("$in")) {
+                        List<?> rawList = ((Document) periodObj).getList("$in", Object.class);
+                        for (Object item : rawList) {
+                            periodIds.add(item instanceof ObjectId ? ((ObjectId) item).toHexString() : item.toString());
+                        }
+                    } else {
+                        periodIds.add(periodObj instanceof ObjectId ? ((ObjectId) periodObj).toHexString() : periodObj.toString());
+                    }
+                }
+
+                // Guard Check: Skip execution if both lists came back completely empty
+                if (memberIds.isEmpty() || periodIds.isEmpty()) {
+                    logger.warn("Skipping REST execution: 'member' or 'period' filter fields are empty.");
+                    continue;
+                }
+
+                Map<String, Object> requestPayload = new HashMap<>();
+                requestPayload.put("members", memberIds);
+                requestPayload.put("periods", periodIds);
+                requestPayload.put("table", myForm.getTable());
+
+                String TARGET_URL = "http://localhost:8080" + additionalRow.getUri();
+
+                List<Document> restSummaryRows = new ArrayList<>();
+
+                // 1. Instantiate the native Jakarta REST client worker engine
+                try (Client client = ClientBuilder.newClient()) {
+                    // 2. Dispatch the HTTP POST execution payload over the wire
+                    Response response = client.target(TARGET_URL)
+                            .request(MediaType.APPLICATION_JSON)
+                            .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                            .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+
+                    // 3. Validate output response signals cleanly
+                    if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                        // Read the dynamic JSON array returned by the REST service
+                        List<Map<String, Object>> responseList = response.readEntity(new jakarta.ws.rs.core.GenericType<List<Map<String, Object>>>() {
+                        });
+
+                        if (responseList != null) {
+                            for (Map<String, Object> map : responseList) {
+                                restSummaryRows.add(new Document(map));
+                            }
+                        }
+                        System.out.println("Successfully fetched summaries from REST service. Rows count: " + restSummaryRows.size());
+                    } else {
+                        System.err.println("Failed to execute calculation microservice. HTTP Status Code: " + response.getStatus());
+                        System.err.println("Error output detail: " + response.readEntity(String.class));
+                    }
+                    response.close();
+                } catch (Exception e) {
+                    logger.error("REST connection connection error encountered: " + e.getMessage(), e);
+                }
+
+                // 4. PROCESS THE RETURNED DATA (Replacing the legacy runCommand system.js fallback)
+
+                for (Document addDoc : restSummaryRows) {
+                    // Assign a new runtime ID string signature to map onto your framework components
+                    addDoc.put(MONGO_ID, UUID.randomUUID().toString());
+
+                    // Convert 'member' back to BSON ObjectId if it's a valid hex signature
+                    if (addDoc.get("member") != null) {
+                        String memberStr = addDoc.get("member").toString();
+                        if (ObjectId.isValid(memberStr)) {
+                            addDoc.put("member", new ObjectId(memberStr));
+                        }
+                    }
+
+                    // Convert 'period' back to BSON ObjectId if it's a valid hex signature
+                    if (addDoc.get("period") != null) {
+                        String periodStr = addDoc.get("period").toString();
+                        if (ObjectId.isValid(periodStr)) {
+                            addDoc.put("period", new ObjectId(periodStr));
+                        }
+                    }
+
+                    // Wrap the document natively using your existing architecture utilities
+                    list.add(mongoDbUtil.wrapIt(myForm, addDoc));
+                }
+
+
+            } catch (Exception ex) {
+                logger.error(ex.getMessage());
+            }
+        }
     }
 
     private void calculateColumns(List<Map> list) {

@@ -459,7 +459,7 @@ public class FmsBulkUpload extends FmsTable implements Serializable {
 
                     if (excellColumnDef.getConverter() != null && excellColumnDef.
                             getConverter().
-                            getCode() != null) {
+                            getOp() != null) {
 
                         try {
                             Document commandResult = mongoDbUtil.runCommand(
@@ -467,7 +467,7 @@ public class FmsBulkUpload extends FmsTable implements Serializable {
                                             getUploadMerge().
                                             getToDb(),
                                     excellColumnDef.getConverter().
-                                            getCode(), resolvedValue, memberType);
+                                            getOp(), resolvedValue, memberType);
 
                             resolvedValue = commandResult.get(RETVAL);
 

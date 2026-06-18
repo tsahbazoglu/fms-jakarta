@@ -3,16 +3,17 @@ package tr.org.tspb.table;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
@@ -37,6 +38,7 @@ import tr.org.tspb.common.services.AppScopeSrvCtrl;
 import tr.org.tspb.common.services.BaseService;
 import tr.org.tspb.common.services.LoginController;
 import tr.org.tspb.common.services.MailService;
+
 import static tr.org.tspb.constants.ProjectConstants.ADMIN_METADATA;
 import static tr.org.tspb.constants.ProjectConstants.CREATE_DATE;
 import static tr.org.tspb.constants.ProjectConstants.CREATE_SESSIONID;
@@ -58,22 +60,16 @@ import static tr.org.tspb.constants.ProjectConstants.UPDATE_DATE;
 import static tr.org.tspb.constants.ProjectConstants.UPDATE_USER;
 import static tr.org.tspb.constants.ProjectConstants.UYS_EASY_FIND_KEY;
 import static tr.org.tspb.constants.ProjectConstants.VALUE;
-import tr.org.tspb.datamodel.dao.FmsForm;
-import tr.org.tspb.datamodel.dao.MyBaseRecord;
-import tr.org.tspb.datamodel.dao.MyField;
-import tr.org.tspb.datamodel.dao.MyMap;
-import tr.org.tspb.datamodel.dao.MyMerge;
-import tr.org.tspb.datamodel.dao.MyProject;
+
+import tr.org.tspb.datamodel.dao.*;
 import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.constants.exceptions.LdapException;
 import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
 import tr.org.tspb.constants.exceptions.UserException;
+import tr.org.tspb.datamodel.pojo.*;
 import tr.org.tspb.factory.cp.OgmCreatorIntr;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
-import tr.org.tspb.datamodel.pojo.ExcellColumnDef;
-import tr.org.tspb.datamodel.pojo.PostSaveResult;
-import tr.org.tspb.datamodel.pojo.UserDetail;
 import tr.org.tspb.service.CalcService;
 import tr.org.tspb.service.CtrlService;
 import tr.org.tspb.service.FilterService;
@@ -86,10 +82,8 @@ import tr.org.tspb.util.tools.MongoDbUtilIntr;
 import tr.org.tspb.util.tools.MongoDbVersion;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import jakarta.annotation.PostConstruct;
-import tr.org.tspb.datamodel.pojo.PreSaveResult;
 
 /**
  *
@@ -175,8 +169,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
     }
 
     public String createToken(Object data) {
-        String token = UUID.randomUUID().
-                toString();
+        String token = UUID.randomUUID().toString();
         tokens.put(token, data);
         return token;
     }
@@ -254,37 +247,65 @@ public class FmsMultiFormBulkUpload implements Serializable {
 
     }
 
+    record BulkLoadTask(FmsForm form, List<Document> list) {
+    }
+
     public String localBulkLoadExcell() {
+
         try {
-            localBulkLoadExcellBy(myForm1, listOfToBeUpsert1);
-            logger.info("form1 completed");
+            List<BulkLoadTask> tasks = List.of(
+                    new BulkLoadTask(myForm1, listOfToBeUpsert1),
+                    new BulkLoadTask(myForm2, listOfToBeUpsert2),
+                    new BulkLoadTask(myForm3, listOfToBeUpsert3),
+                    new BulkLoadTask(myForm4, listOfToBeUpsert4),
+                    new BulkLoadTask(myForm5, listOfToBeUpsert5),
+                    new BulkLoadTask(myForm6, listOfToBeUpsert6)
+            );
+            // 3. Process the tasks cleanly without casting
+            Map<String, Document> allCollectUpdates = loadAllSheets(tasks);
 
-            localBulkLoadExcellBy(myForm2, listOfToBeUpsert2);
-            logger.info("form2 completed");
+            for (Map.Entry<String, Document> entry : allCollectUpdates.entrySet()) {
+                Document dbo = entry.getValue();
+                PostSaveResult postSaveResult = repositoryService.
+                        runEventPostSaveByGivenTagEvent("/calc-service/api/calculations/gyonad/overall-ratios", dbo);
+                String msg = postSaveResult.getMsg();
+                if (msg != null) {
+                    StringBuilder dlgSb = new StringBuilder();
+                    dlgSb.append("*Kayıt Sonrası* tetikleyici çalıştırılıyor iken hata oluştu. ");
+                    dlgSb.append("<br/><br/>");
+                    dlgSb.append(msg);
+                    dialogController.showPopupInfoWithOk(postSaveResult.
+                            getMsg(), MESSAGE_DIALOG);
+                }
+            }
 
-            localBulkLoadExcellBy(myForm3, listOfToBeUpsert3);
-            logger.info("form3 completed");
-
-            localBulkLoadExcellBy(myForm4, listOfToBeUpsert4);
-            logger.info("form4 completed");
-
-            localBulkLoadExcellBy(myForm5, listOfToBeUpsert5);
-            logger.info("form5 completed");
-
-            localBulkLoadExcellBy(myForm6, listOfToBeUpsert6);
-            logger.info("form6 completed");
 
         } catch (Exception ex) {
-            logger.error("error occured", ex);
-            dialogController.showPopupError(
-                    "Dosya Yükleme Esnasında hata oluştu.<br/><br/>".concat(ex.
-                            getMessage()));
+            logger.error("Error occurred during bulk excel load", ex);
+            String errorMsg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            dialogController.showPopupError("Dosya Yükleme Esnasında hata oluştu.<br/><br/>" + errorMsg);
         }
         return null;
     }
 
-    public void localBulkLoadExcellBy(FmsForm fmsForm,
-            List<Document> listOfToBeUpsert) throws Exception {
+    private Map<String, Document> loadAllSheets(List<BulkLoadTask> tasks) throws Exception {
+        Map<String, Document> allCollectUpdates = new HashMap<>();
+
+        for (BulkLoadTask task : tasks) {
+            // Optional: Skip if data isn't initialized yet
+            if (task.form() == null || task.list() == null) continue;
+
+            Map<String, Document> collectUpdates = localBulkLoadExcellBy(task.form(), task.list());
+            allCollectUpdates.putAll(collectUpdates);
+            logger.info("{} completed", task.form().getName());
+        }
+
+        return allCollectUpdates;
+
+    }
+
+    public Map<String, Document> localBulkLoadExcellBy(FmsForm fmsForm, List<Document> listOfToBeUpsert)
+            throws Exception {
 
         List<String> upsertKeys = null;
         if (!fmsForm.getUploadMerge().
@@ -297,6 +318,8 @@ public class FmsMultiFormBulkUpload implements Serializable {
             }
         }
 
+        Map<String, Document> collectUpdates = new HashMap<>();
+
         if (fmsForm.getUploadMerge().
                 isInsert()) {
             for (Document dbo : listOfToBeUpsert) {
@@ -305,12 +328,17 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 mm.putAll(dbo);
                 saveObject(fmsForm, loginController, mm, fmsForm);
             }
-        } else if (fmsForm.getUploadMerge().
-                isUpdate()) {
+        } else if (fmsForm.getUploadMerge().isUpdate()) {
             int no = 0;
+
+
             for (Document dbo : listOfToBeUpsert) {
-                logger.info(loginController.getLoggedUserDetail().
-                        getCommonName() + " : start to upsert line : " + no++);
+                logger.info(
+                        String.format("%s : %s : upsert row : %03d",
+                                loginController.getLoggedUserDetail().getCommonName(),
+                                fmsForm.getName(),
+                                no++
+                        ));
                 dbo.putAll(uploadedMergeObject);
                 Document search = new Document(FORMS, fmsForm.getKey());
                 if (upsertKeys != null) {
@@ -327,24 +355,19 @@ public class FmsMultiFormBulkUpload implements Serializable {
                     PreSaveResult preSaveResult = repositoryService.
                             runEventPreSave(search, fmsForm, myMap);
                     if (!preSaveResult.isResult()) {
-                        mongoDbUtil.updateMany(fmsForm.getUploadMerge().
-                                getToDb(),
-                                fmsForm.getUploadMerge().
-                                        getToCollection(),
-                                search, dbo, new UpdateOptions().upsert(true));
+                        mongoDbUtil
+                                .updateMany(
+                                        fmsForm.getUploadMerge().getToDb(),
+                                        fmsForm.getUploadMerge().getToCollection(),
+                                        search,
+                                        dbo,
+                                        new UpdateOptions().upsert(true));
 
-                        PostSaveResult postSaveResult = repositoryService.
-                                runEventPostSave(dbo, fmsForm, null);
-                        //FIXME messagebundle
-                        if (postSaveResult.getMsg() != null) {
-                            StringBuilder dlgSb = new StringBuilder();
-                            dlgSb.append(
-                                    "*Kayıt Sonrası* tetikleyici çalıştırılıyor iken hata oluştu. ");
-                            dlgSb.append("<br/><br/>");
-                            dlgSb.append(preSaveResult.getMsg());
-                            dialogController.showPopupInfoWithOk(postSaveResult.
-                                    getMsg(), MESSAGE_DIALOG);
-                        }
+                        String uniqueKey = String.format("m:%s|p:%s",
+                                search.get("member").toString(),
+                                search.get("period").toString()
+                        );
+                        collectUpdates.put(uniqueKey, dbo);
                     } else {
                         StringBuilder dlgSb = new StringBuilder();
                         dlgSb.append(
@@ -362,9 +385,29 @@ public class FmsMultiFormBulkUpload implements Serializable {
                                     new FacesMessage(FacesMessage.SEVERITY_FATAL,
                                             "Hata", "Hata"));
                 }
-
             }
+
+            for (Map.Entry<String, Document> entry : collectUpdates.entrySet()) {
+                Document dbo = entry.getValue();
+                dbo.append("table", fmsForm.getTable());
+                PostSaveResult postSaveResult = repositoryService.
+                        runEventPostSaveByGivenTagEvent("/calc-service/api/calculations/gyonad/internal-ratios", dbo);
+
+                String msg = postSaveResult.getMsg();
+
+                if (msg != null) {
+                    StringBuilder dlgSb = new StringBuilder();
+                    dlgSb.append("*Kayıt Sonrası* tetikleyici çalıştırılıyor iken hata oluştu. ");
+                    dlgSb.append("<br/><br/>");
+                    dlgSb.append(msg);
+                    dialogController.showPopupInfoWithOk(postSaveResult.
+                            getMsg(), MESSAGE_DIALOG);
+                }
+            }
+
         }
+
+        return collectUpdates;
     }
 
     private void resetUpsertList() {
@@ -377,7 +420,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
     }
 
     private void writeToList(StringBuilder sb, List<Document> listOfToBeUpsert,
-            FmsForm myForm, XSSFWorkbook xssfWorkbook, int sheetNo)
+                             FmsForm myForm, XSSFWorkbook xssfWorkbook, int sheetNo)
             throws IOException, Exception {
 
         MyMerge myMerge = myForm.getUploadMerge();
@@ -402,9 +445,11 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 if (!appendField(myMerge, row, sheet, i, record, myForm)) {
                     break;
                 }
+            } catch (NullPointerException e) {
+                sb.append(String.format("NullPointerException at sheet %s row %s </br>", sheetNo, i));
+                continue;
             } catch (Exception e) {
-                sb.append(e.getMessage().
-                        concat("</br>"));
+                sb.append(e.getMessage().concat("</br>"));
                 continue;
             }
 
@@ -428,13 +473,12 @@ public class FmsMultiFormBulkUpload implements Serializable {
     }
 
     private boolean appendField(MyMerge myMerge, XSSFRow row, XSSFSheet sheet,
-            int i, Document record, FmsForm myForm) throws Exception {
+                                int i, Document record, FmsForm myForm) throws Exception {
 
         XSSFCell cellll;
         int columnn = 0;
 
-        for (ExcellColumnDef excellColumnDef : myMerge.
-                getWorkbookSheetColumnList()) {
+        for (ExcellColumnDef excellColumnDef : myMerge.getWorkbookSheetColumnList()) {
 
             cellll = row.getCell(columnn++);
 
@@ -476,100 +520,134 @@ public class FmsMultiFormBulkUpload implements Serializable {
             if (cellll.getCellType() == org.apache.poi.ss.usermodel.CellType.STRING) {
                 obtainedValue = switch (excellColumnDef.getToMyField().
                         getValueType()) {
-                    case JAVAUTIL_DATE, JAVALANG_DATE ->
-                        dateFormat.parse(cellll.
-                        getStringCellValue());
-                    case JAVALANG_STRING ->
-                        cellll.getStringCellValue();
-                    default ->
-                        cellll.getStringCellValue();
+                    case JAVAUTIL_DATE, JAVALANG_DATE -> dateFormat.parse(cellll.
+                            getStringCellValue());
+                    case JAVALANG_STRING -> cellll.getStringCellValue();
+                    default -> cellll.getStringCellValue();
                 };
             } else if (cellll.getCellType() == org.apache.poi.ss.usermodel.CellType.NUMERIC) {
                 obtainedValue = switch (excellColumnDef.getToMyField().
                         getValueType()) {
-                    case JAVAUTIL_DATE ->
-                        cellll.getDateCellValue();
-                    case JAVALANG_DATE ->
-                        cellll.getDateCellValue();
-                    case JAVALANG_STRING ->
-                        String.valueOf(((Number) cellll.
-                        getNumericCellValue()).longValue());
-                    case JAVAUTIL_OBJECTID ->
-                        cellll.getNumericCellValue();
-                    case JAVALANG_INTEGER ->
-                        Double.valueOf(cellll.getNumericCellValue());
-                    default ->
-                        cellll.getNumericCellValue();
+                    case JAVAUTIL_DATE -> cellll.getDateCellValue();
+                    case JAVALANG_DATE -> cellll.getDateCellValue();
+                    case JAVALANG_STRING -> String.valueOf(((Number) cellll.
+                            getNumericCellValue()).longValue());
+                    case JAVAUTIL_OBJECTID -> cellll.getNumericCellValue();
+                    case JAVALANG_INTEGER -> Double.valueOf(cellll.getNumericCellValue());
+                    default -> cellll.getNumericCellValue();
                 }; //obtainedValue = new Double(cellll.getNumericCellValue()).intValue();//max value 2^31-1=2147483647
             }
 
             // we use referansNo emty check as an end_of_sheet
             if (obtainedValue instanceof String
                     && obtainedValue.toString().
-                            trim().
-                            isEmpty()
+                    trim().
+                    isEmpty()
                     && "referansNo".equals(excellColumnDef.getToMyField().
-                            getKey())) {
+                    getKey())) {
                 return false;
             }
 
-            Object resolvedValue = null;
+            FmsWorkbookColumnConverter converter = excellColumnDef.getConverter();
 
-            if (excellColumnDef.getConverter() != null && excellColumnDef.
-                    getConverter().
-                    getCode() != null) {
+            Object resolvedValue = handleConverter(sheet, i, myForm, excellColumnDef, converter, columnn, obtainedValue);
 
-                try {
-                    String token = sheet.getSheetName().
-                            concat("__").
-                            concat(Integer.toString(columnn).
-                                    concat("__").
-                                    concat(obtainedValue.toString()));
-
-                    if ((resolvedValue = tokens.getIfPresent(token)) == null) {
-                        Document commandResult = mongoDbUtil.runCommand(myForm.
-                                getUploadMerge().
-                                getToDb(),
-                                excellColumnDef.getConverter().
-                                        getCode(), obtainedValue,
-                                loginController.getLoggedUserDetail().
-                                        getDbo().
-                                        getMemberType());
-                        resolvedValue = commandResult.get(RETVAL);
-
-                        if (resolvedValue instanceof Document) {
-                            Document resolvedValueDoc = (Document) resolvedValue;
-                            String type = resolvedValueDoc.getString(TYPE);
-                            switch (type) {
-                                case "objectid":
-                                    resolvedValue = new ObjectId(
-                                            resolvedValueDoc.getString(VALUE));
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                        tokens.put(token, resolvedValue);
-                    }
-
-                } catch (Exception ex) {
-                    throw new Exception(
-                            String.format(
-                                    "sayfa %s : satır '%d' : sütun '%d' : '%s' = %s alanının tespiti esnasında hata oluştu",
-                                    sheet.getSheetName(), i, columnn,
-                                    excellColumnDef.getToMyField().
-                                            getName(), obtainedValue));
-                }
-
-            } else {
-                resolvedValue = obtainedValue;
-            }
-
-            record.append(excellColumnDef.getToMyField().
-                    getKey(), resolvedValue);
+            record.append(excellColumnDef.getToMyField().getKey(), resolvedValue);
 
         }
         return true;
+    }
+
+    private Object handleConverter(XSSFSheet sheet, int i, FmsForm myForm, ExcellColumnDef excellColumnDef,
+                                   FmsWorkbookColumnConverter converter, int columnn, Object obtainedValue)
+            throws Exception {
+
+        if (converter == null) {
+            return obtainedValue;
+        }
+
+        String token = sheet.getSheetName().
+                concat("__").
+                concat(Integer.toString(columnn).
+                        concat("__").
+                        concat(obtainedValue.toString()));
+
+        Object resolvedValue = tokens.getIfPresent(token);
+
+        if (resolvedValue != null) {
+            return resolvedValue;
+        }
+
+        String db = myForm.getUploadMerge().getToDb();
+        String table = myForm.getTable();
+        String memberType = loginController.getLoggedUserDetail().getDbo().getMemberType();
+        String convertType = converter.getType();
+        try {
+            if ("external-api".equals(convertType)) {
+
+                String uri = "http://localhost:8080" + converter.getUri();
+
+                Map<String, String> payload = new HashMap<>();
+
+                payload.put("form", table);
+                payload.put("value", obtainedValue == null ? "" : obtainedValue.toString());
+                payload.put("memberType", memberType);
+
+                try (Client client = ClientBuilder.newClient()) {
+                    Response response = client.target(uri)
+                            .request(MediaType.APPLICATION_JSON)
+                            .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                            .post(Entity.entity(payload, MediaType.APPLICATION_JSON));
+
+                    if (response.getStatus() == 200) {
+                        Document targetInfo = response.readEntity(Document.class);
+                        String type = targetInfo.getString("type"); // Pulls out the raw database hex string identifier
+                        String val = targetInfo.getString("value"); // Pulls out the raw database hex string identifier
+
+                        switch (type) {
+                            case "objectId" -> resolvedValue = new ObjectId(val);
+                            case "Integer" -> resolvedValue = Integer.valueOf(val);
+                            case "String" -> resolvedValue = val;
+                            default -> resolvedValue = val;
+                        }
+                    } else {
+                        throw new Exception("Can not resolve data for : " + obtainedValue);
+                    }
+                    response.close();
+                }
+            } else if ("aggregate".equals(convertType)) {
+                String converterCode = excellColumnDef.getConverter().getOp();
+                Document commandResult = mongoDbUtil
+                        .runCommand(db, converterCode, obtainedValue, memberType);
+                resolvedValue = commandResult.get(RETVAL);
+                if (resolvedValue instanceof Document) {
+                    Document resolvedValueDoc = (Document) resolvedValue;
+                    String type = resolvedValueDoc.getString(TYPE);
+                    switch (type) {
+                        case "objectid":
+                            resolvedValue = new ObjectId(
+                                    resolvedValueDoc.getString(VALUE));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+        } catch (Exception ex) {
+            throw new Exception(
+                    String.format(
+                            "sayfa / %s / satır / <b>%03d</b> / sütun / <b>%02d</b>  ->  [%s = %s] sistemde tanımlı değil.",
+                            sheet.getSheetName(), i, columnn,
+                            excellColumnDef.getToMyField().
+                                    getName(), obtainedValue));
+        }
+
+        if (resolvedValue != null) {
+            tokens.put(token, resolvedValue);
+        }
+
+        return resolvedValue;
     }
 
     /**
@@ -613,14 +691,14 @@ public class FmsMultiFormBulkUpload implements Serializable {
     }
 
     protected void addMessage(String componentId, String summary, String message,
-            FacesMessage.Severity severity) {
+                              FacesMessage.Severity severity) {
         FacesContext.getCurrentInstance().
                 addMessage(componentId, new FacesMessage(severity, summary,
                         message));
     }
 
     public ObjectId saveObject(FmsForm myForm, LoginController loginMB,
-            MyMap crudObject, FmsForm fmsForm)
+                               MyMap crudObject, FmsForm fmsForm)
             throws UserException, MessagingException, NullNotExpectedException,
             LdapException, FormConfigException, MongoOrmFailedException {
 
@@ -665,8 +743,8 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 getSession(false)).getId();
 
         ObjectId returnID = saveOneDimensionObject(operatedObject, loginMB.
-                getLoggedUserDetail().
-                getUsername(),
+                        getLoggedUserDetail().
+                        getUsername(),
                 fmsForm, request.getRemoteAddr(), sessionId);
         crudObject.put(STATE, "saved");
 
@@ -674,8 +752,8 @@ public class FmsMultiFormBulkUpload implements Serializable {
     }
 
     public ObjectId saveOneDimensionObject(Document operatedObject,
-            String username,
-            FmsForm myForm, String ip, String sessionId)
+                                           String username,
+                                           FmsForm myForm, String ip, String sessionId)
             throws MessagingException, NullNotExpectedException, LdapException,
             FormConfigException, MongoOrmFailedException, UserException {
 

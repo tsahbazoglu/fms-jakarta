@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 public final class MongoPlaceholderUtil {
 
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(.+?)\\}\\}");
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile("^\\{\\$(.+?):\\{\\{(.+?)\\}\\}\\}$");
 
     private MongoPlaceholderUtil() {
     }
@@ -44,6 +45,34 @@ public final class MongoPlaceholderUtil {
      * or a concatenated String.
      */
     private static Object resolveValue(String text, Document sourceDoc) {
+        if (text == null) return null;
+        // --- NEW: Check for type casting functions like {$toInt:{{key}}} ---
+        Matcher funcMatcher = FUNCTION_PATTERN.matcher(text);
+        if (funcMatcher.matches()) {
+            String function = funcMatcher.group(1); // e.g., "toInt"
+            String key = funcMatcher.group(2);      // e.g., "moderator_password"
+            Object rawValue = sourceDoc.get(key);
+
+            if (rawValue == null) return null;
+
+            // Apply type conversion based on the function name
+            switch (function) {
+                case "toInt":
+                    if (rawValue instanceof Number) return ((Number) rawValue).intValue();
+                    return Integer.parseInt(rawValue.toString().trim());
+
+                case "toLong":
+                    if (rawValue instanceof Number) return ((Number) rawValue).longValue();
+                    return Long.parseLong(rawValue.toString().trim());
+
+                case "toObjectId":
+                    return new org.bson.types.ObjectId(rawValue.toString().trim());
+
+                default:
+                    return rawValue; // Fallback if function is unknown
+            }
+        }
+
         Matcher matcher = PLACEHOLDER_PATTERN.matcher(text);
 
         // 1. Check if the string is EXACTLY one placeholder: "{{key}}"
