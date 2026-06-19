@@ -10,24 +10,7 @@
       xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid"
 >
 
-<h:outputText value="Filtreler" styleClass="text-xl font-bold"/>
-
 <h:form id="id-2d-form-search">
-
-    <p:panelGrid layout="grid" columns="2" columnClasses="ui-g-1,ui-1-6">
-        <p:commandButton
-                icon="pi pi-filter"
-                title="ara"
-                action="#{twoDimModifyCtrl.actionSearchObject}"
-                update="#{updateAjaxMB.btn2dSearch}"
-        />
-        <p:commandButton
-                icon="pi pi-times"
-                title="sıfırla"
-                action="#{twoDimModifyCtrl.resetFilter}"
-                update="#{updateAjaxMB.btn2dSearch},id-tab-view:id-2d-form-search:id-filter-current-vertical-panel-grid"
-        />
-    </p:panelGrid>
 
     <h:panelGroup id="id-filter-current-vertical-panel-grid" layout="block" styleClass="ui-g ui-fluid">
         <c:forEach items="#{filterService.quickFilters}" var="columnMap">

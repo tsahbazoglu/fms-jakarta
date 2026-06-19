@@ -82,12 +82,14 @@
                             <div class="grid flex-column md:flex-row mt-2">
 
                                 <div class="col-12 #{mainFrame.historyRendered ? 'md:col-6' : 'md:col-12'}">
-                                    <div class="p-2 border-bottom-1 surface-border mb-2">
-                                        <h:outputText value="Veri Girişi" styleClass="text-xl font-bold"/>
-                                        <p:tooltip for="@previous"
-                                                   value="güncellenebilir veriler bu sekmede yer almaktadır"
-                                                   position="top"/>
-                                    </div>
+                                    <h:panelGroup rendered="#{mainFrame.historyRendered}">
+                                        <div class="p-2 border-bottom-1 surface-border mb-2">
+                                            <h:outputText value="Veri Girişi" styleClass="text-xl font-bold"/>
+                                            <p:tooltip for="@previous"
+                                                       value="güncellenebilir veriler bu sekmede yer almaktadır"
+                                                       position="top"/>
+                                        </div>
+                                    </h:panelGroup>
                                     <ui:insert name="current-content">define current-content</ui:insert>
                                 </div>
 

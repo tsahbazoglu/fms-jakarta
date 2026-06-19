@@ -1,101 +1,115 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGrid columns="20">
-        <p:button  
+<h:panelGrid columns="20">
+    <p:button
             icon="pi pi-filter"
-            title="Geniş Filtre" 
+            title="Geniş Filtre"
             onclick="rcTableFilter();return false;"
             rendered="false"
-            /> 
-        <p:button 
+    />
+    <p:button
             icon="pi pi-info-circle"
-            title="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
+            title="Bu sayfa ile ilgili açıklamalar için tıklayınız"
             rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
             onclick="rcTableDesc();return false;"
-            />
-        <p:button  
+    />
+    <p:button
             icon="pi pi-file"
-            title="Yeni Ekle" 
+            title="Yeni Ekle"
             rendered="#{formService.myForm.myActions.create}"
             onclick="rcTableNew();return false;"
-            /> 
-        <p:button 
+    />
+    <p:button
             icon="pi pi-check-circle"
-            value="Tüm Sayfaları Kontrol Et" 
+            value="Tüm Sayfaları Kontrol Et"
             rendered="#{formService.myForm.myActions.checkAll}"
             onclick="rcTableCheck();return false;"
-            />
-        <p:button 
+    />
+    <p:button
             icon="pi pi-check-circle"
-            value="Tüm Sayfaları Kontrol Et (Admin)" 
+            value="Tüm Sayfaları Kontrol Et (Admin)"
             rendered="#{formService.myForm.myActions.checkAll and roleMB[mainFrame.architectRole]}"
             onclick="rcTableCheckAsAdmin();return false;"
-            />
-        <p:button 
+    />
+    <p:button
             icon="pi pi-send"
-            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}" 
+            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}"
             rendered="#{formService.myForm.myActions.sendForms}"
             onclick="rcTableSend();return false;"
-            />
-        <p:button 
+    />
+    <p:button
             icon="pi pi-circle-off"
-            value="#{formService.myForm.myActions.norecordAction.enableResult.caption}" 
+            value="#{formService.myForm.myActions.norecordAction.enableResult.caption}"
             rendered="#{formService.myForm.myActions.norecord}"
             onclick="rcTableNotifyNoRecord();return false;"
-            />
-        <p:button 
+    />
+    <p:button
             id="id-btn-download"
             icon="pi pi-file-excel"
-            title="Excele Aktar" 
+            title="Excele Aktar"
             rendered="#{formService.myForm.myActions.download}"
             onclick="rcDownload();return false;"
-            >
-        </p:button>
-        <p:button 
-            value="API" 
+    >
+    </p:button>
+    <p:button
+            value="API"
             rendered="false"
             onclick="rcTableApi();return false;"
-            />
-        <p:button 
-            id ="id-button-esign-2d-v2"
-            value="E-İmza Süreci" 
+    />
+    <p:button
+            id="id-button-esign-2d-v2"
+            value="E-İmza Süreci"
             rendered="#{formService.myForm.myActions.eimza2D}"
             onclick="rcTableApiEsign();return false;"
-            />
-        <p:button 
-            value="Toplu E-Posta Gönder" 
+    />
+    <p:button
+            value="Toplu E-Posta Gönder"
             rendered="#{formService.myForm.myActions.emailToAll}"
             onclick="rcTableEmail();return false;"
-            />
-        <p:button 
+    />
+    <p:button
             icon="pi pi-upload"
-            title="Toplu Veri Yükleme Aracı" 
+            title="Toplu Veri Yükleme Aracı"
             rendered="#{formService.myForm.myActions.upload}"
             onclick="PF('wv-bulkdupload').show();return false;"
-            />
-        <p:button 
+    />
+    <p:button
             icon="pi pi-trash"
-            title="Toplu Silme" 
+            title="Toplu Silme"
             rendered="#{formService.myForm.myActions.delete}"
             onclick="PF('wv-confirm-multiple-delete').show();return false;"
-            />
-        <p:button 
-            icon="pi pi-reply" 
+    />
+    <p:button
+            icon="pi pi-reply"
             onclick="rcSetMultiToRelatedForm();return false;"
-            title="Aktar" 
+            title="Aktar"
             transient="true"
             rendered="#{mainFrame.hasSetToRelatedForm}"
-            />
-        <p:button 
+    />
+    <p:button
             icon="pi pi-check-circle"
-            value="Test Veri Oluştur" 
+            value="Test Veri Oluştur"
             onclick="rcCreateTestData();return false;"
             rendered="false"
-            />
-    </h:panelGrid>
+    />
+
+    <p:commandButton
+            icon="pi pi-filter"
+            title="filtrele"
+            action="#{twoDimModifyCtrl.actionSearchObject}"
+            update="#{updateAjaxMB.btn2dSearch}"
+    />
+    <p:commandButton
+            icon="pi pi-filter-slash"
+            title="filtreleri sıfırla"
+            action="#{twoDimModifyCtrl.resetFilter}"
+            update="#{updateAjaxMB.btn2dSearch},id-tab-view:id-2d-form-search:id-filter-current-vertical-panel-grid"
+    />
+</h:panelGrid>
 
 </html>
