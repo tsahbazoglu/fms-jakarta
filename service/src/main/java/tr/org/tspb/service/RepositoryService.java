@@ -191,7 +191,7 @@ public class RepositoryService implements Serializable {
     }
 
 
-    public PostSaveResult runEventPostSaveByGivenTagEvent(String uri, Document operatedObject)
+    public PostSaveResult runEventPostSaveByGivenTagEvent(String apiToken, String uri, Document operatedObject)
             throws MongoOrmFailedException {
 
         String memberIdAsStr = operatedObject.getObjectId("member").toHexString();
@@ -203,14 +203,14 @@ public class RepositoryService implements Serializable {
         requestPayload.put("period", periodIdAsStr);
         requestPayload.put("table", tableName);
 
-        String TARGET_URL = "http://localhost:8080" +uri;
+        String TARGET_URL = "http://localhost:8080" + uri;
 
         // 2. Instantiate the native Jakarta REST client worker engine
         try (Client client = ClientBuilder.newClient()) {
             // 3. Dispatch the HTTP POST execution payload over the wire
             Response response = client.target(TARGET_URL)
                     .request(MediaType.APPLICATION_JSON)
-                    .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                    .header("X-API-KEY", apiToken)
                     .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
             // 4. Validate output response signals cleanly
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
@@ -268,7 +268,7 @@ public class RepositoryService implements Serializable {
                         // 3. Dispatch the HTTP POST execution payload over the wire
                         Response response = client.target(TARGET_URL)
                                 .request(MediaType.APPLICATION_JSON)
-                                .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                                .header("X-API-KEY", myForm.getMyProject().getApiToken())
                                 .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
                         // 4. Validate output response signals cleanly
                         if (response.getStatus() == Response.Status.OK.getStatusCode()) {

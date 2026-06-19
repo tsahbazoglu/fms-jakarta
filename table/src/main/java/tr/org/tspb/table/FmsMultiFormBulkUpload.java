@@ -267,7 +267,10 @@ public class FmsMultiFormBulkUpload implements Serializable {
             for (Map.Entry<String, Document> entry : allCollectUpdates.entrySet()) {
                 Document dbo = entry.getValue();
                 PostSaveResult postSaveResult = repositoryService.
-                        runEventPostSaveByGivenTagEvent("/calc-service/api/calculations/gyonad/overall-ratios", dbo);
+                        runEventPostSaveByGivenTagEvent(
+                                myForm1.getMyProject().getApiToken(),
+                                "/calc-service/api/calculations/gyonad/overall-ratios",
+                                dbo);
                 String msg = postSaveResult.getMsg();
                 if (msg != null) {
                     StringBuilder dlgSb = new StringBuilder();
@@ -391,7 +394,9 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 Document dbo = entry.getValue();
                 dbo.append("table", fmsForm.getTable());
                 PostSaveResult postSaveResult = repositoryService.
-                        runEventPostSaveByGivenTagEvent("/calc-service/api/calculations/gyonad/internal-ratios", dbo);
+                        runEventPostSaveByGivenTagEvent(
+                                fmsForm.getMyProject().getApiToken(),
+                                "/calc-service/api/calculations/gyonad/internal-ratios", dbo);
 
                 String msg = postSaveResult.getMsg();
 
@@ -596,7 +601,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 try (Client client = ClientBuilder.newClient()) {
                     Response response = client.target(uri)
                             .request(MediaType.APPLICATION_JSON)
-                            .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                            .header("X-API-KEY", myForm.getMyProject().getApiToken())
                             .post(Entity.entity(payload, MediaType.APPLICATION_JSON));
 
                     if (response.getStatus() == 200) {

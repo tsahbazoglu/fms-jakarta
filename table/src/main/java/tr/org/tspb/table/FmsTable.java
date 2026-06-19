@@ -664,8 +664,8 @@ public abstract class FmsTable extends FmsTableView {
             TagEvent postDelete = myForm.getEventPostDelete();
             if (postDelete != null && TagEvent.TagEventType.externalApi.equals(postDelete.getType())) {
 
-                String memberIdAsStr= ((ObjectId)crudObject.get("member")).toHexString();
-                String periodIdAsStr= ((ObjectId)crudObject.get("period")).toHexString();
+                String memberIdAsStr = ((ObjectId) crudObject.get("member")).toHexString();
+                String periodIdAsStr = ((ObjectId) crudObject.get("period")).toHexString();
 
                 Map<String, Object> requestPayload = new HashMap<>();
                 requestPayload.put("member", memberIdAsStr);
@@ -679,7 +679,7 @@ public abstract class FmsTable extends FmsTableView {
                     // 3. Dispatch the HTTP POST execution payload over the wire
                     Response response = client.target(TARGET_URL)
                             .request(MediaType.APPLICATION_JSON)
-                            .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                            .header("X-API-KEY", myForm.getMyProject().getApiToken())
                             .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
                     // 4. Validate output response signals cleanly
                     if (response.getStatus() == Response.Status.OK.getStatusCode()) {

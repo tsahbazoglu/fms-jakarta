@@ -486,6 +486,9 @@
                             <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
                             <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
                             <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                            <includeOnlyProperty>^git.commit.message.(full|short)$</includeOnlyProperty>
+                            <includeOnlyProperty>^git.commit.time$</includeOnlyProperty>
+                            <includeOnlyProperty>^git.commit.user.name$</includeOnlyProperty>
                         </includeOnlyProperties>
                         <commitIdGenerationMode>full</commitIdGenerationMode>
                     </configuration>

@@ -1,7 +1,9 @@
 package tr.org.tspb.datamodel.dao;
 
 import java.util.List;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import org.bson.Document;
 
 /**
@@ -24,10 +26,11 @@ public class MyProject {
     private Document registredFunctions;
     private Document jsonSchemaDef;
     private boolean checkJsonSchema;
+    private String apiToken;
 
     public MyProject(Document docProject, String loginDetailDb,
-            String loginDetailTable, String loginDetailLdapUID,
-            Document loginDetailQuery) {
+                     String loginDetailTable, String loginDetailLdapUID,
+                     Document loginDetailQuery) {
         this.configCollection = docProject.get(CONFIG_COLLECTIONS).
                 toString();
         this.adminRole = docProject.get(ADMIN_ROLE).
@@ -59,6 +62,8 @@ public class MyProject {
         this.jsonSchemaDef = docProject.get("json-schema-def", Document.class);
         this.checkJsonSchema = docProject.getBoolean("check-json-schema", false);
 
+        this.apiToken = docProject.getString("api-token");
+
     }
 
     public Document getRegistredFunctions() {
@@ -71,6 +76,10 @@ public class MyProject {
 
     public String getConfigTable() {
         return configCollection;
+    }
+
+    public String getApiToken() {
+        return apiToken;
     }
 
     public String getUserRole() {

@@ -1685,7 +1685,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
                     // 2. Dispatch the HTTP POST execution payload over the wire
                     Response response = client.target(TARGET_URL)
                             .request(MediaType.APPLICATION_JSON)
-                            .header("X-API-KEY", "TSPBApiKeySecret2026_SecureHashX99!")
+                            .header("X-API-KEY", myForm.getMyProject().getApiToken())
                             .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
 
                     // 3. Validate output response signals cleanly
