@@ -2,7 +2,9 @@ package tr.org.tspb.service;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
 import tr.org.tspb.constants.exceptions.MoreThenOneInListException;
@@ -120,7 +122,7 @@ public class CtrlService extends CommonSrv {
                 myConstraintFormula.getEngineType())) {
 
             Object[] jsParameters = new Object[]{filter, loginController.
-                getRolesAsSet()};
+                    getRolesAsSet()};
 
             if (parameters != null) {
                 jsParameters = parameters;
@@ -130,7 +132,7 @@ public class CtrlService extends CommonSrv {
 
             Document commandResult = mongoDbUtil
                     .runCommand(formService.getMyForm().
-                            getDb(), myConstraintFormula.getControlFunction(),
+                                    getDb(), myConstraintFormula.getControlFunction(),
                             jsParameters);
 
             Document returnObject = (Document) commandResult.get(RETVAL);
@@ -198,12 +200,12 @@ public class CtrlService extends CommonSrv {
                         getVariables()) {
 
                     Object presentableFormOfValue = retrivedVariables.get(
-                            myConstraintVariable.getKey()).
+                                    myConstraintVariable.getKey()).
                             get(PRESENT);
 
                     if (presentableFormOfValue == null
                             || (presentableFormOfValue instanceof String) && ((String) presentableFormOfValue).
-                                    isEmpty()) {
+                            isEmpty()) {
                         presentableFormOfValue = "boş";
                     }
 
@@ -213,7 +215,7 @@ public class CtrlService extends CommonSrv {
 
                     String param = myConstraintVariable.getKey();
                     Object value = retrivedVariables.get(myConstraintVariable.
-                            getKey()).
+                                    getKey()).
                             get(VALUE);
 
                     if (value instanceof Long) {
@@ -280,14 +282,14 @@ public class CtrlService extends CommonSrv {
             Document commandResult = mongoDbUtil
                     .runCommand(formService.getMyForm().
                             getDb(), myConstraintVariable.getCode().
-                                    getCode(), filter);
+                            getCode(), filter);
 
             Object value = commandResult.get(RETVAL);
 
             returnMap.put(VALUE, value == null ? null : Math.round(
                     ((Number) value).doubleValue() / 100));
             returnMap.put(PRESENT, value == null ? null : new MoneyConverter().
-                    getAsString(null, null, value));
+                                                          getAsString(null, null, value));
             return returnMap;
         }
 
@@ -296,7 +298,7 @@ public class CtrlService extends CommonSrv {
 
         valueKey = myConstraintVariable.getValueKey();
         /*
-         * FIXME generalize period attr name. 
+         * FIXME generalize period attr name.
          * It should be admin managable accross config
          */
         Document elementDefinedPeriod = myConstraintVariable.getPeriod();
@@ -377,7 +379,7 @@ public class CtrlService extends CommonSrv {
             if (currentTemplateID != null) {
                 ObjectId prevTemplateId = appScopeSrvCtrl
                         .getPrevTemplate(formService.getMyForm().
-                                getDb(), null, 1, currentTemplateID,
+                                        getDb(), null, 1, currentTemplateID,
                                 currentPeriodID);
                 cashedPersistenceKey.put(TEMPLATE, prevTemplateId);
             }
@@ -503,7 +505,7 @@ public class CtrlService extends CommonSrv {
             returnMap.put(VALUE, value == null ? null : Math.round(
                     ((Number) value).doubleValue() / 100));
             returnMap.put(PRESENT, value == null ? null : new MoneyConverter().
-                    getAsString(null, null, value));
+                                                          getAsString(null, null, value));
         } else if (fieldDef.getMyconverter() instanceof NumberConverter) {
 
             Locale locale = new Locale("tr", "TR");
@@ -530,10 +532,10 @@ public class CtrlService extends CommonSrv {
     }
 
     public Map jevalCalculateAndStore(Map searchedMap, MyCalcDef myCalcDef,
-            String initForm, int recursiveDeepSizeLimit, boolean isInternalCheck,
-            Map<CellMultiDimensionKey, List<CustomOlapHashMap>> mapMultiDimension,
-            FmsForm selectedForm, String configCollection, Map searchObject,
-            String db)
+                                      String initForm, int recursiveDeepSizeLimit, boolean isInternalCheck,
+                                      Map<CellMultiDimensionKey, List<CustomOlapHashMap>> mapMultiDimension,
+                                      FmsForm selectedForm, String configCollection, Map searchObject,
+                                      String db)
             throws NullNotExpectedException, MongoOrmFailedException,
             RecursiveLimitExceedException, MoreThenOneInListException,
             EvaluationException, FormConfigException {
@@ -634,7 +636,7 @@ public class CtrlService extends CommonSrv {
 
                         resultMap.put(RESULT,
                                 cachedResult == null ? "0" : ((Map) cachedResult.
-                                                get(0)).get(cacheValue));
+                                                                    get(0)).get(cacheValue));
                         resultMap.put(EXPRESSION, jevalExpression.toString());
                         return resultMap;
                     }
@@ -824,7 +826,7 @@ public class CtrlService extends CommonSrv {
         Document search = new Document();
         search.append(formService.getMyForm().
                 getLoginFkField(), filter.get(formService.getMyForm().
-                        getLoginFkField()));
+                getLoginFkField()));
         search.append(PERIOD, filter.get(PERIOD));
         if (formService.getMyForm().
                 getField(TEMPLATE) != null) {
@@ -833,8 +835,8 @@ public class CtrlService extends CommonSrv {
 
         search.append(formService.getMyForm().
                 getLoginFkField(), loginController.getLoggedUserDetail().
-                        getDbo().
-                        getObjectId());
+                getDbo().
+                getObjectId());
 
         UpdateOptions upsert = new UpdateOptions().upsert(true);
 
@@ -856,7 +858,7 @@ public class CtrlService extends CommonSrv {
 
             mongoDbUtil.createIndex(formService.getMyForm().
                     getDb(), formService.getMyForm().
-                            getTable(), index);
+                    getTable(), index);
             mongoDbUtil.updateMany(
                     formService.getMyForm(),
                     search,
@@ -877,11 +879,11 @@ public class CtrlService extends CommonSrv {
 
         for (String object : keySet) {
             if (Arrays.asList(//
-                    PERIOD,//
-                    formService.getMyForm().
-                            getLoginFkField(),//
-                    TEMPLATE//
-            ).
+                            PERIOD,//
+                            formService.getMyForm().
+                                    getLoginFkField(),//
+                            TEMPLATE//
+                    ).
                     contains(object)) {
                 continue;
             }
@@ -973,8 +975,8 @@ public class CtrlService extends CommonSrv {
 
         if (appScopeSrvCtrl.getTestControlFormulaTransferOrders() != null //
                 && !appScopeSrvCtrl.getTestControlFormulaTransferOrders().
-                        trim().
-                        isEmpty()) {
+                trim().
+                isEmpty()) {
             String[] nolar = appScopeSrvCtrl.
                     getTestControlFormulaTransferOrders().
                     split(COMMA);
@@ -1012,7 +1014,7 @@ public class CtrlService extends CommonSrv {
         private final Document filter;
 
         CheckConstraintTask(MyConstraintFormula myConstraintFormula,
-                Document filter) {
+                            Document filter) {
             this.myConstraintFormula = myConstraintFormula;
             this.filter = filter;
         }
@@ -1055,7 +1057,7 @@ public class CtrlService extends CommonSrv {
                         MSG_FORMAT_CONTROL_FORMULA, myConstraintFormula.
                                 getTransferOrder(),
                         myConstraintFormula.getName(), myConstraintFormula.
-                        getEngineType()), e);
+                                getEngineType()), e);
             }
             return all;
         }
@@ -1087,8 +1089,8 @@ public class CtrlService extends CommonSrv {
 
         if (appScopeSrvCtrl.getTestControlFormulaTransferOrders() != null //
                 && !appScopeSrvCtrl.getTestControlFormulaTransferOrders().
-                        trim().
-                        isEmpty()) {
+                trim().
+                isEmpty()) {
             String[] nolar = appScopeSrvCtrl.
                     getTestControlFormulaTransferOrders().
                     split(COMMA);
@@ -1107,7 +1109,7 @@ public class CtrlService extends CommonSrv {
 
                 if (checkTestControl
                         && !listOfTestControlNo.contains(myConstraintFormula.
-                                getTransferOrder())) {
+                        getTransferOrder())) {
                     continue;
                 }
 
@@ -1149,41 +1151,50 @@ public class CtrlService extends CommonSrv {
         return returnMap;
     }
 
-    public List<Document> createConstraintCursor(CtrlItems ctrlItems,
-            Document filter) {
+    public List<Document> createConstraintCursor(CtrlItems ctrlItems, Document filter) {
         String constraintDB = ctrlItems.getDb();
         String constraintCollection = ctrlItems.getCollection();
         Object constraintQuery = ctrlItems.getQuery();
+        String queryFunc = ctrlItems.getQueryFunc();
+        Document queryAsDocument = ctrlItems.getQueryDoc();
+        String dbName = formService.getMyForm().getDb();
 
+        Document finalQuery = null;
+
+        // 1. Handle Query Object (String or pre-existing Document)
         if (constraintQuery != null) {
-
             if (constraintQuery instanceof String) {
-                Document commandResult = mongoDbUtil.runCommand(formService.
-                        getMyForm().
-                        getDb(), constraintQuery.toString(), filter, null);
-                constraintQuery = commandResult.get(RETVAL);
+                Document commandResult = mongoDbUtil.runCommand(dbName, constraintQuery.toString(), filter, null);
+                finalQuery = (commandResult != null) ? (Document) commandResult.get(RETVAL) : null;
+            } else if (constraintQuery instanceof Document) {
+                finalQuery = (Document) constraintQuery;
             }
-            constraintQuery = mongoDbUtil.replaceToDollar(
-                    (Document) constraintQuery);
-
-        } else if (ctrlItems.getQueryFunc() != null) {
-
-            Document commandResult = mongoDbUtil.runCommand(formService.
-                    getMyForm().
-                    getDb(), ctrlItems.getQueryFunc(), filter, null);
-            constraintQuery = commandResult.get(RETVAL);
-            constraintQuery = mongoDbUtil.replaceToDollar(
-                    (Document) constraintQuery);
-
-        } else if (ctrlItems.getQueryDoc() != null) {
-
-            constraintQuery = mongoDbUtil.replaceToDollar(ctrlItems.
-                    getQueryDoc());
-
         }
-        return mongoDbUtil.find(constraintDB, constraintCollection,
-                (Document) constraintQuery, Filters.eq(TRANSFER_ORDER, 1), null);
+        // 2. Handle Query Function String
+        else if (queryFunc != null) {
+            Document commandResult = mongoDbUtil.runCommand(dbName, queryFunc, filter, null);
+            finalQuery = (commandResult != null) ? (Document) commandResult.get(RETVAL) : null;
+        }
+        // 3. Handle Fallback Document
+        else if (queryAsDocument != null) {
+            finalQuery = queryAsDocument;
+        }
 
+        // 4. Sanitize and Fallback to Empty Document if everything resulted in null
+        if (finalQuery != null) {
+            finalQuery = mongoDbUtil.replaceToDollar(finalQuery);
+        } else {
+            finalQuery = new Document();
+        }
+
+        // 5. Execute and Return Find Result
+        return mongoDbUtil.find(
+                constraintDB,
+                constraintCollection,
+                finalQuery,
+                Filters.eq(TRANSFER_ORDER, 1),
+                null
+        );
     }
 
     public Map createPivotCtrlData(Map filter) throws NullNotExpectedException {
@@ -1203,8 +1214,8 @@ public class CtrlService extends CommonSrv {
             Document controlSearch = new Document()
                     .append(formService.getMyForm().
                             getLoginFkField(), filter.get(formService.
-                                    getMyForm().
-                                    getLoginFkField())).
+                            getMyForm().
+                            getLoginFkField())).
                     append(PERIOD, filter.get(PERIOD)).
                     append(RESULT, HATA_VAR).
                     append(RELATIONS, new Document(DOLAR_REGEX, formService.
@@ -1213,7 +1224,7 @@ public class CtrlService extends CommonSrv {
 
             cursor = mongoDbUtil.find(formService.getMyForm().
                     getDb(), formService.getMyForm().
-                            getControlCollection(), controlSearch);
+                    getControlCollection(), controlSearch);
 
             for (Document dBObject : cursor) {
                 String resultType = dBObject.get(RESULT_TYPE, String.class);
@@ -1236,8 +1247,8 @@ public class CtrlService extends CommonSrv {
             controlSearch = new Document()
                     .append(formService.getMyForm().
                             getLoginFkField(), filter.get(formService.
-                                    getMyForm().
-                                    getLoginFkField())).
+                            getMyForm().
+                            getLoginFkField())).
                     append(PERIOD, filter.get(PERIOD)).
                     append(RESULT, HATA_VAR).
                     append(RELATIONS, formService.getMyForm().
@@ -1245,7 +1256,7 @@ public class CtrlService extends CommonSrv {
 
             cursor = mongoDbUtil.find(formService.getMyForm().
                     getDb(), formService.getMyForm().
-                            getControlCollection(), controlSearch);
+                    getControlCollection(), controlSearch);
 
             for (Document dBObject : cursor) {
                 String resultType = dBObject.get(RESULT_TYPE, String.class);
@@ -1323,9 +1334,9 @@ public class CtrlService extends CommonSrv {
                 }
 
                 if (Arrays.asList(
-                        ProjectConstants.JAVALANG_STRING,
-                        ProjectConstants.JAVAUTIL_DATE,
-                        ProjectConstants.JAVALANG_DATE).
+                                ProjectConstants.JAVALANG_STRING,
+                                ProjectConstants.JAVAUTIL_DATE,
+                                ProjectConstants.JAVALANG_DATE).
                         contains(myField.getValueType())) {
                     StringBuilder sb = new StringBuilder();
                     sb.append(

@@ -115,54 +115,54 @@ public class CaptchaServletJaas extends HttpServlet {
                 break;
             case "/anonym":
                 try {
-                String loginDB = baseService.getLoginDB();
-                String loginTable = baseService.getLoginTable();
-                String usernameField = baseService.getLoginUsernameField();
-                String emailField = baseService.getLoginEmailField();
+                    String loginDB = baseService.getLoginDB();
+                    String loginTable = baseService.getLoginTable();
+                    String usernameField = baseService.getLoginUsernameField();
+                    String emailField = baseService.getLoginEmailField();
 
-                String username = "anonim";
-                String whatisit = "anonim";
+                    String username = "anonim";
+                    String whatisit = "anonim";
 
-                // authentication check
-                request.login(username, whatisit);
-                request.logout();
+                    // authentication check
+                    request.login(username, whatisit);
+                    request.logout();
 
-                // username check
-                Map searchMap = new HashMap();
-                searchMap.put(usernameField, username);
-                Map userDBO = repositoryService.one(loginDB, loginTable, searchMap);
+                    // username check
+                    Map searchMap = new HashMap();
+                    searchMap.put(usernameField, username);
+                    Map userDBO = repositoryService.one(loginDB, loginTable, searchMap);
 
-                if (userDBO == null) {
-                    sendRedirectToHome(response, request, "/loginJaas/errnouser");
-                    return;
-                }
-
-                LoginUser loginUser = new LoginUser(userDBO, usernameField, emailField);
-
-                if (checkUserDataState(loginUser, response, request, loginDB, loginTable, usernameField, emailField)) {
-                    return;
-                }
-
-                // policy check
-                byte ppolicuResult = verifyPPolicy(loginUser, request.getRemoteAddr());
-
-                switch (ppolicuResult) {
-                    case 0://blocked
-                        sendRedirectToHome(response, request, "/loginJaas/errpolicy");
+                    if (userDBO == null) {
+                        sendRedirectToHome(response, request, "/loginJaas/errnouser");
                         return;
-                    case 1://expired
+                    }
+
+                    LoginUser loginUser = new LoginUser(userDBO, usernameField, emailField);
+
+                    if (checkUserDataState(loginUser, response, request, loginDB, loginTable, usernameField, emailField)) {
+                        return;
+                    }
+
+                    // policy check
+                    byte ppolicuResult = verifyPPolicy(loginUser, request.getRemoteAddr());
+
+                    switch (ppolicuResult) {
+                        case 0://blocked
+                            sendRedirectToHome(response, request, "/loginJaas/errpolicy");
+                            return;
+                        case 1://expired
                         /*
                                 anonim user is not provided with reset password link as it is a genereal username for all guests.
                          */
-                        sendRedirectToHome(response, request, "/loginJaas/errpolicy");
-                        return;
+                            sendRedirectToHome(response, request, "/loginJaas/errpolicy");
+                            return;
+                    }
+                    request.login(username, whatisit);
+                    sendRedirectToHome(response, request, "/");
+                } catch (Exception ex) {
+                    sendRedirectToHome(response, request, "/loginJaas/errpolicy");
                 }
-                request.login(username, whatisit);
-                sendRedirectToHome(response, request, "/");
-            } catch (Exception ex) {
-                sendRedirectToHome(response, request, "/loginJaas/errpolicy");
-            }
-            break;
+                break;
             case "/erremail":
                 writeToResponse(response, "Veri Hatası : e-posta tanımlı değil");
                 break;
@@ -180,16 +180,16 @@ public class CaptchaServletJaas extends HttpServlet {
                 break;
             default:
                 try {
-                response.sendError(404);
-            } catch (IOException ex) {
-                logger.error("error occured", ex);
-            }
-            break;
+                    response.sendError(404);
+                } catch (IOException ex) {
+                    logger.error("error occured", ex);
+                }
+                break;
         }
     }
 
     private boolean checkUserDataState(LoginUser loginUser, HttpServletResponse response, HttpServletRequest request,
-            String loginDB, String loginTable, String usernameField, String emailField) {
+                                       String loginDB, String loginTable, String usernameField, String emailField) {
         // email check
         if (loginUser.getEmail() == null) {
             sendRedirectToHome(response, request, "/loginJaas/erremail");
@@ -233,8 +233,8 @@ public class CaptchaServletJaas extends HttpServlet {
 
         String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
         boolean verified;
-       
-        if(false){
+
+        if (false) {
             try {
                 verified = VerifyRecaptcha.verify(gRecaptchaResponse, baseService.getProperties().getGoogleRecaptchaSecret());
             } catch (IOException ex) {
@@ -243,7 +243,7 @@ public class CaptchaServletJaas extends HttpServlet {
                 return;
             }
         }
-      
+
         verified = true;
 
         if (!verified) {
@@ -261,6 +261,10 @@ public class CaptchaServletJaas extends HttpServlet {
 
         //login check
         try {
+            if (request.getRemoteUser() != null) {
+                request.logout();
+                request.getSession().invalidate();
+            }
             request.login(username, pswd);
             request.logout();
         } catch (ServletException ex) {
@@ -305,44 +309,54 @@ public class CaptchaServletJaas extends HttpServlet {
                     break;
                 default:
                     try {
-                    request.login(username, pswd);
-                    //update policy
-                    Map searchMap1 = new HashMap();
-                    searchMap1.put(ProjectConstants.LDAP_UID, username);
 
-                    Map dbo = repositoryService.one(ProjectConstants.CONFIG_DB, ProjectConstants.PPOLICY, searchMap1);
+// Double-check state before calling login again
+                        if (request.getRemoteUser() == null) {
+                            request.login(username, pswd);
+                        } else if (!request.getRemoteUser().equals(username)) {
+                            // A different user context exists, flush it and take over
+                            request.logout();
+                            request.getSession().invalidate();
+                            request.login(username, pswd);
+                        }
 
-                    if (dbo != null) {
-                        Ppolicy ppolicy = new Ppolicy.Builder()
-                                .withMongoDBO(dbo)
-                                .build();
-                        repositoryService.updateMany(ProjectConstants.CONFIG_DB, ProjectConstants.PPOLICY,
-                                ppolicy.createQuery(), ppolicy.createZeroTryCountSet());
+                        //update policy
+                        Map searchMap1 = new HashMap();
+                        searchMap1.put(ProjectConstants.LDAP_UID, username);
+
+                        Map dbo = repositoryService.one(ProjectConstants.CONFIG_DB, ProjectConstants.PPOLICY, searchMap1);
+
+                        if (dbo != null) {
+                            Ppolicy ppolicy = new Ppolicy.Builder()
+                                    .withMongoDBO(dbo)
+                                    .build();
+                            repositoryService.updateMany(ProjectConstants.CONFIG_DB, ProjectConstants.PPOLICY,
+                                    ppolicy.createQuery(), ppolicy.createZeroTryCountSet());
+                        }
+
+                    } catch (ServletException ex) {
+
+                        logger.error("error occured", ex);
+
+                        Map searchMap1 = new HashMap();
+                        searchMap1.put(ProjectConstants.LDAP_UID, username);
+
+                        Map dbo = repositoryService.one(ProjectConstants.CONFIG_DB, ProjectConstants.PPOLICY, searchMap1);
+
+                        if (dbo != null) {
+                            Ppolicy ppolicy = new Ppolicy.Builder()
+                                    .withMongoDBO(dbo)
+                                    .build();
+
+                            ppolicy.incrementTryCount();
+
+                            repositoryService.updateMany(ProjectConstants.CONFIG_DB, ProjectConstants.PPOLICY,
+                                    ppolicy.createQuery(), ppolicy.createTryCountSet());
+                        }
+
+                    } finally {
+                        sendRedirectToHome(response, request);
                     }
-
-                } catch (ServletException ex) {
-
-                    logger.error("error occured", ex);
-
-                    Map searchMap1 = new HashMap();
-                    searchMap1.put(ProjectConstants.LDAP_UID, username);
-
-                    Map dbo = repositoryService.one(ProjectConstants.CONFIG_DB, ProjectConstants.PPOLICY, searchMap1);
-
-                    if (dbo != null) {
-                        Ppolicy ppolicy = new Ppolicy.Builder()
-                                .withMongoDBO(dbo)
-                                .build();
-
-                        ppolicy.incrementTryCount();
-
-                        repositoryService.updateMany(ProjectConstants.CONFIG_DB, ProjectConstants.PPOLICY,
-                                ppolicy.createQuery(), ppolicy.createTryCountSet());
-                    }
-
-                } finally {
-                    sendRedirectToHome(response, request);
-                }
             }
         } catch (Exception ex) {
             logger.error("error occured", ex);

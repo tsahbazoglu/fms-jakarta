@@ -238,7 +238,7 @@ public class PivotModifierCtrl extends PivotImpl {
             if (recordMapValue.get(MONGO_ID, ObjectId.class) == null) {
                 Document index = new Document();
                 for (String key : indexRecord.keySet()) {
-                    index.put(key, true);
+                    index.put(key, 1);
                 }
                 mongoDbUtil.createIndex(formService.getMyForm(), index);
                 mongoDbUtil.updateMany(formService.getMyForm(), indexRecord,
