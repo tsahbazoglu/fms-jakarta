@@ -1,87 +1,93 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
       xmlns:p="http://primefaces.org/ui">
 
-    <h:form>
-        <p:panelGrid columns="1">
-            <h:outputText 
-                value="
-                &lt;ul&gt;
-                &lt;li&gt;
-                Verileriniz kaydedilmiştir. 
-                &lt;/li&gt;
-                &lt;li&gt;
-                Ancak aşağıdaki Uyarı ve Hataların giderilmesi gerekmektedir. 
-                &lt;/li&gt;
-                &lt;li&gt;
-                Hatalar giderilmedikçe veya Uyarılara ilişkin açıklama girilmedikçe form Birliğimize &lt;b&gt;gönderilemeyecektir.&lt;/b&gt;
-                &lt;/li&gt;
-                &lt;/ul&gt;" 
-                rendered="#{not empty pivotModifierCtrl.failList}"
-                escape="false"
-                /> 
-            <h:outputText 
-                value="Verileriniz Kaydedildi."
-                rendered="#{empty pivotModifierCtrl.failList}"/>   
-            <p:dataTable 
-                id="idFailDataTable"
-                value="#{pivotModifierCtrl.failList}"
-                rendered="#{not empty pivotModifierCtrl.failList}"
-                var="controlMap"
-                style="text-align: left;"
-                tableStyle="width:auto">
+<h:body>
+    <h:form id="mainForm">
+        <p:panelGrid columns="1" layout="tabular" styleClass="ui-noborder">
+
+            <h:panelGroup rendered="#{not empty pivotModifierCtrl.failList}" layout="block"
+                          styleClass="ui-messages-warn">
+                <ul>
+                    <li>Verileriniz kaydedilmiştir.</li>
+                    <li>Ancak aşağıdaki Uyarı ve Hataların giderilmesi gerekmektedir.</li>
+                    <li>
+                        Hatalar giderilmedikçe veya Uyarılara ilişkin açıklama girilmedikçe form Birliğimize <strong>gönderilemeyecektir.</strong>
+                    </li>
+                </ul>
+            </h:panelGroup>
+
+            <h:outputText value="Verileriniz Kaydedildi."
+                          styleClass="ui-messages-info"
+                          rendered="#{empty pivotModifierCtrl.failList}"/>
+
+            <p:dataTable id="idFailDataTable"
+                         value="#{pivotModifierCtrl.failList}"
+                         rendered="#{not empty pivotModifierCtrl.failList}"
+                         var="controlMap"
+                         tableStyle="width:auto">
+
                 <p:column headerText="Kontrol Kodu">
                     <h:outputText value="#{controlMap.transferOrder}">
                         <f:convertNumber integerOnly="true" groupingUsed="false"/>
                     </h:outputText>
                 </p:column>
+
                 <p:column headerText="Açıklama">
                     <h:outputText value="#{controlMap.name}"/>
                 </p:column>
+
                 <p:column headerText="Hata Niteliği">
                     <h:outputText value="#{controlMap.description}"/>
                 </p:column>
-                <p:column headerText="Matematik İfade" 
-                          rendered="#{roleMB['uysuser']}">
+
+                <p:column headerText="Matematik İfade" rendered="#{roleMB['uysuser']}">
                     <h:outputText value="#{controlMap.expression}"/>
-                </p:column> 
+                </p:column>
 
                 <p:column headerText="Sonuç Tipi">
                     <h:outputText value="#{controlMap.resultType}"/>
-                </p:column> 
-                <p:column headerText="Sonuç" rendered="#{roleMB[pivotModifierCtrl.selectedForm.myProject.adminAndViewerRole]}">
+                </p:column>
+
+                <p:column headerText="Sonuç"
+                          rendered="#{roleMB[pivotModifierCtrl.selectedForm.myProject.adminAndViewerRole]}">
                     <h:outputText value="#{controlMap.controlResult}"/>
-                </p:column> 
+                </p:column>
             </p:dataTable>
 
-            <p:dataTable 
-                id="idSuccessDataTable"
-                value="#{pivotModifierCtrl.successList}"
-                var="controlMap"
-                style="white-space: nowrap;"
-                tableStyle="width:auto" 
-                rendered="#{roleMB['uystester']}">
+            <p:dataTable id="idSuccessDataTable"
+                         value="#{pivotModifierCtrl.successList}"
+                         var="controlMap"
+                         tableStyle="width:auto"
+                         rendered="#{roleMB['uystester']}">
+
                 <p:column headerText="Kontrol Kodu">
                     <h:outputText value="#{controlMap.transferOrder}">
                         <f:convertNumber integerOnly="true" groupingUsed="false"/>
                     </h:outputText>
                 </p:column>
+
                 <p:column headerText="Açıklama">
                     <h:outputText value="#{controlMap.name}"/>
                 </p:column>
+
                 <p:column headerText="Hata Niteliği">
                     <h:outputText value="#{controlMap.description}"/>
                 </p:column>
+
                 <p:column headerText="Matematik İfade">
                     <h:outputText value="#{controlMap.expression}"/>
-                </p:column> 
+                </p:column>
+
                 <p:column headerText="Sonuç">
                     <h:outputText value="#{controlMap.controlResult}"/>
-                </p:column> 
+                </p:column>
             </p:dataTable>
+
         </p:panelGrid>
     </h:form>
+</h:body>
 </html>
