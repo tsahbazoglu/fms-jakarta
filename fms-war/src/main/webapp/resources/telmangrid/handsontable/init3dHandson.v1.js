@@ -48,10 +48,10 @@ if (!telmangrid.clarity) {
             var container = document.getElementById(ccid);
 
             var nestedHeaders = null;
-            if (colHeaders.join() === "Kadın,Erkek,Kadın,Erkek,Toplam,Değer") {
+            if (colHeaders.join() === "Kadın,Erkek,Kadın,Erkek,Toplam") {
                 nestedHeaders = [
-                    [{"label": "T.C. Vatandaşı", "colspan": 2}, {"label": "Yabancı Uyruklu", "colspan": 2}, "-", "-"],
-                    ["Kadın", "Erkek", "Kadın", "Erkek", "Toplam", "Değer"]
+                    [{"label": "T.C. Vatandaşı", "colspan": 2}, {"label": "Yabancı Uyruklu", "colspan": 2}, "-"],
+                    ["Kadın", "Erkek", "Kadın", "Erkek", "Toplam"]
                 ];
             }
             var hot = new Handsontable(container, {

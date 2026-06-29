@@ -14,7 +14,9 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="yes"/>
     </f:facet>
 
-    <title><ui:insert name="title">#{mainFrame.companyTitle}</ui:insert></title>
+    <title>
+        <ui:insert name="title">#{mainFrame.companyTitle}</ui:insert>
+    </title>
 
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
@@ -79,9 +81,11 @@
 
                     <p:tabView id="id-tab-view" styleClass="mt-2">
                         <p:tab id="id-tab-data-input" title="Veriler">
+
+
                             <div class="grid flex-column md:flex-row mt-2">
 
-                                <div class="col-12 #{mainFrame.historyRendered ? 'md:col-6' : 'md:col-12'}">
+                                <div class="col-12">
                                     <h:panelGroup rendered="#{mainFrame.historyRendered}">
                                         <div class="p-2 border-bottom-1 surface-border mb-2">
                                             <h:outputText value="Veri Girişi" styleClass="text-xl font-bold"/>
@@ -90,19 +94,29 @@
                                                        position="top"/>
                                         </div>
                                     </h:panelGroup>
+
                                     <ui:insert name="current-content">define current-content</ui:insert>
+
+                                    <h:panelGroup rendered="#{mainFrame.historyRendered}">
+                                        <div class="p-2 border-bottom-1 surface-border mb-2">
+                                            <h:outputText value="Tüm Veriler" styleClass="text-xl font-bold"/>
+                                            <p:tooltip for="@previous"
+                                                       value="tüm veriler bu sekmede yer almaktadır"
+                                                       position="top"/>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{mainFrame.historyRendered}">
+                                        <ui:insert name="history-content">define history-content</ui:insert>
+                                    </h:panelGroup>
+
+
                                 </div>
 
-                                <h:panelGroup rendered="#{mainFrame.historyRendered}" layout="block"
-                                              styleClass="col-12 md:col-6 border-left-none md:border-left-1 surface-border">
-                                    <div class="p-2 border-bottom-1 surface-border mb-2">
-                                        <h:outputText value="Tüm Veriler" styleClass="text-xl font-bold"/>
-                                        <p:tooltip for="@previous" value="tüm veriler bu sekmede yer almaktadır"
-                                                   position="top"/>
-                                    </div>
-                                    <ui:insert name="history-content">define history-content</ui:insert>
-                                </h:panelGroup>
+
                             </div>
+
+
                         </p:tab>
 
                         <p:tab id="id-tab-attachments" title="Ekli Dosyalar"

@@ -1,13 +1,16 @@
 package tr.org.tspb.pivot.ctrl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import jakarta.faces.event.AjaxBehaviorEvent;
 import org.bson.Document;
 import tr.org.tspb.common.pojo.CellMultiDimensionKey;
+
 import static tr.org.tspb.constants.ProjectConstants.ADMIN_QUERY;
 import static tr.org.tspb.constants.ProjectConstants.HISTORY_QUERY;
+
 import tr.org.tspb.common.qualifier.ViewerController;
 import tr.org.tspb.common.qualifier.MyQualifier;
 import tr.org.tspb.common.util.CustomOlapHashMap;
@@ -66,8 +69,8 @@ public class PivotViewerCtrl extends PivotImpl {
             createDimensionIksIgrek(formService.getMyForm());
             refreshPivotData();
         } catch (NullNotExpectedException | MongoOrmFailedException
-                | MoreThenOneInListException | UserException
-                | FormConfigException ex) {
+                 | MoreThenOneInListException | UserException
+                 | FormConfigException ex) {
             logger.error("error occured", ex);
         }
     }
@@ -108,6 +111,32 @@ public class PivotViewerCtrl extends PivotImpl {
                 cellControl,
                 snapshotNullHandler);
 
+
+        if ("ume_form_02".equals(formService.getMyForm().
+                getKey())) {
+            List<Object> nestedHeaders = new ArrayList<>();
+            Map map = new HashMap<>();
+            map.put("label", "T.C. Vatandaşı");
+            map.put("colspan", "2");
+            nestedHeaders.add(map);
+
+            map = new HashMap<>();
+            map.put("label", "Yabancı Uyruklu");
+            map.put("colspan", "2");
+            nestedHeaders.add(map);
+
+            map = new HashMap<>();
+            map.put("label", "-");
+            nestedHeaders.add(map);
+
+            map = new HashMap<>();
+            map.put("label", "-");
+            nestedHeaders.add(map);
+
+            ((PivotDataModelReadonly) pivotDataModel).setNestedHeaders(
+                    nestedHeaders);
+        }
+
         if (formService.getMyForm().
                 getSnapshotCollection() != null && false) {
             snapshotMapMultiDimension = dataService.createPivotDataSnapshot(
@@ -120,7 +149,7 @@ public class PivotViewerCtrl extends PivotImpl {
                             getMyForm(), getFilter());
 
             snapshotNullHandler = mongoDbUtil.findOne(formService.getMyForm().
-                    getDb(), "snapshotNullHandler",
+                            getDb(), "snapshotNullHandler",
                     new Document(getFilter()));
         }
 

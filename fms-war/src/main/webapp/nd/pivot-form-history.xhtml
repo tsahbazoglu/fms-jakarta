@@ -108,13 +108,14 @@
 
     <p:outputPanel id="historyMyGridReadOnly">
         <p:scrollPanel mode="native" 
-                       style="width:95%;height:800px">    
+                       style="width:95%;">
             <mygrid:mygridHistory 
                 id="idHistoryMyGridReadOnly"
                 rowHeaderWidh="#{pivotViewerCtrl.pivotDataModel.handsonRowHeaderWidth}"
                 colWidths="#{pivotViewerCtrl.pivotDataModel.handsonColWidths}"
-                columns="#{pivotViewerCtrl.pivotDataModel.columns}" 
-                rows="#{pivotViewerCtrl.pivotDataModel.rows}" 
+                columns="#{pivotViewerCtrl.pivotDataModel.columns}"
+                nestedHeaders="#{pivotViewerCtrl.pivotDataModel.nestedHeaders}"
+                rows="#{pivotViewerCtrl.pivotDataModel.rows}"
                 cell="#{pivotViewerCtrl.pivotDataModel.cell}"
                 rendered="#{formService.myForm.historyRendered}"
                 /> 
