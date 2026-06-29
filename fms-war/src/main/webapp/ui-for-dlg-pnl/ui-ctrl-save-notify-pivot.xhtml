@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core">
 
 <h:body>
     <h:form id="mainForm">
@@ -49,7 +50,7 @@
                 </p:column>
 
                 <p:column headerText="Sonuç Tipi">
-                    <h:outputText value="#{controlMap.resultType}"/>
+                    <h:outputText value="#{controlMap.resultType eq '000' ? 'Hata' : (controlMap.resultType eq '001' ? 'Uyarı' : controlMap.resultType)}" />
                 </p:column>
 
                 <p:column headerText="Sonuç"
