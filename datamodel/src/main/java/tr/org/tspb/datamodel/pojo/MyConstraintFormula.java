@@ -1,6 +1,7 @@
 package tr.org.tspb.datamodel.pojo;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,8 @@ public class MyConstraintFormula {
     private final String resultType;
     private final String relations;
     private final String description;
+    private final String controlApi;
+    private final FmsConstraintApiControlParams controlParams;
 
     private final int transferOrder;
     private final List checkList;
@@ -31,12 +34,28 @@ public class MyConstraintFormula {
 
     public MyConstraintFormula(Map contraintFormula) {
         this.id = (ObjectId) contraintFormula.get(MONGO_ID);
-        String localEngine = contraintFormula.get(ENGINE).
-                toString();
+        this.controlApi = (String) contraintFormula.get("control-api");
+
+        Object localControlParams = contraintFormula.get("control-params");
+
+        if (localControlParams instanceof Document doc) {
+            this.controlParams = new FmsConstraintApiControlParams(
+                    doc.getList("ctype-codes", String.class),
+                    doc.getString("collection"),
+                    doc.getString("ctype-name"),
+                    doc.getInteger("function-code")
+            );
+        } else {
+            this.controlParams = new FmsConstraintApiControlParams(
+                    new ArrayList<>(), "", "", 0
+            );
+        }
+
+
+        String localEngine = contraintFormula.get(ENGINE).toString();
 
         if (localEngine == null) {
-            throw new RuntimeException(
-                    "Capraz Kontrol Tanımlama Formülü İçin Tanımlanamayan Engine<br/>");
+            throw new RuntimeException("Capraz Kontrol Tanımlama Formülü İçin Tanımlanamayan Engine<br/>");
         }
 
         switch (localEngine) {
@@ -49,9 +68,11 @@ public class MyConstraintFormula {
             case "mongodbFunction":
                 this.engineType = EngineType.MONGODB_FUNCTION;
                 break;
+            case "api":
+                this.engineType = EngineType.API;
+                break;
             default:
-                throw new RuntimeException(
-                        "Capraz Kontrol Tanımlama Formülü İçin Tanımlanamayan Engine<br/>");
+                throw new RuntimeException("Capraz Kontrol Tanımlama Formülü İçin Tanımlanamayan Engine<br/>");
         }
 
         Object tmp = null;
@@ -61,29 +82,22 @@ public class MyConstraintFormula {
             this.relationsPresentation = null;
         }
 
-        this.name = contraintFormula.get(NAME).
-                toString();
-        this.resultType = contraintFormula.get(RESULT_TYPE).
-                toString();
-        this.transferOrder = ((Number) contraintFormula.get(TRANSFER_ORDER)).
-                intValue();
-        this.description = contraintFormula.get(DESCRIPTION).
-                toString();
+        this.name = contraintFormula.get(NAME).toString();
+        this.resultType = contraintFormula.get(RESULT_TYPE).toString();
+        this.transferOrder = ((Number) contraintFormula.get(TRANSFER_ORDER)).intValue();
+        this.description = contraintFormula.get(DESCRIPTION).toString();
 
         Object localControlFunction = contraintFormula.get(CONTROL_FUNCTION);
-        this.controlFunction = localControlFunction == null ? null : ((Code) localControlFunction).
-                getCode();
+        this.controlFunction = localControlFunction == null ? null : ((Code) localControlFunction).getCode();
 
-        this.relations = contraintFormula.get(RELATIONS).
-                toString();
+        this.relations = contraintFormula.get(RELATIONS).toString();
 
         variables = new ArrayList<>();
 
         Document variablesDbo = (Document) contraintFormula.get(VARIABLES);
         if (variablesDbo != null) {
             for (String variableKey : variablesDbo.keySet()) {
-                variables.add(new MyConstraintVariable(variablesDbo.get(
-                        variableKey), variableKey));
+                variables.add(new MyConstraintVariable(variablesDbo.get(variableKey), variableKey));
             }
         }
 
@@ -151,10 +165,16 @@ public class MyConstraintFormula {
         return relationsPresentation;
     }
 
+    public String getControlApi() {
+        return controlApi;
+    }
+
+    public FmsConstraintApiControlParams getControlParams() {
+        return controlParams;
+    }
+
     public enum EngineType {
-        JEVAL,
-        JAVA_SCRIPT,
-        MONGODB_FUNCTION
+        JEVAL, JAVA_SCRIPT, MONGODB_FUNCTION, API
     }
 
 }

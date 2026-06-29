@@ -5,6 +5,12 @@ import com.mongodb.client.model.UpdateOptions;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.*;
 import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
 import tr.org.tspb.constants.exceptions.MoreThenOneInListException;
@@ -23,14 +29,6 @@ import tr.org.tspb.util.stereotype.MyServices;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import jakarta.inject.Inject;
 import javax.script.Invocable;
@@ -88,26 +86,22 @@ public class CtrlService extends CommonSrv {
     private static final String SORT_KEY = "sortKey";
     private static final String CHECK_INDEX = "checkIndex";
 
-    private final ScriptEngine jsEngine = new ScriptEngineManager().
-            getEngineByName("JavaScript");
+    private final ScriptEngine jsEngine = new ScriptEngineManager().getEngineByName("JavaScript");
 
     private String configCollection;
 
     public void init(String configCollection) {
         this.configCollection = configCollection;
-
     }
 
-    public List<Map> runConstraintCrossCheck(
-            MyConstraintFormula myConstraintFormula,
-            boolean isInternalCheck,
-            Object[] parameters,
-            Map<CellMultiDimensionKey, List<CustomOlapHashMap>> mapMultiDimension,
-            Document filter)
-            throws ScriptException, NoSuchMethodException,
-            NullNotExpectedException,
-            MongoOrmFailedException, FormConfigException, ParseException,
-            MoreThenOneInListException, RecursiveLimitExceedException,
+    public List<Map> runConstraintCrossCheck(String apiToken,
+                                             MyConstraintFormula myConstraintFormula,
+                                             boolean isInternalCheck,
+                                             Object[] parameters,
+                                             Map<CellMultiDimensionKey, List<CustomOlapHashMap>> mapMultiDimension,
+                                             Document filter)
+            throws ScriptException, NoSuchMethodException, NullNotExpectedException, MongoOrmFailedException,
+            FormConfigException, ParseException, MoreThenOneInListException, RecursiveLimitExceedException,
             EvaluationException {
 
         List<Map> resultListOfMap = new ArrayList<>();
@@ -118,158 +112,206 @@ public class CtrlService extends CommonSrv {
         replace-with-control-function.js
                 
          */
-        if (MyConstraintFormula.EngineType.MONGODB_FUNCTION.equals(
-                myConstraintFormula.getEngineType())) {
+        if (MyConstraintFormula.EngineType.MONGODB_FUNCTION.equals(myConstraintFormula.getEngineType())) {
+            return handleMongoStoredFunction(myConstraintFormula, parameters, filter, resultListOfMap);
+        }
 
-            Object[] jsParameters = new Object[]{filter, loginController.
-                    getRolesAsSet()};
-
-            if (parameters != null) {
-                jsParameters = parameters;
-            }
-
-            Map resultMap = new HashMap();
-
-            Document commandResult = mongoDbUtil
-                    .runCommand(formService.getMyForm().
-                                    getDb(), myConstraintFormula.getControlFunction(),
-                            jsParameters);
-
-            Document returnObject = (Document) commandResult.get(RETVAL);
-            resultMap.put(RESULT, returnObject.get(RESULT));
-            resultMap.put(EXPRESSION, returnObject.get(EXPRESSION));
-            resultListOfMap.add(resultMap);
-            return resultListOfMap;
+        if (MyConstraintFormula.EngineType.API.equals(myConstraintFormula.getEngineType())) {
+            return handleApiConstraint(apiToken, myConstraintFormula, parameters, filter);
         }
 
         Map<String, Map> retrivedVariables = new HashMap<>();
 
-        for (MyConstraintVariable myConstraintVariable : myConstraintFormula.
-                getVariables()) {
-            retrivedVariables.put(myConstraintVariable.getKey(),
-                    retriveValueByCoordinate(myConstraintVariable,
-                            isInternalCheck,
-                            appScopeSrvCtrl.getDatabankRecalculateOnControl(),
-                            mapMultiDimension, filter));
+        for (MyConstraintVariable myConstraintVariable : myConstraintFormula.getVariables()) {
+            retrivedVariables.put(myConstraintVariable.getKey(), retriveValueByCoordinate(myConstraintVariable, isInternalCheck, appScopeSrvCtrl.getDatabankRecalculateOnControl(), mapMultiDimension, filter));
         }
 
-        if (MyConstraintFormula.EngineType.JEVAL.equals(myConstraintFormula.
-                getEngineType())) {
+        if (MyConstraintFormula.EngineType.JEVAL.equals(myConstraintFormula.getEngineType())) {
+            return handleJeval(myConstraintFormula, retrivedVariables);
+        } else if (MyConstraintFormula.EngineType.JAVA_SCRIPT.equals(myConstraintFormula.getEngineType())) {
+            return handleJavaScript(myConstraintFormula, retrivedVariables);
+        } else {
+            return Collections.emptyList();
+        }
 
-            for (Object checkExpression : myConstraintFormula.getCheckList()) {
-                String jevalExpression = (String) checkExpression;
-                String customNicePresenter = (String) checkExpression;
+    }
 
-                for (Map.Entry<String, Map> entry : retrivedVariables.entrySet()) {
-                    Object present = entry.getValue().
-                            get(PRESENT);
-                    Object value = entry.getValue().
-                            get(VALUE);
+    private List<Map> handleJavaScript(MyConstraintFormula myConstraintFormula, Map<String, Map> retrivedVariables) throws ScriptException, NoSuchMethodException {
 
-                    if (present == null || present instanceof String && ((String) present).
-                            isEmpty()) {
-                        present = "boş";
-                    }
-                    if (value == null || value instanceof String && ((String) value).
-                            isEmpty()) {
-                        value = "0";
-                    }
+        List<Map> resultListOfMap = new ArrayList<>();
+        for (Object checkExpression : myConstraintFormula.getCheckList()) {
+            String formula = (String) checkExpression;
+            String customNicePresenter = (String) checkExpression;
+            Map sessionCacheRetrivedVariables = new HashMap();
 
-                    customNicePresenter = customNicePresenter.replaceAll(entry.
-                            getKey(), present.toString());
-                    jevalExpression = jevalExpression.replaceAll(entry.getKey(),
-                            "(" + value.toString() + ")");
+            for (MyConstraintVariable myConstraintVariable : myConstraintFormula.getVariables()) {
+
+                Object presentableFormOfValue = retrivedVariables.get(myConstraintVariable.getKey()).get(PRESENT);
+
+                if (presentableFormOfValue == null || (presentableFormOfValue instanceof String) && ((String) presentableFormOfValue).isEmpty()) {
+                    presentableFormOfValue = "boş";
                 }
 
-                Map resultMap = new HashMap();
-                Evaluator evaluator = new Evaluator();
-                resultMap.put(RESULT, evaluator.
-                        getBooleanResult(jevalExpression));
-                resultMap.put(EXPRESSION, customNicePresenter);
+                customNicePresenter = customNicePresenter.replaceAll(myConstraintVariable.getKey(), presentableFormOfValue.toString());
 
-                resultListOfMap.add(resultMap);
+                String param = myConstraintVariable.getKey();
+                Object value = retrivedVariables.get(myConstraintVariable.getKey()).get(VALUE);
+
+                if (value instanceof Long) {
+                    // https://bugs.openjdk.java.net/browse/JDK-8161665
+                    value = value.toString();
+                    sessionCacheRetrivedVariables.put(param, value == null ? 0 : value);
+                    formula = formula.replaceAll(param, String.format("Number(input.%s)", param));
+                } else {
+                    sessionCacheRetrivedVariables.put(myConstraintVariable.getKey(), value == null ? 0 : value);
+                    formula = formula.replaceAll(param, "input.".concat(param));
+                }
+
             }
-        } else if (MyConstraintFormula.EngineType.JAVA_SCRIPT.equals(
-                myConstraintFormula.getEngineType())) {
-            for (Object checkExpression : myConstraintFormula.getCheckList()) {
-                String formula = (String) checkExpression;
-                String customNicePresenter = (String) checkExpression;
-                Map sessionCacheRetrivedVariables = new HashMap();
 
-                for (MyConstraintVariable myConstraintVariable : myConstraintFormula.
-                        getVariables()) {
+            StringBuilder javaScriptFunction = new StringBuilder();
 
-                    Object presentableFormOfValue = retrivedVariables.get(
-                                    myConstraintVariable.getKey()).
-                            get(PRESENT);
-
-                    if (presentableFormOfValue == null
-                            || (presentableFormOfValue instanceof String) && ((String) presentableFormOfValue).
-                            isEmpty()) {
-                        presentableFormOfValue = "boş";
-                    }
-
-                    customNicePresenter = customNicePresenter.replaceAll(
-                            myConstraintVariable.getKey(),
-                            presentableFormOfValue.toString());
-
-                    String param = myConstraintVariable.getKey();
-                    Object value = retrivedVariables.get(myConstraintVariable.
-                                    getKey()).
-                            get(VALUE);
-
-                    if (value instanceof Long) {
-                        // https://bugs.openjdk.java.net/browse/JDK-8161665
-                        value = value.toString();
-                        sessionCacheRetrivedVariables.put(param,
-                                value == null ? 0 : value);
-                        formula = formula.replaceAll(param, String.format(
-                                "Number(input.%s)", param));
-                    } else {
-                        sessionCacheRetrivedVariables.put(myConstraintVariable.
-                                getKey(), value == null ? 0 : value);
-                        formula = formula.replaceAll(param, "input.".concat(
-                                param));
-                    }
-
-                }
-
-                StringBuilder javaScriptFunction = new StringBuilder();
-
-                javaScriptFunction.append("function constraint(input){");
-                //javaScriptFunction.append("input = eval('('+input+')');");//IMPORTANAT
-                if (!formula.contains("return")) {
-                    javaScriptFunction.append("return ");
-                }
-                javaScriptFunction.append(formula);
-                javaScriptFunction.append("}");
-
-                jsEngine.eval(javaScriptFunction.toString());
-
-                Invocable inv = (Invocable) jsEngine;
-
-                Object result = inv.invokeFunction("constraint",
-                        sessionCacheRetrivedVariables);
-
-                Map resultMap = new HashMap();
-                resultMap.put(RESULT, result);
-                resultMap.put(EXPRESSION, customNicePresenter);
-
-                resultListOfMap.add(resultMap);
+            javaScriptFunction.append("function constraint(input){");
+            //javaScriptFunction.append("input = eval('('+input+')');");//IMPORTANAT
+            if (!formula.contains("return")) {
+                javaScriptFunction.append("return ");
             }
+            javaScriptFunction.append(formula);
+            javaScriptFunction.append("}");
+
+            jsEngine.eval(javaScriptFunction.toString());
+
+            Invocable inv = (Invocable) jsEngine;
+
+            Object result = inv.invokeFunction("constraint", sessionCacheRetrivedVariables);
+
+            Map resultMap = new HashMap();
+            resultMap.put(RESULT, result);
+            resultMap.put(EXPRESSION, customNicePresenter);
+
+            resultListOfMap.add(resultMap);
         }
         return resultListOfMap;
     }
 
-    private Map retriveValueByCoordinate(
-            MyConstraintVariable myConstraintVariable,
-            boolean isInternalCheck, boolean recalculate,
-            Map<CellMultiDimensionKey, List<CustomOlapHashMap>> mapMultiDimension,
-            Document filter)
-            throws NullNotExpectedException, MongoOrmFailedException,
-            FormConfigException,
-            ParseException, MoreThenOneInListException,
-            RecursiveLimitExceedException, EvaluationException {
+    private static List<Map> handleJeval(MyConstraintFormula myConstraintFormula, Map<String, Map> retrivedVariables) throws EvaluationException {
+
+        List<Map> resultListOfMap = new ArrayList<>();
+        for (Object checkExpression : myConstraintFormula.getCheckList()) {
+            String jevalExpression = (String) checkExpression;
+            String customNicePresenter = (String) checkExpression;
+
+            for (Map.Entry<String, Map> entry : retrivedVariables.entrySet()) {
+                Object present = entry.getValue().get(PRESENT);
+                Object value = entry.getValue().get(VALUE);
+
+                if (present == null || present instanceof String && ((String) present).isEmpty()) {
+                    present = "boş";
+                }
+                if (value == null || value instanceof String && ((String) value).isEmpty()) {
+                    value = "0";
+                }
+
+                customNicePresenter = customNicePresenter.replaceAll(entry.getKey(), present.toString());
+                jevalExpression = jevalExpression.replaceAll(entry.getKey(), "(" + value.toString() + ")");
+            }
+
+            Map resultMap = new HashMap();
+            Evaluator evaluator = new Evaluator();
+            resultMap.put(RESULT, evaluator.getBooleanResult(jevalExpression));
+            resultMap.put(EXPRESSION, customNicePresenter);
+
+            resultListOfMap.add(resultMap);
+        }
+
+        return resultListOfMap;
+
+
+    }
+
+    private List<Map> handleApiConstraint(String apiToken, MyConstraintFormula myConstraintFormula, Object[] parameters, Document filter) {
+       /*
+        http://localhost:8080/constraint-service/api/constraints/umedb/status
+        */
+        Object[] jsParameters = new Object[]{filter, loginController.getRolesAsSet()};
+
+        if (parameters != null) {
+            jsParameters = parameters;
+        }
+
+        // 1. Unpack Member array collection paths safely
+        List<String> memberIdsAsStr = new ArrayList<>();
+
+        Object memberObj = filter.get("member");
+        if (memberObj != null) {
+            if (memberObj instanceof Document && ((Document) memberObj).containsKey("$in")) {
+                List<?> rawList = ((Document) memberObj).getList("$in", Object.class);
+                for (Object item : rawList) {
+                    memberIdsAsStr.add(item instanceof ObjectId ? ((ObjectId) item).toHexString() : item.toString());
+                }
+            } else {
+                memberIdsAsStr.add(memberObj instanceof ObjectId ? ((ObjectId) memberObj).toHexString() : memberObj.toString());
+            }
+        }
+
+        String periodIdAsStr = filter.getObjectId("period").toHexString();
+
+        Map<String, Object> requestPayload = new HashMap<>();
+        requestPayload.put("member-ids-as-str", memberIdsAsStr);
+        requestPayload.put("period-id-as-str", periodIdAsStr);
+        requestPayload.put("collection", myConstraintFormula.getControlParams().collection());
+        requestPayload.put("ctype-codes", myConstraintFormula.getControlParams().ctypeCodes());
+        requestPayload.put("ctype-name", myConstraintFormula.getControlParams().ctypeName());
+        requestPayload.put("function-code", myConstraintFormula.getControlParams().functionCode());
+
+        String TARGET_URL = "http://localhost:8080" + myConstraintFormula.getControlApi();
+        Map resultMap = null;
+        // 2. Instantiate the native Jakarta REST client worker engine
+        try (Client client = ClientBuilder.newClient()) {
+            // 3. Dispatch the HTTP POST execution payload over the wire
+            Response response = client.target(TARGET_URL).request(MediaType.APPLICATION_JSON).header("X-API-KEY", apiToken).post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+            // 4. Validate output response signals cleanly
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                resultMap = response.readEntity(Map.class);
+                System.out.println("Success response signature received from service: " + resultMap);
+            } else {
+                System.err.println("Failed to execute. HTTP Status Code: " + response.getStatus());
+                System.err.println("Error output detail: " + response.readEntity(String.class));
+            }
+            response.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (resultMap == null) {
+            return Collections.emptyList();
+        } else {
+            List<Map> resultListOfMap = new ArrayList<>();
+            resultListOfMap.add(resultMap);
+            return resultListOfMap;
+        }
+
+    }
+
+    private List<Map> handleMongoStoredFunction(MyConstraintFormula myConstraintFormula, Object[] parameters, Document filter, List<Map> resultListOfMap) {
+        Object[] jsParameters = new Object[]{filter, loginController.getRolesAsSet()};
+
+        if (parameters != null) {
+            jsParameters = parameters;
+        }
+
+        Map resultMap = new HashMap();
+
+        Document commandResult = mongoDbUtil.runCommand(formService.getMyForm().getDb(), myConstraintFormula.getControlFunction(), jsParameters);
+
+        Document returnObject = (Document) commandResult.get(RETVAL);
+        resultMap.put(RESULT, returnObject.get(RESULT));
+        resultMap.put(EXPRESSION, returnObject.get(EXPRESSION));
+        resultListOfMap.add(resultMap);
+        return resultListOfMap;
+    }
+
+    private Map retriveValueByCoordinate(MyConstraintVariable myConstraintVariable, boolean isInternalCheck, boolean recalculate, Map<CellMultiDimensionKey, List<CustomOlapHashMap>> mapMultiDimension, Document filter) throws NullNotExpectedException, MongoOrmFailedException, FormConfigException, ParseException, MoreThenOneInListException, RecursiveLimitExceedException, EvaluationException {
 
         String collectionKey;
         String collection;
@@ -279,17 +321,12 @@ public class CtrlService extends CommonSrv {
         Map returnMap = new HashMap();
 
         if (myConstraintVariable.isCode()) {
-            Document commandResult = mongoDbUtil
-                    .runCommand(formService.getMyForm().
-                            getDb(), myConstraintVariable.getCode().
-                            getCode(), filter);
+            Document commandResult = mongoDbUtil.runCommand(formService.getMyForm().getDb(), myConstraintVariable.getCode().getCode(), filter);
 
             Object value = commandResult.get(RETVAL);
 
-            returnMap.put(VALUE, value == null ? null : Math.round(
-                    ((Number) value).doubleValue() / 100));
-            returnMap.put(PRESENT, value == null ? null : new MoneyConverter().
-                                                          getAsString(null, null, value));
+            returnMap.put(VALUE, value == null ? null : Math.round(((Number) value).doubleValue() / 100));
+            returnMap.put(PRESENT, value == null ? null : new MoneyConverter().getAsString(null, null, value));
             return returnMap;
         }
 
@@ -307,33 +344,27 @@ public class CtrlService extends CommonSrv {
 
         // FIXME Move to engine constraint formula validator
         if (form == null) {
-            form = formService.getMyForm().
-                    getForm();
+            form = formService.getMyForm().getForm();
             if (form == null) {
-                throw new NullNotExpectedException(
-                        "form is not defined on variable and could not be retrived from the current state");
+                throw new NullNotExpectedException("form is not defined on variable and could not be retrived from the current state");
             }
         }
 
-        FmsForm formDef = appScopeSrvCtrl.getFormDefinitionByForm(
-                configCollection, form, filter);
+        FmsForm formDef = appScopeSrvCtrl.getFormDefinitionByForm(configCollection, form, filter);
         MyField fieldDef = formDef.getField(valueKey);
 
         if (fieldDef == null) {
-            throw new FormConfigException(valueKey.concat(
-                    " form field is resolved to null"));
+            throw new FormConfigException(valueKey.concat(" form field is resolved to null"));
         }
 
         collection = formDef.getTable();
         if (collection == null) {
-            collection = formService.getMyForm().
-                    getTable();
+            collection = formService.getMyForm().getTable();
         }
 
         collectionKey = formDef.getKey();
         if (collectionKey == null) {
-            collectionKey = formService.getMyForm().
-                    getTable();
+            collectionKey = formService.getMyForm().getTable();
         }
 
         for (Map.Entry entry : filter.entrySet()) {
@@ -361,26 +392,18 @@ public class CtrlService extends CommonSrv {
          * </pre>
          */
         if (elementDefinedPeriod != null) {
-            ObjectId currentPeriodID = (ObjectId) cashedPersistenceKey.get(
-                    PERIOD);
-            ObjectId currentTemplateID = (ObjectId) cashedPersistenceKey.get(
-                    TEMPLATE);
+            ObjectId currentPeriodID = (ObjectId) cashedPersistenceKey.get(PERIOD);
+            ObjectId currentTemplateID = (ObjectId) cashedPersistenceKey.get(TEMPLATE);
 
             String sortKey = (String) elementDefinedPeriod.get(SORT_KEY);
-            Document prevPeriodDBObject = appScopeSrvCtrl
-                    .getPrevPeriod(formService.getMyForm().
-                            getDb(), sortKey, 1, currentPeriodID);
+            Document prevPeriodDBObject = appScopeSrvCtrl.getPrevPeriod(formService.getMyForm().getDb(), sortKey, 1, currentPeriodID);
 
             if (prevPeriodDBObject != null) {
-                cashedPersistenceKey.put(PERIOD, prevPeriodDBObject.
-                        get(MONGO_ID));
+                cashedPersistenceKey.put(PERIOD, prevPeriodDBObject.get(MONGO_ID));
             }
 
             if (currentTemplateID != null) {
-                ObjectId prevTemplateId = appScopeSrvCtrl
-                        .getPrevTemplate(formService.getMyForm().
-                                        getDb(), null, 1, currentTemplateID,
-                                currentPeriodID);
+                ObjectId prevTemplateId = appScopeSrvCtrl.getPrevTemplate(formService.getMyForm().getDb(), null, 1, currentTemplateID, currentPeriodID);
                 cashedPersistenceKey.put(TEMPLATE, prevTemplateId);
             }
         }
@@ -393,66 +416,45 @@ public class CtrlService extends CommonSrv {
         if (recalculate) {
             Map calculateFormulaSearchMap = new HashMap();
             calculateFormulaSearchMap.put(RELATIONS, form);
-            calculateFormulaSearchMap.put(X_CODE, myConstraintVariable.
-                    getxCode());
-            calculateFormulaSearchMap.put(Y_CODE, myConstraintVariable.
-                    getyCode());
+            calculateFormulaSearchMap.put(X_CODE, myConstraintVariable.getxCode());
+            calculateFormulaSearchMap.put(Y_CODE, myConstraintVariable.getyCode());
             calculateFormulaSearchMap.putAll(cashedPersistenceKey);
-            calculateDefinition = appScopeSrvCtrl.getCalculateFormula(
-                    calculateFormulaSearchMap);
+            calculateDefinition = appScopeSrvCtrl.getCalculateFormula(calculateFormulaSearchMap);
         }
 
-        boolean shouldbeRetrievedFromDB = myConstraintVariable.
-                isShouldbeRetrievedFromDB();
+        boolean shouldbeRetrievedFromDB = myConstraintVariable.isShouldbeRetrievedFromDB();
         if (shouldbeRetrievedFromDB) {
             double sum = 0D;
 
-            List<Document> cursor = mongoDbUtil.find(formService.getMyForm().
-                    getDb(), collection, new Document(cashedPersistenceKey));
+            List<Document> cursor = mongoDbUtil.find(formService.getMyForm().getDb(), collection, new Document(cashedPersistenceKey));
 
             for (Document dBObject : cursor) {
-                if (dBObject.get(valueKey) != null && !dBObject.get(valueKey).
-                        toString().
-                        isEmpty()) {
-                    sum += Double.valueOf(dBObject.get(valueKey).
-                            toString());
+                if (dBObject.get(valueKey) != null && !dBObject.get(valueKey).toString().isEmpty()) {
+                    sum += Double.valueOf(dBObject.get(valueKey).toString());
                 }
             }
             value = Double.valueOf(sum);
         } else if (recalculate && calculateDefinition != null && elementDefinedPeriod == null) {
 
-            FmsForm formulaRelatedFormDef = appScopeSrvCtrl
-                    .getFormDefinitionByForm(configCollection,
-                            calculateDefinition.getRelations(), filter);
+            FmsForm formulaRelatedFormDef = appScopeSrvCtrl.getFormDefinitionByForm(configCollection, calculateDefinition.getRelations(), filter);
 
             Map search = new HashMap();
             for (Map.Entry entry : filter.entrySet()) {
-                if (formulaRelatedFormDef.getField(entry.getKey().
-                        toString()) != null) {
+                if (formulaRelatedFormDef.getField(entry.getKey().toString()) != null) {
                     search.put(entry.getKey(), entry.getValue());
                 }
             }
 
-            cashedPreCalculatedKey = calcService
-                    .createCalculateMapKey(search, formulaRelatedFormDef.
-                            getKey(), new MyCalcCoordinate(myConstraintVariable));
+            cashedPreCalculatedKey = calcService.createCalculateMapKey(search, formulaRelatedFormDef.getKey(), new MyCalcCoordinate(myConstraintVariable));
 
             if (!calcService.doesCalcCacheContainKey(cashedPreCalculatedKey)) {
-                jevalCalculateAndStore(search, calculateDefinition, form, 0,
-                        isInternalCheck, mapMultiDimension, formService.
-                                getMyForm(), configCollection, filter,
-                        formService.getMyForm().
-                                getDb());
+                jevalCalculateAndStore(search, calculateDefinition, form, 0, isInternalCheck, mapMultiDimension, formService.getMyForm(), configCollection, filter, formService.getMyForm().getDb());
             }
-            value = calcService.get(cashedPreCalculatedKey).
-                    get(valueKey);
+            value = calcService.get(cashedPreCalculatedKey).get(valueKey);
 
-        } else if (formService.getMyForm().
-                getKey().
-                equals(collectionKey) && elementDefinedPeriod == null) {
+        } else if (formService.getMyForm().getKey().equals(collectionKey) && elementDefinedPeriod == null) {
 
-            List<CustomOlapHashMap> list = mapMultiDimension.get(
-                    cellMultiDimensionKey);
+            List<CustomOlapHashMap> list = mapMultiDimension.get(cellMultiDimensionKey);
 
             if (list != null) {
                 for (CustomOlapHashMap customOlapHaspMap : list) {
@@ -471,8 +473,7 @@ public class CtrlService extends CommonSrv {
             }
         } else {
 
-            Map matris = dataService.cacheAndGetPivotData(cashedPersistenceKey,
-                    formDef);
+            Map matris = dataService.cacheAndGetPivotData(cashedPersistenceKey, formDef);
 
             if (matris.get(cellMultiDimensionKey) == null) {
                 value = 0D;
@@ -489,8 +490,7 @@ public class CtrlService extends CommonSrv {
             }
         } else if (fieldDef.getMyconverter() instanceof MoneyConverter) {
             if (value instanceof String) {
-                if (((String) value).trim().
-                        isEmpty()) {
+                if (((String) value).trim().isEmpty()) {
                     value = null;
                 } else {
                     try {
@@ -502,10 +502,8 @@ public class CtrlService extends CommonSrv {
                     }
                 }
             }
-            returnMap.put(VALUE, value == null ? null : Math.round(
-                    ((Number) value).doubleValue() / 100));
-            returnMap.put(PRESENT, value == null ? null : new MoneyConverter().
-                                                          getAsString(null, null, value));
+            returnMap.put(VALUE, value == null ? null : Math.round(((Number) value).doubleValue() / 100));
+            returnMap.put(PRESENT, value == null ? null : new MoneyConverter().getAsString(null, null, value));
         } else if (fieldDef.getMyconverter() instanceof NumberConverter) {
 
             Locale locale = new Locale("tr", "TR");
@@ -531,24 +529,14 @@ public class CtrlService extends CommonSrv {
         return returnMap;
     }
 
-    public Map jevalCalculateAndStore(Map searchedMap, MyCalcDef myCalcDef,
-                                      String initForm, int recursiveDeepSizeLimit, boolean isInternalCheck,
-                                      Map<CellMultiDimensionKey, List<CustomOlapHashMap>> mapMultiDimension,
-                                      FmsForm selectedForm, String configCollection, Map searchObject,
-                                      String db)
-            throws NullNotExpectedException, MongoOrmFailedException,
-            RecursiveLimitExceedException, MoreThenOneInListException,
-            EvaluationException, FormConfigException {
+    public Map jevalCalculateAndStore(Map searchedMap, MyCalcDef myCalcDef, String initForm, int recursiveDeepSizeLimit, boolean isInternalCheck, Map<CellMultiDimensionKey, List<CustomOlapHashMap>> mapMultiDimension, FmsForm selectedForm, String configCollection, Map searchObject, String db) throws NullNotExpectedException, MongoOrmFailedException, RecursiveLimitExceedException, MoreThenOneInListException, EvaluationException, FormConfigException {
 
-        FmsForm initMyForm = appScopeSrvCtrl.getFormDefinitionByForm(
-                configCollection, initForm, searchObject);
+        FmsForm initMyForm = appScopeSrvCtrl.getFormDefinitionByForm(configCollection, initForm, searchObject);
 
         recursiveDeepSizeLimit++;
         // to prevent wrong circles
         if (recursiveDeepSizeLimit > 100) {
-            throw new RecursiveLimitExceedException(
-                    "recursiveDeepSizeLimit achived on formula : " + myCalcDef.
-                            getName());
+            throw new RecursiveLimitExceedException("recursiveDeepSizeLimit achived on formula : " + myCalcDef.getName());
         }
 
         MyCalcCoordinate myCalcCoordinate = myCalcDef.getDroolsRuleCoordinate();
@@ -557,9 +545,7 @@ public class CtrlService extends CommonSrv {
 
         if (MyCalcDef.CalcType.FUNCTION.equals(myCalcDef.getCalcType())) {
 
-            Document commandResult = mongoDbUtil.runCommand(db, myCalcDef.
-                    getFuncCode().
-                    getCode(), searchObject);
+            Document commandResult = mongoDbUtil.runCommand(db, myCalcDef.getFuncCode().getCode(), searchObject);
 
             Object value = commandResult.get(RETVAL);
             resultMap.put(RESULT, value);
@@ -593,20 +579,13 @@ public class CtrlService extends CommonSrv {
                     calculateFormulaSearchMap.put(RELATIONS, elementForm);
                     calculateFormulaSearchMap.put(X_CODE, myCalcVar.getxCode());
                     calculateFormulaSearchMap.put(Y_CODE, myCalcVar.getyCode());
-                    calculateFormulaSearchMap.put(PERIOD, searchedMap.
-                            get(PERIOD));
-                    calculateFormulaSearchMap.put(TEMPLATE, searchedMap.get(
-                            TEMPLATE));
+                    calculateFormulaSearchMap.put(PERIOD, searchedMap.get(PERIOD));
+                    calculateFormulaSearchMap.put(TEMPLATE, searchedMap.get(TEMPLATE));
 
-                    MyCalcDef reCalculateDefinition = appScopeSrvCtrl.
-                            getCalculateFormula(calculateFormulaSearchMap);
+                    MyCalcDef reCalculateDefinition = appScopeSrvCtrl.getCalculateFormula(calculateFormulaSearchMap);
 
                     if (reCalculateDefinition != null && elementDefinedPeriod == null) {
-                        jevalCalculateAndStore(searchedMap,
-                                reCalculateDefinition, elementForm,
-                                recursiveDeepSizeLimit, isInternalCheck,
-                                mapMultiDimension, selectedForm,
-                                configCollection, searchObject, db);
+                        jevalCalculateAndStore(searchedMap, reCalculateDefinition, elementForm, recursiveDeepSizeLimit, isInternalCheck, mapMultiDimension, selectedForm, configCollection, searchObject, db);
                     }
 
                     if ("developer".equals(myCalcVar.getLevel())) {
@@ -619,10 +598,8 @@ public class CtrlService extends CommonSrv {
                         for (String key : cacheKey.keySet()) {
                             if (PERIOD.equals(key)) {
                                 searchCacheKey.put(key, searchedMap.get(PERIOD));
-                            } else if (selectedForm.getLoginFkField().
-                                    equals(key)) {
-                                searchCacheKey.put(key, searchedMap.get(
-                                        selectedForm.getLoginFkField()));
+                            } else if (selectedForm.getLoginFkField().equals(key)) {
+                                searchCacheKey.put(key, searchedMap.get(selectedForm.getLoginFkField()));
                             } else {
                                 searchCacheKey.put(key, cacheKey.get(key));
                             }
@@ -630,20 +607,14 @@ public class CtrlService extends CommonSrv {
 
                         resultMap = new HashMap();
 
-                        List cachedResult = appScopeSrvCtrl
-                                .getSessionSearchCacheMap().
-                                get(searchCacheKey);
+                        List cachedResult = appScopeSrvCtrl.getSessionSearchCacheMap().get(searchCacheKey);
 
-                        resultMap.put(RESULT,
-                                cachedResult == null ? "0" : ((Map) cachedResult.
-                                                                    get(0)).get(cacheValue));
+                        resultMap.put(RESULT, cachedResult == null ? "0" : ((Map) cachedResult.get(0)).get(cacheValue));
                         resultMap.put(EXPRESSION, jevalExpression.toString());
                         return resultMap;
                     }
 
-                    FmsForm elementFormDef = appScopeSrvCtrl.
-                            getFormDefinitionByForm(configCollection,
-                                    elementForm, searchObject);
+                    FmsForm elementFormDef = appScopeSrvCtrl.getFormDefinitionByForm(configCollection, elementForm, searchObject);
 
                     String collectionKey = elementFormDef.getKey();
 
@@ -660,21 +631,15 @@ public class CtrlService extends CommonSrv {
 
                     if (elementDefinedPeriod != null) {
                         Document periodDBObject;
-                        if (SelectOneObjectIdConverter.NULL_VALUE.equals(
-                                cashedPersistenceKey.get(PERIOD))) {
+                        if (SelectOneObjectIdConverter.NULL_VALUE.equals(cashedPersistenceKey.get(PERIOD))) {
                             periodDBObject = null;
                         } else {
-                            String sortKey = (String) elementDefinedPeriod.get(
-                                    SORT_KEY);
-                            periodDBObject = appScopeSrvCtrl.
-                                    getLastQuaterOfPrevYear(db, sortKey, 1,
-                                            (ObjectId) cashedPersistenceKey.get(
-                                                    PERIOD));
+                            String sortKey = (String) elementDefinedPeriod.get(SORT_KEY);
+                            periodDBObject = appScopeSrvCtrl.getLastQuaterOfPrevYear(db, sortKey, 1, (ObjectId) cashedPersistenceKey.get(PERIOD));
                         }
 
                         if (periodDBObject != null) {
-                            cashedPersistenceKey.put(PERIOD, periodDBObject.get(
-                                    MONGO_ID));
+                            cashedPersistenceKey.put(PERIOD, periodDBObject.get(MONGO_ID));
                         } else {
                             /**
                              * If there is no previous period record then we
@@ -685,69 +650,54 @@ public class CtrlService extends CommonSrv {
                         }
                     }
 
-                    Map cachedPreCalculatedKey = new HashMap(
-                            cashedPersistenceKey);
+                    Map cachedPreCalculatedKey = new HashMap(cashedPersistenceKey);
                     cachedPreCalculatedKey.putAll(coordinate);
 
-                    if (calcService.doesCalcCacheContainKey(
-                            cachedPreCalculatedKey)) {
-                        Object value = calcService.get(cachedPreCalculatedKey).
-                                get(valueKey);
+                    if (calcService.doesCalcCacheContainKey(cachedPreCalculatedKey)) {
+                        Object value = calcService.get(cachedPreCalculatedKey).get(valueKey);
                         if (value instanceof Double) {
                             double myValue = ((Number) value).doubleValue();
-                            if (Double.isInfinite(myValue) || Double.isNaN(
-                                    myValue)) {
+                            if (Double.isInfinite(myValue) || Double.isNaN(myValue)) {
                                 value = 0D;
                             }
                         }
-                        if (value == null || value instanceof String && ((String) value).
-                                isEmpty()) {
+                        if (value == null || value instanceof String && ((String) value).isEmpty()) {
                             value = 0D;
                         }
 
-                        jevalExpression.append("(").
-                                append(value).
-                                append(")");
+                        jevalExpression.append("(").append(value).append(")");
                     } else {
 
                         Object value;
 
-                        if (isInternalCheck && elementDefinedPeriod == null && selectedForm.
-                                getKey().
-                                equals(collectionKey)) {
+                        if (isInternalCheck && elementDefinedPeriod == null && selectedForm.getKey().equals(collectionKey)) {
 
                             CellMultiDimensionKey cellMultiDimensionKey = new CellMultiDimensionKey();
 
                             cellMultiDimensionKey.putAll(coordinate);
-                            List<CustomOlapHashMap> list = mapMultiDimension.
-                                    get(cellMultiDimensionKey);
+                            List<CustomOlapHashMap> list = mapMultiDimension.get(cellMultiDimensionKey);
                             if (list == null || list.isEmpty()) {
                                 // FIXME should be 1 in case of *
                                 value = "0";
                             } else {
-                                value = list.get(0).
-                                        getValue();
-                                if (value == null || value instanceof String && ((String) value).
-                                        isEmpty()) {
+                                value = list.get(0).getValue();
+                                if (value == null || value instanceof String && ((String) value).isEmpty()) {
                                     value = 0D;
                                 }
                             }
                         } else {
                             // create map reduce result
 
-                            Map matris = dataService.cacheAndGetPivotData(
-                                    cashedPersistenceKey, elementFormDef);
+                            Map matris = dataService.cacheAndGetPivotData(cashedPersistenceKey, elementFormDef);
 
                             if (matris.get(coordinate) == null) {
                                 // FIXME should be 1 in case of *
                                 value = "0";
                             } else {
 
-                                value = ((Map) matris.get(coordinate)).get(
-                                        valueKey);
+                                value = ((Map) matris.get(coordinate)).get(valueKey);
 
-                                if (value == null || value instanceof String && ((String) value).
-                                        isEmpty()) {
+                                if (value == null || value instanceof String && ((String) value).isEmpty()) {
                                     value = 0D;
                                 }
                             }
@@ -756,9 +706,7 @@ public class CtrlService extends CommonSrv {
                          * Parantezzis is used to prevent an error in case of
                          * negative amount
                          */
-                        jevalExpression.append("(").
-                                append(value).
-                                append(")");
+                        jevalExpression.append("(").append(value).append(")");
                     }
 
                 }
@@ -777,16 +725,12 @@ public class CtrlService extends CommonSrv {
 
         }
 
-        Map cashedCalculatedCoordinateValueMap = calcService.
-                createCalculateMapKey(searchedMap, initMyForm.getKey(),
-                        myCalcCoordinate);
+        Map cashedCalculatedCoordinateValueMap = calcService.createCalculateMapKey(searchedMap, initMyForm.getKey(), myCalcCoordinate);
 
         HashMap storedCalculatedValue = new HashMap();
-        storedCalculatedValue.put(myCalcDef.getDroolsMeasureKey(), resultMap.
-                get(RESULT));
+        storedCalculatedValue.put(myCalcDef.getDroolsMeasureKey(), resultMap.get(RESULT));
 
-        calcService.put(cashedCalculatedCoordinateValueMap,
-                storedCalculatedValue);
+        calcService.put(cashedCalculatedCoordinateValueMap, storedCalculatedValue);
 
         return resultMap;
 
@@ -796,27 +740,22 @@ public class CtrlService extends CommonSrv {
 
         dataService.resetMapReduceCache();
 
-        if (filter.get(formService.getMyForm().
-                getLoginFkField()) == null) {
+        if (filter.get(formService.getMyForm().getLoginFkField()) == null) {
             throw new NullNotExpectedException("Üye seçilmedi");
         }
         if (filter.get(PERIOD) == null) {
             throw new NullNotExpectedException("Dönem seçilmedi");
         }
-        if (formService.getMyForm().
-                getField(TEMPLATE) != null && filter.get(TEMPLATE) == null) {
+        if (formService.getMyForm().getField(TEMPLATE) != null && filter.get(TEMPLATE) == null) {
             throw new NullNotExpectedException("Şablon seçilmedi");
         }
 
-        List<Map<String, Object>> onFlyList = constraintCrossCheckVersionThree(
-                filter);
+        List<Map<String, Object>> onFlyList = constraintCrossCheckVersionThree(filter);
 
         Document index = new Document();
-        index.put(formService.getMyForm().
-                getLoginFkField(), 1);
+        index.put(formService.getMyForm().getLoginFkField(), 1);
         index.put(PERIOD, 1);
-        if (formService.getMyForm().
-                getField(TEMPLATE) != null) {
+        if (formService.getMyForm().getField(TEMPLATE) != null) {
             index.put(TEMPLATE, 1);
         }
 
@@ -824,19 +763,13 @@ public class CtrlService extends CommonSrv {
         index.put(CHECK_INDEX, 1);
 
         Document search = new Document();
-        search.append(formService.getMyForm().
-                getLoginFkField(), filter.get(formService.getMyForm().
-                getLoginFkField()));
+        search.append(formService.getMyForm().getLoginFkField(), filter.get(formService.getMyForm().getLoginFkField()));
         search.append(PERIOD, filter.get(PERIOD));
-        if (formService.getMyForm().
-                getField(TEMPLATE) != null) {
+        if (formService.getMyForm().getField(TEMPLATE) != null) {
             search.append(TEMPLATE, filter.get(TEMPLATE));
         }
 
-        search.append(formService.getMyForm().
-                getLoginFkField(), loginController.getLoggedUserDetail().
-                getDbo().
-                getObjectId());
+        search.append(formService.getMyForm().getLoginFkField(), loginController.getLoggedUserDetail().getDbo().getObjectId());
 
         UpdateOptions upsert = new UpdateOptions().upsert(true);
 
@@ -847,8 +780,7 @@ public class CtrlService extends CommonSrv {
                      because it had been updated by admin who dont have member account.
                      so we garant here the current member and period
              */
-            map.remove(formService.getMyForm().
-                    getLoginFkField());
+            map.remove(formService.getMyForm().getLoginFkField());
             map.remove(PERIOD);
             map.remove(TEMPLATE);
 
@@ -856,21 +788,13 @@ public class CtrlService extends CommonSrv {
             // this covers the state when more than one chek is performed bu only one formul definition
             search.append(CHECK_INDEX, map.get(CHECK_INDEX));
 
-            mongoDbUtil.createIndex(formService.getMyForm().
-                    getDb(), formService.getMyForm().
-                    getTable(), index);
-            mongoDbUtil.updateMany(
-                    formService.getMyForm(),
-                    search,
-                    new Document(map).append(FORMS, formService.getMyForm().
-                            getKey()),
-                    upsert);
+            mongoDbUtil.createIndex(formService.getMyForm().getDb(), formService.getMyForm().getTable(), index);
+            mongoDbUtil.updateMany(formService.getMyForm(), search, new Document(map).append(FORMS, formService.getMyForm().getKey()), upsert);
         }
 
     }
 
-    private List<Map<String, Object>> constraintCrossCheckVersionThree(
-            Document filter) throws Exception {
+    private List<Map<String, Object>> constraintCrossCheckVersionThree(Document filter) throws Exception {
 
         // clean up search map.
         // over all cross check appaers to aal collections
@@ -879,12 +803,10 @@ public class CtrlService extends CommonSrv {
 
         for (String object : keySet) {
             if (Arrays.asList(//
-                            PERIOD,//
-                            formService.getMyForm().
-                                    getLoginFkField(),//
-                            TEMPLATE//
-                    ).
-                    contains(object)) {
+                    PERIOD,//
+                    formService.getMyForm().getLoginFkField(),//
+                    TEMPLATE//
+            ).contains(object)) {
                 continue;
             }
             filter.remove(object);
@@ -892,22 +814,15 @@ public class CtrlService extends CommonSrv {
 
         List<Map<String, Object>> all = new ArrayList<>();
 
-        String contraintConfigDefinitionKey = formService.getMyForm().
-                getConstraintItems().
-                getConfigDefinitionKey();
+        String contraintConfigDefinitionKey = formService.getMyForm().getConstraintItems().getConfigDefinitionKey();
 
-        FmsForm constraintFormDef = appScopeSrvCtrl
-                .getFormDefinitionByKey(configCollection,
-                        contraintConfigDefinitionKey, filter);
+        FmsForm constraintFormDef = appScopeSrvCtrl.getFormDefinitionByKey(configCollection, contraintConfigDefinitionKey, filter);
 
-        Document overallCheckDoc = constraintFormDef.getMyNamedQueries().
-                get("overAllCheck", Document.class);
+        Document overallCheckDoc = constraintFormDef.getMyNamedQueries().get("overAllCheck", Document.class);
         String overAllCheck;
         List listOfQueries;
 
-        ObjectId loginMemberId = loginController.getLoggedUserDetail().
-                getDbo().
-                getObjectId();
+        ObjectId loginMemberId = loginController.getLoggedUserDetail().getDbo().getObjectId();
 
         Document constraintQuery = null;
 
@@ -931,55 +846,33 @@ public class CtrlService extends CommonSrv {
 
             Document tempSearchObject = new Document();
 
-            if (loginController.isUserInRole(formService.getMyForm().
-                    getMyProject().
-                    getAdminRole())) {
-                tempSearchObject.put(
-                        formService.getMyForm().
-                                getLoginFkField(), filter.get(formService.
-                                getMyForm().
-                                getLoginFkField()));
-                tempSearchObject.put(
-                        PERIOD, filter.get(PERIOD));
-                tempSearchObject.put(
-                        TEMPLATE, filter.get(TEMPLATE));
+            if (loginController.isUserInRole(formService.getMyForm().getMyProject().getAdminRole())) {
+                tempSearchObject.put(formService.getMyForm().getLoginFkField(), filter.get(formService.getMyForm().getLoginFkField()));
+                tempSearchObject.put(PERIOD, filter.get(PERIOD));
+                tempSearchObject.put(TEMPLATE, filter.get(TEMPLATE));
             } else {
-                tempSearchObject.put(
-                        formService.getMyForm().
-                                getLoginFkField(), loginMemberId);
-                tempSearchObject.put(
-                        PERIOD, filter.get(PERIOD));
-                tempSearchObject.put(
-                        TEMPLATE, filter.get(TEMPLATE));
+                tempSearchObject.put(formService.getMyForm().getLoginFkField(), loginMemberId);
+                tempSearchObject.put(PERIOD, filter.get(PERIOD));
+                tempSearchObject.put(TEMPLATE, filter.get(TEMPLATE));
             }
 
-            Document commandResult = mongoDbUtil
-                    .runCommand(formService.getMyForm().
-                            getDb(), overAllCheck, tempSearchObject, null);
+            Document commandResult = mongoDbUtil.runCommand(formService.getMyForm().getDb(), overAllCheck, tempSearchObject, null);
 
             constraintQuery = commandResult.get(RETVAL, Document.class);
 
-        } else if ((listOfQueries = overallCheckDoc.getList("list",
-                Document.class)) != null) {
-            constraintQuery = FmsQuery.buildListQuery(listOfQueries, filter,
-                    ogmCreatorIntr.getFmsScriptRunner(), loginMemberId);
+        } else if ((listOfQueries = overallCheckDoc.getList("list", Document.class)) != null) {
+            constraintQuery = FmsQuery.buildListQuery(listOfQueries, filter, ogmCreatorIntr.getFmsScriptRunner(), loginMemberId);
         } else {
             constraintQuery = new Document();
         }
 
-        List<Document> constraintCursor = mongoDbUtil
-                .find(constraintFormDef.getDb(), constraintFormDef.getTable(),
-                        constraintQuery, new Document(TRANSFER_ORDER, 1), null);
+        List<Document> constraintCursor = mongoDbUtil.find(constraintFormDef.getDb(), constraintFormDef.getTable(), constraintQuery, new Document(TRANSFER_ORDER, 1), null);
         boolean checkTestControl = false;//to accelarate followed loop
         List listOfTestControlNo = new ArrayList();
 
         if (appScopeSrvCtrl.getTestControlFormulaTransferOrders() != null //
-                && !appScopeSrvCtrl.getTestControlFormulaTransferOrders().
-                trim().
-                isEmpty()) {
-            String[] nolar = appScopeSrvCtrl.
-                    getTestControlFormulaTransferOrders().
-                    split(COMMA);
+                && !appScopeSrvCtrl.getTestControlFormulaTransferOrders().trim().isEmpty()) {
+            String[] nolar = appScopeSrvCtrl.getTestControlFormulaTransferOrders().split(COMMA);
 
             for (String no : nolar) {
                 listOfTestControlNo.add(Integer.parseInt(no));
@@ -987,22 +880,22 @@ public class CtrlService extends CommonSrv {
             }
         }
 
+
+        String apiToken = constraintFormDef.getMyProject().getApiToken();
+
         for (Document next : constraintCursor) {
 
-            MyConstraintFormula myConstraintFormula = new MyConstraintFormula(
-                    next);
+            MyConstraintFormula myConstraintFormula = new MyConstraintFormula(next);
 
             if ("BOS".equals(myConstraintFormula.getRelations())) {
                 continue;
             }
 
-            if (checkTestControl && !listOfTestControlNo.contains(
-                    ((Number) myConstraintFormula.getTransferOrder()))) {
+            if (checkTestControl && !listOfTestControlNo.contains(((Number) myConstraintFormula.getTransferOrder()))) {
                 continue;
             }
 
-            all.addAll(new CheckConstraintTask(myConstraintFormula, filter).
-                    call());
+            all.addAll(new CheckConstraintTask(apiToken, myConstraintFormula, filter).call());
         }
         /* */
         return all;
@@ -1012,11 +905,12 @@ public class CtrlService extends CommonSrv {
 
         private final MyConstraintFormula myConstraintFormula;
         private final Document filter;
+        private final String apiToken;
 
-        CheckConstraintTask(MyConstraintFormula myConstraintFormula,
-                            Document filter) {
+        CheckConstraintTask(String apiToken, MyConstraintFormula myConstraintFormula, Document filter) {
             this.myConstraintFormula = myConstraintFormula;
             this.filter = filter;
+            this.apiToken = apiToken;
         }
 
         @Override
@@ -1027,23 +921,17 @@ public class CtrlService extends CommonSrv {
             try {
                 List<Map> resultListOfMap;
 
-                resultListOfMap = runConstraintCrossCheck(myConstraintFormula,
-                        false, null, null, filter);
+                resultListOfMap = runConstraintCrossCheck(apiToken, myConstraintFormula, false, null, null, filter);
 
                 int i = 0;
                 for (Map map : resultListOfMap) {
-                    myConstraintFormula.setControlResult(
-                            new MyControlResult(map));
+                    myConstraintFormula.setControlResult(new MyControlResult(map));
                     Map row = new HashMap();
-                    row.put(RELATIONS_PRESENTATION, myConstraintFormula.
-                            getRelationsPresentation());
+                    row.put(RELATIONS_PRESENTATION, myConstraintFormula.getRelationsPresentation());
                     row.put(RESULT_TYPE, myConstraintFormula.getResultType());
-                    row.put(EXPRESSION, myConstraintFormula.getControlResult().
-                            getExpression());
-                    row.put(RESULT, myConstraintFormula.getControlResult().
-                            getControlResult());
-                    row.put(TRANSFER_ORDER, myConstraintFormula.
-                            getTransferOrder());
+                    row.put(EXPRESSION, myConstraintFormula.getControlResult().getExpression());
+                    row.put(RESULT, myConstraintFormula.getControlResult().getControlResult());
+                    row.put(TRANSFER_ORDER, myConstraintFormula.getTransferOrder());
                     row.put(DESCRIPTION, myConstraintFormula.getDescription());
                     row.put(NAME, myConstraintFormula.getName());
                     row.put(CHECK_INDEX, i);
@@ -1053,19 +941,14 @@ public class CtrlService extends CommonSrv {
                 }
             } catch (Exception e) {
                 logger.error("error occured", e);
-                throw new Exception(MessageFormat.format(
-                        MSG_FORMAT_CONTROL_FORMULA, myConstraintFormula.
-                                getTransferOrder(),
-                        myConstraintFormula.getName(), myConstraintFormula.
-                                getEngineType()), e);
+                throw new Exception(MessageFormat.format(MSG_FORMAT_CONTROL_FORMULA, myConstraintFormula.getTransferOrder(), myConstraintFormula.getName(), myConstraintFormula.getEngineType()), e);
             }
             return all;
         }
     }
 
-    public Map<String, List<MyConstraintFormula>> constraintCrossCheckVersionTwo(
-            Document filter,
-            Map<CellMultiDimensionKey, List<CustomOlapHashMap>> pivotData)
+    public Map<String, List<MyConstraintFormula>> constraintCrossCheckVersionTwo(Document filter, Map<CellMultiDimensionKey, List<CustomOlapHashMap>> pivotData)
+
             throws Exception {
 
         Map<String, List<MyConstraintFormula>> returnMap = new HashMap();
@@ -1074,77 +957,55 @@ public class CtrlService extends CommonSrv {
 
         // Object constraint = MongodbUtil.getValue(selectedForm, CONSTRAINTS);
         // this should be retrieved from selectedNode structure
-        CtrlItems costraintItems = formService.getMyForm().
-                getConstraintItems();
+        CtrlItems costraintItems = formService.getMyForm().getConstraintItems();
 
         if (costraintItems == null) {
             return returnMap;
         }
 
-        List<Document> constraintCursor = createConstraintCursor(costraintItems,
-                filter);
+        List<Document> constraintCursor = createConstraintCursor(costraintItems, filter);
 
         boolean checkTestControl = false;//to accelarate followed loop
         List listOfTestControlNo = new ArrayList();
 
         if (appScopeSrvCtrl.getTestControlFormulaTransferOrders() != null //
-                && !appScopeSrvCtrl.getTestControlFormulaTransferOrders().
-                trim().
-                isEmpty()) {
-            String[] nolar = appScopeSrvCtrl.
-                    getTestControlFormulaTransferOrders().
-                    split(COMMA);
+                && !appScopeSrvCtrl.getTestControlFormulaTransferOrders().trim().isEmpty()) {
+            String[] nolar = appScopeSrvCtrl.getTestControlFormulaTransferOrders().split(COMMA);
 
             for (String no : nolar) {
                 listOfTestControlNo.add(Integer.parseInt(no));
                 checkTestControl = true;
             }
         }
-
+        String apiToken = formService.getMyForm().getMyProject().getApiToken();
         for (Document doc : constraintCursor) {
-            MyConstraintFormula myConstraintFormula = new MyConstraintFormula(
-                    doc);
+            MyConstraintFormula myConstraintFormula = new MyConstraintFormula(doc);
 
             try {
 
-                if (checkTestControl
-                        && !listOfTestControlNo.contains(myConstraintFormula.
-                        getTransferOrder())) {
+                if (checkTestControl && !listOfTestControlNo.contains(myConstraintFormula.getTransferOrder())) {
                     continue;
                 }
 
 //                if (myConstraintFormula.getTransferOrder() != 80300) {
 //                    continue;
 //                }
-                init(formService.getMyForm().
-                        getMyProject().
-                        getConfigTable());
+                init(formService.getMyForm().getMyProject().getConfigTable());
 
-                List<Map> resultListOfMap = runConstraintCrossCheck(
-                        myConstraintFormula, true, null, pivotData, filter);
+                List<Map> resultListOfMap = runConstraintCrossCheck(apiToken, myConstraintFormula, true, null, pivotData, filter);
 
                 for (Map map : resultListOfMap) {
 
-                    myConstraintFormula.setControlResult(
-                            new MyControlResult(map));
-                    if (myConstraintFormula.getControlResult().
-                            isResult()) {
-                        returnMap.get(SUCCESS_LIST).
-                                add(myConstraintFormula);
+                    myConstraintFormula.setControlResult(new MyControlResult(map));
+                    if (myConstraintFormula.getControlResult().isResult()) {
+                        returnMap.get(SUCCESS_LIST).add(myConstraintFormula);
                     } else {
-                        returnMap.get(FAIL_LIST).
-                                add(myConstraintFormula);
+                        returnMap.get(FAIL_LIST).add(myConstraintFormula);
                     }
                 }
 
             } catch (Exception ex) {
-                throw new Exception(
-                        MessageFormat.format(
-                                "exception:{0}<br/>transferOrder:{1}<br/>name:{2}<br/>constraint:{3}<br/>",
-                                ex.getMessage(),
-                                myConstraintFormula.getTransferOrder(),
-                                myConstraintFormula.getName(),
-                                myConstraintFormula), ex);
+                throw new Exception(MessageFormat.format("exception:{0}<br/>transferOrder:{1}<br/>name:{2}<br/>constraint:{3}<br/>", ex.getMessage(), myConstraintFormula.getTransferOrder(), myConstraintFormula.getName(), myConstraintFormula), ex);
             }
         }
 
@@ -1188,43 +1049,23 @@ public class CtrlService extends CommonSrv {
         }
 
         // 5. Execute and Return Find Result
-        return mongoDbUtil.find(
-                constraintDB,
-                constraintCollection,
-                finalQuery,
-                Filters.eq(TRANSFER_ORDER, 1),
-                null
-        );
+        return mongoDbUtil.find(constraintDB, constraintCollection, finalQuery, Filters.eq(TRANSFER_ORDER, 1), null);
     }
 
     public Map createPivotCtrlData(Map filter) throws NullNotExpectedException {
 
         Map cellControl = new HashMap();
 
-        if (formService.getMyForm().
-                getControlCollection() != null) {
+        if (formService.getMyForm().getControlCollection() != null) {
             List<Document> cursor;
 
-            if (formService.getMyForm().
-                    getLoginFkField() == null) {
-                throw new NullNotExpectedException(formService.getMyForm().
-                        printToConfigAnalyze(LOGIN_FK));
+            if (formService.getMyForm().getLoginFkField() == null) {
+                throw new NullNotExpectedException(formService.getMyForm().printToConfigAnalyze(LOGIN_FK));
             }
 
-            Document controlSearch = new Document()
-                    .append(formService.getMyForm().
-                            getLoginFkField(), filter.get(formService.
-                            getMyForm().
-                            getLoginFkField())).
-                    append(PERIOD, filter.get(PERIOD)).
-                    append(RESULT, HATA_VAR).
-                    append(RELATIONS, new Document(DOLAR_REGEX, formService.
-                            getMyForm().
-                            getName()));
+            Document controlSearch = new Document().append(formService.getMyForm().getLoginFkField(), filter.get(formService.getMyForm().getLoginFkField())).append(PERIOD, filter.get(PERIOD)).append(RESULT, HATA_VAR).append(RELATIONS, new Document(DOLAR_REGEX, formService.getMyForm().getName()));
 
-            cursor = mongoDbUtil.find(formService.getMyForm().
-                    getDb(), formService.getMyForm().
-                    getControlCollection(), controlSearch);
+            cursor = mongoDbUtil.find(formService.getMyForm().getDb(), formService.getMyForm().getControlCollection(), controlSearch);
 
             for (Document dBObject : cursor) {
                 String resultType = dBObject.get(RESULT_TYPE, String.class);
@@ -1236,27 +1077,16 @@ public class CtrlService extends CommonSrv {
                     map.put(X_CODE, cell.get(X_CODE));
                     map.put(Y_CODE, cell.get(Y_CODE));
                     Map control = new HashMap();
-                    control.put(COLOR,
-                            "000".equals(resultType) ? "red" : "yellow");
+                    control.put(COLOR, "000".equals(resultType) ? "red" : "yellow");
                     control.put(MONGO_ID, dBObject.get(MONGO_ID));
                     control.put(DESCRIPTION, dBObject.get(DESCRIPTION));
                     cellControl.put(map, control);
                 }
             }
 
-            controlSearch = new Document()
-                    .append(formService.getMyForm().
-                            getLoginFkField(), filter.get(formService.
-                            getMyForm().
-                            getLoginFkField())).
-                    append(PERIOD, filter.get(PERIOD)).
-                    append(RESULT, HATA_VAR).
-                    append(RELATIONS, formService.getMyForm().
-                            getForm());
+            controlSearch = new Document().append(formService.getMyForm().getLoginFkField(), filter.get(formService.getMyForm().getLoginFkField())).append(PERIOD, filter.get(PERIOD)).append(RESULT, HATA_VAR).append(RELATIONS, formService.getMyForm().getForm());
 
-            cursor = mongoDbUtil.find(formService.getMyForm().
-                    getDb(), formService.getMyForm().
-                    getControlCollection(), controlSearch);
+            cursor = mongoDbUtil.find(formService.getMyForm().getDb(), formService.getMyForm().getControlCollection(), controlSearch);
 
             for (Document dBObject : cursor) {
                 String resultType = dBObject.get(RESULT_TYPE, String.class);
@@ -1271,8 +1101,7 @@ public class CtrlService extends CommonSrv {
                         map.put(X_CODE, cell.get(X_CODE));
                         map.put(Y_CODE, cell.get(Y_CODE));
                         Map control = new HashMap();
-                        control.put(COLOR,
-                                "000".equals(resultType) ? "red" : "yellow");
+                        control.put(COLOR, "000".equals(resultType) ? "red" : "yellow");
                         control.put(MONGO_ID, dBObject.get(MONGO_ID));
                         control.put(DESCRIPTION, dBObject.get(DESCRIPTION));
                         cellControl.put(map, control);
@@ -1285,8 +1114,7 @@ public class CtrlService extends CommonSrv {
         return cellControl;
     }
 
-    public void checkRecordConverterValueType(Document mm, FmsForm mf) throws
-            FormConfigException {
+    public void checkRecordConverterValueType(Document mm, FmsForm mf) throws FormConfigException {
         for (String fieldKey : mm.keySet()) {
 
             MyField myField = mf.getField(fieldKey);
@@ -1295,29 +1123,20 @@ public class CtrlService extends CommonSrv {
                 continue;
             }
 
-            if (myField == null
-                    && !MONGO_ID.equals(fieldKey)
-                    && !OPERATOR_LDAP_UID.equals(fieldKey)
-                    && !FORMS.equals(fieldKey)
-                    && !UYS_EASY_FIND_KEY.equals(fieldKey)
-                    && !ADMIN_METADATA.equals(fieldKey)) {
+            if (myField == null && !MONGO_ID.equals(fieldKey) && !OPERATOR_LDAP_UID.equals(fieldKey) && !FORMS.equals(fieldKey) && !UYS_EASY_FIND_KEY.equals(fieldKey) && !ADMIN_METADATA.equals(fieldKey)) {
 
                 boolean nok = true;
 
                 if (nok) {
-                    throw new FormConfigException(String
-                            .format("it looks like you have a record key that is absent on the related data structure : %s",
-                                    fieldKey));
+                    throw new FormConfigException(String.format("it looks like you have a record key that is absent on the related data structure : %s", fieldKey));
                 }
             }
 
             if (mm.get(fieldKey) instanceof Number) {
-                if (myField.getMyconverter() instanceof TelmanStringConverter || myField.
-                        getMyconverter() instanceof SelectOneObjectIdConverter) {
+                if (myField.getMyconverter() instanceof TelmanStringConverter || myField.getMyconverter() instanceof SelectOneObjectIdConverter) {
                     StringBuilder sb = new StringBuilder();
                     //FIXME messagebundle
-                    sb.append(
-                            "kayıtlı olan değer türü ile tanımlanmış olan dönüşütürücü uyumsuzluğu tespit edildi");
+                    sb.append("kayıtlı olan değer türü ile tanımlanmış olan dönüşütürücü uyumsuzluğu tespit edildi");
                     sb.append("<hr/>");
                     sb.append("<br/>");
                     sb.append(mf.printToConfigAnalyze(fieldKey));
@@ -1325,22 +1144,14 @@ public class CtrlService extends CommonSrv {
                     sb.append("<br/>");
                     sb.append("data:");
                     sb.append("<br/>");
-                    sb.append(String.format("mfdb=db.getSisterDB('%s');", mf.
-                            getDb()));
-                    sb.append(String.format(
-                            "mfdb.%s.findOne({_id:ObjectId('%s')},{%s:1});", mf.
-                                    getTable(), mm.get(MONGO_ID), fieldKey));
+                    sb.append(String.format("mfdb=db.getSisterDB('%s');", mf.getDb()));
+                    sb.append(String.format("mfdb.%s.findOne({_id:ObjectId('%s')},{%s:1});", mf.getTable(), mm.get(MONGO_ID), fieldKey));
                     throw new FormConfigException(sb.toString());
                 }
 
-                if (Arrays.asList(
-                                ProjectConstants.JAVALANG_STRING,
-                                ProjectConstants.JAVAUTIL_DATE,
-                                ProjectConstants.JAVALANG_DATE).
-                        contains(myField.getValueType())) {
+                if (Arrays.asList(ProjectConstants.JAVALANG_STRING, ProjectConstants.JAVAUTIL_DATE, ProjectConstants.JAVALANG_DATE).contains(myField.getValueType())) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(
-                            "kayıtlı olan değer türü ile tanımlanmış olan veri türü uyumsuzluğu tespit edildi");
+                    sb.append("kayıtlı olan değer türü ile tanımlanmış olan veri türü uyumsuzluğu tespit edildi");
                     sb.append("<hr/>");
                     sb.append("<br/>");
                     sb.append(mf.printToConfigAnalyze(fieldKey));
@@ -1348,11 +1159,8 @@ public class CtrlService extends CommonSrv {
                     sb.append("<br/>");
                     sb.append("data:");
                     sb.append("<br/>");
-                    sb.append(String.format("mfdb=db.getSisterDB('%s');", mf.
-                            getDb()));
-                    sb.append(String.format(
-                            "mfdb.%s.findOne({_id:ObjectId('%s')},{%s:1});", mf.
-                                    getTable(), mm.get(MONGO_ID), fieldKey));
+                    sb.append(String.format("mfdb=db.getSisterDB('%s');", mf.getDb()));
+                    sb.append(String.format("mfdb.%s.findOne({_id:ObjectId('%s')},{%s:1});", mf.getTable(), mm.get(MONGO_ID), fieldKey));
                     throw new FormConfigException(sb.toString());
                 }
             }

@@ -21,6 +21,7 @@ import org.bson.Document;
 import org.bson.types.Code;
 import org.bson.types.ObjectId;
 import tr.org.tspb.constants.ProjectConstants;
+
 import static tr.org.tspb.constants.ProjectConstants.CFG_TABLE_PROJECT;
 import static tr.org.tspb.constants.ProjectConstants.COLLECTION;
 import static tr.org.tspb.constants.ProjectConstants.COMMON;
@@ -63,6 +64,7 @@ import static tr.org.tspb.constants.ProjectConstants.REPLACEABLE_KEY_WORD_FOR_TH
 import static tr.org.tspb.constants.ProjectConstants.RETURN_KEY;
 import static tr.org.tspb.constants.ProjectConstants.RETVAL;
 import static tr.org.tspb.constants.ProjectConstants.UYSDB;
+
 import tr.org.tspb.converter.base.JsFunctionConverter;
 import tr.org.tspb.converter.base.BsonConverter;
 import tr.org.tspb.converter.base.MoneyConverter;
@@ -109,7 +111,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private boolean calcRendered(RoleMap roleMap, Document docField,
-            Map searchObject, UserDetail userDetail) {
+                                 Map searchObject, UserDetail userDetail) {
 
         Document dboRendered = docField.get(RENDERED, Document.class);
 
@@ -132,8 +134,8 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                         "field." + docField.get("key") + ".rendered is defined as func. 'db' tag is required.");
             }
             Document commandResult = mongoDbUtil.runCommand(docField.
-                    get(FORM_DB).
-                    toString(),
+                            get(FORM_DB).
+                            toString(),
                     funcValue, searchObject, roleMap.keySet());
             return Boolean.TRUE.equals(commandResult.get(RETVAL));
         } else if (refValue != null) {
@@ -165,12 +167,12 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private Object calcDefaultValue(MyProject myProject, Document docForm,
-            Document docField, RoleMap roleMap, Map searchObject,
-            UserDetail userDetail) {
+                                    Document docField, RoleMap roleMap, Map searchObject,
+                                    UserDetail userDetail) {
 
         ObjectId loginDataBaseUserId = (userDetail == null) ? null : userDetail.
-                getDbo().
-                getObjectId();
+                                                                     getDbo().
+                                                                     getObjectId();
 
         if (docField.get(DEFAULT_VALUE) == null) {
             return null;
@@ -272,7 +274,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private String resolveValue(Document docRoleValue, UserDetail userDetail,
-            Document docForm) {
+                                Document docForm) {
 
         Document refValue = docRoleValue.get("ref-value", Document.class);
 
@@ -292,14 +294,11 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
             String strValue = doc.getString("string-value");
             if (fmsValue != null) {
                 switch (fmsValue) {
-                    case REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_TYPE ->
-                        filter.append(key, userDetail.getDbo().
-                                getMemberType());
-                    case REPLACEABLE_KEY_WORD_FOR_THIS_FORM ->
-                        filter.append(key, docForm.getString("form"));
-                    default ->
-                        throw new RuntimeException(
-                                "not supported value type");
+                    case REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_TYPE -> filter.append(key, userDetail.getDbo().
+                            getMemberType());
+                    case REPLACEABLE_KEY_WORD_FOR_THIS_FORM -> filter.append(key, docForm.getString("form"));
+                    default -> throw new RuntimeException(
+                            "not supported value type");
                 }
             } else if (strValue != null) {
                 filter.append(key, strValue);
@@ -315,7 +314,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private boolean calcReadOnly(Document docField, Map searchObject,
-            RoleMap roleMap) {
+                                 RoleMap roleMap) {
         Object dboReadonly = docField.get(READONLY);
         if (dboReadonly instanceof Code) {
             Code appearFunction = (Code) dboReadonly;
@@ -334,8 +333,8 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
     @Override
     public FmsForm getMyFormExternal(MyProject myProject, String collection,
-            Map formSearch, Map searchObject,
-            RoleMap roleMap, UserDetail userDetail)
+                                     Map formSearch, Map searchObject,
+                                     RoleMap roleMap, UserDetail userDetail)
             throws NullNotExpectedException, MongoOrmFailedException {
 
         Document dboForm = mongoDbUtil.findOne("configdb", collection,
@@ -350,7 +349,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
             Map<String, MyField> fields = createFields(myProject, dboForm,
                     searchObject, roleMap, userDetail);
 
-            List< MyField> fieldsAsList = new ArrayList<>();
+            List<MyField> fieldsAsList = new ArrayList<>();
             for (MyField field : fields.values()) {
                 if (roleMap.isUserInRole(field.getAccesscontrol())) {
                     fieldsAsList.add(field);
@@ -520,7 +519,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
     @Override
     public FmsForm getMyFormXsmall(MyProject myProject, Map searchObject,
-            RoleMap roleMap, UserDetail userDetail) throws
+                                   RoleMap roleMap, UserDetail userDetail) throws
             NullNotExpectedException, MongoOrmFailedException {
         try {
 
@@ -600,8 +599,8 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
     @Override
     public FmsForm getMyFormSmall(MyProject myProject, Document dboForm,
-            Map searchObject,
-            RoleMap roleMap, UserDetail userDetail) throws
+                                  Map searchObject,
+                                  RoleMap roleMap, UserDetail userDetail) throws
             NullNotExpectedException, MongoOrmFailedException {
 
         try {
@@ -662,14 +661,14 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
     @Override
     public FmsForm getMyFormMedium(MyProject myProject, Document dboForm,
-            Map searchObject,
-            RoleMap roleMap, UserDetail userDetail)
+                                   Map searchObject,
+                                   RoleMap roleMap, UserDetail userDetail)
             throws NullNotExpectedException, MongoOrmFailedException {
         try {
 
             Map<String, MyField> fieldsSmall = createFields(myProject, dboForm,
                     searchObject, roleMap, userDetail);
-            List< MyField> fieldsAsList = new ArrayList<>();
+            List<MyField> fieldsAsList = new ArrayList<>();
             for (MyField field : fieldsSmall.values()) {
                 if (roleMap.isUserInRole(field.getAccesscontrol())) {
                     fieldsAsList.add(field);
@@ -760,8 +759,8 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
     @Override
     public FmsForm getMyFormLarge(MyProject myProject, String collection,
-            Map formSearch, Map filter,
-            RoleMap roleMap, UserDetail userDetail)
+                                  Map formSearch, Map filter,
+                                  RoleMap roleMap, UserDetail userDetail)
             throws NullNotExpectedException, MongoOrmFailedException {
 
         Document dboForm = cacheAndGetForm(myProject, collection, formSearch);
@@ -781,7 +780,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
             Map<String, MyField> rowFields = createRowFields(myProject, dboForm,
                     filter, roleMap, userDetail);
 
-            List< MyField> fieldsAsList = new ArrayList<>();
+            List<MyField> fieldsAsList = new ArrayList<>();
             for (MyField field : fields.values()) {
                 if (roleMap.isUserInRole(field.getAccesscontrol())) {
                     fieldsAsList.add(field);
@@ -983,63 +982,69 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private Document cacheAndGetForm(MyProject myProject, String collection,
-            Map formSearch) {
+                                     Map formSearch) {
         StringBuilder sb = new StringBuilder();
         sb.append(collection);
         sb.append(" : ");
         sb.append(formSearch);
         String cacheKey = org.apache.commons.codec.digest.DigestUtils.sha256Hex(
                 sb.toString());
+
         Document dboForm = cacheDocumentForm.get(cacheKey);
         if (dboForm == null) {
             dboForm = mongoDbUtil.findOne(CONFIG_DB, collection, new Document(
                     formSearch));
-            if (myProject != null) {
-                dboForm.put(PROJECT_KEY, myProject.getKey());
-                List<Document> fieldList = dboForm.getList("fields",
-                        Document.class);
-                if (fieldList != null) {
-                    for (Document fieldDoc : fieldList) {
-                        String ref = fieldDoc.getString(DOLAR_FMS_REF);
-                        Document overrideDoc = new Document(fieldDoc);
-                        if (ref != null) {
-                            Document refField = myProject.getJsonSchemaDef().
-                                    get(ref, Document.class);
-                            String json = refField.toJson().
-                                    replaceAll(
-                                            "fms_code\\{\\{this_form_key\\}\\}",
-                                            dboForm.getString("key"));
-                            fieldDoc.putAll(Document.parse(json));
-                            fieldDoc.putAll(overrideDoc);
-                        }
-                    }
-                }
-                Document actionsDoc = dboForm.get("actions", Document.class);
-                if (actionsDoc != null) {
-                    for (String actionKey : actionsDoc.keySet()) {
-                        Document action = actionsDoc.get(actionKey,
-                                Document.class);
-                        String actionRefeferance = action.getString(
-                                DOLAR_FMS_REF);
-                        if (actionRefeferance == null) {
-                            actionRefeferance = action.getString(
-                                    ProjectConstants.FMS_ACTION_REF);
-                        }
+        }
 
-                        if (actionRefeferance != null) {
-                            Document refAction = myProject.getJsonSchemaDef().
-                                    get(actionRefeferance, Document.class);
-                            String json = refAction.toJson().
-                                    replaceAll(
-                                            "fms_code\\{\\{this_form_key\\}\\}",
-                                            dboForm.getString("key"));
-                            action.putAll(Document.parse(json));
-                        }
+        if (dboForm != null && myProject != null) {
+
+            dboForm.put(PROJECT_KEY, myProject.getKey());
+
+            List<Document> fieldList = dboForm.getList("fields",
+                    Document.class);
+
+            if (fieldList != null) {
+                for (Document fieldDoc : fieldList) {
+                    String ref = fieldDoc.getString(DOLAR_FMS_REF);
+                    Document overrideDoc = new Document(fieldDoc);
+                    if (ref != null) {
+                        Document refField = myProject.getJsonSchemaDef().
+                                get(ref, Document.class);
+                        String json = refField.toJson().
+                                replaceAll(
+                                        "fms_code\\{\\{this_form_key\\}\\}",
+                                        dboForm.getString("key"));
+                        fieldDoc.putAll(Document.parse(json));
+                        fieldDoc.putAll(overrideDoc);
                     }
                 }
             }
-            cacheDocumentForm.put(cacheKey, dboForm);
+            Document actionsDoc = dboForm.get("actions", Document.class);
+            if (actionsDoc != null) {
+                for (String actionKey : actionsDoc.keySet()) {
+                    Document action = actionsDoc.get(actionKey,
+                            Document.class);
+                    String actionRefeferance = action.getString(
+                            DOLAR_FMS_REF);
+                    if (actionRefeferance == null) {
+                        actionRefeferance = action.getString(
+                                ProjectConstants.FMS_ACTION_REF);
+                    }
+
+                    if (actionRefeferance != null) {
+                        Document refAction = myProject.getJsonSchemaDef().
+                                get(actionRefeferance, Document.class);
+                        String json = refAction.toJson().
+                                replaceAll(
+                                        "fms_code\\{\\{this_form_key\\}\\}",
+                                        dboForm.getString("key"));
+                        action.putAll(Document.parse(json));
+                    }
+                }
+            }
         }
+        cacheDocumentForm.put(cacheKey, dboForm);
+
         return dboForm;
     }
 
@@ -1082,14 +1087,14 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private List<MyField> createChildFields(MyProject myProject,
-            Document docForm, Map filter,
-            RoleMap roleMap, UserDetail userDetail) throws
+                                            Document docForm, Map filter,
+                                            RoleMap roleMap, UserDetail userDetail) throws
             NullNotExpectedException, FormConfigException {
 
         List<Document> childFields = docForm.getList(FORM_CHILD_FIELDS,
                 Document.class);
 
-        List< MyField> fields = new ArrayList<>();
+        List<MyField> fields = new ArrayList<>();
 
         if (childFields == null) {
             return fields;
@@ -1098,7 +1103,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
         if (FmsForm.SCHEMA_VERSION_110.equals(docForm.getString(
                 FmsForm.SCHEMA_VERSION))
                 || FmsForm.SCHEMA_VERSION_111.equals(docForm.getString(
-                        FmsForm.SCHEMA_VERSION))) {
+                FmsForm.SCHEMA_VERSION))) {
 
             for (Document docField : childFields) {
 
@@ -1119,7 +1124,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                                 docField, roleMap, filter, userDetail)).
                         maskComponentType().
                         maskItemsAsMyItems((String) docForm.get(
-                                MyForm.SCHEMA_VERSION), filter, roleMap.
+                                        MyForm.SCHEMA_VERSION), filter, roleMap.
                                         isUserInRole(myProject.getAdminRole()),
                                 roleMap.keySet()).
                         withConverter(converter, null).
@@ -1146,8 +1151,8 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private Map<String, MyField> createFields(MyProject myProject,
-            Document docForm, Map filter,
-            RoleMap roleMap, UserDetail userDetail) throws
+                                              Document docForm, Map filter,
+                                              RoleMap roleMap, UserDetail userDetail) throws
             NullNotExpectedException, FormConfigException {
 
         if (docForm.get(FORMFIELDS) == null) {
@@ -1160,7 +1165,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
         if (FmsForm.SCHEMA_VERSION_110.equals(docForm.getString(
                 FmsForm.SCHEMA_VERSION))
                 || FmsForm.SCHEMA_VERSION_111.equals(docForm.getString(
-                        FmsForm.SCHEMA_VERSION))) {
+                FmsForm.SCHEMA_VERSION))) {
 
             for (Document docField : (List<Document>) docForm.get(FORMFIELDS)) {
 
@@ -1182,7 +1187,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                                 docField, roleMap, filter, userDetail)).
                         maskComponentType().
                         maskItemsAsMyItems((String) docForm.get(
-                                MyForm.SCHEMA_VERSION), filter, roleMap.
+                                        MyForm.SCHEMA_VERSION), filter, roleMap.
                                         isUserInRole(myProject.getAdminRole()),
                                 roleMap.keySet()).
                         withConverter(converter, null).
@@ -1239,7 +1244,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                                 docField, roleMap, filter, userDetail)).
                         maskComponentType().
                         maskItemsAsMyItems(docForm.getString(
-                                FmsForm.SCHEMA_VERSION), filter, roleMap.
+                                        FmsForm.SCHEMA_VERSION), filter, roleMap.
                                         isUserInRole(myProject.getAdminRole()),
                                 roleMap.keySet()).
                         withConverter(converter, null).
@@ -1265,8 +1270,8 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private Map<String, MyField> createRowFields(MyProject myProject,
-            Document docForm,
-            Map filter, RoleMap roleMap, UserDetail userDetail) throws
+                                                 Document docForm,
+                                                 Map filter, RoleMap roleMap, UserDetail userDetail) throws
             FormConfigException {
 
         Map<String, MyField> fieldsRow = new HashMap<>();
@@ -1296,7 +1301,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                                 docField, roleMap, filter, userDetail)).
                         maskComponentType().
                         maskItemsAsMyItems((String) docForm.get(
-                                MyForm.SCHEMA_VERSION), filter, roleMap.
+                                        MyForm.SCHEMA_VERSION), filter, roleMap.
                                         isUserInRole(myProject.getAdminRole()),
                                 roleMap.keySet()).
                         withConverter(converter, null).
@@ -1330,14 +1335,14 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
     }
 
     private Converter createConverter2(Document docForm, String converter,
-            String componentType, boolean hasUysFormat, Object myConverter) {
+                                       String componentType, boolean hasUysFormat, Object myConverter) {
 
         Converter converterValue = null;
 
         if ((ComponentType.selectOneMenu.name().
                 equals(componentType)
                 || ComponentType.selectManyListbox.name().
-                        equals(componentType))
+                equals(componentType))
                 && (converter == null)) {
 
             String html = HtmlFlow.doc(System.out).
@@ -1347,7 +1352,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                     body().
                     div().
                     attrClass("container") //.span().text(this.myField.getMyForm().printToConfigAnalyze(this.myField.getKey())).__()
-                    .
+                            .
                     span().
                     text(docForm.get(NAME)).
                     __().
@@ -1374,7 +1379,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                     __().
                     br().
                     __() //.span().text(String.format("cfgdb.%s.update({key:'%s'},{$set:{'fields.%s.converter':'SelectOneStringConverter'}});", this.myField.getMyForm().getMyProject().getConfigTable(), this.myField.getMyForm().getKey(), this.myField.getKey())).__()
-                    .
+                            .
                     span().
                     text(docForm.get(NAME)).
                     __().
@@ -1432,7 +1437,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
     @Override
     public MyField getMyField(FmsForm myForm, Document docField, Map filter,
-            RoleMap roleMap, UserDetail userDetail) throws FormConfigException {
+                              RoleMap roleMap, UserDetail userDetail) throws FormConfigException {
 
         Converter converter = createConverter(myForm.getDbo(), docField);
 
@@ -1465,7 +1470,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
     @Override
     public MyField getMyFieldPivot(FmsForm myForm, Document docField, Map filter,
-            RoleMap roleMap, UserDetail userDetail)
+                                   RoleMap roleMap, UserDetail userDetail)
             throws FormConfigException {
         Converter converter = createConverter(myForm.getDbo(), docField);
 
@@ -1506,13 +1511,13 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
      */
     @Override
     public MyActions getMyActions(FmsForm myFormLarge, RoleMap roleMap,
-            Document filter, UserDetail userDetail) {
+                                  Document filter, UserDetail userDetail) {
 
         if (FmsForm.SCHEMA_VERSION_100.equals(myFormLarge.getSchemaVersion())
                 || FmsForm.SCHEMA_VERSION_110.equals(myFormLarge.
-                        getSchemaVersion())
+                getSchemaVersion())
                 || FmsForm.SCHEMA_VERSION_111.equals(myFormLarge.
-                        getSchemaVersion())) {
+                getSchemaVersion())) {
             return new MyActions.Build(myFormLarge.getMyProject().
                     getViewerRole(), myFormLarge.getDb(),
                     roleMap, filter, myFormLarge.getActions(), fmsScriptRunner,
@@ -1547,7 +1552,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
         @Override
         public List<Document> uysdbCommonFindSort(Document filter,
-                Document sorter) {
+                                                  Document sorter) {
             return mongoDbUtil.find(UYSDB, COMMON, filter, sorter, null);
         }
 
@@ -1565,7 +1570,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
         @Override
         public boolean runActionAsDbTableFilterResult(Document actionDoc,
-                RoleMap roleMap, Map filter) {
+                                                      RoleMap roleMap, Map filter) {
             return mongoDbUtil.
                     runActionAsDbTableFilterResult(actionDoc, roleMap, filter);
         }
@@ -1577,7 +1582,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
         @Override
         public List<ObjectId> findObjectIds(String db, String collection,
-                Document query, String projection) {
+                                            Document query, String projection) {
             List<Document> docs = mongoDbUtil
                     .findWithProjection(db, collection, query, new Document(
                             projection, Boolean.TRUE));
@@ -1593,7 +1598,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
         @Override
         public List<Document> aggreagate(String db, String table,
-                List<Document> listOfAggrDoc) {
+                                         List<Document> listOfAggrDoc) {
             return mongoDbUtil.aggregate(db, table, listOfAggrDoc);
         }
 
@@ -1603,7 +1608,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
         @Override
         public void dynamicButtonExecute(String db, String codeStr,
-                MyMap crudObject) {
+                                         MyMap crudObject) {
             try {
                 Document cmdResult = mongoDbUtil.runCommand(db, codeStr,
                         crudObject);
@@ -1616,7 +1621,7 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
         @Override
         public Boolean calcActionValue(String db, String code,
-                Map<String, Serializable> searchObject, Set roleKeySet) {
+                                       Map<String, Serializable> searchObject, Set roleKeySet) {
 
             Document commandResult = fmsScriptRunner.runCommand(db, code,
                     searchObject, roleKeySet);

@@ -814,12 +814,19 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         return myMap;
     }
 
-    protected Map<String, List> internalCheck() throws ScriptException, NoSuchMethodException, MongoOrmFailedException, NullNotExpectedException, FormConfigException, ParseException, MoreThenOneInListException, RecursiveLimitExceedException, net.sourceforge.jeval.EvaluationException {
+    protected Map<String, List> internalCheck()
+
+            throws ScriptException, NoSuchMethodException, MongoOrmFailedException, NullNotExpectedException,
+            FormConfigException, ParseException, MoreThenOneInListException, RecursiveLimitExceedException,
+            net.sourceforge.jeval.EvaluationException {
+
         Map<String, List> returnMap = new HashMap();
         returnMap.put(SUCCESS_LIST, new ArrayList<>());
         returnMap.put(FAIL_LIST, new ArrayList<>());
 
         CtrlItems docConstraintItems = formService.getMyForm().getConstraintItems();
+
+        String apiToken = formService.getMyForm().getMyProject().getApiToken();
 
         if (docConstraintItems == null) {
             return returnMap;
@@ -836,7 +843,10 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             //  try {
             ctrlService.init(formService.getMyForm().getMyProject().getConfigTable());
 
-            List<Map> resultListOfMap = ctrlService.runConstraintCrossCheck(myConstraintFormula, true, new Object[]{filterService.getTableFilterCurrent(), loginController.getRolesAsSet(), myCrudObject}, null, filterService.getTableFilterCurrent());
+            List<Map> resultListOfMap = ctrlService.runConstraintCrossCheck(apiToken, myConstraintFormula,
+                    true, new Object[]{filterService.getTableFilterCurrent(),
+                            loginController.getRolesAsSet(), myCrudObject}, null,
+                    filterService.getTableFilterCurrent());
 
             for (Map map : resultListOfMap) {
                 myConstraintFormula.setControlResult(new MyControlResult(map));
