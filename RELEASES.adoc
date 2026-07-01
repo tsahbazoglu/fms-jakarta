@@ -1,5 +1,29 @@
 = RELEASES
 
+----
+# Delete the old development branches
+git branch -d dev-1.1.0
+git branch -d dev-1.2.0
+
+# Delete the old release branches
+git branch -d release-1.0.0
+git branch -d release-1.1.0
+git branch -d release-1.2.0
+git branch -d release-1.2.1
+----
+
+----
+# Delete the old dev branches from GitHub
+git push origin --delete dev-1.1.0
+git push origin --delete dev-1.2.0
+
+# Delete the old release branches from GitHub
+git push origin --delete release-1.0.0
+git push origin --delete release-1.1.0
+git push origin --delete release-1.2.0
+git push origin --delete release-1.2.1
+----
+
 == Delete the wrong tag
 ----
 # Delete it from your local computer

@@ -439,6 +439,36 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>RELEASES</h1>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre># Delete the old development branches
+git branch -d dev-1.1.0
+git branch -d dev-1.2.0
+
+# Delete the old release branches
+git branch -d release-1.0.0
+git branch -d release-1.1.0
+git branch -d release-1.2.0
+git branch -d release-1.2.1</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># Delete the old dev branches from GitHub
+git push origin --delete dev-1.1.0
+git push origin --delete dev-1.2.0
+
+# Delete the old release branches from GitHub
+git push origin --delete release-1.0.0
+git push origin --delete release-1.1.0
+git push origin --delete release-1.2.0
+git push origin --delete release-1.2.1</pre>
+</div>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="_delete_the_wrong_tag">Delete the wrong tag</h2>
 <div class="sectionbody">
@@ -468,7 +498,7 @@ git tag</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-07-01 17:39:48 +0300
+Last updated 2026-07-01 17:42:11 +0300
 </div>
 </div>
 </body>
