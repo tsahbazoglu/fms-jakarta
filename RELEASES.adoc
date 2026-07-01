@@ -1,5 +1,7 @@
 = RELEASES
 
+== Delete the old development branches
+=== Local
 ----
 # Delete the old development branches
 git branch -d dev-1.1.0
@@ -12,6 +14,7 @@ git branch -d release-1.2.0
 git branch -d release-1.2.1
 ----
 
+=== Remote
 ----
 # Delete the old dev branches from GitHub
 git push origin --delete dev-1.1.0
