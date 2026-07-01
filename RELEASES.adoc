@@ -1,5 +1,14 @@
 = RELEASES
 
+== Delete the wrong tag
+----
+# Delete it from your local computer
+git tag -d v1.0.0
+
+# Delete it from GitHub
+git push origin --delete v1.0.0
+----
+
 == 1.2.1
 ----
 git tag -a v1.2.1 -m "Release version 1.2.1"
