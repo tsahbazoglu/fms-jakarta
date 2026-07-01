@@ -774,11 +774,21 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
 
         } else if ("AGGREGATE_AND_MERGE".equals(strategy)) {
 
-            String targetCollectionName = pipelineMeta.getString("collection");
+            Document finalDoc = new Document();
+            reviewedArgs.forEach(finalDoc::putAll);
 
-            List<Document> executablePipeline = new ArrayList<>();
+            List<Bson> executablePipeline = new ArrayList<>();
+
+            Document pipelineStagesMatch = pipelineMeta.get("match", Document.class);
+
+            if (pipelineStagesMatch != null) {
+                MongoPlaceholderUtil.resolve(pipelineStagesMatch, finalDoc);
+                executablePipeline.add(Aggregates.match(pipelineStagesMatch));
+            }
 
             executablePipeline.addAll(pipelineStages);
+
+            String targetCollectionName = pipelineMeta.getString("collection");
 
             MongoCollection<Document> collection
                     = database.getCollection(targetCollectionName);
@@ -870,7 +880,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
         if (obj instanceof Map<?, ?> map) {
             Document doc = new Document((Map<String, Object>) map);
             doc.replaceAll((k, v) -> (v instanceof PlainRecord vpr) ? vpr.
-                                                                      getObjectId() : v);
+                    getObjectId() : v);
             return doc;
         }
 
@@ -1118,13 +1128,13 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
                         myDb = myForm.getDb();
                     }
                     String myColl = myField.getRefCollection() == null ? myField.
-                                                                         getItemsAsMyItems().
-                                                                         getTable() : myField.getRefCollection();
+                            getItemsAsMyItems().
+                            getTable() : myField.getRefCollection();
                     def.put(FORM_DB, myDb == null ? myForm.getDb() : myDb);
                     def.put(COLLECTION_NAME, myColl);
                     def.put(MONGO_ID, keyValue);
                     def.put("viewKeys", myField.getViewKey() == null ? Arrays.
-                                                                       asList(NAME) : myField.getViewKey());
+                            asList(NAME) : myField.getViewKey());
                     manualDbRefs.put(key, def);
                 } else {
                     document.remove(key);

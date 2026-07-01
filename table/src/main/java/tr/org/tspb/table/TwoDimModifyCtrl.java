@@ -1214,10 +1214,17 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
     public String sendForm() {
         try {
-            String successMessage = repositoryService.sendForm(formService.getMyForm(), (ObjectId) getSearchObjectValue(PERIOD), getSearchObjectAsDbo(), crudObject);
+            String successMessage = repositoryService
+                    .sendForm(formService.getMyForm(),
+                            (ObjectId) getSearchObjectValue(PERIOD),
+                            getSearchObjectAsDbo(),
+                            crudObject);
             informAndReset(successMessage);
         } catch (Exception ex) {
-            dialogController.showPopupInfo(formService.getMyForm().getMyActions().getSendFormAction().getEnableResult().getFailMessage(), MESSAGE_DIALOG);
+            dialogController
+                    .showPopupInfo(
+                            formService.getMyForm().getMyActions().getSendFormAction().getEnableResult().getFailMessage(),
+                            MESSAGE_DIALOG);
         }
         return null;
     }
