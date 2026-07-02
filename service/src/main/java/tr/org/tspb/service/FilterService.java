@@ -15,20 +15,24 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Code;
 import org.bson.types.ObjectId;
+
 import static tr.org.tspb.constants.ProjectConstants.DIEZ;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR;
 import static tr.org.tspb.constants.ProjectConstants.RETVAL;
+
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.datamodel.dao.MyItems;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
 import tr.org.tspb.common.qualifier.MyLoginQualifier;
+
 import static tr.org.tspb.constants.ProjectConstants.FORMS;
 import static tr.org.tspb.constants.ProjectConstants.FORM_KEY;
 import static tr.org.tspb.constants.ProjectConstants.MONGO_ID;
 import static tr.org.tspb.constants.ProjectConstants.PERIOD;
 import static tr.org.tspb.constants.ProjectConstants.TEMPLATE;
 import static tr.org.tspb.constants.ProjectConstants.ZET_DIMENSION;
+
 import tr.org.tspb.converter.base.BsonConverter;
 import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
 import tr.org.tspb.datamodel.dao.refs.PlainRecord;
@@ -106,7 +110,7 @@ public class FilterService extends CommonSrv {
                     MyItems myItems = myField.getItemsAsMyItems();
 
                     Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.
-                            getTable(),
+                                    getTable(),
                             Filters.eq(MONGO_ID, guiFiltersCurrent.get(myField.
                                     getKey())));
                     guiFiltersCurrent.put(myField.getKey(), PlainRecordData.
@@ -119,19 +123,36 @@ public class FilterService extends CommonSrv {
     }
 
     private String createCacheKey(String prefix) {
+
+        FmsForm myForm = formService.getMyForm();
+        if (myForm == null || myForm.getKey() == null) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append(prefix);
         sb.append(" : ");
-        sb.append(formService.getMyForm().
-                getKey());
+        sb.append(myForm.getKey());
         sb.append(" : ");
-        sb.append(loginController.getRoleMap());
+
+        Map<String, Object> roleMap = loginController.getRoleMap();
+        if (roleMap != null) {
+            sb.append(new java.util.TreeMap<>(roleMap).toString());
+        } else {
+            sb.append("null");
+        }
         sb.append(" : ");
+
         sb.append(loginController.getLoggedUserDetail());
         sb.append(" : ");
-        sb.append(tableFilterCurrent);
-        return org.apache.commons.codec.digest.DigestUtils.sha256Hex(sb.
-                toString());
+
+        if (tableFilterCurrent != null) {
+            sb.append(new java.util.TreeMap<>(tableFilterCurrent).toString());
+        } else {
+            sb.append("null");
+        }
+
+        return org.apache.commons.codec.digest.DigestUtils.sha256Hex(sb.toString());
     }
 
     public void createPivotCurrentAndHistoryFilters() throws FormConfigException {
@@ -178,26 +199,30 @@ public class FilterService extends CommonSrv {
 
     }
 
-    public void createPivotFilterHistory() {
+    public void createPivotFilterHistory() throws FormConfigException {
         pivotFilterHistory = new Document();
         FmsForm myForm = formService.getMyForm();
-        for (MyField myField : formService.getMyForm().
-                getZetDimension()) {
+
+        // 1. Guard against unconfigured fields
+        if (myForm.getZetDimension() == null) {
+            throw new FormConfigException(ZET_DIMENSION.concat(" is resolved to null"));
+        }
+
+        for (MyField myField : myForm.getZetDimension()) {
             String fieldName = myField.getField();
-            if (guiFiltersHistory.get(fieldName) != null) {
-                pivotFilterHistory.put(fieldName, guiFiltersHistory.get(
-                        fieldName));
+            Object historyValue = guiFiltersHistory.get(fieldName);
+
+            if (historyValue != null) {
+                pivotFilterHistory.put(fieldName, historyValue);
             } else if (baseFilterCurrent.get(fieldName) != null) {
-                pivotFilterHistory.put(fieldName, baseFilterHistory.get(
-                        fieldName));
-                guiFiltersHistory.put(fieldName, baseFilterHistory.
-                        get(fieldName));
+                Object baseHistoryValue = (baseFilterHistory != null) ? baseFilterHistory.get(fieldName) : null;
+                pivotFilterHistory.put(fieldName, baseHistoryValue);
+                guiFiltersHistory.put(fieldName, baseHistoryValue);
             } else {
                 pivotFilterHistory.put(fieldName, new ObjectId());
             }
         }
-        pivotFilterHistory.put(FORMS, formService.getMyForm().
-                getKey());
+        pivotFilterHistory.put(FORMS, myForm.getKey());
     }
 
     public void createPivotFilterCurrentOnGuiChange() throws FormConfigException {
@@ -241,7 +266,7 @@ public class FilterService extends CommonSrv {
     }
 
     public void initSearchMap(ObjectId memberID, ObjectId periodID,
-            ObjectId templateID, FmsForm myForm) {
+                              ObjectId templateID, FmsForm myForm) {
         tableFilterCurrent = new Document();
         tableFilterCurrent.put(myForm.getLoginFkField(), memberID);
         tableFilterCurrent.put(PERIOD, periodID);
@@ -258,7 +283,7 @@ public class FilterService extends CommonSrv {
 
         if (myForm.getSchemaVersion() == null) {
             this.tableFilterCurrent = FilterUtil.instance(mongoDbUtil,
-                    ogmCreatorIntr).
+                            ogmCreatorIntr).
                     createTableFilter(myForm,
                             baseFilterCurrent,
                             guiFiltersCurrent,
@@ -275,7 +300,7 @@ public class FilterService extends CommonSrv {
             case FmsForm.SCHEMA_VERSION_110:
             case FmsForm.SCHEMA_VERSION_111:
                 this.tableFilterCurrent = FilterUtil.instance(mongoDbUtil,
-                        ogmCreatorIntr).
+                                ogmCreatorIntr).
                         createTableFilterSchemaVersion110(myForm,
                                 baseFilterCurrent,
                                 guiFiltersCurrent,
@@ -288,7 +313,7 @@ public class FilterService extends CommonSrv {
                 break;
             default:
                 this.tableFilterCurrent = FilterUtil.instance(mongoDbUtil,
-                        ogmCreatorIntr).
+                                ogmCreatorIntr).
                         createTableFilter(myForm,
                                 baseFilterCurrent,
                                 guiFiltersCurrent,
@@ -306,7 +331,7 @@ public class FilterService extends CommonSrv {
 
         if (myForm.getSchemaVersion() == null) {
             this.tableFilterHistory = FilterUtil.instance(mongoDbUtil,
-                    ogmCreatorIntr).
+                            ogmCreatorIntr).
                     createTableHistory(myForm,
                             baseFilterHistory,
                             guiFiltersHistory,
@@ -323,7 +348,7 @@ public class FilterService extends CommonSrv {
             case FmsForm.SCHEMA_VERSION_110:
             case FmsForm.SCHEMA_VERSION_111:
                 this.tableFilterHistory = FilterUtil.instance(mongoDbUtil,
-                        ogmCreatorIntr).
+                                ogmCreatorIntr).
                         createTableHistoryScemaVersion110(myForm,
                                 baseFilterHistory,
                                 guiFiltersHistory,
@@ -336,7 +361,7 @@ public class FilterService extends CommonSrv {
                 break;
             default:
                 this.tableFilterHistory = FilterUtil.instance(mongoDbUtil,
-                        ogmCreatorIntr).
+                                ogmCreatorIntr).
                         createTableHistory(myForm,
                                 baseFilterHistory,
                                 guiFiltersHistory,
@@ -350,7 +375,7 @@ public class FilterService extends CommonSrv {
     }
 
     public List<Document> createZetDimensionCurrentDocuments(MyItems myItems,
-            FmsForm selectedForm, Map<String, Object> filter) {
+                                                             FmsForm selectedForm, Map<String, Object> filter) {
 
         Object queryObject = myItems.getQuery();
 
@@ -380,7 +405,7 @@ public class FilterService extends CommonSrv {
     }
 
     public List<Document> createZetDimensionHistoryDocuments(MyItems myItems,
-            FmsForm selectedForm, Map<String, Object> filter) {
+                                                             FmsForm selectedForm, Map<String, Object> filter) {
 
         Object queryObject = myItems.getHistoryQuery();
         if (queryObject == null) {
@@ -464,7 +489,7 @@ public class FilterService extends CommonSrv {
             quickFilters = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr).
                     createCurrentQuickFilters(formService.getMyForm(),
                             loginController.getRoleMap(), loginController.
-                            getLoggedUserDetail(), tableFilterCurrent);
+                                    getLoggedUserDetail(), tableFilterCurrent);
         }
 
         for (MyField myField : quickFilters) {
@@ -473,7 +498,7 @@ public class FilterService extends CommonSrv {
                     MyItems myItems = myField.getItemsAsMyItems();
 
                     Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.
-                            getTable(),
+                                    getTable(),
                             Filters.eq(MONGO_ID, guiFiltersCurrent.get(myField.
                                     getKey())));
                     guiFiltersCurrent.put(myField.getKey(), PlainRecordData.
