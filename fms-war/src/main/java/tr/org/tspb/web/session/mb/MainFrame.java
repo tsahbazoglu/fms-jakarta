@@ -1126,11 +1126,8 @@ public class MainFrame implements Serializable {
         filterService.createBaseFilter(myFormXs);
         for (String key : filterService.getBaseFilterCurrent().
                 keySet()) {
-            if (filterService.getGuiFilterCurrent().
-                    get(key) == null) {
-                filterService.getGuiFilterCurrent().
-                        put(key, filterService.getBaseFilterCurrent().
-                                get(key));
+            if (filterService.getGuiFilterCurrent().get(key) == null) {
+                filterService.getGuiFilterCurrent().put(key, filterService.getBaseFilterCurrent().get(key));
             }
         }
 

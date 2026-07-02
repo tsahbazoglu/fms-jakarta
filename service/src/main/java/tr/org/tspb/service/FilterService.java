@@ -179,7 +179,7 @@ public class FilterService extends CommonSrv {
         }
 
         for (MyField myField : myForm.getZetDimension()) {
-            // take into account an alternativechannels form's 
+            // take into account an alternative channels form's
             // periodFilter and period. 
             // key and field could be different
             String fieldName = myField.getField();
@@ -231,15 +231,18 @@ public class FilterService extends CommonSrv {
         pivotFilterCurrent = new Document();
         FmsForm myForm = formService.getMyForm();
         if (myForm.getZetDimension() == null) {
-            throw new FormConfigException(ZET_DIMENSION.concat(
-                    " is resolved to null"));
+            throw new FormConfigException(ZET_DIMENSION.concat(" is resolved to null"));
         }
         for (MyField myField : myForm.getZetDimension()) {
             String fieldName = myField.getField();
-            pivotFilterCurrent.put(fieldName, guiFiltersCurrent.get(fieldName));
+            Object guiValue = guiFiltersCurrent.get(fieldName);
+            if (guiValue != null) {
+                pivotFilterCurrent.put(fieldName, guiValue);
+            } else {
+                pivotFilterCurrent.put(fieldName, new ObjectId());
+            }
         }
-        pivotFilterCurrent.put(FORMS, formService.getMyForm().
-                getKey());
+        pivotFilterCurrent.put(FORMS, myForm.getKey());
     }
 
     public void createPivotFilterHistoryOnGuiChange() throws FormConfigException {
