@@ -43,3 +43,11 @@ git push origin v1.2.1
 git tag
 ----
 
+
+== 1.2.2
+----
+git tag -a v1.2.2 -m "Release version 1.2.2"
+git push origin v1.2.2
+git tag
+----
+
