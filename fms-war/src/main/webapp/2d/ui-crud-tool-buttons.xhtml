@@ -37,9 +37,12 @@
             onclick="rcTableCheckAsAdmin();return false;"
     />
     <p:button
+            id="id-send-ok"
             icon="pi pi-send"
-            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}"
-            rendered="#{formService.myForm.myActions.sendForms}"
+            value="GÖNDER"
+            rendered="#{not empty formService.myForm.myActions.sendFormAction}"
+            disabled="#{not formService.myForm.myActions.sendForms}"
+            title="Gönder"
             onclick="rcTableSend();return false;"
     />
     <p:button

@@ -127,11 +127,14 @@ public class UpdateAjaxMB implements Serializable {
         btnCheckAllAsAdmin = ID_2D_DATA_TABLE
                 .concat(COMMA).concat(ID_MSG_DLG)
                 .concat(COMMA).concat(ID_CENTER_TOP);
+
         btnCheckAll = ID_2D_DATA_TABLE
                 .concat(COMMA).concat(ID_MSG_DLG)
                 .concat(COMMA).concat(ID_CENTER_TOP)
                 .concat(COMMA).concat("id-tab-view:id2DCurrentObjectList:objectsDataTable")
-                .concat(COMMA).concat("id-tab-view:id-2d-action-form:id-2d-action-toolbar");
+                .concat(COMMA).concat("id-tab-view:id-2d-action-form:id-2d-action-toolbar")
+                .concat(COMMA).concat("id-tab-view:id-send-ok");
+
         btnNdSave = ID_MSG_DLG
                 .concat(COMMA).concat(ID_CENTER_TOP)
                 .concat(COMMA).concat(ID_DLG_CTRL_AND_SAVE)
