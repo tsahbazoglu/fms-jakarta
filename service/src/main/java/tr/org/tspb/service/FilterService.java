@@ -85,8 +85,10 @@ public class FilterService extends CommonSrv {
     }
 
     public void createBaseFilter(FmsForm myFormXs) {
-        baseFilterCurrent = new Document(myFormXs.getDefaultCurrentQuery());
-        baseFilterHistory = new Document(myFormXs.getDefaultHistoryQuery());
+        if (myFormXs != null) { // Added guard
+            baseFilterCurrent = new Document(myFormXs.getDefaultCurrentQuery());
+            baseFilterHistory = new Document(myFormXs.getDefaultHistoryQuery());
+        }
     }
 
     public String bringFilters() {
@@ -214,7 +216,7 @@ public class FilterService extends CommonSrv {
 
             if (historyValue != null) {
                 pivotFilterHistory.put(fieldName, historyValue);
-            } else if (baseFilterCurrent.get(fieldName) != null) {
+            } else if (baseFilterCurrent != null && baseFilterCurrent.get(fieldName) != null) {
                 Object baseHistoryValue = (baseFilterHistory != null) ? baseFilterHistory.get(fieldName) : null;
                 pivotFilterHistory.put(fieldName, baseHistoryValue);
                 guiFiltersHistory.put(fieldName, baseHistoryValue);
@@ -244,11 +246,9 @@ public class FilterService extends CommonSrv {
         pivotFilterHistory = new Document();
         FmsForm myForm = formService.getMyForm();
         if (myForm.getZetDimension() == null) {
-            throw new FormConfigException(ZET_DIMENSION.concat(
-                    " is resolved to null"));
+            throw new FormConfigException(ZET_DIMENSION.concat(" is resolved to null"));
         }
-        for (MyField myField : formService.getMyForm().
-                getZetDimension()) {
+        for (MyField myField : myForm.getZetDimension()) {
             String fieldName = myField.getField();
             pivotFilterHistory.put(fieldName, guiFiltersHistory.get(fieldName));
         }
@@ -261,8 +261,8 @@ public class FilterService extends CommonSrv {
     }
 
     public void init(Map searchMap, Map currentFilter) {
-        this.guiFiltersCurrent = currentFilter;
-        this.tableFilterCurrent = new Document(searchMap);
+        this.guiFiltersCurrent = currentFilter != null ? new HashMap<>(currentFilter) : new HashMap<>();
+        this.tableFilterCurrent = searchMap != null ? new Document(searchMap) : new Document();
     }
 
     public void initSearchMap(ObjectId memberID, ObjectId periodID,
@@ -280,7 +280,7 @@ public class FilterService extends CommonSrv {
 
     public void createTableFilterCurrent(FmsForm myForm)
             throws NullNotExpectedException {
-
+        if (myForm == null) return; // Added guard
         if (myForm.getSchemaVersion() == null) {
             this.tableFilterCurrent = FilterUtil.instance(mongoDbUtil,
                             ogmCreatorIntr).
@@ -328,6 +328,8 @@ public class FilterService extends CommonSrv {
 
     public void createTableFilterHistory(FmsForm myForm) throws
             NullNotExpectedException {
+
+        if (myForm == null) return; // Added guard
 
         if (myForm.getSchemaVersion() == null) {
             this.tableFilterHistory = FilterUtil.instance(mongoDbUtil,
@@ -486,38 +488,35 @@ public class FilterService extends CommonSrv {
         String key = createCacheKey("quick-filter");
         quickFilters = filtersCache.get(key);
         if (quickFilters == null) {
-            quickFilters = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr).
-                    createCurrentQuickFilters(formService.getMyForm(),
-                            loginController.getRoleMap(), loginController.
-                                    getLoggedUserDetail(), tableFilterCurrent);
+            quickFilters = FilterUtil
+                    .instance(mongoDbUtil, ogmCreatorIntr)
+                    .createCurrentQuickFilters(
+                            formService.getMyForm(),
+                            loginController.getRoleMap(),
+                            loginController.getLoggedUserDetail(),
+                            tableFilterCurrent);
         }
 
         for (MyField myField : quickFilters) {
-            if (myField.isAutoComplete()) {
-                if (!(guiFiltersCurrent.get(myField.getKey()) instanceof PlainRecord)) {
-                    MyItems myItems = myField.getItemsAsMyItems();
 
-                    Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.
-                                    getTable(),
-                            Filters.eq(MONGO_ID, guiFiltersCurrent.get(myField.
-                                    getKey())));
-                    guiFiltersCurrent.put(myField.getKey(), PlainRecordData.
-                            getPlainRecord(doc, myItems));
-                }
+            String fieldKey = myField.getKey();
+
+            Object currentFilterValue = guiFiltersCurrent.get(fieldKey);
+
+            if (myField.isAutoComplete() && !(currentFilterValue instanceof PlainRecord)) {
+                MyItems myItems = myField.getItemsAsMyItems();
+                Document doc = mongoDbUtil.findOne(
+                        myItems.getDb(),
+                        myItems.getTable(),
+                        Filters.eq(MONGO_ID, currentFilterValue));
+                guiFiltersCurrent.put(fieldKey, PlainRecordData.getPlainRecord(doc, myItems));
             }
 
-            if (myField.getComponentType().
-                    contains("selectOneMenu")) {
+            if (myField.getComponentType().contains("selectOneMenu")) {
                 if (myField.getMyconverter() instanceof SelectOneObjectIdConverter) {
-                    if (guiFiltersCurrent.get(myField.getKey()) == null) {
-                        guiFiltersCurrent.put(myField.getKey(),
-                                SelectOneObjectIdConverter.SELECT_ALL);
-                    }
+                    guiFiltersCurrent.putIfAbsent(fieldKey, SelectOneObjectIdConverter.SELECT_ALL);
                 } else if (myField.getMyconverter() instanceof BsonConverter) {
-                    if (guiFiltersCurrent.get(myField.getKey()) == null) {
-                        guiFiltersCurrent.put(myField.getKey(),
-                                BsonConverter.SELECT_ALL);
-                    }
+                    guiFiltersCurrent.putIfAbsent(fieldKey, BsonConverter.SELECT_ALL);
                 }
             }
         }
