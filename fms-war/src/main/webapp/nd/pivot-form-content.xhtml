@@ -8,7 +8,7 @@
       xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid"
       xmlns:c="jakarta.tags.core"
       >
-    <h:head>
+     <h:head>
         <title></title>
         <script>
             function setStatusToSaved() {
@@ -35,7 +35,7 @@
     <ui:include src="pivot-dialogs.xhtml"/>
 
     <h:form id="nd-form">
-        <p:remoteCommand 
+        <p:remoteCommand
             name="rcPivotSave"
             value="Kaydet"
             rendered="#{formService.myForm.myActions.save}"
@@ -43,41 +43,41 @@
             update="id-tab-view:currentMyGrid,#{updateAjaxMB.btnNdSave}"
             oncomplete="setStatusToSaved();hideNotSavedDlg();"
             />
-        <p:remoteCommand 
+        <p:remoteCommand
             name="rcPivotSendForms"
-            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}" 
-            actionListener="#{pivotModifierCtrl.sendForm}" 
+            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}"
+            actionListener="#{pivotModifierCtrl.sendForm}"
             rendered="#{formService.myForm.myActions.sendForms}"
             update="#{updateAjaxMB.btnNdSendForms}"
             />
-        <p:remoteCommand 
+        <p:remoteCommand
             name="rcPivotShowDesc"
-            value="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
-            action="#{pivotModifierCtrl.showAllNote}" 
+            value="Bu sayfa ile ilgili açıklamalar için tıklayınız"
+            action="#{pivotModifierCtrl.showAllNote}"
             rendered="#{pivotModifierCtrl.selectedFormUserNote}"
             update="#{updateAjaxMB.msgDlg}"
             />
-        <p:remoteCommand 
+        <p:remoteCommand
             name="rcPivotDownlodExcel"
-            value="Excele Aktar" 
+            value="Excele Aktar"
             rendered="#{formService.myForm.myActions.download}"
-            action="#{pivotModifierCtrl.downloadCsvFile}" 
+            action="#{pivotModifierCtrl.downloadCsvFile}"
             />
-        <p:remoteCommand 
-            name="rcPivotEsign" 
-            action="#{pivotModifierCtrl.showEimza22}" 
+        <p:remoteCommand
+            name="rcPivotEsign"
+            action="#{pivotModifierCtrl.showEimza22}"
             rendered="#{formService.myForm.myActions.eimza2D}"
             update="#{updateAjaxMB.msgDlg},:id_nd_esign_dialog"
-            />  
+            />
         <h:inputHidden
-            id="id-hidden-text-json-data-to-model" 
+            id="id-hidden-text-json-data-to-model"
             value="#{pivotModifierCtrl.pivotDataModelEdit.jsonDataToModel}"
             />
         <h:inputHidden
-            id="id-hidden-text-saved-status" 
+            id="id-hidden-text-saved-status"
             value="false"
             />
-    </h:form> 
+    </h:form>
 
     <p:panel>
         <h:form id="ndFilterForm">
@@ -89,54 +89,54 @@
                 <c:forEach items="#{pivotModifierCtrl.zetDimension}" var="filterFieldStructure">
                     <p:outputLabel value="#{filterFieldStructure.shortName}"/>
                     <p:outputPanel>
-                        <p:selectOneMenu  
+                        <p:selectOneMenu
                             value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
                             converter="#{filterFieldStructure.myconverter}"
                             rendered="#{'member' eq filterFieldStructure.key}"
-                            filter="true" 
-                            filterMatchMode="contains"   
+                            filter="true"
+                            filterMatchMode="contains"
                             caseSensitive="true"
                             style="width: 400px;"
                             >
-                            <p:ajax 
-                                listener="#{pivotModifierCtrl.valueChangeListenerZet}" 
+                            <p:ajax
+                                listener="#{pivotModifierCtrl.valueChangeListenerZet}"
                                 update="#{updateAjaxMB.filterNdDataAndTop}"
                                 />
                             <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
                             <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
                         </p:selectOneMenu>
-                        <p:selectOneMenu  
+                        <p:selectOneMenu
                             value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
                             converter="#{filterFieldStructure.myconverter}"
                             rendered="#{'period' eq filterFieldStructure.key}"
                             style="width: 400px;"
                             >
-                            <p:ajax 
-                                listener="#{pivotModifierCtrl.valueChangeListenerZet}" 
+                            <p:ajax
+                                listener="#{pivotModifierCtrl.valueChangeListenerZet}"
                                 update="#{updateAjaxMB.filterNdDataAndTop}"/>
                             <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
                             <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
                         </p:selectOneMenu>
-                        <p:selectOneMenu  
+                        <p:selectOneMenu
                             value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
                             converter="#{filterFieldStructure.myconverter}"
                             rendered="#{'periodFilter' eq filterFieldStructure.key}"
                             style="width: 400px;"
                             >
-                            <p:ajax 
-                                listener="#{pivotModifierCtrl.valueChangeListenerZet}" 
+                            <p:ajax
+                                listener="#{pivotModifierCtrl.valueChangeListenerZet}"
                                 update="#{updateAjaxMB.filterNdDataAndTop}"/>
                             <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
                             <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
                         </p:selectOneMenu>
-                        <p:selectOneMenu  
+                        <p:selectOneMenu
                             value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
                             converter="#{filterFieldStructure.myconverter}"
                             rendered="#{'template' eq filterFieldStructure.key}"
                             style="width: 400px;"
                             >
-                            <p:ajax                                 
-                                listener="#{pivotModifierCtrl.valueChangeListenerZet}" 
+                            <p:ajax
+                                listener="#{pivotModifierCtrl.valueChangeListenerZet}"
                                 update="#{updateAjaxMB.filterNdDataAndTop}"/>
                             <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
                             <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
@@ -152,7 +152,7 @@
                 <c:forEach items="#{formService.myForm.fieldsRowKeys}" var="fieldKey">
                     <h:panelGrid columns="1">
                         <h:outputText
-                            value="#{pivotModifierCtrl.componentMap[fieldKey]['label']}" 
+                            value="#{pivotModifierCtrl.componentMap[fieldKey]['label']}"
                             escape="false"
                             style="#{pivotModifierCtrl.componentMap[fieldKey]['style']}"
                             rendered="#{pivotModifierCtrl.componentMap[fieldKey]['rendered']}"
@@ -160,19 +160,19 @@
                         </h:outputText>
                         <p:selectOneMenu
                             value="#{pivotModifierCtrl.rowObject[fieldKey]}"
-                            label="#{pivotModifierCtrl.componentMap[fieldKey]['label']}" 
+                            label="#{pivotModifierCtrl.componentMap[fieldKey]['label']}"
                             rendered="#{'selectOneMenu' eq  pivotModifierCtrl.componentMap[fieldKey]['componentType'] 
                                         and pivotModifierCtrl.componentMap[fieldKey]['rendered']}"
                             converter="#{pivotModifierCtrl.componentMap[fieldKey].myconverter}"
                             >
-                            <p:ajax 
-                                listener="#{pivotModifierCtrl.submitRowData}" 
+                            <p:ajax
+                                listener="#{pivotModifierCtrl.submitRowData}"
                                 update="#{updateAjaxMB.filterNdData}"
                                 />
                             <f:selectItems value="#{pivotModifierCtrl.componentMap[fieldKey].items}"/>
-                        </p:selectOneMenu>   
+                        </p:selectOneMenu>
                     </h:panelGrid>
-                </c:forEach>   
+                </c:forEach>
 
             </p:panelGrid>
 
@@ -182,26 +182,26 @@
     </p:panel>
 
     <p:scrollPanel mode="native" style="width:95%;">
-        <p:outputPanel 
+        <p:outputPanel
             id="currentMyGrid"
-            > 
-            <mygrid:mygridHistory 
+            >
+            <mygrid:mygridHistory
                 id="idCurrentMyGridReadOnly"
                 rowHeaderWidh="#{pivotModifierCtrl.pivotDataModelRead.handsonRowHeaderWidth}"
                 colWidths="#{pivotModifierCtrl.pivotDataModelRead.handsonColWidths}"
-                columns="#{pivotModifierCtrl.pivotDataModelRead.columns}" 
-                nestedHeaders="#{pivotModifierCtrl.pivotDataModelRead.nestedHeaders}" 
-                rows="#{pivotModifierCtrl.pivotDataModelRead.rows}" 
+                columns="#{pivotModifierCtrl.pivotDataModelRead.columns}"
+                nestedHeaders="#{pivotModifierCtrl.pivotDataModelRead.nestedHeaders}"
+                rows="#{pivotModifierCtrl.pivotDataModelRead.rows}"
                 cell="#{pivotModifierCtrl.pivotDataModelRead.cell}"
-                rendered="#{not pivotModifierCtrl.editable}"            
-                /> 
+                rendered="#{not pivotModifierCtrl.editable}"
+                />
             <style>
                 .handsontable table thead th {
                     white-space: pre-line;
                     /*max-width: 10px;*/
                 }
             </style>
-            <mygrid:mygrid 
+            <mygrid:mygrid
                 id="idCurrentMyGrid"
                 rowHeaderWidh="#{pivotModifierCtrl.pivotDataModelEdit.handsonRowHeaderWidth}"
                 colWidths="#{pivotModifierCtrl.pivotDataModelEdit.handsonColWidths}"
@@ -212,7 +212,7 @@
                 rendered="#{pivotModifierCtrl.editable}"
                 />
         </p:outputPanel>
-    </p:scrollPanel>     
+    </p:scrollPanel>
 
     <script>
         $(document.getElementById("id-tab-view:currentMyGrid")).bind("click", function (event) {
@@ -225,14 +225,14 @@
 <!--
                            A html select option element trims the white spaces by default.
                            this is not the issue of jsf.
-                           so even if we have no jsf component we have to replace 
+                           so even if we have no jsf component we have to replace
                            all white spaces in option element labels to &nbsp;
-                           
+
                            At this phase we are success with h:selectOneMenu too,
                            but it does not taken into account when we use ice:selectOneMenu.
-                           
-                           So, this is the main reason why we use h:selectoneMenu 
+
+                           So, this is the main reason why we use h:selectoneMenu
                            instead of ice:selectOneMenu here.
-                           
+
                            That is all.
 -->

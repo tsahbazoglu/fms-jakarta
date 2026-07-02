@@ -151,7 +151,8 @@ public class UpdateAjaxMB implements Serializable {
         filterNdDataAndTop = ID_CURRENT_MYGRID_EDITABLE
                 .concat(COMMA).concat(ID_CENTER_TOP)
                 .concat(COMMA).concat("id-tab-view:nd-form")
-                .concat(COMMA).concat("id-tab-view:currentMyGrid");
+                .concat(COMMA).concat("id-tab-view:currentMyGrid")
+                .concat(COMMA).concat("id-tool-pivot-actions");
 
         filterNdDataCurrent = ID_CURRENT_MYGRID_EDITABLE;
         filterNdDataHistory = ID_HISTORY_MYGRID_READONLY;
