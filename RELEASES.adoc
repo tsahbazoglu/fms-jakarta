@@ -41,6 +41,7 @@ git push origin --delete v1.0.0
 git tag -a v1.2.1 -m "Release version 1.2.1"
 git push origin v1.2.1
 git tag
+git describe --tags
 ----
 
 
@@ -49,5 +50,6 @@ git tag
 git tag -a v1.2.2 -m "Release version 1.2.2"
 git push origin v1.2.2
 git tag
+git describe --tags
 ----
 
