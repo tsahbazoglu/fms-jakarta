@@ -6,12 +6,11 @@
 # Delete the old development branches
 git branch -d dev-1.1.0
 git branch -d dev-1.2.0
-
-# Delete the old release branches
 git branch -d release-1.0.0
 git branch -d release-1.1.0
 git branch -d release-1.2.0
 git branch -d release-1.2.1
+git branch -d p_ajax_update_save_button_on_pivot_ui
 ----
 
 === Remote
@@ -19,12 +18,11 @@ git branch -d release-1.2.1
 # Delete the old dev branches from GitHub
 git push origin --delete dev-1.1.0
 git push origin --delete dev-1.2.0
-
-# Delete the old release branches from GitHub
 git push origin --delete release-1.0.0
 git push origin --delete release-1.1.0
 git push origin --delete release-1.2.0
 git push origin --delete release-1.2.1
+git push origin --delete p_ajax_update_save_button_on_pivot_ui
 ----
 
 == Delete the wrong tag
@@ -49,6 +47,15 @@ git describe --tags
 ----
 git tag -a v1.2.2 -m "Release version 1.2.2"
 git push origin v1.2.2
+git tag
+git describe --tags
+----
+
+
+== 1.2.3
+----
+git tag -a v1.2.3 -m "Release version 1.2.3"
+git push origin v1.2.3
 git tag
 git describe --tags
 ----
