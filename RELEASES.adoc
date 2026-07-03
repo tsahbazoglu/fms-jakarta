@@ -1,5 +1,10 @@
 = RELEASES
 
+== Asccidoc
+----
+asciidoctor -b html5 -r asciidoctor-diagram -D docs *.adoc
+----
+
 == Delete the old development branches
 === Local
 ----

@@ -440,6 +440,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect1">
+<h2 id="_asccidoc">Asccidoc</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>asciidoctor -b html5 -r asciidoctor-diagram -D docs *.adoc</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_delete_the_old_development_branches">Delete the old development branches</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -449,12 +459,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre># Delete the old development branches
 git branch -d dev-1.1.0
 git branch -d dev-1.2.0
-
-# Delete the old release branches
 git branch -d release-1.0.0
 git branch -d release-1.1.0
 git branch -d release-1.2.0
-git branch -d release-1.2.1</pre>
+git branch -d release-1.2.1
+git branch -d p_ajax_update_save_button_on_pivot_ui</pre>
 </div>
 </div>
 </div>
@@ -465,12 +474,11 @@ git branch -d release-1.2.1</pre>
 <pre># Delete the old dev branches from GitHub
 git push origin --delete dev-1.1.0
 git push origin --delete dev-1.2.0
-
-# Delete the old release branches from GitHub
 git push origin --delete release-1.0.0
 git push origin --delete release-1.1.0
 git push origin --delete release-1.2.0
-git push origin --delete release-1.2.1</pre>
+git push origin --delete release-1.2.1
+git push origin --delete p_ajax_update_save_button_on_pivot_ui</pre>
 </div>
 </div>
 </div>
@@ -497,7 +505,47 @@ git push origin --delete v1.0.0</pre>
 <div class="content">
 <pre>git tag -a v1.2.1 -m "Release version 1.2.1"
 git push origin v1.2.1
-git tag</pre>
+git tag
+git describe --tags</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_2_2">1.2.2</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>git tag -a v1.2.2 -m "Release version 1.2.2"
+git push origin v1.2.2
+git tag
+git describe --tags</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_2_3">1.2.3</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>git tag -a v1.2.3 -m "Release version 1.2.3"
+git push origin v1.2.3
+git tag
+git describe --tags</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_2_4">1.2.4</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>git tag -a v1.2.4 -m "Release version 1.2.4"
+git push origin v1.2.4
+git tag
+git describe --tags</pre>
 </div>
 </div>
 </div>
@@ -505,7 +553,7 @@ git tag</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-07-01 17:45:32 +0300
+Last updated 2026-07-03 17:44:19 +0300
 </div>
 </div>
 </body>
