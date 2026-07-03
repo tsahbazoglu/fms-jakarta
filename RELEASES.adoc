@@ -60,3 +60,11 @@ git tag
 git describe --tags
 ----
 
+
+== 1.2.4
+----
+git tag -a v1.2.4 -m "Release version 1.2.4"
+git push origin v1.2.4
+git tag
+git describe --tags
+----
