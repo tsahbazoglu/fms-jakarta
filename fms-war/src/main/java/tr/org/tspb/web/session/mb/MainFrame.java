@@ -1124,12 +1124,8 @@ public class MainFrame implements Serializable {
             throws NullNotExpectedException, MongoOrmFailedException, Exception {
 
         filterService.createBaseFilter(myFormXs);
-        for (String key : filterService.getBaseFilterCurrent().
-                keySet()) {
-            if (filterService.getGuiFilterCurrent().get(key) == null) {
-                filterService.getGuiFilterCurrent().put(key, filterService.getBaseFilterCurrent().get(key));
-            }
-        }
+
+        filterService.initUiCurrentFilter();
 
         FmsForm myFormLarge = repositoryService.getMyFormLargeWithBaseFilter(
                 myProject, myFormXs.getKey());
@@ -1188,15 +1184,8 @@ public class MainFrame implements Serializable {
     private void createPivotForm(FmsForm fmsForm) throws Exception {
 
         filterService.createBaseFilter(fmsForm);
-        for (String key : filterService.getBaseFilterCurrent().
-                keySet()) {
-            if (filterService.getGuiFilterCurrent().
-                    get(key) == null) {
-                filterService.getGuiFilterCurrent().
-                        put(key, filterService.getBaseFilterCurrent().
-                                get(key));
-            }
-        }
+
+        filterService.initUiCurrentFilter();
 
         FmsForm myFormLarge = repositoryService.getMyFormLargeWithBaseFilter(
                 myProject, fmsForm.getKey());

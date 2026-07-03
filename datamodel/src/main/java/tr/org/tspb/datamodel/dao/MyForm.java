@@ -1749,7 +1749,7 @@ public class MyForm extends FmsFormAbstract {
                                                     getDbo().
                                                     getObjectId());
                             for (String key : query.keySet()) {
-                                this.myForm.defaultCurrentQuery.put(key, query.
+                                this.myForm.defaultHistoryQuery.put(key, query.
                                         get(key));
                             }
                         }

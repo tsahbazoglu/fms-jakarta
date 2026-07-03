@@ -443,7 +443,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     }
 
     public String resetFilter() {
-        filterService.getGuiFilterCurrent().clear();
+        filterService.resetCurrentUiFilters();
         search();
         resetActions();
         return null;

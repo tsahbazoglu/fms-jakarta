@@ -78,6 +78,19 @@ public class FilterService extends CommonSrv {
     private List<MyField> advanceFilters = new ArrayList<>();
     private List<MyField> quickFilters = new ArrayList<>();
 
+
+    private void putUiCurrentFilter(String key, Object value) {
+        guiFiltersCurrent.putIfAbsent(key, value);
+    }
+
+    private Object fetchUiCurrentFilter(String key) {
+        return guiFiltersCurrent.get(key);
+    }
+
+    private Object fetchUiHistoryFilter(String key) {
+        return guiFiltersHistory.get(key);
+    }
+
     @PostConstruct
     public void init() {
         this.guiFiltersCurrent = new HashMap<>();
@@ -98,25 +111,19 @@ public class FilterService extends CommonSrv {
         advanceFilters = filtersCache.get(key);
 
         if (advanceFilters == null) {
-            advanceFilters = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr).
-                    createCurrentFilters(formService.getMyForm(),
-                            loginController.getRoleMap(),
-                            loginController.getLoggedUserDetail(),
-                            tableFilterCurrent);
+            advanceFilters = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr).createCurrentFilters(formService.getMyForm(), loginController.getRoleMap(), loginController.getLoggedUserDetail(), tableFilterCurrent);
             filtersCache.put(key, advanceFilters);
         }
 
         for (MyField myField : advanceFilters) {
+            Object currentFilterValue = fetchUiCurrentFilter(myField.getKey());
+
             if (myField.isAutoComplete()) {
-                if (!(guiFiltersCurrent.get(myField.getKey()) instanceof PlainRecord)) {
+                if (!(currentFilterValue instanceof PlainRecord)) {
                     MyItems myItems = myField.getItemsAsMyItems();
 
-                    Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.
-                                    getTable(),
-                            Filters.eq(MONGO_ID, guiFiltersCurrent.get(myField.
-                                    getKey())));
-                    guiFiltersCurrent.put(myField.getKey(), PlainRecordData.
-                            getPlainRecord(doc, myItems));
+                    Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.getTable(), Filters.eq(MONGO_ID, currentFilterValue));
+                    putUiCurrentFilter(myField.getKey(), PlainRecordData.getPlainRecord(doc, myItems));
                 }
             }
         }
@@ -157,25 +164,13 @@ public class FilterService extends CommonSrv {
         return org.apache.commons.codec.digest.DigestUtils.sha256Hex(sb.toString());
     }
 
-    public void createPivotCurrentAndHistoryFilters() throws FormConfigException {
-        createPivotFilterCurrent();
-        createPivotFilterHistory();
-    }
-
-    public void createTableCurrentAndHistoryFilters(FmsForm myForm) throws
-            NullNotExpectedException {
-        createTableFilterCurrent(myForm);
-        createTableFilterHistory(myForm);
-    }
-
     public void createPivotFilterCurrent() throws FormConfigException {
 
         pivotFilterCurrent = new Document();
         FmsForm myForm = formService.getMyForm();
 
         if (myForm.getZetDimension() == null) {
-            throw new FormConfigException(ZET_DIMENSION.concat(
-                    " is resolved to null"));
+            throw new FormConfigException(ZET_DIMENSION.concat(" is resolved to null"));
         }
 
         for (MyField myField : myForm.getZetDimension()) {
@@ -184,20 +179,19 @@ public class FilterService extends CommonSrv {
             // key and field could be different
             String fieldName = myField.getField();
 
-            if (guiFiltersCurrent.get(fieldName) != null) {
-                pivotFilterCurrent.put(fieldName, guiFiltersCurrent.get(
-                        fieldName));
-            } else if (baseFilterCurrent.get(fieldName) != null) {
-                pivotFilterCurrent.put(fieldName, baseFilterCurrent.get(
-                        fieldName));
-                guiFiltersCurrent.put(fieldName, baseFilterCurrent.
-                        get(fieldName));
+            Object guiValue = fetchUiCurrentFilter(fieldName);
+            Object baseValue = baseFilterCurrent.get(fieldName);
+
+            if (guiValue != null) {
+                pivotFilterCurrent.put(fieldName, guiValue);
+            } else if (baseValue != null) {
+                pivotFilterCurrent.put(fieldName, baseValue);
+                putUiCurrentFilter(fieldName, baseValue);
             } else {
                 pivotFilterCurrent.put(fieldName, new ObjectId());
             }
         }
-        pivotFilterCurrent.put(FORMS, formService.getMyForm().
-                getKey());
+        pivotFilterCurrent.put(FORMS, formService.getMyForm().getKey());
 
     }
 
@@ -235,7 +229,7 @@ public class FilterService extends CommonSrv {
         }
         for (MyField myField : myForm.getZetDimension()) {
             String fieldName = myField.getField();
-            Object guiValue = guiFiltersCurrent.get(fieldName);
+            Object guiValue = fetchUiCurrentFilter(fieldName);
             if (guiValue != null) {
                 pivotFilterCurrent.put(fieldName, guiValue);
             } else {
@@ -255,8 +249,7 @@ public class FilterService extends CommonSrv {
             String fieldName = myField.getField();
             pivotFilterHistory.put(fieldName, guiFiltersHistory.get(fieldName));
         }
-        pivotFilterHistory.put(FORMS, formService.getMyForm().
-                getKey());
+        pivotFilterHistory.put(FORMS, formService.getMyForm().getKey());
     }
 
     public void resetColumnDataModel() {
@@ -268,8 +261,7 @@ public class FilterService extends CommonSrv {
         this.tableFilterCurrent = searchMap != null ? new Document(searchMap) : new Document();
     }
 
-    public void initSearchMap(ObjectId memberID, ObjectId periodID,
-                              ObjectId templateID, FmsForm myForm) {
+    public void initSearchMap(ObjectId memberID, ObjectId periodID, ObjectId templateID, FmsForm myForm) {
         tableFilterCurrent = new Document();
         tableFilterCurrent.put(myForm.getLoginFkField(), memberID);
         tableFilterCurrent.put(PERIOD, periodID);
@@ -281,116 +273,55 @@ public class FilterService extends CommonSrv {
         return Filters.eq(FORM_KEY, formKey);
     }
 
-    public void createTableFilterCurrent(FmsForm myForm)
-            throws NullNotExpectedException {
+    public void createTableFilterCurrent(FmsForm myForm) throws NullNotExpectedException {
+        if (myForm == null) {
+            throw new NullNotExpectedException("myForm cannot be null");
+        }
+
+        boolean isAdminOrViewer = loginController.isUserInRole(formService.getMyForm().getMyProject().getAdminAndViewerRole());
+        var userDetail = loginController.getLoggedUserDetail();
+        var roleMap = loginController.getRoleMap();
+        String schemaVersion = myForm.getSchemaVersion();
+        var filterBuilder = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr);
+
+        if (FmsForm.SCHEMA_VERSION_110.equals(schemaVersion) || FmsForm.SCHEMA_VERSION_111.equals(schemaVersion)) {
+            this.tableFilterCurrent = filterBuilder.createTableFilterSchemaVersion110(
+                    myForm, baseFilterCurrent, guiFiltersCurrent, isAdminOrViewer, userDetail, roleMap
+            );
+        } else {
+            this.tableFilterCurrent = filterBuilder.createTableFilter(
+                    myForm, baseFilterCurrent, guiFiltersCurrent, isAdminOrViewer, userDetail, roleMap
+            );
+        }
+    }
+
+    public void createTableFilterHistory(FmsForm myForm) throws NullNotExpectedException {
+
         if (myForm == null) return; // Added guard
+
         if (myForm.getSchemaVersion() == null) {
-            this.tableFilterCurrent = FilterUtil.instance(mongoDbUtil,
-                            ogmCreatorIntr).
-                    createTableFilter(myForm,
-                            baseFilterCurrent,
-                            guiFiltersCurrent,
-                            loginController.isUserInRole(
-                                    formService.getMyForm().
-                                            getMyProject().
-                                            getAdminAndViewerRole()),
-                            loginController.getLoggedUserDetail(),
-                            loginController.getRoleMap());
+            this.tableFilterHistory = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr).createTableHistory(myForm, baseFilterHistory, guiFiltersHistory, loginController.isUserInRole(formService.getMyForm().getMyProject().getAdminAndViewerRole()), loginController.getLoggedUserDetail(), loginController.getRoleMap());
             return;
         }
 
         switch (myForm.getSchemaVersion()) {
             case FmsForm.SCHEMA_VERSION_110:
             case FmsForm.SCHEMA_VERSION_111:
-                this.tableFilterCurrent = FilterUtil.instance(mongoDbUtil,
-                                ogmCreatorIntr).
-                        createTableFilterSchemaVersion110(myForm,
-                                baseFilterCurrent,
-                                guiFiltersCurrent,
-                                loginController.isUserInRole(formService.
-                                        getMyForm().
-                                        getMyProject().
-                                        getAdminAndViewerRole()),
-                                loginController.getLoggedUserDetail(),
-                                loginController.getRoleMap());
+                this.tableFilterHistory = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr).createTableHistoryScemaVersion110(myForm, baseFilterHistory, guiFiltersHistory, loginController.isUserInRole(formService.getMyForm().getMyProject().getAdminAndViewerRole()), loginController.getLoggedUserDetail(), loginController.getRoleMap());
                 break;
             default:
-                this.tableFilterCurrent = FilterUtil.instance(mongoDbUtil,
-                                ogmCreatorIntr).
-                        createTableFilter(myForm,
-                                baseFilterCurrent,
-                                guiFiltersCurrent,
-                                loginController.isUserInRole(formService.
-                                        getMyForm().
-                                        getMyProject().
-                                        getAdminAndViewerRole()),
-                                loginController.getLoggedUserDetail(),
-                                loginController.getRoleMap());
+                this.tableFilterHistory = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr).createTableHistory(myForm, baseFilterHistory, guiFiltersHistory, loginController.isUserInRole(formService.getMyForm().getMyProject().getAdminAndViewerRole()), loginController.getLoggedUserDetail(), loginController.getRoleMap());
         }
     }
 
-    public void createTableFilterHistory(FmsForm myForm) throws
-            NullNotExpectedException {
-
-        if (myForm == null) return; // Added guard
-
-        if (myForm.getSchemaVersion() == null) {
-            this.tableFilterHistory = FilterUtil.instance(mongoDbUtil,
-                            ogmCreatorIntr).
-                    createTableHistory(myForm,
-                            baseFilterHistory,
-                            guiFiltersHistory,
-                            loginController.isUserInRole(
-                                    formService.getMyForm().
-                                            getMyProject().
-                                            getAdminAndViewerRole()),
-                            loginController.getLoggedUserDetail(),
-                            loginController.getRoleMap());
-            return;
-        }
-
-        switch (myForm.getSchemaVersion()) {
-            case FmsForm.SCHEMA_VERSION_110:
-            case FmsForm.SCHEMA_VERSION_111:
-                this.tableFilterHistory = FilterUtil.instance(mongoDbUtil,
-                                ogmCreatorIntr).
-                        createTableHistoryScemaVersion110(myForm,
-                                baseFilterHistory,
-                                guiFiltersHistory,
-                                loginController.isUserInRole(formService.
-                                        getMyForm().
-                                        getMyProject().
-                                        getAdminAndViewerRole()),
-                                loginController.getLoggedUserDetail(),
-                                loginController.getRoleMap());
-                break;
-            default:
-                this.tableFilterHistory = FilterUtil.instance(mongoDbUtil,
-                                ogmCreatorIntr).
-                        createTableHistory(myForm,
-                                baseFilterHistory,
-                                guiFiltersHistory,
-                                loginController.isUserInRole(formService.
-                                        getMyForm().
-                                        getMyProject().
-                                        getAdminAndViewerRole()),
-                                loginController.getLoggedUserDetail(),
-                                loginController.getRoleMap());
-        }
-    }
-
-    public List<Document> createZetDimensionCurrentDocuments(MyItems myItems,
-                                                             FmsForm selectedForm, Map<String, Object> filter) {
+    public List<Document> createZetDimensionCurrentDocuments(MyItems myItems, FmsForm selectedForm, Map<String, Object> filter) {
 
         Object queryObject = myItems.getQuery();
 
         if (queryObject instanceof Code) {
-            Code func = new Code(((Code) queryObject).getCode().
-                    replace(DIEZ, DOLAR));
+            Code func = new Code(((Code) queryObject).getCode().replace(DIEZ, DOLAR));
 
-            Document commandResult = mongoDbUtil.
-                    runCommand(selectedForm.getDb(), func.getCode(), filter,
-                            null);
+            Document commandResult = mongoDbUtil.runCommand(selectedForm.getDb(), func.getCode(), filter, null);
 
             queryObject = commandResult.get(RETVAL);
         }
@@ -402,15 +333,16 @@ public class FilterService extends CommonSrv {
 
         Document sortObject = myItems.getSort();
 
-        List<Document> cursor = mongoDbUtil.find(
-                database == null ? selectedForm.getDb()
-                        : database, collectionName, queryDoc, sortObject, null);
+        List<Document> cursor = mongoDbUtil.find(database == null ? selectedForm.getDb() : database, collectionName, queryDoc, sortObject, null);
 
         return cursor;
     }
 
-    public List<Document> createZetDimensionHistoryDocuments(MyItems myItems,
-                                                             FmsForm selectedForm, Map<String, Object> filter) {
+    public void resetCurrentUiFilters() {
+        this.guiFiltersCurrent.clear();
+    }
+
+    public List<Document> createZetDimensionHistoryDocuments(MyItems myItems, FmsForm selectedForm, Map<String, Object> filter) {
 
         Object queryObject = myItems.getHistoryQuery();
         if (queryObject == null) {
@@ -424,12 +356,9 @@ public class FilterService extends CommonSrv {
         String database = myItems.getDb();
 
         if (queryObject instanceof Code) {
-            Code func = new Code(((Code) queryObject).getCode().
-                    replace(DIEZ, DOLAR));
+            Code func = new Code(((Code) queryObject).getCode().replace(DIEZ, DOLAR));
 
-            Document commandResult = mongoDbUtil.
-                    runCommand(selectedForm.getDb(), func.getCode(), filter,
-                            null);
+            Document commandResult = mongoDbUtil.runCommand(selectedForm.getDb(), func.getCode(), filter, null);
 
             queryObject = commandResult.get(RETVAL);
         }
@@ -438,11 +367,14 @@ public class FilterService extends CommonSrv {
 
         Document sortObject = myItems.getSort();
 
-        List<Document> cursor = mongoDbUtil.find(
-                database == null ? selectedForm.getDb()
-                        : database, collectionName, queryDoc, sortObject, null);
+        List<Document> cursor = mongoDbUtil.find(database == null ? selectedForm.getDb() : database, collectionName, queryDoc, sortObject, null);
 
         return cursor;
+    }
+
+    public void initUiCurrentFilter() {
+        baseFilterCurrent.forEach(guiFiltersCurrent::putIfAbsent);
+        baseFilterHistory.forEach(guiFiltersHistory::putIfAbsent);
     }
 
     public Map getGuiFilterCurrent() {
@@ -491,35 +423,26 @@ public class FilterService extends CommonSrv {
         String key = createCacheKey("quick-filter");
         quickFilters = filtersCache.get(key);
         if (quickFilters == null) {
-            quickFilters = FilterUtil
-                    .instance(mongoDbUtil, ogmCreatorIntr)
-                    .createCurrentQuickFilters(
-                            formService.getMyForm(),
-                            loginController.getRoleMap(),
-                            loginController.getLoggedUserDetail(),
-                            tableFilterCurrent);
+            quickFilters = FilterUtil.instance(mongoDbUtil, ogmCreatorIntr).createCurrentQuickFilters(formService.getMyForm(), loginController.getRoleMap(), loginController.getLoggedUserDetail(), tableFilterCurrent);
         }
 
         for (MyField myField : quickFilters) {
 
             String fieldKey = myField.getKey();
 
-            Object currentFilterValue = guiFiltersCurrent.get(fieldKey);
+            Object currentFilterValue = fetchUiCurrentFilter(fieldKey);
 
             if (myField.isAutoComplete() && !(currentFilterValue instanceof PlainRecord)) {
                 MyItems myItems = myField.getItemsAsMyItems();
-                Document doc = mongoDbUtil.findOne(
-                        myItems.getDb(),
-                        myItems.getTable(),
-                        Filters.eq(MONGO_ID, currentFilterValue));
-                guiFiltersCurrent.put(fieldKey, PlainRecordData.getPlainRecord(doc, myItems));
+                Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.getTable(), Filters.eq(MONGO_ID, currentFilterValue));
+                putUiCurrentFilter(fieldKey, PlainRecordData.getPlainRecord(doc, myItems));
             }
 
             if (myField.getComponentType().contains("selectOneMenu")) {
                 if (myField.getMyconverter() instanceof SelectOneObjectIdConverter) {
-                    guiFiltersCurrent.putIfAbsent(fieldKey, SelectOneObjectIdConverter.SELECT_ALL);
+                    putUiCurrentFilter(fieldKey, SelectOneObjectIdConverter.SELECT_ALL);
                 } else if (myField.getMyconverter() instanceof BsonConverter) {
-                    guiFiltersCurrent.putIfAbsent(fieldKey, BsonConverter.SELECT_ALL);
+                    putUiCurrentFilter(fieldKey, BsonConverter.SELECT_ALL);
                 }
             }
         }
