@@ -328,8 +328,7 @@ public class MyActions {
 
 
         private void handleActionEnableAsListDocument(MyMap crudObject, String key, List<Document> actions) {
-            boolean enable = false;
-            ActionEnableResult enableResult = null;
+
             Document actionDoc = actions.stream()
                     // Filter down to only actions the user is actually allowed to see
                     .filter(action -> {
@@ -346,9 +345,12 @@ public class MyActions {
                     .orElse(null);
 
             if (actionDoc == null) {
-                map.put(key, enable);
+                map.put(key, false);
                 return;
             }
+
+            boolean enable = false;
+            ActionEnableResult enableResult = null;
 
             String strategy = actionDoc.getString("strategy");
 
