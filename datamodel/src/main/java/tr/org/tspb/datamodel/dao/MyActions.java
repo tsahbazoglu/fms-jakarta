@@ -330,64 +330,75 @@ public class MyActions {
         private void handleActionEnableAsListDocument(MyMap crudObject, String key, List<Document> actions) {
             boolean enable = false;
             ActionEnableResult enableResult = null;
+            Document actionDoc = actions.stream()
+                    // Filter down to only actions the user is actually allowed to see
+                    .filter(action -> {
+                        String role = action.getString("role");
+                        return "*".equals(role) || roleMap.isUserInRole(role);
+                    })
+                    // Sort so specific roles come first, and "*" always comes last
+                    .sorted((a1, a2) -> {
+                        boolean isWildcard1 = "*".equals(a1.getString("role"));
+                        boolean isWildcard2 = "*".equals(a2.getString("role"));
+                        return Boolean.compare(isWildcard1, isWildcard2);
+                    })
+                    .findFirst()
+                    .orElse(null);
 
-            for (Document action : actions) {
-
-                String role = action.getString("role");
-
-                if (role != null && !roleMap.isUserInRole(role)) {
-                    continue;
-                }
-
-                String strategy = action.getString("strategy");
-
-                switch (strategy) {
-                    case "boolean-value":
-                        enable = action.getBoolean("boolean-value");
-                        break;
-                    case "lookup":
-                        Document lookup = action.get("lookup", Document.class);
-                        enable = TagActionRef.calc(lookup, searchObject, userDetail,
-                                fmsScriptRunner, crudObject);
-                        break;
-                    case EVENT_ENABLE:
-                        enableResult = checkControlResultSchemaVersion110(
-                                searchObject, action);
-                        enable = enableResult.isEnable();
-                }
-
+            if (actionDoc == null) {
                 map.put(key, enable);
+                return;
+            }
 
-                switch (key) {
-                    case ACTION_SAVE:
-                        myActions.saveAction = new TagActionSave(enable,
-                                enableResult, action,
-                                myActions.myForm.getMyProject().
-                                        getRegistredFunctions(),
-                                searchObject, userDetail, fmsScriptRunner);
-                        break;
-                    case ACTION_CHECK_ALL:
-                        myActions.checkAllAction = new TagActionCheckAll(enable,
-                                enableResult, action,
-                                myActions.myForm.getMyProject().
-                                        getRegistredFunctions(),
-                                searchObject, userDetail, fmsScriptRunner);
-                        break;
-                    case ACTION_SEND_FORMS:
-                        myActions.sendFormAction = new TagActionSendForms(enable,
-                                enableResult, action,
-                                myActions.myForm.getMyProject().
-                                        getRegistredFunctions(),
-                                searchObject, userDetail, fmsScriptRunner);
-                        break;
-                    case ACTION_NORECORD:
-                        myActions.norecordAction = new TagActionNoRecord(enable,
-                                enableResult, action,
-                                myActions.myForm.getMyProject().
-                                        getRegistredFunctions(),
-                                searchObject, userDetail, fmsScriptRunner);
-                        break;
-                }
+            String strategy = actionDoc.getString("strategy");
+
+            switch (strategy) {
+                case "boolean-value":
+                    enable = actionDoc.getBoolean("boolean-value");
+                    break;
+                case "lookup":
+                    Document lookup = actionDoc.get("lookup", Document.class);
+                    enable = TagActionRef.calc(lookup, searchObject, userDetail,
+                            fmsScriptRunner, crudObject);
+                    break;
+                case EVENT_ENABLE:
+                    enableResult = checkControlResultSchemaVersion110(
+                            searchObject, actionDoc);
+                    enable = enableResult.isEnable();
+                    break;
+            }
+
+            map.put(key, enable);
+
+            switch (key) {
+                case ACTION_SAVE:
+                    myActions.saveAction = new TagActionSave(enable,
+                            enableResult, actionDoc,
+                            myActions.myForm.getMyProject().
+                                    getRegistredFunctions(),
+                            searchObject, userDetail, fmsScriptRunner);
+                    break;
+                case ACTION_CHECK_ALL:
+                    myActions.checkAllAction = new TagActionCheckAll(enable,
+                            enableResult, actionDoc,
+                            myActions.myForm.getMyProject().
+                                    getRegistredFunctions(),
+                            searchObject, userDetail, fmsScriptRunner);
+                    break;
+                case ACTION_SEND_FORMS:
+                    myActions.sendFormAction = new TagActionSendForms(enable,
+                            enableResult, actionDoc,
+                            myActions.myForm.getMyProject().
+                                    getRegistredFunctions(),
+                            searchObject, userDetail, fmsScriptRunner);
+                    break;
+                case ACTION_NORECORD:
+                    myActions.norecordAction = new TagActionNoRecord(enable,
+                            enableResult, actionDoc,
+                            myActions.myForm.getMyProject().
+                                    getRegistredFunctions(),
+                            searchObject, userDetail, fmsScriptRunner);
+                    break;
             }
         }
 
