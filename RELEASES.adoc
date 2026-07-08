@@ -79,6 +79,9 @@ git describe --tags
 
 == 1.2.5
 ----
+git tag -d v1.2.5
+git push origin --delete v1.2.5
+
 git tag -a v1.2.5 -m "Release version 1.2.5"
 git push origin v1.2.5
 git tag
