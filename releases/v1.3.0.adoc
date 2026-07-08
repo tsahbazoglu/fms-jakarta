@@ -1,0 +1,89 @@
+[[v1-3-0]]
+= Release Notes — v1.3.0
+:toc: left
+:toclevels: 3
+:icons: font
+
+== 🚀 Overview
+Version `1.3.0` introduces granular, role-based action enforcement directly within form schemas. This allows administrators to dynamically control whether a form action (such as saving or submitting) is enabled or disabled, based entirely on the authenticated user's role and specific database conditions.
+
+---
+
+== 🌟 For Customers & Users
+
+* *Dynamic Form Actions:* Buttons and actions within forms now intelligently enable or disable themselves based on your assigned role and the current status of the data.
+* *Safer Workflows:* Users will only see or interact with actions they are permitted to use, preventing accidental submissions or unauthorized data modifications.
+* *Adaptive Workflows for Operational Roles:* Actions for operational staff (e.g., standard users) can now automatically adapt based on complex workflow stages or organizational parameters.
+
+---
+
+== 🛠 For Developers & System Administrators
+
+=== New Feature: Role-Based Action Enability (`list` by role)
+You can now define an array of rule strategies under form schema actions. The system evaluates these rules per role to determine if an action should be active.
+
+==== Key Strategies Introduced:
+1. *`boolean-value` Strategy:* A straightforward hardcoded permission toggle for specific administrative roles.
+2. *`lookup` Strategy:* A data-driven approach that queries the database to evaluate if an action should be enabled (e.g., checking record statuses, organization context, or active periods).
+
+=== Schema Implementation Example
+
+[source,json]
+----
+"/schemas/action/save_admin_enable": {
+  "fms-version": "1.3.0",
+  "list": [
+    {
+      "role": "umeadmin",
+      "strategy": "boolean-value",
+      "boolean-value": true,
+      "action": {
+        "db": "umedb",
+        "registred-func-name": "write-data-changed-status"
+      }
+    },
+    {
+      "role": "akuser",
+      "strategy": "lookup",
+      "lookup": {
+        "db": "umedb",
+        "table": "dataBankOrganizationStatus",
+        "query": {
+          "list": [
+            { "key": "status", "value": "000,001,002", "type": "in" },
+            { "key": "workflowStatus", "value": "000,002,003", "type": "in" },
+            { "key": "member", "fms-value": "fms_crud{{member}}" },
+            { "key": "period", "fms-value": "fms_crud{{period}}" }
+          ]
+        },
+        "check": "result>0"
+      },
+      "action": {
+        "db": "umedb",
+        "registred-func-name": "write-data-changed-status"
+      }
+    }
+  ]
+}
+----
+
+NOTE: In the example above, `umeadmin` has unconditional access to the save action, whereas `akuser` requires a backend state verification (`status`, `workflowStatus`, context-aware `member`, and `period`) yielding a `result > 0` to enable the button.
+
+---
+
+== 📦 Deployment Reference (Git Commands)
+
+[source,bash]
+----
+# Delete the local and remote tags if they already exist
+git tag -d v1.3.0
+git push origin --delete v1.3.0
+
+# Create and push the fresh annotated release tag
+git tag -a v1.3.0 -m "Release version 1.3.0"
+git push origin v1.3.0
+
+# Verify the changes
+git tag
+git describe --tags
+----
