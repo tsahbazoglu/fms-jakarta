@@ -5,7 +5,7 @@
     <parent>
         <artifactId>fms</artifactId>
         <groupId>tr.org.tspb</groupId>
-        <version>1.2.4</version>
+        <version>1.2.5</version>
     </parent>
 
     <artifactId>fms-web</artifactId>
