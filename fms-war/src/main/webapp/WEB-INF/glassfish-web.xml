@@ -9,6 +9,10 @@
         </property>
     </jsp-config>
     <security-role-mapping>
+        <role-name>umeadmin</role-name>
+        <group-name>umeadmin</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
         <role-name>kvhsuser</role-name>
         <group-name>kvhsuser</group-name>
     </security-role-mapping> 

@@ -119,8 +119,9 @@
             <description>
                 only admin group can access
             </description>
-            <role-name>kvhsuser</role-name>          
-            <role-name>architect</role-name>          
+            <role-name>umeadmin</role-name>
+            <role-name>kvhsuser</role-name>
+            <role-name>architect</role-name>
             <role-name>uysviewer</role-name>
             <role-name>uysuser</role-name>
             <role-name>gyonadadmin</role-name>
@@ -168,7 +169,11 @@
             <role-name>welcome</role-name>
         </auth-constraint>
     </security-constraint>
-  
+
+    <security-role>
+        <description/>
+        <role-name>umeadmin</role-name>
+    </security-role>
     <security-role>
         <description/>
         <role-name>kvhsuser</role-name>        
