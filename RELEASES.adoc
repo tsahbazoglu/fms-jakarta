@@ -75,3 +75,13 @@ git push origin v1.2.4
 git tag
 git describe --tags
 ----
+
+
+== 1.2.5
+----
+git tag -a v1.2.5 -m "Release version 1.2.5"
+git push origin v1.2.5
+git tag
+git describe --tags
+----
+
