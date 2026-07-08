@@ -16,6 +16,7 @@ git branch -d release-1.1.0
 git branch -d release-1.2.0
 git branch -d release-1.2.1
 git branch -d p_ajax_update_save_button_on_pivot_ui
+git branch -d correct_hitory_view
 ----
 
 === Remote
@@ -28,6 +29,7 @@ git push origin --delete release-1.1.0
 git push origin --delete release-1.2.0
 git push origin --delete release-1.2.1
 git push origin --delete p_ajax_update_save_button_on_pivot_ui
+git push origin --delete correct_hitory_view
 ----
 
 == Delete the wrong tag
