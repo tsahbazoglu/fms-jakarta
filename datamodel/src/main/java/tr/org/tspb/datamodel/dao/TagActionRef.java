@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import tr.org.tspb.constants.ProjectConstants;
+
 import static tr.org.tspb.constants.ProjectConstants.DIEZ;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR_IN;
@@ -21,6 +22,7 @@ import static tr.org.tspb.constants.ProjectConstants.TEMPLATE;
 import static tr.org.tspb.constants.ProjectConstants.VALUE;
 import static tr.org.tspb.constants.ProjectConstants.pattern_fms_crud;
 import static tr.org.tspb.constants.ProjectConstants.pattern_fms_filter;
+
 import tr.org.tspb.datamodel.expected.FmsScriptRunner;
 import tr.org.tspb.datamodel.pojo.UserDetail;
 
@@ -31,10 +33,10 @@ import tr.org.tspb.datamodel.pojo.UserDetail;
 public class TagActionRef {
 
     static Boolean calc(Document ref, Map filter, UserDetail userDetail,
-            FmsScriptRunner fmsScriptRunner, MyMap crudObject) {
+                        FmsScriptRunner fmsScriptRunner, MyMap crudObject) {
 
-        String db = ref.get("db", String.class);
-        String table = ref.get("table", String.class);
+        String db = ref.getString("db");
+        String table = ref.getString("table");
 
         Document query = new Document();
 
@@ -111,7 +113,8 @@ public class TagActionRef {
                                     "could not find replaceable word");
                     }
                 }
-                query.put(key, crudValue == null ? "no result" : crudValue);
+                //new ObjectId() means no value
+                query.put(key, crudValue == null ? new ObjectId() : crudValue);
             } else if (strValue != null) {
                 query.put(key, strValue);
             } else if (numberValue != null) {
@@ -138,12 +141,12 @@ public class TagActionRef {
                         break;
                     case "ne":
                         query.put(key, new Document(DOLAR_NE, d.get(VALUE,
-                                String.class).
+                                        String.class).
                                 replaceAll(DIEZ, DOLAR)));
                         break;
                     case "regex":
                         query.put(key, new Document(DOLAR_REGEX, d.get(VALUE,
-                                String.class).
+                                        String.class).
                                 replaceAll(DIEZ, DOLAR)));
                         break;
                     default:

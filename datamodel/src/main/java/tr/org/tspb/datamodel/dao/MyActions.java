@@ -1,7 +1,9 @@
 package tr.org.tspb.datamodel.dao;
 
 import tr.org.tspb.datamodel.pojo.RoleMap;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import tr.org.tspb.constants.ProjectConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -221,9 +223,9 @@ public class MyActions {
         private UserDetail userDetail;
 
         public Build(String viewerRole, String db, RoleMap roleMap,
-                Document searchObject,//
-                Object attrActions, FmsScriptRunner fmsScriptRunner,
-                UserDetail userDetail) {
+                     Document searchObject,//
+                     Object attrActions, FmsScriptRunner fmsScriptRunner,
+                     UserDetail userDetail) {
 
             this.viewerRole = viewerRole;
             this.db = db;
@@ -308,43 +310,50 @@ public class MyActions {
 
         public Build initAsSchemaVersion100(MyMap crudObject) {
 
-            for (String key : ((Document) attrActions).keySet()) {
+            Document attrActionsDoc = (Document) attrActions;
 
-                Document action = ((Document) attrActions).get(key,
-                        Document.class);
+            for (String key : attrActionsDoc.keySet()) {
 
-                boolean enable = false;
+                Document action = attrActionsDoc.get(key, Document.class);
 
-                ActionEnableResult enableResult = null;
+                List<Document> actions = action.getList("list", Document.class);
+                if (actions != null && !actions.isEmpty()) {
+                    handleActionEnableAsListDocument(crudObject, key, actions);
+                } else {
+                    handleActionEnableAsDocument(crudObject, key, action);
+                }
+            }
+            return this;
+        }
 
-                List<String> permit = action.getList("permit", String.class);
-                List<String> block = action.getList("block", String.class);
-                Boolean shoot = action.getBoolean("shoot");
-                String func = action.getString("func");
-                Document ref = action.get(CONFIG_ATTR_REF, Document.class);
 
-                if (permit == null || roleMap.isUserInRole(permit)) {
-                    enable = true;
+        private void handleActionEnableAsListDocument(MyMap crudObject, String key, List<Document> actions) {
+            boolean enable = false;
+            ActionEnableResult enableResult = null;
+
+            for (Document action : actions) {
+
+                String role = action.getString("role");
+
+                if (role != null && !roleMap.isUserInRole(role)) {
+                    continue;
                 }
 
-                if (block != null && roleMap.isUserInRole(block)) {
-                    enable = false;
-                }
+                String strategy = action.getString("strategy");
 
-                if (func != null) {
-                    func = func.replace(DIEZ, DOLAR);
-                    Document commandResult = fmsScriptRunner.
-                            runCommand(db, func, searchObject, roleMap.keySet());
-                    enable = commandResult.getBoolean(RETVAL);
-                } else if (ref != null) {
-                    enable = TagActionRef.calc(ref, searchObject, userDetail,
-                            fmsScriptRunner, crudObject);
-                } else if (action.get(EVENT_ENABLE) != null) {
-                    enableResult = checkControlResultSchemaVersion110(
-                            searchObject, action);
-                    enable = enableResult.isEnable();
-                } else if (shoot != null) {
-                    enable = shoot;
+                switch (strategy) {
+                    case "boolean-value":
+                        enable = action.getBoolean("boolean-value");
+                        break;
+                    case "lookup":
+                        Document lookup = action.get("lookup", Document.class);
+                        enable = TagActionRef.calc(lookup, searchObject, userDetail,
+                                fmsScriptRunner, crudObject);
+                        break;
+                    case EVENT_ENABLE:
+                        enableResult = checkControlResultSchemaVersion110(
+                                searchObject, action);
+                        enable = enableResult.isEnable();
                 }
 
                 map.put(key, enable);
@@ -380,7 +389,74 @@ public class MyActions {
                         break;
                 }
             }
-            return this;
+        }
+
+        private void handleActionEnableAsDocument(MyMap crudObject, String key, Document action) {
+            boolean enable = false;
+            ActionEnableResult enableResult = null;
+
+            List<String> permit = action.getList("permit", String.class);
+            List<String> block = action.getList("block", String.class);
+            Boolean shoot = action.getBoolean("shoot");
+            String func = action.getString("func");
+            Document ref = action.get(CONFIG_ATTR_REF, Document.class);
+
+            if (permit == null || roleMap.isUserInRole(permit)) {
+                enable = true;
+            }
+
+            if (block != null && roleMap.isUserInRole(block)) {
+                enable = false;
+            }
+
+            if (func != null) {
+                func = func.replace(DIEZ, DOLAR);
+                Document commandResult = fmsScriptRunner.
+                        runCommand(db, func, searchObject, roleMap.keySet());
+                enable = commandResult.getBoolean(RETVAL);
+            } else if (ref != null) {
+                enable = TagActionRef.calc(ref, searchObject, userDetail,
+                        fmsScriptRunner, crudObject);
+            } else if (action.get(EVENT_ENABLE) != null) {
+                enableResult = checkControlResultSchemaVersion110(
+                        searchObject, action);
+                enable = enableResult.isEnable();
+            } else if (shoot != null) {
+                enable = shoot;
+            }
+
+            map.put(key, enable);
+
+            switch (key) {
+                case ACTION_SAVE:
+                    myActions.saveAction = new TagActionSave(enable,
+                            enableResult, action,
+                            myActions.myForm.getMyProject().
+                                    getRegistredFunctions(),
+                            searchObject, userDetail, fmsScriptRunner);
+                    break;
+                case ACTION_CHECK_ALL:
+                    myActions.checkAllAction = new TagActionCheckAll(enable,
+                            enableResult, action,
+                            myActions.myForm.getMyProject().
+                                    getRegistredFunctions(),
+                            searchObject, userDetail, fmsScriptRunner);
+                    break;
+                case ACTION_SEND_FORMS:
+                    myActions.sendFormAction = new TagActionSendForms(enable,
+                            enableResult, action,
+                            myActions.myForm.getMyProject().
+                                    getRegistredFunctions(),
+                            searchObject, userDetail, fmsScriptRunner);
+                    break;
+                case ACTION_NORECORD:
+                    myActions.norecordAction = new TagActionNoRecord(enable,
+                            enableResult, action,
+                            myActions.myForm.getMyProject().
+                                    getRegistredFunctions(),
+                            searchObject, userDetail, fmsScriptRunner);
+                    break;
+            }
         }
 
         public Build base() {
@@ -522,7 +598,7 @@ public class MyActions {
                 if (gui instanceof Code) {
                     Document commandResult = fmsScriptRunner.runCommand(
                             this.myActions.myForm.getDb(), ((Code) gui).
-                            getCode(), filter, null);
+                                    getCode(), filter, null);
                     gui = commandResult.get(RETVAL);
                 }
 
