@@ -6,6 +6,8 @@
 Welcome to the official release history. Below you will find detailed updates for both customers and developers.
 
 include::releases/v1.3.0.adoc[leveloffset=+1]
+include::releases/v1.4.0.adoc[leveloffset=+1]
+
 
 
 == Asccidoc

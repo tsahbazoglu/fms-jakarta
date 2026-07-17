@@ -1,0 +1,101 @@
+[[v1-4-0]]
+= Release Notes — v1.4.0
+:toc: left
+:toclevels: 3
+:icons: font
+
+== Overview
+
+Version `1.4.0` introduces **preSaveEvent** action functionality accessible via external API.
+This release migrates from deprecated MongoDB JavaScript stored functions to a modern API-driven approach.
+
+---
+
+== For Customers & Users
+
+* *Enhanced Data Validation:* Forms execute custom pre-save business logic via external API calls before data persistence.
+* *Improved Reliability:* Migration from deprecated MongoDB stored functions to API endpoints ensures long-term stability.
+* *Seamless Experience:* No change to user workflows — validations and transformations happen automatically.
+
+---
+
+== For Developers
+
+=== New Feature: External API-Based `preSaveEvent` Actions
+
+Form schemas can now trigger external API endpoints before data is saved, replacing the deprecated MongoDB JavaScript stored function approach.
+
+==== Key Benefits:
+
+1. *Modern Architecture:* Leverages RESTful APIs instead of database-stored JavaScript functions.
+2. *Enhanced Security:* Supports authentication, authorization, and audit logging.
+3. *Better Testability:* Business logic can be tested independently of database schema.
+4. *Cross-Platform Compatibility:* API endpoints can be implemented in any language or framework.
+
+=== Schema Implementation Example
+
+[source,json]
+----
+"your_schema": {
+  "fms-version": "1.4.0",
+  "eventPreSave": {
+    "type": "external_api",
+    "uri": "/constraint-service/api/constraints/gsygsyo/presave",
+    "uri-params": [
+      {
+        "key": "function-code",
+        "value": "108"
+      },
+      {
+        "key": "member",
+        "value": "fms_crud{{member}}"
+      },
+      {
+        "key": "period",
+        "value": "fms_crud{{period}}"
+      }
+    ]
+  }
+}
+----
+
+=== Migration Guide: From MongoDB Stored Functions to API
+
+[cols="1,1",options="header"]
+|===
+|Old Approach (v1.3.0 and earlier) |New Approach (v1.4.0+)
+
+|MongoDB JavaScript stored functions
+|External RESTful API endpoints
+
+|`db.system.js.save({...})`
+|`POST https://api.example.com/validate`
+
+|Limited testability & debugging
+|Full unit/integration test coverage
+
+|Deprecated by MongoDB
+|Modern, supported standard
+|===
+
+NOTE: Existing MongoDB stored functions will continue to work but are considered deprecated.
+We strongly recommend migrating to the API-based approach for all new implementations.
+
+---
+
+== Deployment Reference (Git Commands)
+
+[source,bash]
+----
+# Delete the local and remote tags if they already exist
+git tag -d v1.4.0
+git push origin --delete v1.4.0
+
+# Create and push the fresh annotated release tag
+git tag -a v1.4.0 -m "Release version 1.4.0 - preSaveEvent API functionality"
+git push origin v1.4.0
+
+# Verify the changes
+git tag
+git describe --tags
+----
