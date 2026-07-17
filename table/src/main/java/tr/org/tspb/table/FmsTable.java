@@ -44,6 +44,7 @@ import tr.org.tspb.datamodel.dao.ChildFilter;
 import tr.org.tspb.datamodel.dao.MyBaseRecord;
 import tr.org.tspb.datamodel.dao.TagEvent;
 import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
+import tr.org.tspb.datamodel.pojo.PreSaveResult;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
 import tr.org.tspb.service.CtrlService;
 import tr.org.tspb.factory.cp.OgmCreatorIntr;
@@ -150,11 +151,13 @@ public abstract class FmsTable extends FmsTableView {
 
     public boolean runEventPreSave(Map query, MyMap crud) {
 
-        if (formService.getMyForm().getEventPreSave() == null) {
+        FmsForm fmsForm = formService.getMyForm();
+
+        if (fmsForm.getEventPreSave() == null) {
             return false;
         }
 
-        String eventPreSaveDB = formService.getMyForm().getEventPreSave().getDb();
+        String eventPreSaveDB = fmsForm.getEventPreSave().getDb();
 
         if (eventPreSaveDB == null) {
             //FIXME messagebundle
@@ -162,12 +165,36 @@ public abstract class FmsTable extends FmsTableView {
             return true;
         }
 
-        Document myCrudObject = new Document(crud);
-        myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
+        TagEvent tagEventPreSave = fmsForm.getEventPreSave();
+        TagEvent.TagEventType type = tagEventPreSave.getType();
 
-        String code = formService.getMyForm().getEventPreSave().getJsFunction();
-        Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code, query, myCrudObject);
-        Object result = commandResult.get(RETVAL);
+        Object result = null;
+        if (type == null) {
+            Document myCrudObject = new Document(crud);
+            myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
+            String code = fmsForm.getEventPreSave().getJsFunction();
+            Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code, query, myCrudObject);
+            result = commandResult.get(RETVAL);
+        } else {
+            switch (type) {
+                case externalApi -> {
+                    try {
+                        PreSaveResult preSaveResult = repositoryService.runEventPreSaveByGivenTagEvent(
+                                fmsForm.getMyProject().getKey(),
+                                fmsForm.getMyProject().getApiToken(),
+                                tagEventPreSave,
+                                new Document(crud));
+
+                        if (!preSaveResult.isResult()) {
+                            result = new Document()
+                                    .append("popupMessage", preSaveResult.getMsg());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
         if (Boolean.TRUE.equals(result)) {
             //FIXME messagebundle
@@ -175,8 +202,7 @@ public abstract class FmsTable extends FmsTableView {
             return true;
         }
 
-        if (result instanceof Document) {
-            Document resultJSON = (Document) result;
+        if (result instanceof Document resultJSON) {
             if ("facesMessage".equals(resultJSON.get("gui"))) {
                 String mssssage = resultJSON.get("facesMessage").toString();
                 FacesMessage.Severity severity;
@@ -677,10 +703,7 @@ public abstract class FmsTable extends FmsTableView {
                 // 2. Instantiate the native Jakarta REST client worker engine
                 try (Client client = ClientBuilder.newClient()) {
                     // 3. Dispatch the HTTP POST execution payload over the wire
-                    Response response = client.target(TARGET_URL)
-                            .request(MediaType.APPLICATION_JSON)
-                            .header("X-API-KEY", myForm.getMyProject().getApiToken())
-                            .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+                    Response response = client.target(TARGET_URL).request(MediaType.APPLICATION_JSON).header("X-API-KEY", myForm.getMyProject().getApiToken()).post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
                     // 4. Validate output response signals cleanly
                     if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                         String jsonResponse = response.readEntity(String.class);
@@ -696,11 +719,7 @@ public abstract class FmsTable extends FmsTableView {
 
 
             } else {
-                mongoDbUtil.trigger(
-                        repositoryService.expandCrudObject(myForm, new Document(crudObject)),
-                        myForm.getEventPostDelete(),
-                        loginController.getRolesAsList()
-                );
+                mongoDbUtil.trigger(repositoryService.expandCrudObject(myForm, new Document(crudObject)), myForm.getEventPostDelete(), loginController.getRolesAsList());
             }
 
 

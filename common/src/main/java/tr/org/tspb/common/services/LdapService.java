@@ -179,7 +179,7 @@ public class LdapService extends AbstractSrv {
     }
 
     public void createUser(String uid, String fn, String ln, String email,
-            String pswd) throws LdapException {
+                           String pswd) throws LdapException {
 
         MyLdapUser myLdapUser = null;
 
@@ -203,7 +203,7 @@ public class LdapService extends AbstractSrv {
     }
 
     private void createUser(String uid, String firstName, String lastName,
-            String email, String passwordNew, DirContext context) throws
+                            String email, String passwordNew, DirContext context) throws
             NamingException {
         String userDN = createUserDN(uid);
 
@@ -539,6 +539,50 @@ public class LdapService extends AbstractSrv {
                     email, attachment);
 
         }
+    }
+
+    /**
+     * Finds all roles (CN) that contain the given username as a member.
+     *
+     * @param username The UID of the user.
+     * @return A list of group names (CN) the user belongs to.
+     * @throws LdapException
+     */
+    public List<String> getRolesByUsername(String username) throws LdapException {
+        List<String> roles = new ArrayList<>();
+        String userDn = createUserDN(username);
+        DirContext context = null;
+
+        try {
+            context = getContext();
+
+            // We search in the Roles DN path
+            String searchBase = baseService.getProperties().getLdapRolesDn();
+
+            // Filter: find objects where uniqueMember is the specific user DN
+            // Note: adjust "uniqueMember" if your LDAP schema uses "member" instead
+            String filter = "(&(objectClass=*)(uniqueMember=" + userDn + "))";
+
+            javax.naming.directory.SearchControls controls = new javax.naming.directory.SearchControls();
+            controls.setSearchScope(javax.naming.directory.SearchControls.SUBTREE_SCOPE);
+
+            NamingEnumeration<SearchResult> results = context.search(searchBase, filter, controls);
+
+            while (results != null && results.hasMore()) {
+                SearchResult sr = results.next();
+                Attributes attrs = sr.getAttributes();
+                Attribute cnAttr = attrs.get("cn");
+                if (cnAttr != null) {
+                    roles.add(cnAttr.get().toString());
+                }
+            }
+        } catch (NamingException ex) {
+            throw new LdapException("Could not retrieve roles for user: " + username, ex);
+        } finally {
+            closeContext(context);
+        }
+
+        return roles;
     }
 
 }

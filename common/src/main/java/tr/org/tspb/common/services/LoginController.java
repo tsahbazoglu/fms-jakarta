@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters;
 import static tr.org.tspb.constants.ProjectConstants.*;
 import htmlflow.HtmlFlow;
 import htmlflow.HtmlView;
+import tr.org.tspb.constants.exceptions.LdapException;
 import tr.org.tspb.util.service.DlgCtrl;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class LoginController implements Serializable {
     @Inject
     private MyHtmlTemplates myHtmlTemplates;
 
-//    @Inject
+    //    @Inject
 //    //@DefaultEsignDoor
 //    @OyasEsignDoorQualifier
 //    private EsignDoor esignDoor;
@@ -124,14 +125,19 @@ public class LoginController implements Serializable {
         Object session = FacesContext.getCurrentInstance().
                 getExternalContext().
                 getSession(false);
-        Object loggedUserRoles = ((HttpSession) session).getAttribute(
-                LOGGED_USER_ROLES);
-        roleMap = new RoleMap();
-        roleMap.setLoggedUserRoles((List) loggedUserRoles);
-        roleAsList = new ArrayList();
-        for (Object x : (List) loggedUserRoles) {
-            roleAsList.add(x.toString());
+
+        try {
+            roleAsList = ldapService
+                    .getRolesByUsername(loggedUserDetail.getUsername());
+        } catch (LdapException e) {
+            logBaseInfo(request);
+            invalidateSession();
+            return;
         }
+
+        roleMap = new RoleMap();
+        roleMap.setLoggedUserRoles(roleAsList);
+
         String loginDB = baseService.getLoginDB();
         String loginTable = baseService.getLoginTable();
         String loginUsernameField = baseService.getLoginUsernameField();
@@ -161,12 +167,12 @@ public class LoginController implements Serializable {
         serverLog.append(COMMA);
         serverLog.append(
                 request.getRemoteHost() == null ? "REMOTE HOST" : request.
-                getRemoteHost());
+                        getRemoteHost());
 
         serverLog.append(COMMA);
         serverLog.append(
                 request.getRemoteAddr() == null ? "REMOTE ADDR" : request.
-                getRemoteAddr());
+                        getRemoteAddr());
 
         String logMsg = serverLog.toString();
 
@@ -213,7 +219,7 @@ public class LoginController implements Serializable {
                         html().
                         head().
                         __() //head
-                        .
+                                .
                         body().
                         div().
                         attrClass("container").
@@ -263,24 +269,24 @@ public class LoginController implements Serializable {
                                 "<b>Yabancı Piyasa İşlemleri</b> mönüsünde, Birliğimize bildirilen yurtdışı piyasalardaki işlemlere ilişkin bilgiler yer almaktadır.").
                         __().
                         __()//ul
-                        .
+                                .
                         br().
                         __().
                         __().
                         __() //body
-                        .
+                                .
                         __() //html
-                        .
+                                .
                         toString();
                 break;
             case "TSPB2":
                 html = HtmlFlow
                         .doc(System.out) //.view()
-                        .
+                                .
                         html().
                         head().
                         __() //head
-                        .
+                                .
                         body().
                         div().
                         attrClass("container").
@@ -323,7 +329,7 @@ public class LoginController implements Serializable {
                                 "Gayrimenkul Yatırım Ortaklıkları ile Girişim Sermayesi Yatırım Ortaklıklarının alım ve satımlarından elde edilen kazançlar “Pay” kırılımının altında takip edilir.").
                         __().
                         __()//ul
-                        .
+                                .
                         br().
                         __().
                         p().
@@ -334,9 +340,9 @@ public class LoginController implements Serializable {
                         __().
                         __().
                         __() //body
-                        .
+                                .
                         __() //html
-                        .
+                                .
                         toString();
                 break;
             case "TDUB":
@@ -457,15 +463,15 @@ public class LoginController implements Serializable {
 
         for (Document delegationRecord : eimzaInfo) {
             Document delegatedFieldRecord = mongoDbUtil.findOne(baseService.
-                    getLoginDB(),
+                            getLoginDB(),
                     baseService.getLoginTable(),
                     Filters.eq(MONGO_ID, delegationRecord.get(delegatedField,
                             ObjectId.class)));
 
             UserDetail.EimzaPersonel eimzaPersonel
                     = new UserDetail().new EimzaPersonel(delegationRecord,
-                            delegatedFieldRecord, delegatedField,
-                            delegatingField);
+                    delegatedFieldRecord, delegatedField,
+                    delegatingField);
 
             listofEligibale.add(eimzaPersonel);
         }
@@ -651,7 +657,7 @@ public class LoginController implements Serializable {
     public boolean notMemberNotAdminNotViewer(MyProject myProject) {
         return loggedUserDetail.getDbo().
                 getObjectId() == null && !isUserInRole(
-                        myProject.getAdminAndViewerRole());
+                myProject.getAdminAndViewerRole());
     }
 
 }

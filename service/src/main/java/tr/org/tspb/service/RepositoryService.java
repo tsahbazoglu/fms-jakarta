@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,6 +46,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.primefaces.model.DualListModel;
 //
+import tr.org.tspb.constants.ProjectConstants;
 import tr.org.tspb.util.tools.DocumentRecursive;
 import tr.org.tspb.util.stereotype.MyServices;
 import tr.org.tspb.common.qualifier.MyCtrlServiceQualifier;
@@ -114,6 +116,8 @@ public class RepositoryService implements Serializable {
 
     private final Map<String, FmsForm> cacheMyFormLarge = new HashMap<>();
 
+    private static final Pattern FMS_CRUD_PATTERN = ProjectConstants.pattern_fms_crud;
+
     Gson gsonConverter = new Gson();
     Type gsonType = new TypeToken<List<String>>() {
     }.getType();
@@ -174,8 +178,8 @@ public class RepositoryService implements Serializable {
 
             if (ComponentType.chips.name().
                     equals(fmsForm.getField(key) == null ? null : fmsForm.
-                                                                  getField(key).
-                                                                  getComponentType())) {
+                            getField(key).
+                            getComponentType())) {
                 List<SelectItem> list = (List<SelectItem>) object;
                 List<ObjectId> targetList = new ArrayList<>();
                 if (list != null) {
@@ -228,6 +232,77 @@ public class RepositoryService implements Serializable {
         return PostSaveResult.getNullSingleton();
     }
 
+
+    public PreSaveResult runEventPreSaveByGivenTagEvent(String projectKey, String apiToken, TagEvent tagEvent, Document operatedObject)
+            throws MongoOrmFailedException {
+
+        List<String> memberIdsAsStr = new ArrayList<>();
+
+        Object memberObj = operatedObject.get("member");
+        if (memberObj != null) {
+            if (memberObj instanceof Document && ((Document) memberObj).containsKey("$in")) {
+                List<?> rawList = ((Document) memberObj).getList("$in", Object.class);
+                for (Object item : rawList) {
+                    memberIdsAsStr.add(item instanceof ObjectId ? ((ObjectId) item).toHexString() : item.toString());
+                }
+            } else {
+                memberIdsAsStr.add(memberObj instanceof ObjectId ? ((ObjectId) memberObj).toHexString() : memberObj.toString());
+            }
+        }
+
+        String periodIdAsStr = new ObjectId().toHexString();
+        if (operatedObject.getObjectId("period") != null) {
+            periodIdAsStr = operatedObject.getObjectId("period").toHexString();
+        }
+
+        String tableName = operatedObject.getString("table");
+
+        Map<String, Object> requestPayload = new HashMap<>();
+        requestPayload.put("member-ids-as-str", memberIdsAsStr);
+        requestPayload.put("period-id-as-str", periodIdAsStr);
+        tagEvent.getUriParameters().forEach(uriParameter -> {
+            String value = uriParameter.value();
+            Matcher matcher = FMS_CRUD_PATTERN.matcher(value);
+            if (matcher.find()) {
+                Object operatedObjectValue = operatedObject.get(matcher.group(1));
+                if (operatedObjectValue != null) {
+                    value = operatedObjectValue.toString();
+                }
+            }
+            requestPayload.put(uriParameter.key(), value);
+        });
+
+        String TARGET_URL = "http://localhost:8080" + tagEvent.getUri();
+
+        PreSaveResult preSaveResult;
+
+        // 2. Instantiate the native Jakarta REST client worker engine
+        try (Client client = ClientBuilder.newClient()) {
+            // 3. Dispatch the HTTP POST execution payload over the wire
+            Response response = client.target(TARGET_URL)
+                    .request(MediaType.APPLICATION_JSON)
+                    .header("X-API-KEY", apiToken)
+                    .header("X-API-PROJECT", projectKey)
+                    .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+            // 4. Validate output response signals cleanly
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                Map jsonResponse = response.readEntity(Map.class);
+                preSaveResult = new PreSaveResult(
+                        Boolean.TRUE.equals(jsonResponse.get("result")),
+                        jsonResponse.get("expression").toString(),
+                        PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
+            } else {
+                preSaveResult = new PreSaveResult(false, "Constraint API is not reachable",
+                        PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
+            }
+            response.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            preSaveResult = PreSaveResult.getNullSingleton();
+        }
+
+        return preSaveResult;
+    }
 
     public PostSaveResult runEventPostSave(Document operatedObject,
                                            FmsForm myForm, MyMap crudObject) throws MongoOrmFailedException {
@@ -402,8 +477,8 @@ public class RepositoryService implements Serializable {
                             myDb = myForm.getDb();
                         }
                         myColl = field.getRefCollection() == null ? field.
-                                                                    getItemsAsMyItems().
-                                                                    getTable() : field.getRefCollection();
+                                getItemsAsMyItems().
+                                getTable() : field.getRefCollection();
                     } else {
                         myDb = field.getDb();
                         myColl = field.getRefCollection();
@@ -1219,7 +1294,7 @@ public class RepositoryService implements Serializable {
                 if (fmsChecks != null) {
                     for (FmsCheck fmsCheck : fmsChecks) {
                         ifcase = (ifcase == null) ? fmsCheck.execute() : ifcase && fmsCheck.
-                                                                                   execute();
+                                execute();
                     }
                 }
 

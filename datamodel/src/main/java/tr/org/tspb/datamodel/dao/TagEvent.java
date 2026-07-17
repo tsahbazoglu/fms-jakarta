@@ -1,6 +1,7 @@
 package tr.org.tspb.datamodel.dao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.bson.Document;
 
 import static tr.org.tspb.constants.ProjectConstants.COLLECTION;
@@ -21,7 +22,7 @@ public class TagEvent {
     private String jsFunction;
     private Document cacheQuery;
     private String uri;
-
+    private List<FmsUriParameter> uriParameters;
 
     public enum TagEventType {
         showWarnErrPopup, application, nothing, externalApi
@@ -38,6 +39,15 @@ public class TagEvent {
         tagEvent.db = docEvent.getString("db");
         tagEvent.uri = docEvent.getString("uri");
         String type = docEvent.getString(TYPE);
+        List<Document> uriParams = docEvent.getList("uri-params", Document.class);
+        if (uriParams != null) {
+            tagEvent.uriParameters = uriParams.stream()
+                    .map(uriParam -> new FmsUriParameter(
+                            uriParam.getString("key"),
+                            uriParam.getString("value")))
+                    .collect(Collectors.toList());
+        }
+
 
         if (type != null) {
             switch (type) {
@@ -115,6 +125,10 @@ public class TagEvent {
 
     public String getUri() {
         return uri;
+    }
+
+    public List<FmsUriParameter> getUriParameters() {
+        return uriParameters;
     }
 
 }
