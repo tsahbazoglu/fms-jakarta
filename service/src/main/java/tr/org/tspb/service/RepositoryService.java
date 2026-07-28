@@ -336,6 +336,18 @@ public class RepositoryService implements Serializable {
                     requestPayload.put("period", periodIdAsStr);
                     requestPayload.put("table", myForm.getTable());
 
+                    tagEvent.getUriParameters().forEach(uriParameter -> {
+                        String value = uriParameter.value();
+                        Matcher matcher = FMS_CRUD_PATTERN.matcher(value);
+                        if (matcher.find()) {
+                            Object operatedObjectValue = operatedObject.get(matcher.group(1));
+                            if (operatedObjectValue != null) {
+                                value = operatedObjectValue.toString();
+                            }
+                        }
+                        requestPayload.put(uriParameter.key(), value);
+                    });
+
                     String TARGET_URL = "http://localhost:8080" + tagEvent.getUri();
 
                     // 2. Instantiate the native Jakarta REST client worker engine
@@ -344,6 +356,7 @@ public class RepositoryService implements Serializable {
                         Response response = client.target(TARGET_URL)
                                 .request(MediaType.APPLICATION_JSON)
                                 .header("X-API-KEY", myForm.getMyProject().getApiToken())
+                                .header("X-API-PROJECT", myForm.getMyProject().getKey())
                                 .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
                         // 4. Validate output response signals cleanly
                         if (response.getStatus() == Response.Status.OK.getStatusCode()) {

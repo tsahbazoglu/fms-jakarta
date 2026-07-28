@@ -445,8 +445,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_overview">🚀 Overview</a></li>
 <li><a href="#_for_customers_users">🌟 For Customers &amp; Users</a></li>
-<li><a href="#_for_developers_system_administrators">🛠 For Developers &amp; System Administrators</a></li>
-<li><a href="#_deployment_reference_git_commands">📦 Deployment Reference (Git Commands)</a></li>
+<li><a href="#_for_developers_system_administrators">🛠 For Developers &amp; System Administrators</a>
+<ul class="sectlevel3">
+<li><a href="#_new_feature_role_based_action_enability_list_by_role">New Feature: Role-Based Action Enability (<code>list</code> by role)</a></li>
+<li><a href="#_schema_implementation_example">Schema Implementation Example</a></li>
+</ul>
+</li>
+<li><a href="#_git_commands">Git Commands</a></li>
+</ul>
+</li>
+<li><a href="#v1-4-0">Release Notes — v1.4.0</a>
+<ul class="sectlevel2">
+<li><a href="#_overview_2">Overview</a></li>
+<li><a href="#_for_customers_users_2">For Customers &amp; Users</a></li>
+<li><a href="#_for_developers">For Developers</a>
+<ul class="sectlevel3">
+<li><a href="#_new_feature_external_api_based_presaveevent_actions">New Feature: External API-Based <code>preSaveEvent</code> Actions</a></li>
+<li><a href="#_schema_implementation_example_2">Schema Implementation Example</a></li>
+<li><a href="#_migration_guide_from_mongodb_stored_functions_to_api">Migration Guide: From MongoDB Stored Functions to API</a></li>
+</ul>
+</li>
+<li><a href="#_git_commands_2">Git Commands</a></li>
+</ul>
+</li>
+<li><a href="#v1-5-0">Release Notes — v1.5.0</a>
+<ul class="sectlevel2">
+<li><a href="#_overview_3">Overview</a></li>
+<li><a href="#_for_customers_users_3">For Customers &amp; Users</a></li>
+<li><a href="#_for_developers_2">For Developers</a>
+<ul class="sectlevel3">
+<li><a href="#_new_feature_external_api_based_postsaveevent_actions">New Feature: External API-Based <code>postSaveEvent</code> Actions</a></li>
+<li><a href="#_schema_implementation_example_3">Schema Implementation Example</a></li>
+<li><a href="#_migration_guide_from_mongodb_stored_functions_to_api_2">Migration Guide: From MongoDB Stored Functions to API</a></li>
+</ul>
+</li>
+<li><a href="#_git_commands_3">Git Commands</a></li>
 </ul>
 </li>
 <li><a href="#_asccidoc">Asccidoc</a></li>
@@ -467,7 +500,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="_overview">🚀 Overview</h3>
 <div class="paragraph">
-<p>Version <code>1.3.0</code> introduces granular, role-based action enforcement directly within form schemas. This allows administrators to dynamically control whether a form action (such as saving or submitting) is enabled or disabled, based entirely on the authenticated user&#8217;s role and specific database conditions.</p>
+<p>Version <code>1.3.0</code> introduces granular, role-based action enforcement directly within form schemas.
+This allows administrators to dynamically control whether a form action (such as saving or submitting) is enabled or disabled, based entirely on the authenticated user&#8217;s role and specific database conditions.</p>
 </div>
 <hr>
 </div>
@@ -493,7 +527,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect3">
 <h4 id="_new_feature_role_based_action_enability_list_by_role">New Feature: Role-Based Action Enability (<code>list</code> by role)</h4>
 <div class="paragraph">
-<p>You can now define an array of rule strategies under form schema actions. The system evaluates these rules per role to determine if an action should be active.</p>
+<p>You can now define an array of rule strategies under form schema actions.
+The system evaluates these rules per role to determine if an action should be active.</p>
 </div>
 <div class="sect4">
 <h5 id="_key_strategies_introduced">Key Strategies Introduced:</h5>
@@ -566,7 +601,7 @@ In the example above, <code>umeadmin</code> has unconditional access to the save
 </div>
 </div>
 <div class="sect2">
-<h3 id="_deployment_reference_git_commands">📦 Deployment Reference (Git Commands)</h3>
+<h3 id="_git_commands">Git Commands</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash"># Delete the local and remote tags if they already exist
@@ -576,6 +611,308 @@ git push origin --delete v1.3.0
 # Create and push the fresh annotated release tag
 git tag -a v1.3.0 -m "Release version 1.3.0"
 git push origin v1.3.0
+
+# Verify the changes
+git tag
+git describe --tags</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="v1-4-0">Release Notes — v1.4.0</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_overview_2">Overview</h3>
+<div class="paragraph">
+<p>Version <code>1.4.0</code> introduces <strong>preSaveEvent</strong> action functionality accessible via external API.
+This release migrates from deprecated MongoDB JavaScript stored functions to a modern API-driven approach.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_for_customers_users_2">For Customers &amp; Users</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Enhanced Data Validation:</strong> Forms execute custom pre-save business logic via external API calls before data persistence.</p>
+</li>
+<li>
+<p><strong>Improved Reliability:</strong> Migration from deprecated MongoDB stored functions to API endpoints ensures long-term stability.</p>
+</li>
+<li>
+<p><strong>Seamless Experience:</strong> No change to user workflows — validations and transformations happen automatically.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_for_developers">For Developers</h3>
+<div class="sect3">
+<h4 id="_new_feature_external_api_based_presaveevent_actions">New Feature: External API-Based <code>preSaveEvent</code> Actions</h4>
+<div class="paragraph">
+<p>Form schemas can now trigger external API endpoints before data is saved, replacing the deprecated MongoDB JavaScript stored function approach.</p>
+</div>
+<div class="sect4">
+<h5 id="_key_benefits">Key Benefits:</h5>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Modern Architecture:</strong> Leverages RESTful APIs instead of database-stored JavaScript functions.</p>
+</li>
+<li>
+<p><strong>Enhanced Security:</strong> Supports authentication, authorization, and audit logging.</p>
+</li>
+<li>
+<p><strong>Better Testability:</strong> Business logic can be tested independently of database schema.</p>
+</li>
+<li>
+<p><strong>Cross-Platform Compatibility:</strong> API endpoints can be implemented in any language or framework.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_schema_implementation_example_2">Schema Implementation Example</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">"your_schema": {
+  "fms-version": "1.4.0",
+  "eventPreSave": {
+    "type": "external_api",
+    "uri": "/constraint-service/api/constraints/gsygsyo/presave",
+    "uri-params": [
+      {
+        "key": "function-code",
+        "value": "108"
+      },
+      {
+        "key": "member",
+        "value": "fms_crud{{member}}"
+      },
+      {
+        "key": "period",
+        "value": "fms_crud{{period}}"
+      }
+    ]
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_migration_guide_from_mongodb_stored_functions_to_api">Migration Guide: From MongoDB Stored Functions to API</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Old Approach (v1.3.0 and earlier)</th>
+<th class="tableblock halign-left valign-top">New Approach (v1.4.0+)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB JavaScript stored functions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">External RESTful API endpoints</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>db.system.js.save({&#8230;&#8203;})</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>POST <a href="https://api.example.com/validate" class="bare">https://api.example.com/validate</a></code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited testability &amp; debugging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full unit/integration test coverage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deprecated by MongoDB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modern, supported standard</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Existing MongoDB stored functions will continue to work but are considered deprecated.
+We strongly recommend migrating to the API-based approach for all new implementations.
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_git_commands_2">Git Commands</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash"># Delete the local and remote tags if they already exist
+git tag -d v1.4.0
+git push origin --delete v1.4.0
+
+# Create and push the fresh annotated release tag
+git tag -a v1.4.0 -m "Release version 1.4.0"
+git push origin v1.4.0
+
+# Verify the changes
+git tag
+git describe --tags</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="v1-5-0">Release Notes — v1.5.0</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_overview_3">Overview</h3>
+<div class="paragraph">
+<p>Version <code>1.5.0</code> introduces <strong>postSaveEvent</strong> action functionality accessible via external API.
+This release migrates from deprecated MongoDB JavaScript stored functions to a modern API-driven approach.</p>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_for_customers_users_3">For Customers &amp; Users</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Enhanced Data Validation:</strong> Forms execute custom pre-save business logic via external API calls before data persistence.</p>
+</li>
+<li>
+<p><strong>Improved Reliability:</strong> Migration from deprecated MongoDB stored functions to API endpoints ensures long-term stability.</p>
+</li>
+<li>
+<p><strong>Seamless Experience:</strong> No change to user workflows — validations and transformations happen automatically.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_for_developers_2">For Developers</h3>
+<div class="sect3">
+<h4 id="_new_feature_external_api_based_postsaveevent_actions">New Feature: External API-Based <code>postSaveEvent</code> Actions</h4>
+<div class="paragraph">
+<p>Form schemas can now trigger external API endpoints before data is saved, replacing the deprecated MongoDB JavaScript stored function approach.</p>
+</div>
+<div class="sect4">
+<h5 id="_key_benefits_2">Key Benefits:</h5>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Modern Architecture:</strong> Leverages RESTful APIs instead of database-stored JavaScript functions.</p>
+</li>
+<li>
+<p><strong>Enhanced Security:</strong> Supports authentication, authorization, and audit logging.</p>
+</li>
+<li>
+<p><strong>Better Testability:</strong> Business logic can be tested independently of database schema.</p>
+</li>
+<li>
+<p><strong>Cross-Platform Compatibility:</strong> API endpoints can be implemented in any language or framework.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_schema_implementation_example_3">Schema Implementation Example</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">"your_schema": {
+  "fms-version": "1.5.0",
+  "eventPostSave": {
+    "type": "external_api",
+    "uri": "/constraint-service/api/constraints/gsygsyo/presave",
+    "uri-params": [
+      {
+        "key": "function-code",
+        "value": "108"
+      },
+      {
+        "key": "member",
+        "value": "fms_crud{{member}}"
+      },
+      {
+        "key": "period",
+        "value": "fms_crud{{period}}"
+      }
+    ]
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_migration_guide_from_mongodb_stored_functions_to_api_2">Migration Guide: From MongoDB Stored Functions to API</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Old Approach (v1.3.0 and earlier)</th>
+<th class="tableblock halign-left valign-top">New Approach (v1.4.0+)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB JavaScript stored functions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">External RESTful API endpoints</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>db.system.js.save({&#8230;&#8203;})</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>POST <a href="https://api.example.com/validate" class="bare">https://api.example.com/validate</a></code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited testability &amp; debugging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full unit/integration test coverage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deprecated by MongoDB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modern, supported standard</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Existing MongoDB stored functions will continue to work but are considered deprecated.
+We strongly recommend migrating to the API-based approach for all new implementations.
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_git_commands_3">Git Commands</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash"># Delete the local and remote tags if they already exist
+git tag -d v1.5.0
+git push origin --delete v1.5.0
+
+# Create and push the fresh annotated release tag
+git tag -a v1.5.0 -m "Release version 1.5.0"
+git push origin v1.5.0
 
 # Verify the changes
 git tag
@@ -598,7 +935,7 @@ git describe --tags</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-07-08 15:07:33 +0300
+Last updated 2026-07-28 19:37:19 +0300
 </div>
 </div>
 </body>
