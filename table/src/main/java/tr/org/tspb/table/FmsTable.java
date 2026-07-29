@@ -169,7 +169,7 @@ public abstract class FmsTable extends FmsTableView {
         TagEvent.TagEventType type = tagEventPreSave.getType();
 
         Object result = null;
-        if (type == null) {
+        if (type == null || type == TagEvent.TagEventType.nothing) {
             Document myCrudObject = new Document(crud);
             myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
             String code = fmsForm.getEventPreSave().getJsFunction();
