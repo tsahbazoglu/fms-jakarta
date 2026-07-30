@@ -157,19 +157,23 @@ public abstract class FmsTable extends FmsTableView {
             return false;
         }
 
-        String eventPreSaveDB = fmsForm.getEventPreSave().getDb();
-
-        if (eventPreSaveDB == null) {
-            //FIXME messagebundle
-            dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>Konfigürasyon Hatası : db tanımlı değil.</li>" + "</ul>", MESSAGE_DIALOG);
-            return true;
-        }
-
         TagEvent tagEventPreSave = fmsForm.getEventPreSave();
         TagEvent.TagEventType type = tagEventPreSave.getType();
 
         Object result = null;
         if (type == null || type == TagEvent.TagEventType.nothing) {
+            String eventPreSaveDB = fmsForm.getEventPreSave().getDb();
+            if (eventPreSaveDB == null) {
+                dialogController.showPopupInfoWithOk("""
+                                             <ul>
+                                             <li>
+                                             <font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font>
+                                             </li> 
+                                             <li>Konfigürasyon Hatası : db tanımlı değil.</li>
+                                             </ul>                        
+                        """, MESSAGE_DIALOG);
+                return true;
+            }
             Document myCrudObject = new Document(crud);
             myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
             String code = fmsForm.getEventPreSave().getJsFunction();
