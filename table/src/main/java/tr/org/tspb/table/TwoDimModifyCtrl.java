@@ -1857,7 +1857,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
     public String onAddNew() {
         MyMap mymap = new MyMap();
-        mymap.put("rowKey", UUID.randomUUID());
+        mymap.put("rowKey", UUID.randomUUID().toString());
         if (childRecords == null) {
             childRecords = new ArrayList<>();
         }
@@ -1868,7 +1868,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     public void reset(int count) {
         for (int i = 0; i < count; i++) {
             MyMap mymap = new MyMap();
-            mymap.put("rowKey", UUID.randomUUID());
+            mymap.put("rowKey", UUID.randomUUID().toString());
             childRecords.add(mymap);
         }
     }

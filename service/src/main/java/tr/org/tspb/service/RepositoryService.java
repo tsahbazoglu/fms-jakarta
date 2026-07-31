@@ -261,12 +261,18 @@ public class RepositoryService implements Serializable {
         requestPayload.put("member-ids-as-str", memberIdsAsStr);
         requestPayload.put("period-id-as-str", periodIdAsStr);
         tagEvent.getUriParameters().forEach(uriParameter -> {
-            String value = uriParameter.value();
-            Matcher matcher = FMS_CRUD_PATTERN.matcher(value);
-            if (matcher.find()) {
-                Object operatedObjectValue = operatedObject.get(matcher.group(1));
-                if (operatedObjectValue != null) {
-                    value = operatedObjectValue.toString();
+            Object value = uriParameter.value();
+            if (value instanceof String stringValue) {
+                Matcher matcher = FMS_CRUD_PATTERN.matcher(stringValue);
+                if (matcher.find()) {
+                    Object operatedObjectValue = operatedObject.get(matcher.group(1));
+                    if (operatedObjectValue != null) {
+                        if (operatedObjectValue instanceof List<?>) {
+                            value = new ArrayList<>((List<?>) operatedObjectValue);
+                        } else {
+                            value = operatedObjectValue.toString();
+                        }
+                    }
                 }
             }
             requestPayload.put(uriParameter.key(), value);
