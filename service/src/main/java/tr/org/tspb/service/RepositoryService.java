@@ -268,7 +268,24 @@ public class RepositoryService implements Serializable {
                     Object operatedObjectValue = operatedObject.get(matcher.group(1));
                     if (operatedObjectValue != null) {
                         if (operatedObjectValue instanceof List<?>) {
-                            value = new ArrayList<>((List<?>) operatedObjectValue);
+                            List<?> originalList = (List<?>) operatedObjectValue;
+                            List<Object> newList = new ArrayList<>();
+                            for (Object item : originalList) {
+                                if (item instanceof Map) {
+                                    // Create a new map to avoid modifying the original
+                                    Map<Object, Object> newMap = new HashMap<>((Map<?, ?>) item);
+                                    // Convert any ObjectId values inside the map to strings
+                                    newMap.replaceAll((k, v) ->
+                                            (v != null && v.getClass().getName().equals("org.bson.types.ObjectId"))
+                                                    ? v.toString()
+                                                    : v
+                                    );
+                                    newList.add(newMap);
+                                } else {
+                                    newList.add(item);
+                                }
+                            }
+                            value = newList;
                         } else {
                             value = operatedObjectValue.toString();
                         }
