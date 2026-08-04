@@ -149,6 +149,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
     private List<Document> listOfToBeUpsert4 = new ArrayList<>();
     private List<Document> listOfToBeUpsert5 = new ArrayList<>();
     private List<Document> listOfToBeUpsert6 = new ArrayList<>();
+    private List<Document> listOfToBeUpsert7 = new ArrayList<>();
 
     private FmsForm myForm1;
     private FmsForm myForm2;
@@ -156,6 +157,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
     private FmsForm myForm4;
     private FmsForm myForm5;
     private FmsForm myForm6;
+    private FmsForm myForm7;
 
     private static final long TIMEOUT = 30;
 
@@ -189,6 +191,8 @@ public class FmsMultiFormBulkUpload implements Serializable {
         myForm5 = repositoryService.getMyFormLarge(myProject, "varlik_turu_bes");
         myForm6 = repositoryService.
                 getMyFormLarge(myProject, "varlik_turu_alti");
+        myForm7 = repositoryService.
+                getMyFormLarge(myProject, "varlik_turu_yedi");
     }
 
     private Map<String, Object> uploadedMergeObject = new HashMap<>();
@@ -229,6 +233,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
             writeToList(sb, listOfToBeUpsert4, myForm4, xssfWorkbook, 3);
             writeToList(sb, listOfToBeUpsert5, myForm5, xssfWorkbook, 4);
             writeToList(sb, listOfToBeUpsert6, myForm6, xssfWorkbook, 5);
+            writeToList(sb, listOfToBeUpsert7, myForm7, xssfWorkbook, 6);
 
             if (!sb.toString().
                     isEmpty()) {
@@ -250,16 +255,165 @@ public class FmsMultiFormBulkUpload implements Serializable {
     record BulkLoadTask(FmsForm form, List<Document> list) {
     }
 
+    private boolean isExcelFieldEmpty(String str) {
+        if (str == null) {
+            return true;
+        }
+        String trimmed = str.trim();
+        return trimmed.isEmpty()
+                || "null".equalsIgnoreCase(trimmed)
+                || "BSON_CONVERTER_NULL_VALUE".equalsIgnoreCase(trimmed);
+    }
+
     public String localBulkLoadExcell() {
 
         try {
+
+            //FIXME START REMOVE 001
+
+            // -------------------------------------------------------------------------
+            // ==== [NAD403] GYO-NAD EXCEL 3 SAYFA (VARLIK 1, 2, 3) BOŞ OLMA KONTROLÜ (RAM SEVİYESİNDE)
+            // -------------------------------------------------------------------------
+            int varlik1SatirSayisi = (listOfToBeUpsert1 != null) ? listOfToBeUpsert1.size() : 0;
+            int varlik2SatirSayisi = (listOfToBeUpsert2 != null) ? listOfToBeUpsert2.size() : 0;
+            int varlik3SatirSayisi = (listOfToBeUpsert3 != null) ? listOfToBeUpsert3.size() : 0;
+
+            int toplamYuklenenSatir = varlik1SatirSayisi + varlik2SatirSayisi + varlik3SatirSayisi;
+
+            // Eğer 3 listeden de (sayfadan da) hafızaya tek bir satır dahi gelmediyse aktarımı durdur!
+            if (toplamYuklenenSatir == 0) {
+                // Katı blokaj popup uyarısını fırlatıyoruz
+                dialogController.showPopupError("[NAD403] Excel Yükleme Reddedildi! Yüklemeye çalıştığınız dosyada 'Arsa ve Araziler', 'Yapılmakta Olan Yatırımlar' ve 'Binalar' sayfalarının tümü boş görünmektedir. Sisteme aktarım yapılabilmesi için bu 3 sayfadan en az birinde, en az 1 satır veri bulunmalıdır!");
+                resetUpsertList();
+                return null; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
+            }
+
+            // -------------------------------------------------------------------------
+            // ===== [NAD402] GYO-NAD EXCEL 175 CİNSİ İÇİN ÇİFT YÖNLÜ ALAN KONTROLÜ (RAM SEVİYESİNDE)
+            // -------------------------------------------------------------------------
+
+            //writeToList içinde excelden gelen cinsi kodunu yakalıp karşılaştıralım
+            if (listOfToBeUpsert2 != null && !listOfToBeUpsert2.isEmpty()) {
+                int rowNum = 1; // Satır numarasını kullanıcıya doğru göstermek için
+                String gelirPaylasimliProje = "175"; // Excelde girilen cins kodu
+
+                for (org.bson.Document doc : listOfToBeUpsert2) {
+                    rowNum++; // Başlık satırını hesaba katarak artırıyoruz, exceldeki satırı verir, referansı değil
+
+                    // writeToList içinde dökümana enjekte ettiğimiz ham değeri doğrudan çekiyoruz
+                    String hamCinsKodu = doc.getString("ham_cinsi_kodu");
+                    if (hamCinsKodu == null) {
+                        hamCinsKodu = "";
+                    }
+
+                    String yatirimModeli = (doc.get("yatirim_modeli") != null) ? doc.get("yatirim_modeli").toString() : null;
+                    String yatirimTuru = (doc.get("yatirim_turu") != null) ? doc.get("yatirim_turu").toString() : null;
+
+                    if (!hamCinsKodu.isEmpty()) {
+                        // Tamamen kurulum ve veritabanı bağımsız "175" kod kontrolü
+                        if (gelirPaylasimliProje.equals(hamCinsKodu)) {
+                            // -----------------------------------------------------------------
+                            // SENARYO A: Gelir Paylaşımlı Projeler (175) ise -> Alanlar DOLU OLMALI
+                            // -----------------------------------------------------------------
+                            if (isExcelFieldEmpty(yatirimModeli) || isExcelFieldEmpty(yatirimTuru)) {
+                                dialogController.showPopupError("[NAD402] Excel Yükleme Reddedildi! Yapılmakta Olan Yatırımlar sayfasında (Satır: " + rowNum + ") seçilen 'Gelir Paylaşımlı Projeler' (" + gelirPaylasimliProje + ") cinsi için Yatırım Modeli ve Yatırım Türü alanları boş bırakılamaz! Lütfen dosyanızı kontrol ediniz.");
+                                resetUpsertList();
+                                return null; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
+                            }
+                        } else {
+                            // -----------------------------------------------------------------
+                            // SENARYO B: 175 DIŞINDA bir cins ise -> Alanlar KESİNLİKLE BOŞ OLMALI
+                            // -----------------------------------------------------------------
+                            if (!isExcelFieldEmpty(yatirimModeli) || !isExcelFieldEmpty(yatirimTuru)) {
+                                dialogController.showPopupError("[NAD402] Excel Yükleme Reddedildi! Yapılmakta Olan Yatırımlar sayfasında (Satır: " + rowNum + ") seçilen varlık cinsi için Yatırım Modeli ve Yatırım Türü alanları doldurulamaz! Bu alanlar sadece 'Gelir Paylaşımlı Projeler' (" + gelirPaylasimliProje + ") cinsi için geçerlidir. Lütfen hücreyi temizleyiniz.");
+                                resetUpsertList();
+                                return null; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
+                            }
+                        }
+                    }
+                }
+            }
+
+            // -----------------------------------------------------------------
+            // ==== [NAD401] GYO-NAD EXCEL İÇİN BELLEK (RAM) SEVİYESİNDE %10 DENETİMİ
+            // -----------------------------------------------------------------
+            double excelDigerTabloToplamDeger = 0.0;
+            if (listOfToBeUpsert5 != null && !listOfToBeUpsert5.isEmpty()) {
+                for (org.bson.Document doc : listOfToBeUpsert5) {
+                    if (doc.get("deger") != null) {
+                        excelDigerTabloToplamDeger += ((Number) doc.get("deger")).doubleValue();
+                    }
+                }
+            }
+
+            // Eğer "Diğer" tablosunda Excel'den gelen ham bir tutar varsa denetimi simüle et
+            if (excelDigerTabloToplamDeger > 0) {
+                double toplamArsaArazi = 0.0;
+                double toplamYapilmakta = 0.0;
+                double toplamBinalar = 0.0;
+                double toplamIstirak = 0.0;
+
+                // Excel'deki 1, 2, 3 ve 4. sekmelerden (RAM'den) güncel ham değerleri topluyoruz
+                if (listOfToBeUpsert1 != null) {
+                    for (org.bson.Document d : listOfToBeUpsert1) {
+                        if (d.get("deger") != null) {
+                            toplamArsaArazi += ((Number) d.get("deger")).doubleValue();
+                        }
+                    }
+                }
+                if (listOfToBeUpsert2 != null) {
+                    for (org.bson.Document d : listOfToBeUpsert2) {
+                        if (d.get("deger") != null) {
+                            toplamYapilmakta += ((Number) d.get("deger")).doubleValue();
+                        }
+                    }
+                }
+                if (listOfToBeUpsert3 != null) {
+                    for (org.bson.Document d : listOfToBeUpsert3) {
+                        if (d.get("deger") != null) {
+                            toplamBinalar += ((Number) d.get("deger")).doubleValue();
+                        }
+                    }
+                }
+                if (listOfToBeUpsert4 != null) {
+                    for (org.bson.Document d : listOfToBeUpsert4) {
+                        if (d.get("deger") != null) {
+                            toplamIstirak += ((Number) d.get("deger")).doubleValue();
+                        }
+                    }
+                }
+
+                // ARINDIRILMIŞ NİHAİ PAYDA SİMÜLASYONU: Excel'deki H2 hücresinin formülüyle birebir aynı kümülatif matematiksel zincir:
+                double predictedOverallDenominator = toplamArsaArazi + toplamYapilmakta + toplamBinalar + toplamIstirak + excelDigerTabloToplamDeger;
+
+                double predictedRatio = 0.0;
+                if (predictedOverallDenominator > 0) {
+                    predictedRatio = excelDigerTabloToplamDeger / predictedOverallDenominator;
+                }
+
+                // KÜMÜLATİF LİMİT KONTROLÜ: Eğer oran %10 sınırını aşıyorsa Excel'i kapıda reddet!
+                if (predictedRatio > 0.10001) {
+                    double roundedTotal = Math.round(predictedRatio * 100.0 * 100.0) / 100.0;
+
+                    logger.error("======> [NAD401] localBulkLoadExcell Tetiklendi:  Diğer varlık değerleri %10 u aştı. Hesaplanan kümülatif pay: %" + roundedTotal);
+                    // Katı blokaj popup uyarısını fırlatıyoruz
+                    dialogController.showPopupError("[NAD401] Excel Yükleme Reddedildi! Diğer varlık değerleri, toplam portföy payının %10'unu geçemez. Lütfen verilerinizi kontrol ediniz. Hesaplanan kümülatif pay: %" + roundedTotal);
+
+                    resetUpsertList(); // Bellekteki temizle
+                    return null; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
+                }
+            }
+
+            //FIXME END REMOVE 001
+
             List<BulkLoadTask> tasks = List.of(
                     new BulkLoadTask(myForm1, listOfToBeUpsert1),
                     new BulkLoadTask(myForm2, listOfToBeUpsert2),
                     new BulkLoadTask(myForm3, listOfToBeUpsert3),
                     new BulkLoadTask(myForm4, listOfToBeUpsert4),
                     new BulkLoadTask(myForm5, listOfToBeUpsert5),
-                    new BulkLoadTask(myForm6, listOfToBeUpsert6)
+                    new BulkLoadTask(myForm6, listOfToBeUpsert6),
+                    new BulkLoadTask(myForm7, listOfToBeUpsert7)
             );
             // 3. Process the tasks cleanly without casting
             Map<String, Document> allCollectUpdates = loadAllSheets(tasks);
@@ -422,6 +576,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
         listOfToBeUpsert4 = new ArrayList<>();
         listOfToBeUpsert5 = new ArrayList<>();
         listOfToBeUpsert6 = new ArrayList<>();
+        listOfToBeUpsert7 = new ArrayList<>();
     }
 
     private void writeToList(StringBuilder sb, List<Document> listOfToBeUpsert,
@@ -450,6 +605,23 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 if (!appendField(myMerge, row, sheet, i, record, myForm)) {
                     break;
                 }
+                // 🚀===== [NAD402] HAM EXCEL DEĞERİNİ DÖKÜMANA ENJEKTE ETME (175=175 YAKALAMAK İÇİN) =====
+                // Sadece 2. sekme (Yapılmakta Olan Yatırımlar - sheetNo: 1) için bu yedekleme kuralını çalıştır
+                if (sheetNo == 1) {
+                    org.apache.poi.xssf.usermodel.XSSFCell cellC = row.getCell(2); // C Sütunu (Cinsi)
+                    String hamCinsKodu = "";
+                    if (cellC != null) {
+                        if (cellC.getCellType() == org.apache.poi.ss.usermodel.CellType.NUMERIC) {
+                            hamCinsKodu = String.valueOf((int) cellC.getNumericCellValue()).trim();
+                        } else {
+                            hamCinsKodu = cellC.getStringCellValue().trim();
+                        }
+                    }
+                    // Yakaladığımız ham string "175" veya diğer değerleri dökümana yedek alan olarak yazıyoruz
+                    record.put("ham_cinsi_kodu", hamCinsKodu);
+                }
+                // -------------------------------------------------------------------------------------
+
             } catch (NullPointerException e) {
                 sb.append(String.format("NullPointerException at sheet %s row %s </br>", sheetNo, i));
                 continue;
@@ -601,6 +773,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 try (Client client = ClientBuilder.newClient()) {
                     Response response = client.target(uri)
                             .request(MediaType.APPLICATION_JSON)
+                            .header("X-API-PROJECT", myForm.getMyProject().getKey())  //gerekli olan parametre
                             .header("X-API-KEY", myForm.getMyProject().getApiToken())
                             .post(Entity.entity(payload, MediaType.APPLICATION_JSON));
 
