@@ -1,5 +1,6 @@
 package tr.org.tspb.datamodel.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.bson.Document;
@@ -46,6 +47,8 @@ public class TagEvent {
                             uriParam.getString("key"),
                             uriParam.getString("value")))
                     .collect(Collectors.toList());
+        } else {
+            tagEvent.uriParameters = new ArrayList<>();
         }
 
 
