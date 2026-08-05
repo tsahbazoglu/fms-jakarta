@@ -88,7 +88,8 @@
         <fms.table.version>${project.version}</fms.table.version>
         <fms.util.version>${project.version}</fms.util.version>
 
-        <fms.esign.version>1.0.0</fms.esign.version>
+        <fms.esign.version>1.6.0</fms.esign.version>
+
         <fms.printer.version>1.0.0</fms.printer.version>
         <fms.webclient.version>1.0.0</fms.webclient.version>
         <fms.workflow.version>1.0.0</fms.workflow.version>
