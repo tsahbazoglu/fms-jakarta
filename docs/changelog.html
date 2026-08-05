@@ -482,6 +482,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_git_commands_3">Git Commands</a></li>
 </ul>
 </li>
+<li><a href="#v1-6-0">Release Notes — v1.5.0</a>
+<ul class="sectlevel2">
+<li><a href="#_overview_4">Overview</a></li>
+<li><a href="#_for_developers_3">For Developers</a>
+<ul class="sectlevel3">
+<li><a href="#_project_version_synchronization">Project Version Synchronization</a></li>
+<li><a href="#_updated_components">Updated Components</a></li>
+<li><a href="#_maven_version_management_commands">Maven Version Management Commands</a></li>
+</ul>
+</li>
+<li><a href="#_git_commands_4">Git Commands</a></li>
+</ul>
+</li>
 <li><a href="#_asccidoc">Asccidoc</a></li>
 </ul>
 </div>
@@ -923,6 +936,79 @@ git describe --tags</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="v1-6-0">Release Notes — v1.5.0</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_overview_4">Overview</h3>
+<div class="paragraph">
+<p>Version 1.5.0 introduces structural project versioning updates, synchronizing all submodules and parent-child dependencies under a unified version management standard.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_for_developers_3">For Developers</h3>
+<div class="sect3">
+<h4 id="_project_version_synchronization">Project Version Synchronization</h4>
+<div class="paragraph">
+<p>All multi-module components and submodules have been upgraded and aligned to version 1.5.0, ensuring consistency across the build reactor and artifact deployment lifecycle.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_updated_components">Updated Components</h4>
+<div class="literalblock">
+<div class="content">
+<pre>Root Project &amp; Parent POM: Synchronized to {version}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Core Modules &amp; Services: Updated across all 18 submodules (fms-common, fms-constants, fms-datamodel, fms-service, fms-web, fms-ear, etc.) to align with version {version}.</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_maven_version_management_commands">Maven Version Management Commands</h4>
+<div class="paragraph">
+<p>Use the following Maven commands when updating or rolling back project versions:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">Automatically update all submodule parent references to match the root POM version</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>mvn versions:update-child-modules
+Commit the version changes permanently (removes backup files)</p>
+</div>
+<div class="paragraph">
+<p>mvn versions:commit
+Revert version changes and restore original files if needed
+mvn versions:revert</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_git_commands_4">Git Commands</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">Delete the local and remote tags if they already exist</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>git tag -d v1.5.0
+git push origin --delete v1.5.0
+Create and push the fresh annotated release tag</p>
+</div>
+<div class="paragraph">
+<p>git tag -a v1.5.0 -m "Release version 1.5.0"
+git push origin v1.5.0
+Verify the changes
+git tag
+git describe --tags</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_asccidoc">Asccidoc</h2>
 <div class="sectionbody">
 <div class="listingblock">
@@ -935,7 +1021,7 @@ git describe --tags</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-07-28 19:37:19 +0300
+Last updated 2026-08-05 15:43:24 +0300
 </div>
 </div>
 </body>

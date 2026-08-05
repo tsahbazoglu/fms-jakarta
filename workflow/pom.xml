@@ -4,12 +4,11 @@
     <parent>
         <artifactId>fms</artifactId>
         <groupId>tr.org.tspb</groupId>
-        <version>1.0.0</version>
+        <version>1.6.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>fms-workflow</artifactId>
-    <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>${project.groupId} : ${project.artifactId} : ${project.version}</name>
    

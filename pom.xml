@@ -8,12 +8,11 @@
 
     <groupId>tr.org.tspb</groupId>
     <artifactId>fms</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
     <packaging>pom</packaging>
     <name>${project.groupId} : ${project.artifactId} : ${project.version}</name>
 
     <modules>
-
         <module>common</module>
         <module>constants</module>
         <module>factory</module>
@@ -46,7 +45,7 @@
 
         <repository>
             <id>KamuSM</id>
-            <url>http://nexus.ozguryazilim.com.tr/content/repositories/KamuSM</url>
+            <url>https://nexus.ozguryazilim.com.tr/content/repositories/KamuSM</url>
         </repository>
         <repository>
             <id>prime-repo</id>
@@ -73,23 +72,24 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.release>17</maven.compiler.release>
 
-        <fms.version>1.0.0</fms.version>
-        <fms.constants.version>1.0.0</fms.constants.version>
-        <fms.common.version>1.0.0</fms.common.version>
-        <fms.converter.version>1.0.0</fms.converter.version>
-        <fms.datamodel.version>1.0.0</fms.datamodel.version>
+        <fms.version>1.5.0</fms.version>
+        <fms.common.version>1.5.0</fms.common.version>
+        <fms.constants.version>1.5.0</fms.constants.version>
+        <fms.converter.version>1.5.0</fms.converter.version>
+        <fms.datamodel.version>1.5.0</fms.datamodel.version>
+        <fms.factory.version>1.5.0</fms.factory.version>
+        <fms.fgtpswd.version>1.5.0</fms.fgtpswd.version>
+        <fms.logger.version>1.5.0</fms.logger.version>
+        <fms.notification.version>1.5.0</fms.notification.version>
+        <fms.outsider.version>1.5.0</fms.outsider.version>
+        <fms.page.version>1.5.0</fms.page.version>
+        <fms.pivot.version>1.5.0</fms.pivot.version>
+        <fms.service.version>1.5.0</fms.service.version>
+        <fms.table.version>1.5.0</fms.table.version>
+        <fms.util.version>1.5.0</fms.util.version>
+
         <fms.esign.version>1.0.0</fms.esign.version>
-        <fms.factory.version>1.0.0</fms.factory.version>
-        <fms.logger.version>1.0.0</fms.logger.version>
-        <fms.notification.version>1.0.0</fms.notification.version>
-        <fms.outsider.version>1.0.0</fms.outsider.version>
         <fms.printer.version>1.0.0</fms.printer.version>
-        <fms.fgtpswd.version>1.0.0</fms.fgtpswd.version>
-        <fms.pivot.version>1.0.0</fms.pivot.version>
-        <fms.page.version>1.0.0</fms.page.version>
-        <fms.service.version>1.0.0</fms.service.version>
-        <fms.table.version>1.0.0</fms.table.version>
-        <fms.util.version>1.0.0</fms.util.version>
         <fms.webclient.version>1.0.0</fms.webclient.version>
         <fms.workflow.version>1.0.0</fms.workflow.version>
 
