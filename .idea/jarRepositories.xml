@@ -17,6 +17,11 @@
       <option name="url" value="http://nexus.ozguryazilim.com.tr/content/repositories/KamuSM" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="KamuSM" />
+      <option name="name" value="KamuSM" />
+      <option name="url" value="https://nexus.ozguryazilim.com.tr/content/repositories/KamuSM" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />

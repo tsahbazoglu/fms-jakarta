@@ -176,13 +176,13 @@
         <!--web and ejb-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <version>1.5.0</version>
+            <version>${project.version}</version>
             <artifactId>fms-ejb</artifactId>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <version>1.5.0</version>
+            <version>${project.version}</version>
             <artifactId>fms-web</artifactId>
             <type>war</type>
         </dependency>
