@@ -1,4 +1,4 @@
-:version: 1.5.0
+:version: 1.6.0
 
 [[v1-6-0]]
 = Release Notes — v{version}
@@ -14,26 +14,36 @@ Version {version} introduces structural project versioning updates, synchronizin
 All multi-module components and submodules have been upgraded and aligned to version {version}, ensuring consistency across the build reactor and artifact deployment lifecycle.
 
 === Updated Components
-
-    Root Project & Parent POM: Synchronized to {version}
-
-    Core Modules & Services: Updated across all 18 submodules (fms-common, fms-constants, fms-datamodel, fms-service, fms-web, fms-ear, etc.) to align with version {version}.
+[source,bash,js,subs="attributes,verbatim,quotes"]
+Root Project & Parent POM: Synchronized to {version}
+Core Modules & Services: Updated across all 18 submodules (fms-common, fms-constants, fms-datamodel, fms-service, fms-web, fms-ear, etc.) to align with version {version}.
 
 === Maven Version Management Commands
 
 Use the following Maven commands when updating or rolling back project versions:
 [source,bash,js,subs="attributes,verbatim,quotes"]
+----
 Automatically update all submodule parent references to match the root POM version
 
 mvn versions:update-child-modules
+----
+
+[source,bash,js,subs="attributes,verbatim,quotes"]
+----
 Commit the version changes permanently (removes backup files)
 
 mvn versions:commit
+----
+
+----
 Revert version changes and restore original files if needed
+
 mvn versions:revert
+----
 
 == Git Commands
 [source,bash,js,subs="attributes,verbatim,quotes"]
+----
 Delete the local and remote tags if they already exist
 
 git tag -d v{version}
@@ -45,3 +55,4 @@ git push origin v{version}
 Verify the changes
 git tag
 git describe --tags
+----
