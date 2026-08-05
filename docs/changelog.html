@@ -991,19 +991,31 @@ mvn versions:revert</pre>
 </div>
 <div class="sect2">
 <h3 id="_git_commands_4">Git Commands</h3>
+<div class="paragraph">
+<p>Delete the local and remote tags if they already exist</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">Delete the local and remote tags if they already exist
-
-git tag -d v1.6.0
-git push origin --delete v1.6.0
-Create and push the fresh annotated release tag
-
-git tag -a v1.6.0 -m "Release version 1.6.0"
-git push origin v1.6.0
-Verify the changes
-git tag
-git describe --tags</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">git tag -d v1.6.0
+git push origin --delete v1.6.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create and push the fresh annotated release tag</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">git tag -a v1.6.0 -m "Release version 1.6.0"
+git push origin v1.6.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify the changes</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git tag
+git describe --tags</pre>
 </div>
 </div>
 </div>
