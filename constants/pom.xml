@@ -5,6 +5,7 @@
         <artifactId>fms</artifactId>
         <groupId>tr.org.tspb</groupId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>   
 
     <artifactId>fms-constants</artifactId>
