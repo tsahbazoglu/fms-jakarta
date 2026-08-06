@@ -195,7 +195,7 @@ public class RepositoryService implements Serializable {
     }
 
 
-    public PostSaveResult runEventPostSaveByGivenTagEvent(String apiToken, String uri, Document operatedObject)
+    public PostSaveResult runEventPostSaveByGivenTagEvent(String projectKey, String apiToken, String uri, Document operatedObject)
             throws MongoOrmFailedException {
 
         String memberIdAsStr = operatedObject.getObjectId("member").toHexString();
@@ -214,7 +214,7 @@ public class RepositoryService implements Serializable {
             // 3. Dispatch the HTTP POST execution payload over the wire
             Response response = client.target(TARGET_URL)
                     .request(MediaType.APPLICATION_JSON)
-                    .header("X-API-KEY", apiToken)
+                    .header("X-API-KEY", apiToken).header("X-API-PROJECT", projectKey)
                     .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
             // 4. Validate output response signals cleanly
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
@@ -304,8 +304,7 @@ public class RepositoryService implements Serializable {
             // 3. Dispatch the HTTP POST execution payload over the wire
             Response response = client.target(TARGET_URL)
                     .request(MediaType.APPLICATION_JSON)
-                    .header("X-API-KEY", apiToken)
-                    .header("X-API-PROJECT", projectKey)
+                    .header("X-API-KEY", apiToken).header("X-API-PROJECT", projectKey)
                     .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
             // 4. Validate output response signals cleanly
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
@@ -378,8 +377,7 @@ public class RepositoryService implements Serializable {
                         // 3. Dispatch the HTTP POST execution payload over the wire
                         Response response = client.target(TARGET_URL)
                                 .request(MediaType.APPLICATION_JSON)
-                                .header("X-API-KEY", myForm.getMyProject().getApiToken())
-                                .header("X-API-PROJECT", myForm.getMyProject().getKey())
+                                .header("X-API-KEY", myForm.getMyProject().getApiToken()).header("X-API-PROJECT", myForm.getMyProject().getKey())
                                 .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
                         // 4. Validate output response signals cleanly
                         if (response.getStatus() == Response.Status.OK.getStatusCode()) {

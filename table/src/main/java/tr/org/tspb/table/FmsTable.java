@@ -729,7 +729,8 @@ public abstract class FmsTable extends FmsTableView {
                     // 3. Dispatch the HTTP POST execution payload over the wire
                     Response response = client.target(TARGET_URL)
                             .request(MediaType.APPLICATION_JSON)
-                            .header("X-API-KEY", myForm.getMyProject().getApiToken()).post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+                            .header("X-API-KEY", myForm.getMyProject().getApiToken()).header("X-API-PROJECT", myForm.getMyProject().getKey())
+                            .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
                     // 4. Validate output response signals cleanly
                     if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                         String jsonResponse = response.readEntity(String.class);

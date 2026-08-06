@@ -94,7 +94,8 @@ public class CtrlService extends CommonSrv {
         this.configCollection = configCollection;
     }
 
-    public List<Map> runConstraintCrossCheck(String apiToken,
+    public List<Map> runConstraintCrossCheck(String projectKey,
+                                             String apiToken,
                                              MyConstraintFormula myConstraintFormula,
                                              boolean isInternalCheck,
                                              Object[] parameters,
@@ -117,7 +118,7 @@ public class CtrlService extends CommonSrv {
         }
 
         if (MyConstraintFormula.EngineType.API.equals(myConstraintFormula.getEngineType())) {
-            return handleApiConstraint(apiToken, myConstraintFormula, parameters, filter);
+            return handleApiConstraint(projectKey, apiToken, myConstraintFormula, parameters, filter);
         }
 
         Map<String, Map> retrivedVariables = new HashMap<>();
@@ -229,7 +230,7 @@ public class CtrlService extends CommonSrv {
 
     }
 
-    private List<Map> handleApiConstraint(String apiToken, MyConstraintFormula myConstraintFormula, Object[] parameters, Document filter) {
+    private List<Map> handleApiConstraint(String projectKey, String apiToken, MyConstraintFormula myConstraintFormula, Object[] parameters, Document filter) {
        /*
         http://localhost:8080/constraint-service/api/constraints/umedb/status
         */
@@ -269,7 +270,10 @@ public class CtrlService extends CommonSrv {
         // 2. Instantiate the native Jakarta REST client worker engine
         try (Client client = ClientBuilder.newClient()) {
             // 3. Dispatch the HTTP POST execution payload over the wire
-            Response response = client.target(TARGET_URL).request(MediaType.APPLICATION_JSON).header("X-API-KEY", apiToken).post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+            Response response = client.target(TARGET_URL)
+                    .request(MediaType.APPLICATION_JSON)
+                    .header("X-API-KEY", apiToken).header("X-API-PROJECT", projectKey)
+                    .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
             // 4. Validate output response signals cleanly
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                 resultMap = response.readEntity(Map.class);
@@ -882,6 +886,7 @@ public class CtrlService extends CommonSrv {
 
 
         String apiToken = constraintFormDef.getMyProject().getApiToken();
+        String projectKey = constraintFormDef.getMyProject().getKey();
 
         for (Document next : constraintCursor) {
 
@@ -895,7 +900,7 @@ public class CtrlService extends CommonSrv {
                 continue;
             }
 
-            all.addAll(new CheckConstraintTask(apiToken, myConstraintFormula, filter).call());
+            all.addAll(new CheckConstraintTask(projectKey, apiToken, myConstraintFormula, filter).call());
         }
         /* */
         return all;
@@ -906,11 +911,13 @@ public class CtrlService extends CommonSrv {
         private final MyConstraintFormula myConstraintFormula;
         private final Document filter;
         private final String apiToken;
+        private final String projectKey;
 
-        CheckConstraintTask(String apiToken, MyConstraintFormula myConstraintFormula, Document filter) {
+        CheckConstraintTask(String projectKey, String apiToken, MyConstraintFormula myConstraintFormula, Document filter) {
             this.myConstraintFormula = myConstraintFormula;
             this.filter = filter;
             this.apiToken = apiToken;
+            this.projectKey = projectKey;
         }
 
         @Override
@@ -921,7 +928,7 @@ public class CtrlService extends CommonSrv {
             try {
                 List<Map> resultListOfMap;
 
-                resultListOfMap = runConstraintCrossCheck(apiToken, myConstraintFormula, false, null, null, filter);
+                resultListOfMap = runConstraintCrossCheck(projectKey, apiToken, myConstraintFormula, false, null, null, filter);
 
                 int i = 0;
                 for (Map map : resultListOfMap) {
@@ -978,6 +985,7 @@ public class CtrlService extends CommonSrv {
             }
         }
         String apiToken = formService.getMyForm().getMyProject().getApiToken();
+        String projectKey = formService.getMyForm().getMyProject().getKey();
         for (Document doc : constraintCursor) {
             MyConstraintFormula myConstraintFormula = new MyConstraintFormula(doc);
 
@@ -992,7 +1000,7 @@ public class CtrlService extends CommonSrv {
 //                }
                 init(formService.getMyForm().getMyProject().getConfigTable());
 
-                List<Map> resultListOfMap = runConstraintCrossCheck(apiToken, myConstraintFormula, true, null, pivotData, filter);
+                List<Map> resultListOfMap = runConstraintCrossCheck(projectKey, apiToken, myConstraintFormula, true, null, pivotData, filter);
 
                 for (Map map : resultListOfMap) {
 

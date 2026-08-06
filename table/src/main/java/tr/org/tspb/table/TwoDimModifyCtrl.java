@@ -827,6 +827,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         CtrlItems docConstraintItems = formService.getMyForm().getConstraintItems();
 
         String apiToken = formService.getMyForm().getMyProject().getApiToken();
+        String projectKey = formService.getMyForm().getMyProject().getKey();
 
         if (docConstraintItems == null) {
             return returnMap;
@@ -843,7 +844,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             //  try {
             ctrlService.init(formService.getMyForm().getMyProject().getConfigTable());
 
-            List<Map> resultListOfMap = ctrlService.runConstraintCrossCheck(apiToken, myConstraintFormula,
+            List<Map> resultListOfMap = ctrlService.runConstraintCrossCheck(projectKey, apiToken, myConstraintFormula,
                     true, new Object[]{filterService.getTableFilterCurrent(),
                             loginController.getRolesAsSet(), myCrudObject}, null,
                     filterService.getTableFilterCurrent());
@@ -1702,7 +1703,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
                     // 2. Dispatch the HTTP POST execution payload over the wire
                     Response response = client.target(TARGET_URL)
                             .request(MediaType.APPLICATION_JSON)
-                            .header("X-API-KEY", myForm.getMyProject().getApiToken())
+                            .header("X-API-KEY", myForm.getMyProject().getApiToken()).header("X-API-PROJECT", myForm.getMyProject().getKey())
                             .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
 
                     // 3. Validate output response signals cleanly

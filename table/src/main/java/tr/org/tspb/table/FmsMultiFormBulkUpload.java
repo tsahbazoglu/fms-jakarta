@@ -422,6 +422,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 Document dbo = entry.getValue();
                 PostSaveResult postSaveResult = repositoryService.
                         runEventPostSaveByGivenTagEvent(
+                                myForm1.getMyProject().getKey(),
                                 myForm1.getMyProject().getApiToken(),
                                 "/calc-service/api/calculations/gyonad/overall-ratios",
                                 dbo);
@@ -549,6 +550,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 dbo.append("table", fmsForm.getTable());
                 PostSaveResult postSaveResult = repositoryService.
                         runEventPostSaveByGivenTagEvent(
+                                fmsForm.getMyProject().getKey(),
                                 fmsForm.getMyProject().getApiToken(),
                                 "/calc-service/api/calculations/gyonad/internal-ratios", dbo);
 
@@ -773,8 +775,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 try (Client client = ClientBuilder.newClient()) {
                     Response response = client.target(uri)
                             .request(MediaType.APPLICATION_JSON)
-                            .header("X-API-PROJECT", myForm.getMyProject().getKey())  //gerekli olan parametre
-                            .header("X-API-KEY", myForm.getMyProject().getApiToken())
+                            .header("X-API-KEY", myForm.getMyProject().getApiToken()).header("X-API-PROJECT", myForm.getMyProject().getKey())
                             .post(Entity.entity(payload, MediaType.APPLICATION_JSON));
 
                     if (response.getStatus() == 200) {
