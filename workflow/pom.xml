@@ -4,7 +4,7 @@
     <parent>
         <artifactId>fms</artifactId>
         <groupId>tr.org.tspb</groupId>
-        <version>1.6.0</version>
+        <version>1.6.1-alpha</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
