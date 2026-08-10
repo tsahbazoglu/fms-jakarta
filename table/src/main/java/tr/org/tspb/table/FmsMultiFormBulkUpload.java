@@ -203,7 +203,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
 
     public String bulkLoadExcell() {
         try {
-            overaAllCheckOnLists();
+            crossCheckOverAllLists();
             localBulkLoadExcell();
         } catch (Exception ex) {
             dialogController.showPopupError(ex.getMessage());
@@ -266,7 +266,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
     }
 
 
-    private void overaAllCheckOnLists() {
+    private void crossCheckOverAllLists() {
         // -------------------------------------------------------------------------
         // ==== [NAD403] GYO-NAD EXCEL 3 SAYFA (VARLIK 1, 2, 3) BOŞ OLMA KONTROLÜ (RAM SEVİYESİNDE)
         // -------------------------------------------------------------------------
