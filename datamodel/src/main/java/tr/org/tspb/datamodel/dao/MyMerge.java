@@ -24,6 +24,8 @@ public class MyMerge {
     private final List<MyField> importAndAppendedFields;
     private final List<String> upsertFilterKeys;
     private final String strategy;
+    private final TagEvent eventPostSaveSheet;
+    private final TagEvent eventPostSaveFile;
 
     MyMerge(Map<String, Object> toMap, FmsForm myForm) throws Exception {
         this.exampleFile = (String) toMap.get("example-file");
@@ -38,7 +40,7 @@ public class MyMerge {
         this.upsertFields = new ArrayList<>();
         this.importAndAppendedFields = new ArrayList<>();
         this.strategy = toMap.get("strategy") == null ? "insert" : toMap.get(
-                "strategy").
+                        "strategy").
                 toString();
         this.upsertFilterKeys = (List) toMap.get("upsertFilterKeys");
 
@@ -82,6 +84,17 @@ public class MyMerge {
                 myField.createSelectItems(null, null, myForm.getRoleMap(),
                         myForm.getUserDetail(), false);
             }
+        }
+
+        if (toMap.get("event-post-save-sheet") instanceof Document docEvent) {
+            this.eventPostSaveSheet = TagEvent.value(docEvent, new Document());
+        } else {
+            this.eventPostSaveSheet = null;
+        }
+        if (toMap.get("event-post-save-file") instanceof Document docEvent) {
+            this.eventPostSaveFile = TagEvent.value(docEvent, new Document());
+        } else {
+            this.eventPostSaveFile = null;
         }
 
     }
@@ -140,6 +153,14 @@ public class MyMerge {
 
     public List<String> getUpsertFilterKeys() {
         return upsertFilterKeys;
+    }
+
+    public TagEvent getEventPostSaveSheet() {
+        return eventPostSaveSheet;
+    }
+
+    public TagEvent getEventPostSaveFile() {
+        return eventPostSaveFile;
     }
 
 }

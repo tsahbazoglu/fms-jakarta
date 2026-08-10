@@ -618,7 +618,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             emailMB.init(crudObject);
             emailMB.actionEmail();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            logger.error(ex.getMessage(), ex);
             dialogController.showPopupError(ex.getMessage());
         }
         return null;
@@ -647,7 +647,11 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         return null;
     }
 
-    public String saveObject(MyCommandResult smControlResult) throws UserException, NullNotExpectedException, FormConfigException, MessagingException, LdapException, ScriptException, NoSuchMethodException, ELException, MongoOrmFailedException, ParseException, MoreThenOneInListException, RecursiveLimitExceedException, net.sourceforge.jeval.EvaluationException {
+    public String saveObject(MyCommandResult smControlResult)
+            throws UserException, NullNotExpectedException, FormConfigException,
+            MessagingException, LdapException, ScriptException, NoSuchMethodException,
+            ELException, MongoOrmFailedException, ParseException, MoreThenOneInListException,
+            RecursiveLimitExceedException, net.sourceforge.jeval.EvaluationException {
 
         if (runEventPreSave(filterService.getTableFilterCurrent(), crudObject)) {
             return null;
