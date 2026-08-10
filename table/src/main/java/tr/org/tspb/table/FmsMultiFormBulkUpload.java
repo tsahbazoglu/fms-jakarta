@@ -281,7 +281,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
             // Katı blokaj popup uyarısını fırlatıyoruz
             dialogController.showPopupError("[NAD403] Excel Yükleme Reddedildi! Yüklemeye çalıştığınız dosyada 'Arsa ve Araziler', 'Yapılmakta Olan Yatırımlar' ve 'Binalar' sayfalarının tümü boş görünmektedir. Sisteme aktarım yapılabilmesi için bu 3 sayfadan en az birinde, en az 1 satır veri bulunmalıdır!");
             resetUpsertList();
-            return null; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
+            return; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
         }
 
         // -------------------------------------------------------------------------
@@ -314,7 +314,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                         if (isExcelFieldEmpty(yatirimModeli) || isExcelFieldEmpty(yatirimTuru)) {
                             dialogController.showPopupError("[NAD402] Excel Yükleme Reddedildi! Yapılmakta Olan Yatırımlar sayfasında (Satır: " + rowNum + ") seçilen 'Gelir Paylaşımlı Projeler' (" + gelirPaylasimliProje + ") cinsi için Yatırım Modeli ve Yatırım Türü alanları boş bırakılamaz! Lütfen dosyanızı kontrol ediniz.");
                             resetUpsertList();
-                            return null; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
+                            return; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
                         }
                     } else {
                         // -----------------------------------------------------------------
@@ -323,7 +323,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                         if (!isExcelFieldEmpty(yatirimModeli) || !isExcelFieldEmpty(yatirimTuru)) {
                             dialogController.showPopupError("[NAD402] Excel Yükleme Reddedildi! Yapılmakta Olan Yatırımlar sayfasında (Satır: " + rowNum + ") seçilen varlık cinsi için Yatırım Modeli ve Yatırım Türü alanları doldurulamaz! Bu alanlar sadece 'Gelir Paylaşımlı Projeler' (" + gelirPaylasimliProje + ") cinsi için geçerlidir. Lütfen hücreyi temizleyiniz.");
                             resetUpsertList();
-                            return null; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
+                            return; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
                         }
                     }
                 }
@@ -396,7 +396,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 dialogController.showPopupError("[NAD401] Excel Yükleme Reddedildi! Diğer varlık değerleri, toplam portföy payının %10'unu geçemez. Lütfen verilerinizi kontrol ediniz. Hesaplanan kümülatif pay: %" + roundedTotal);
 
                 resetUpsertList(); // Bellekteki temizle
-                return null; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
+                return; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
             }
         }
     }
