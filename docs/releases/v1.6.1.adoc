@@ -1,6 +1,6 @@
-:version: 1.6.1-alpha
+:version: 1.6.1
 
-[[v1-6-1-alpha]]
+[[v1-6-1]]
 = Release Notes — v{version}
 
 == Overview
