@@ -9,7 +9,7 @@ include::releases/v1.3.0.adoc[leveloffset=+1]
 include::releases/v1.4.0.adoc[leveloffset=+1]
 include::releases/v1.5.0.adoc[leveloffset=+1]
 include::releases/v1.6.0.adoc[leveloffset=+1]
-include::releases/v1.6.1-alpha.adoc[leveloffset=+1]
+include::releases/v1.6.1.adoc[leveloffset=+1]
 
 == Asccidoc
 ----
