@@ -203,7 +203,6 @@ public class FmsMultiFormBulkUpload implements Serializable {
 
     public String bulkLoadExcell() {
         try {
-            crossCheckOverAllLists();
             localBulkLoadExcell();
         } catch (Exception ex) {
             dialogController.showPopupError(ex.getMessage());
@@ -279,7 +278,11 @@ public class FmsMultiFormBulkUpload implements Serializable {
         // Eğer 3 listeden de (sayfadan da) hafızaya tek bir satır dahi gelmediyse aktarımı durdur!
         if (toplamYuklenenSatir == 0) {
             // Katı blokaj popup uyarısını fırlatıyoruz
-            dialogController.showPopupError("[NAD403] Excel Yükleme Reddedildi! Yüklemeye çalıştığınız dosyada 'Arsa ve Araziler', 'Yapılmakta Olan Yatırımlar' ve 'Binalar' sayfalarının tümü boş görünmektedir. Sisteme aktarım yapılabilmesi için bu 3 sayfadan en az birinde, en az 1 satır veri bulunmalıdır!");
+            dialogController.showPopupError("""
+                    [NAD-403] Excel Yükleme Reddedildi! Yüklemeye çalıştığınız dosyada<br/>
+                    'Arsa ve Araziler', 'Yapılmakta Olan Yatırımlar' ve 'Binalar' sayfalarının tümü boş görünmektedir.<br/> 
+                    Sisteme aktarım yapılabilmesi için bu 3 sayfadan en az birinde, en az 1 satır veri bulunmalıdır!<br/>
+                    """);
             resetUpsertList();
             return; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
         }
@@ -312,7 +315,13 @@ public class FmsMultiFormBulkUpload implements Serializable {
                         // SENARYO A: Gelir Paylaşımlı Projeler (175) ise -> Alanlar DOLU OLMALI
                         // -----------------------------------------------------------------
                         if (isExcelFieldEmpty(yatirimModeli) || isExcelFieldEmpty(yatirimTuru)) {
-                            dialogController.showPopupError("[NAD402] Excel Yükleme Reddedildi! Yapılmakta Olan Yatırımlar sayfasında (Satır: " + rowNum + ") seçilen 'Gelir Paylaşımlı Projeler' (" + gelirPaylasimliProje + ") cinsi için Yatırım Modeli ve Yatırım Türü alanları boş bırakılamaz! Lütfen dosyanızı kontrol ediniz.");
+                            String msg = String.format("""
+                                    [NAD-402]  <br/><br/>
+                                    Excel Yükleme Reddedildi! Yapılmakta Olan Yatırımlar sayfasında (Satır: %d)  <br/>
+                                    seçilen 'Gelir Paylaşımlı Projeler' (%s) cinsi için Yatırım Modeli ve  <br/><br/>
+                                    Yatırım Türü alanları boş bırakılamaz!  <br/>
+                                    Lütfen dosyanızı kontrol ediniz. <br/>""", rowNum, gelirPaylasimliProje);
+                            dialogController.showPopupError(msg);
                             resetUpsertList();
                             return; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
                         }
@@ -321,7 +330,13 @@ public class FmsMultiFormBulkUpload implements Serializable {
                         // SENARYO B: 175 DIŞINDA bir cins ise -> Alanlar KESİNLİKLE BOŞ OLMALI
                         // -----------------------------------------------------------------
                         if (!isExcelFieldEmpty(yatirimModeli) || !isExcelFieldEmpty(yatirimTuru)) {
-                            dialogController.showPopupError("[NAD402] Excel Yükleme Reddedildi! Yapılmakta Olan Yatırımlar sayfasında (Satır: " + rowNum + ") seçilen varlık cinsi için Yatırım Modeli ve Yatırım Türü alanları doldurulamaz! Bu alanlar sadece 'Gelir Paylaşımlı Projeler' (" + gelirPaylasimliProje + ") cinsi için geçerlidir. Lütfen hücreyi temizleyiniz.");
+                            String msg = String.format("""
+                                    [NAD-402]  <br/><br/>
+                                    Excel Yükleme Reddedildi! Yapılmakta Olan Yatırımlar sayfasında (Satır: %d) <br/>
+                                    seçilen varlık cinsi için Yatırım Modeli ve Yatırım Türü alanları doldurulamaz! <br/> <br/>
+                                    Bu alanlar sadece 'Gelir Paylaşımlı Projeler' (" + %s + ") cinsi için geçerlidir. <br/><br/>
+                                    Lütfen hücreyi temizleyiniz. <br/>""", rowNum, gelirPaylasimliProje);
+                            dialogController.showPopupError(msg);
                             resetUpsertList();
                             return; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
                         }
@@ -391,9 +406,15 @@ public class FmsMultiFormBulkUpload implements Serializable {
             if (predictedRatio > 0.10001) {
                 double roundedTotal = Math.round(predictedRatio * 100.0 * 100.0) / 100.0;
 
-                logger.error("======> [NAD401] localBulkLoadExcell Tetiklendi:  Diğer varlık değerleri %10 u aştı. Hesaplanan kümülatif pay: %" + roundedTotal);
+                logger.error("======> [NAD-401] localBulkLoadExcell Tetiklendi:  Diğer varlık değerleri %10 u aştı. Hesaplanan kümülatif pay: %" + roundedTotal);
                 // Katı blokaj popup uyarısını fırlatıyoruz
-                dialogController.showPopupError("[NAD401] Excel Yükleme Reddedildi! Diğer varlık değerleri, toplam portföy payının %10'unu geçemez. Lütfen verilerinizi kontrol ediniz. Hesaplanan kümülatif pay: %" + roundedTotal);
+                String msg = String.format("""
+                        [NAD-401] <br/>
+                        Excel Yükleme Reddedildi! Diğer varlık değerleri,<br/>
+                        toplam portföy payının %10'unu geçemez. <br/>
+                        Lütfen verilerinizi kontrol ediniz. <br/>
+                        Hesaplanan kümülatif pay: %%%d <br/>""" + roundedTotal);
+                dialogController.showPopupError(msg);
 
                 resetUpsertList(); // Bellekteki temizle
                 return; // Aşağıdaki loadAllSheets döngüsüne girmeden çık
@@ -402,6 +423,8 @@ public class FmsMultiFormBulkUpload implements Serializable {
     }
 
     public String localBulkLoadExcell() {
+
+        crossCheckOverAllLists();
 
         try {
             List<BulkLoadTask> tasks = List.of(

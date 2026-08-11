@@ -13,5 +13,5 @@ include::releases/v1.6.1-alpha.adoc[leveloffset=+1]
 
 == Asccidoc
 ----
-asciidoctor -b html5 -r asciidoctor-diagram -D html *.adoc
+asciidoctor -b html5 -r asciidoctor-diagram -D asciidoctor-html *.adoc
 ----
