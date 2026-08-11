@@ -409,11 +409,11 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 logger.error("======> [NAD-401] localBulkLoadExcell Tetiklendi:  Diğer varlık değerleri %10 u aştı. Hesaplanan kümülatif pay: %" + roundedTotal);
                 // Katı blokaj popup uyarısını fırlatıyoruz
                 String msg = String.format("""
-                        [NAD-401] <br/>
+                        [NAD-401] <br/><br/>
                         Excel Yükleme Reddedildi! Diğer varlık değerleri,<br/>
-                        toplam portföy payının %10'unu geçemez. <br/>
+                        toplam portföy payının %%10'unu geçemez. <br/><br/>
                         Lütfen verilerinizi kontrol ediniz. <br/>
-                        Hesaplanan kümülatif pay: %%%d <br/>""" + roundedTotal);
+                        Hesaplanan kümülatif pay: %%%.2f <br/>""", roundedTotal);
                 dialogController.showPopupError(msg);
 
                 resetUpsertList(); // Bellekteki temizle
