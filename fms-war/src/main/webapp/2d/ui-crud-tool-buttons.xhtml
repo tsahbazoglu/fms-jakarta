@@ -19,9 +19,10 @@
             onclick="rcTableDesc();return false;"
     />
     <p:button
+            id="id-table-create-data-record"
             icon="pi pi-file"
             title="Yeni Ekle"
-            rendered="#{formService.myForm.myActions.create}"
+            disabled="#{not formService.myForm.myActions.create}"
             onclick="rcTableNew();return false;"
     />
     <p:button

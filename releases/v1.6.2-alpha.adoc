@@ -1,0 +1,27 @@
+:version: 1.6.2-alpha
+
+= Release Notes — v{version}
+
+== Overview
+
+== Git Commands
+
+Delete the local and remote tags if they already exist
+[source,bash,js,subs="attributes,verbatim,quotes"]
+----
+git tag -d v{version}
+git push origin --delete v{version}
+----
+
+Create and push the fresh annotated release tag
+[source,bash,js,subs="attributes,verbatim,quotes"]
+----
+git tag -a v{version} -m "Release version {version}"
+git push origin v{version}
+----
+
+Verify the changes
+----
+git tag
+git describe --tags
+----
