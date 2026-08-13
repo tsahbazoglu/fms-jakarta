@@ -266,7 +266,9 @@ public class RepositoryService implements Serializable {
                 Matcher matcher = FMS_CRUD_PATTERN.matcher(stringValue);
                 if (matcher.find()) {
                     Object operatedObjectValue = operatedObject.get(matcher.group(1));
-                    if (operatedObjectValue != null) {
+                    if (operatedObjectValue == null) {
+                        value = null;
+                    } else {
                         if (operatedObjectValue instanceof List<?>) {
                             List<?> originalList = (List<?>) operatedObjectValue;
                             List<Object> newList = new ArrayList<>();
