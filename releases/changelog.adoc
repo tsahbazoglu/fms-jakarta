@@ -11,7 +11,7 @@ include::v1.4.0.adoc[leveloffset=+1]
 include::v1.5.0.adoc[leveloffset=+1]
 include::v1.6.0.adoc[leveloffset=+1]
 include::v1.6.1.adoc[leveloffset=+1]
-include::v1.6.2-alpha.adoc[leveloffset=+1]
+include::v1.6.2.adoc[leveloffset=+1]
 
 == Asccidoc
 ----

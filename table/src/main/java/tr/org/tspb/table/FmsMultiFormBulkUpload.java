@@ -796,6 +796,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
         String db = myForm.getUploadMerge().getToDb();
         String table = myForm.getTable();
         String memberType = loginController.getLoggedUserDetail().getDbo().getMemberType();
+        ObjectId memberObjectId = loginController.getLoggedUserDetail().getDbo().getObjectId();
         String convertType = converter.getType();
         try {
             if ("external-api".equals(convertType)) {
@@ -807,6 +808,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                 payload.put("form", table);
                 payload.put("value", obtainedValue == null ? "" : obtainedValue.toString());
                 payload.put("memberType", memberType);
+                payload.put("member-object-id", memberObjectId.toHexString());
 
                 try (Client client = ClientBuilder.newClient()) {
                     Response response = client.target(uri)
