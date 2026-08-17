@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.bson.Document;
+
 import static tr.org.tspb.constants.ProjectConstants.DIEZ;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR;
+
 import tr.org.tspb.datamodel.expected.FmsScriptRunner;
 import tr.org.tspb.datamodel.pojo.UserDetail;
 import tr.org.tspb.datamodel.tags.FmsCheck;
@@ -23,12 +25,36 @@ public abstract class TagActionsAction {
     private String actionFunc;
     private List<Operation> operations;
     private List<FmsCheck> checkList;
+    private ActionType actionType;
+    private String apiUri;
+
+    public String getApiUri() {
+        return apiUri;
+    }
+
+    public enum ActionType {
+        BULk_GET_CONTROL_OVER_API,
+    }
+
+    public ActionType getActionType() {
+        return actionType;
+    }
 
     public TagActionsAction(boolean enable, ActionEnableResult enableResult,
-            Document eventAction, Document registredFunctions, Map myfilter,
-            UserDetail userDetail, FmsScriptRunner fmsScriptRunner) {
+                            Document eventAction, Document registredFunctions, Map myfilter,
+                            UserDetail userDetail, FmsScriptRunner fmsScriptRunner) {
         this.enable = enable;
         this.enableResult = enableResult;
+
+        String type = eventAction.get("type", String.class);
+
+        if ("bulk-get-control-over-api".equals(type)) {
+            this.actionType = ActionType.BULk_GET_CONTROL_OVER_API;
+        } else {
+            this.actionType = null;
+        }
+
+        this.apiUri = eventAction.get("api-uri", String.class);
 
         Document whattodo = eventAction.get("action", Document.class);
 

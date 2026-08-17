@@ -113,11 +113,14 @@ public class CtrlService extends CommonSrv {
         replace-with-control-function.js
                 
          */
-        if (MyConstraintFormula.EngineType.MONGODB_FUNCTION.equals(myConstraintFormula.getEngineType())) {
+
+        MyConstraintFormula.EngineType engineType = myConstraintFormula.getEngineType();
+
+        if (MyConstraintFormula.EngineType.MONGODB_FUNCTION.equals(engineType)) {
             return handleMongoStoredFunction(myConstraintFormula, parameters, filter, resultListOfMap);
         }
 
-        if (MyConstraintFormula.EngineType.API.equals(myConstraintFormula.getEngineType())) {
+        if (MyConstraintFormula.EngineType.API.equals(engineType)) {
             return handleApiConstraint(projectKey, apiToken, myConstraintFormula, parameters, filter);
         }
 
@@ -127,9 +130,9 @@ public class CtrlService extends CommonSrv {
             retrivedVariables.put(myConstraintVariable.getKey(), retriveValueByCoordinate(myConstraintVariable, isInternalCheck, appScopeSrvCtrl.getDatabankRecalculateOnControl(), mapMultiDimension, filter));
         }
 
-        if (MyConstraintFormula.EngineType.JEVAL.equals(myConstraintFormula.getEngineType())) {
+        if (MyConstraintFormula.EngineType.JEVAL.equals(engineType)) {
             return handleJeval(myConstraintFormula, retrivedVariables);
-        } else if (MyConstraintFormula.EngineType.JAVA_SCRIPT.equals(myConstraintFormula.getEngineType())) {
+        } else if (MyConstraintFormula.EngineType.JAVA_SCRIPT.equals(engineType)) {
             return handleJavaScript(myConstraintFormula, retrivedVariables);
         } else {
             return Collections.emptyList();

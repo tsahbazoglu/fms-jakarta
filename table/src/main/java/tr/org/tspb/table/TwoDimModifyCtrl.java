@@ -552,11 +552,87 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     4. check the result to focus on sendForm 
      */
     public String provideOverAllCrossCheck() {
+
+        FmsForm myForm = formService.getMyForm();
+
+        String projectKey = myForm.getMyProject().getKey();
+        String apiToken = myForm.getMyProject().getApiToken();
+
+        TagActionsAction tagActionsActionCheckAll = myForm.getMyActions().getCheckAllAction();
+
+        if (TagActionsAction.ActionType.BULk_GET_CONTROL_OVER_API.equals(tagActionsActionCheckAll.getActionType())) {
+
+            String TARGET_URL = "http://localhost:8080" + tagActionsActionCheckAll.getApiUri();
+
+            Document filter = new Document(filterService.getTableFilterCurrent());
+
+            // 1. Unpack Member array collection paths safely
+            List<String> memberIds = new ArrayList<>();
+            if (filter.get("member") != null) {
+                Object memberObj = filter.get("member");
+                if (memberObj instanceof Document && ((Document) memberObj).containsKey("$in")) {
+                    List<?> rawList = ((Document) memberObj).getList("$in", Object.class);
+                    for (Object item : rawList) {
+                        memberIds.add(item instanceof ObjectId ? ((ObjectId) item).toHexString() : item.toString());
+                    }
+                } else {
+                    memberIds.add(memberObj instanceof ObjectId ? ((ObjectId) memberObj).toHexString() : memberObj.toString());
+                }
+            }
+
+            // 2. Unpack Period array collection paths safely
+            List<String> periodIds = new ArrayList<>();
+            if (filter.get("period") != null) {
+                Object periodObj = filter.get("period");
+                if (periodObj instanceof Document && ((Document) periodObj).containsKey("$in")) {
+                    List<?> rawList = ((Document) periodObj).getList("$in", Object.class);
+                    for (Object item : rawList) {
+                        periodIds.add(item instanceof ObjectId ? ((ObjectId) item).toHexString() : item.toString());
+                    }
+                } else {
+                    periodIds.add(periodObj instanceof ObjectId ? ((ObjectId) periodObj).toHexString() : periodObj.toString());
+                }
+            }
+
+            // Guard Check: Skip execution if both lists came back completely empty
+            if (memberIds.isEmpty() || periodIds.isEmpty()) {
+                logger.warn("Skipping REST execution: 'member' or 'period' filter fields are empty.");
+                throw new RuntimeException("Skipping REST execution: 'member' or 'period' filter fields are empty.");
+            }
+
+            Map<String, Object> requestPayload = new HashMap<>();
+            requestPayload.put("member-ids-as-str", memberIds);
+            requestPayload.put("period-ids-as-str", periodIds);
+
+            Map resultMap = null;
+            // 2. Instantiate the native Jakarta REST client worker engine
+            try (Client client = ClientBuilder.newClient()) {
+                // 3. Dispatch the HTTP POST execution payload over the wire
+                Response response = client.target(TARGET_URL)
+                        .request(MediaType.APPLICATION_JSON)
+                        .header("X-API-KEY", apiToken).header("X-API-PROJECT", projectKey)
+                        .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+                // 4. Validate output response signals cleanly
+                if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                    resultMap = response.readEntity(Map.class);
+                    System.out.println("Success response signature received from service: " + resultMap);
+                } else {
+                    System.err.println("Failed to execute. HTTP Status Code: " + response.getStatus());
+                    System.err.println("Error output detail: " + response.readEntity(String.class));
+                }
+                response.close();
+                ((FmsTableDataModel) getData()).initRowCount(findDataCount());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
         ctrlService.init(formService.getMyForm().getMyProject().getConfigTable());
         try {
             Document filterClone = new Document(filterService.getTableFilterCurrent());
             ctrlService.crossCheck(filterClone);
-            callAdditionalAction(filterClone, formService.getMyForm().getMyActions().getCheckAllAction());
+            callAdditionalAction(filterClone, tagActionsActionCheckAll);
             resetActions();
             ((FmsTableDataModel) getData()).initRowCount(findDataCount());
         } catch (Exception ex) {
