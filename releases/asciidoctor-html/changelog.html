@@ -511,6 +511,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_git_commands_6">Git Commands</a></li>
 </ul>
 </li>
+<li><a href="#_release_notes_v1_6_2_alpha">Release Notes — v1.6.2-alpha</a>
+<ul class="sectlevel2">
+<li><a href="#_overview_7">Overview</a></li>
+<li><a href="#_git_commands_7">Git Commands</a></li>
+</ul>
+</li>
 <li><a href="#_asccidoc">Asccidoc</a></li>
 </ul>
 </div>
@@ -1129,6 +1135,45 @@ git describe --tags</pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_release_notes_v1_6_2_alpha">Release Notes — v1.6.2-alpha</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_overview_7">Overview</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_git_commands_7">Git Commands</h3>
+<div class="paragraph">
+<p>Delete the local and remote tags if they already exist</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">git tag -d v1.6.2-alpha
+git push origin --delete v1.6.2-alpha</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create and push the fresh annotated release tag</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">git tag -a v1.6.2-alpha -m "Release version 1.6.2-alpha"
+git push origin v1.6.2-alpha</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify the changes</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git tag
+git describe --tags</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_asccidoc">Asccidoc</h2>
 <div class="sectionbody">
 <div class="listingblock">
@@ -1141,7 +1186,7 @@ git describe --tags</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-13 13:17:57 +0300
+Last updated 2026-08-17 17:47:28 +0300
 </div>
 </div>
 </body>
