@@ -393,7 +393,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             fmsFlowCtrl.init(formService.getMyForm(), crudObject, filterService.getTableFilterCurrent());
         }
 
-        dialogController.showPopup(CRUD_OPERATION_DIALOG2);
+        dialogController.showPopup("idTwoDlgTabView:crud2dForm", CRUD_OPERATION_DIALOG2);
 
         if (formService.getMyForm().isHasChildFields()) {
             setChildRecords(crudObject.getMyObjectChilds());
@@ -1041,7 +1041,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
             resetHistory();
 
-            dialogController.showPopup(CRUD_OPERATION_DIALOG2);
+            dialogController.showPopup("idTwoDlgTabView:crud2dForm", CRUD_OPERATION_DIALOG2);
 
             if (formService.getMyForm().isHasChildFields()) {
                 crudObject.setMyObjectChilds(new ArrayList<>());

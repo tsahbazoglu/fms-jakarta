@@ -2,6 +2,7 @@ package tr.org.tspb.util.service;
 
 import static tr.org.tspb.constants.ProjectConstants.MESSAGE_DIALOG;
 import static tr.org.tspb.constants.ProjectConstants.WARNING;
+
 import java.io.Serializable;
 import org.primefaces.PrimeFaces;
 import tr.org.tspb.util.stereotype.MyController;
@@ -29,7 +30,7 @@ public class DlgCtrl implements Serializable {
     }
 
     public DlgCtrl(String imageLocation, String imageAlt, String title,
-            String msg, boolean rendered, boolean visible) {
+                   String msg, boolean rendered, boolean visible) {
         this.imageLocation = imageLocation;
         this.imageAlt = imageAlt;
         this.title = title;
@@ -39,7 +40,7 @@ public class DlgCtrl implements Serializable {
     }
 
     public void bulkSet(String imageLocation, String imageAlt, String title,
-            String msg, boolean rendered, boolean visible) {
+                        String msg, boolean rendered, boolean visible) {
         this.imageLocation = imageLocation;
         this.imageAlt = imageAlt;
         this.title = title;
@@ -77,7 +78,7 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showCodePopupInfo(String title, String codeMirrorContent,
-            String errMessage, String clientSideDialogName) {
+                                  String errMessage, String clientSideDialogName) {
         this.codeMirrorContent = codeMirrorContent;
         this.message = errMessage;
         this.title = title;
@@ -141,6 +142,12 @@ public class DlgCtrl implements Serializable {
         setStyle("font-size:13px;");
         setTitle(WARNING);
         showPopup(MESSAGE_DIALOG);
+    }
+
+    public void showPopup(String componentId, String widgetWar) {
+        PrimeFaces.current().resetInputs(componentId);
+        PrimeFaces.current().ajax().update(componentId);
+        PrimeFaces.current().executeScript("PF('" + widgetWar + "').show()");
     }
 
     public void showPopup(String clientSideDialogName) {
