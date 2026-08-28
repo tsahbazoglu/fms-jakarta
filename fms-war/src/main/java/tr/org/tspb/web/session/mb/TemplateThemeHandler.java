@@ -47,31 +47,31 @@ public class TemplateThemeHandler implements Serializable {
     @PostConstruct
     public void init() {
 
-        String username = loginController.getLoggedUserDetail().
-                getUsername();
+        String username = loginController.getLoggedUserDetail().getUsername();
 
-        Map<String, Object> settings = repositoryService.one(DB_NAME,
-                COLLECTION_NAME,
-                Filters.eq(FIELD_MEMBER_ID, username));
+        Map<String, Object> settings = repositoryService.one(DB_NAME, COLLECTION_NAME, Filters.eq(FIELD_MEMBER_ID, username));
 
         if (settings != null) {
-            Optional.ofNullable(settings.get(FIELD_THEME)).
-                    ifPresent(t -> this.theme = t.toString());
-            Optional.ofNullable(settings.get(FIELD_LAYOUT)).
-                    ifPresent(l -> this.layout = l.toString());
-            Optional.ofNullable(settings.get(FIELD_FONT_SIZE)).
-                    ifPresent(fs -> this.fontSize = fs.toString());
+            Optional.ofNullable(settings.get(FIELD_THEME)).ifPresent(t -> this.theme = t.toString());
+            Optional.ofNullable(settings.get(FIELD_LAYOUT)).ifPresent(l -> this.layout = l.toString());
+            Optional.ofNullable(settings.get(FIELD_FONT_SIZE)).ifPresent(fs -> this.fontSize = fs.toString());
         }
-        /*
-        db.getCollection("theme-template").update({ldapUID:"DENEME_PYS_1"},{$set:{theme:"saga"}})
-        db.getCollection("theme-template").update({ldapUID:"DENEME_PYS_2"},{$set:{theme:"saga"}})
-         */
+/*
+        db.getCollection("theme-template").updateOne({ldapUID:"DENEME_PYS_1"},{$set:{theme:"saga"}})
+        db.getCollection("theme-template").updateOne({ldapUID:"DENEME_PYS_2"},{$set:{layout:"web-layout-no-description-sidebar"}})
+*/
+
+/*
+        db.getCollection("theme-template").updateMany({},{$set:{theme:"saga"}})
+        db.getCollection("theme-template").updateMany({},{$set:{theme:"aura-dark-emerald"}})
+
+        db.getCollection("theme-template").updateMany({},{$set:{layout:"web-layout-no-description-sidebar"}})
+*/
 
     }
 
     private void savePreferences() {
-        String username = loginController.getLoggedUserDetail().
-                getUsername();
+        String username = loginController.getLoggedUserDetail().getUsername();
 
         Map<String, Object> filter = new HashMap<>();
         filter.put(FIELD_MEMBER_ID, username);
@@ -81,8 +81,7 @@ public class TemplateThemeHandler implements Serializable {
         record.put(FIELD_LAYOUT, this.layout);
         record.put(FIELD_FONT_SIZE, this.fontSize);
 
-        repositoryService.updateMany(DB_NAME, COLLECTION_NAME, filter, record,
-                true);
+        repositoryService.updateMany(DB_NAME, COLLECTION_NAME, filter, record, true);
     }
 
     public void changeContract(String contract) {
@@ -146,40 +145,21 @@ public class TemplateThemeHandler implements Serializable {
     }
 
     public List<String> getThemes() {
-        return Arrays.asList(
-                "saga-blue",
-                "vela-blue",
-                "arya-blue",
+        return Arrays.asList("saga-blue", "vela-blue", "arya-blue",
                 // "aura-common",
                 // "aura-common-dark",
-                "aura-dark-emerald",
-                "aura-light-emerald",
-                "bootstrap4-blue-dark",
-                "bootstrap4-blue-light",
+                "aura-dark-emerald", "aura-light-emerald", "bootstrap4-blue-dark", "bootstrap4-blue-light",
                 //"bootstrap4-dark-common",
                 //"bootstrap4-light-common",
-                "bootstrap4-purple-dark",
-                "bootstrap4-purple-light",
-                "luna-amber",
-                "luna-blue",
+                "bootstrap4-purple-dark", "bootstrap4-purple-light", "luna-amber", "luna-blue",
                 // "luna-common",
-                "luna-green",
-                "luna-pink",
-                "material-compact-deeppurple-dark",
-                "material-compact-deeppurple-light",
-                "material-compact-indigo-dark",
-                "material-compact-indigo-light",
+                "luna-green", "luna-pink", "material-compact-deeppurple-dark", "material-compact-deeppurple-light", "material-compact-indigo-dark", "material-compact-indigo-light",
                 //"material-dark-common",
-                "material-deeppurple-dark",
-                "material-deeppurple-light",
-                "material-indigo-dark",
-                "material-indigo-light",
+                "material-deeppurple-dark", "material-deeppurple-light", "material-indigo-dark", "material-indigo-light",
                 //"material-light-common",
-                "mytheme",
-                "nova-colored",
+                "mytheme", "nova-colored",
                 //"nova-common",
-                "nova-dark",
-                "nova-light");
+                "nova-dark", "nova-light");
     }
 
 }
