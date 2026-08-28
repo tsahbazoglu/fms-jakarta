@@ -20,35 +20,60 @@
 
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
-    <h:outputScript name="js/fms-core.js" library="web-layout"/>
-    <h:outputStylesheet name="css/noneie.css" library="web-layout"/>
-    <h:outputStylesheet name="css/fms-core.css" library="web-layout"/>
-
     <h:outputScript library="telmangrid" name="handsontable/handsontable.full.js"/>
     <h:outputStylesheet library="telmangrid" name="handsontable/handsontable.full.css"/>
-    <h:outputStylesheet library="telmangrid" name="handsontable/fms.handsontable.override.css"/>
+
+
+    <f:facet name="last">
+        <h:outputStylesheet name="css/noneie.css" library="web-layout"/>
+        <h:outputStylesheet name="css/fms-core.css" library="web-layout"/>
+        <h:outputStylesheet library="telmangrid" name="handsontable/fms.handsontable.override.css"/>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+                background-color: var(--surface-ground);
+                color: var(--text-color, #ffffff);
+                font-family: var(--font-family);
+            }
+
+            .ui-tabs .ui-tabs-panel {
+                padding: 0 !important;
+            }
+
+            /* Ensure the layout takes full height */
+            .main-wrapper {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Force the main grid to stretch full height and align columns */
+            .main-wrapper > .grid {
+                flex: 1 0 auto;
+                align-items: stretch;
+            }
+
+            /* Ensure column wrapper stretches completely */
+            .left-menu-col {
+                display: flex !important;
+                flex-direction: column !important;
+            }
+
+            .left-menu-col > .surface-card {
+                height: 100% !important;
+                min-height: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+        </style>
+    </f:facet>
+
+    <h:outputScript name="js/fms-core.js" library="web-layout"/>
     <h:outputScript library="telmangrid" name="handsontable/init3dHandson.v1.js"/>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background-color: var(--surface-ground);
-            font-family: var(--font-family);
-        }
 
-        .ui-tabs .ui-tabs-panel {
-            padding: 0 !important;
-        }
-
-        /* Ensure the layout takes full height */
-        .main-wrapper {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
 </h:head>
 
 <h:body>
@@ -57,12 +82,12 @@
         <div class="grid">
 
             <div class="col-12 lg:col-4">
-                <div class="surface-card p-3 shadow-1 border-round mb-3">
+                <div class="surface-card p-3 shadow-1 border-round mb-3 flex-grow-1 flex flex-column">
                     <h:form id="iceformTop">
                         <ui:include src="top.xhtml"/>
                     </h:form>
                     <div class="my-1"></div>
-                    <h:form id="menuForm">
+                    <h:form id="menuForm" styleClass="flex-grow-1">
                         <ui:include src="menu.xhtml"/>
                     </h:form>
                 </div>
