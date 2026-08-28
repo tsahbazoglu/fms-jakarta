@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>User Management Panel</title>
+    </h:head>
+
+    <h:body>
+        <p:panel style="width: 100%;">
+
+            <h:panelGroup layout="block" style="margin-bottom: 20px;">
+                <p:graphicImage value="#{mainFrame.logoSmall}" width="250" alt="Logo"/>
+            </h:panelGroup>
+
+            <h:panelGrid columns="1" style="margin-bottom: 15px;">
+                <p:chip label="&#160;#{loginController.loggedUserDetail.username}" 
+                        icon="pi pi-user" 
+                        style="font-size: 1.2rem; font-weight: bold; background: none; border: none; padding: 0;"/>
+
+                <h:panelGroup rendered="#{roleMB['uysdesigner']}">
+                    <h:outputText value="SPK İlk Bildirim Tarihi: " style="font-weight: bold; color: #666;"/>
+                    <h:panelGroup rendered="#{not empty loginController.loggedUserDetail}">
+                        <h:outputText value="Belirtilmemiş" 
+                                      rendered="#{empty loginController.loggedUserDetail.mapProjectInfo}" 
+                                      style="color: #999; font-style: italic;"/>
+                        <h:outputText value="#{loginController.loggedUserDetail.mapProjectInfo['spk_notifacation_date']}"
+                                      rendered="#{not empty loginController.loggedUserDetail.mapProjectInfo}">
+                            <f:convertDateTime pattern="yyyy.MM.dd" timeZone="#{twoDimModifyCtrl.timeZone}"/>
+                        </h:outputText>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGrid>
+
+            <div class="my-1"></div>
+
+            <h:panelGrid columns="3" cellpadding="5" style="margin-top: 10px;">
+
+                <p:linkButton icon="pi pi-share-alt" 
+                              target="_blank" 
+                              href="https://git.tspb.org.tr/explore/projects" 
+                              title="Git Projeleri"
+                              styleClass="ui-button-outlined ui-button-secondary"/>
+
+                <p:commandButton value="Profil"
+                                 icon="pi pi-user-edit"
+                                 action="#{loginController.showRoles}"
+                                 update="#{updateAjaxMB.btnDetay},id-dlg-user-info"
+                                 styleClass="ui-button-outlined ui-button-secondary"/>
+
+                <p:commandButton value="Çıkış"
+                                 icon="pi pi-sign-out"
+                                 action="#{loginController.logout}"
+                                 immediate="true"
+                                 update="#{updateAjaxMB.msgDlg}"
+                                 styleClass="ui-button-outlined ui-button-danger">
+                    <f:attribute name="toPage" value="PERSONNEL"/>
+                </p:commandButton>
+
+            </h:panelGrid>
+
+        </p:panel>
+    </h:body>
+</html>
