@@ -625,6 +625,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            resetActions();
             return null;
         }
 
