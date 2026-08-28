@@ -29,13 +29,14 @@
     </div>
 </p:panel>
 
-<p:messages
+<p:growl
         showDetail="true"
         showSummary="true"
-        closable="true"
+        keepAlive="true"
+        life="3000"
 >
     <p:autoUpdate/>
-</p:messages>
+</p:growl>
 
 <ui:include src="ui-crud-row-list.xhtml"/>
 

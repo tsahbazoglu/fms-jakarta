@@ -15,13 +15,14 @@
     <h:body>
         <ui:include src="ui-free-form-toolbar.xhtml"/>
 
-        <p:messages
+        <p:growl
                 showDetail="true"
                 showSummary="true"
-                closable="true"
+                keepAlive="true"
+                life="3000"
         >
             <p:autoUpdate/>
-        </p:messages>
+        </p:growl>
 
 
         <h:form id="id_freeform" styleClass="p-3"> 
