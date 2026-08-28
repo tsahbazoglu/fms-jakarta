@@ -24,7 +24,7 @@
 
 
     <h:form>
-        <h:outputText value="Arama" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+        <h:outputText value="Arama" styleClass="fms-heading-2 fms-text-muted"/>
         <br/>
         <br/>
         <p:autoComplete
@@ -54,7 +54,7 @@
         >
         <br/>
         <br/>
-        <h:outputText value="Liste" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+        <h:outputText value="Liste" styleClass="fms-heading-2 fms-text-muted"/>
         <br/>
         <br/>
         <p:dataTable
@@ -75,7 +75,7 @@
             <p:ajax event="rowSelect" listener="#{freeDesigner.selectListener}"/>
             <p:column
                 width="100" 
-                style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                style="color:gray;#{columnMap.style}">
                 <f:facet name="header">
                     <h:outputText value="Kullanıcı Adı"/> 
                 </f:facet>
@@ -83,7 +83,7 @@
             </p:column>
             <p:column
                 width="100" 
-                style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                style="color:gray;#{columnMap.style}">
                 <f:facet name="header">
                     <h:outputText value="Bildirim Adı"/> 
                 </f:facet>
@@ -91,7 +91,7 @@
             </p:column>
             <p:column
                 width="10" 
-                style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                style="color:gray;#{columnMap.style}">
             </p:column>
         </p:dataTable>
     </h:form>

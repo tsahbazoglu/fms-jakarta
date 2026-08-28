@@ -113,7 +113,7 @@
                 <h:panelGroup 
                     id="id2dUploadedFiles" 
                     >
-                    <h:outputText value="Ekli Dosyalar" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+                    <h:outputText value="Ekli Dosyalar" styleClass="fms-heading-2 fms-text-muted"/>
                     <br/>
                     <br/>
                     <p:dataTable 
@@ -124,7 +124,7 @@
                         >
                         <p:column 
                             width="#{columnMap.width}" 
-                            style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                            style="color:gray;#{columnMap.style}">
                             <f:facet name="header" >
                                 <h:outputText value="Dosya Adı"/> 
                             </f:facet>
@@ -132,7 +132,7 @@
                         </p:column>
                         <p:column 
                             width="100" 
-                            style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                            style="color:gray;#{columnMap.style}">
                             <f:facet name="header" >
                                 <h:outputText value="Dosya Boyutu"/> 
                             </f:facet>
@@ -140,7 +140,7 @@
                         </p:column>
                         <p:column 
                             width="#{columnMap.width}" 
-                            style="white-space: nowrap;color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                            style="white-space: nowrap;color:gray;#{columnMap.style}">
                             <f:facet name="header" >
                                 <h:outputText value="Durum"/> 
                             </f:facet>
@@ -160,7 +160,7 @@
                         </p:column>
                         <p:column 
                             width="50" 
-                            style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
+                            style="color:gray;#{columnMap.style}">
                             <f:facet name="header" >
                                 <h:outputText value="İndir"/> 
                             </f:facet>
@@ -168,7 +168,6 @@
                                 value="#{application.contextPath}/myDownloadServlet/#{x.fileID}"
                                 style="
                                 text-decoration:none;
-                                font-size: 14px;
                                 color:#112978;
                                 font-weight:bold;"
                                 >

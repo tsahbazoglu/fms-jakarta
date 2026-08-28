@@ -1,10 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html 
+<!DOCTYPE html>
+<ui:composition 
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html"
-    xmlns:p="http://primefaces.org/ui"
-    >
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui">
+
     <p:dialog
         id="idMessageDialog"
         widgetVar="messageDialog"
@@ -12,30 +13,39 @@
         header="#{dlgCtrl.title}"                        
         closable="true"
         closeOnEscape="true" 
-        modal = "false"
+        modal="true"
+        responsive="true"
         draggable="true"
         position="center"
         visible="false"
-        width="700"
-        height="400"
+        width="600"
+        style="max-width: 95vw;"
+        styleClass="border-round shadow-2"
         >
-             <h:panelGrid columns="1">
+        <div class="flex flex-column gap-3 py-2">
+            <h:outputText 
+                id="outMsg"
+                value="#{dlgCtrl.message}"
+                styleClass="text-base line-height-3 block"
+                style="#{dlgCtrl.style}"
+                escape="false"/>
 
-                <h:outputText 
-                    id="outMsg"
-                    value="#{dlgCtrl.message}"
-                    style="text-align:left;display:block;font-weight: bold;#{dlgCtrl.style}"
-                    escape="false"/>
-
+            <div class="flex justify-content-end gap-2 mt-2 pt-2 border-top-1 surface-border">
                 <p:commandButton
                     value="Kaydetmeden Çık"
+                    icon="pi pi-times"
                     action="#{twoDimModifyCtrl.doNotSave}"
-                    rendered="#{dlgCtrl.renderedButon}"/>
+                    rendered="#{dlgCtrl.renderedButon}"
+                    styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
+
                 <p:button
                     value="Tamam"
+                    icon="pi pi-check"
                     onclick="PF('messageDialog').hide();return false;"
                     rendered="#{dlgCtrl.renderedOkButon}"
+                    styleClass="ui-button-primary p-button-sm"
                     />
-            </h:panelGrid>
+            </div>
+        </div>
     </p:dialog>
-</html>
+</ui:composition>

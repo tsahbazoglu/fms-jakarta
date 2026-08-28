@@ -18,6 +18,7 @@
         <ui:insert name="title">#{mainFrame.companyTitle}</ui:insert>
     </title>
 
+    <h:outputStylesheet name="css/fms-design-system.css"/>
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
     <h:outputScript library="telmangrid" name="handsontable/handsontable.full.js"/>
@@ -29,13 +30,18 @@
         <h:outputStylesheet name="css/fms-core.css" library="web-layout-no-description"/>
         <h:outputStylesheet  name="handsontable/fms.handsontable.override.css" library="telmangrid"/>
         <style>
+            :root {
+                --fms-font-size-base: #{templateThemeHandler.fontSizePx};
+            }
+
             body {
                 margin: 0;
                 padding: 0;
                 min-height: 100vh;
-                background-color: var(--surface-ground);
-                color: var(--text-color, #ffffff);
-                font-family: var(--font-family);
+                background-color: var(--surface-ground, #f8fafc);
+                color: var(--text-color, #334155);
+                font-family: var(--fms-font-family, var(--font-family));
+                font-size: var(--fms-font-size-base, 14px);
             }
 
             .ui-tabs .ui-tabs-panel {

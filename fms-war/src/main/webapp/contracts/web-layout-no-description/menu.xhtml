@@ -1,15 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html 
+<!DOCTYPE html>
+<ui:composition 
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ace="http://primefaces.org/ui"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui"
     xmlns:mydinamic="http://java.sun.com/jsf/composite/mydinamic"
-    xmlns:h="jakarta.faces.html"
-    >
-
-    <h:head>
-        <title></title>
-    </h:head>
+    xmlns:h="jakarta.faces.html">
 
     <mydinamic:myaccordion 
         id="id-fms-accordion"
@@ -21,10 +17,11 @@
         myOnPaneChange="#{mainFrame.myOnPaneChange}"
         />
 
-    <ace:commandButton value="Sistem" 
-                       rendered="#{mainFrame.access}"
-                       action="#{mainFrame.goToSystem}" 
-                       style="width: 160px;"
-                       update="#{updateAjaxMB.menuSelectForm}"
-                       />
-</html>
+    <p:commandButton value="Sistem" 
+                     icon="pi pi-cog"
+                     rendered="#{mainFrame.access}"
+                     action="#{mainFrame.goToSystem}" 
+                     styleClass="ui-button-outlined ui-button-secondary w-full mt-2 p-button-sm"
+                     update="#{updateAjaxMB.menuSelectForm}"
+                     />
+</ui:composition>

@@ -57,9 +57,9 @@ li{
 
 /*************************************************************** WELCOME PAGE */
 table{
-    font-size: 14px;
-    font-family:Verdana,Arial,sans-serif;
-    color: gray;
+    font-size: var(--fms-font-size-base, 14px);
+    font-family: inherit;
+    color: inherit;
 }
 .telmanClassName {
     text-align: right;

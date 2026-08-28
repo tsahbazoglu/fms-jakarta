@@ -1,16 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"   
       xmlns:composite="jakarta.faces.composite"
       xmlns:p="http://primefaces.org/ui"
       xmlns:c="jakarta.tags.core"
       xmlns:f="jakarta.faces.core"
-      xmlns:h="jakarta.faces.html"
-      >
-
-    <h:head>
-        <title></title>
-    </h:head>
+      xmlns:h="jakarta.faces.html">
 
     <composite:interface>
         <composite:attribute name="fmsupdate" required="true"/>
@@ -23,34 +18,27 @@
 
     <composite:implementation>
         <style>
-            .fms-highlight{
-                background-color: rgb(23, 209, 230);
-                font-weight: bold!important;
+            .ui-menu.fms-accordion-menu {
+                max-height: calc(100vh - 220px);
+                overflow-y: auto;
+                border: none;
+                background: transparent;
             }
-
-            .ui-menu {
-                overflow-y: scroll;
-                height: 550px;
-            }
-
         </style>
         <p:menu 
             toggleable="true" 
-            style="width: 100%;" 
-            styleClass="large-font-size"
+            styleClass="w-full fms-accordion-menu"
             >    
             <c:forEach items="#{cc.attrs.rows}" var="item">
                 <p:submenu 
                     label="#{item.name}" 
                     expanded="false"
-                    styleClass="medium-font-size"
                     >
                     <p:menuitem
                         value="Hakkında ..." 
                         action="#{cc.attrs.myAction}" 
                         update="#{cc.attrs.fmsupdate}"
-                        icon="ui-icon-home"
-                        styleClass="medium-font-size"
+                        icon="pi pi-home"
                         onclick="$('.fms-highlight').removeClass('fms-highlight');$(this).addClass('fms-highlight')"
                         rendered="false"
                         >
@@ -64,9 +52,9 @@
                             value="#{item.label}"
                             update="#{item.jsfupdate}"
                             action="#{cc.attrs.myAction}"
-                            icon="ui-icon-document"
+                            icon="pi pi-file"
                             onclick="$('.fms-highlight').removeClass('fms-highlight');$(this).addClass('fms-highlight')"
-                            styleClass="#{item.value eq cc.attrs.selectedFormInfo?'fms-highlight':''} medium-font-size" 
+                            styleClass="#{item.value eq cc.attrs.selectedFormInfo ? 'fms-highlight' : ''}" 
                             >
                             <f:setPropertyActionListener 
                                 target="#{cc.attrs.selectedFormInfo}" 

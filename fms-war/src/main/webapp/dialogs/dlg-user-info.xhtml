@@ -1,69 +1,78 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:c="jakarta.tags.core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="jakarta.faces.core">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:c="jakarta.tags.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core">
 
-<p:dialog id="id-dlg-user-info"
-          widgetVar="wv-dlg-user-info"
-          header="Kullanıcı Bilgileri"
-          modal="true"
-          responsive="true"
-          width="700"
-          height="250"
-          style="max-height: 90vh;">
+    <p:dialog id="id-dlg-user-info"
+              widgetVar="wv-dlg-user-info"
+              header="Kullanıcı Bilgileri &amp; Görünüm Ayarları"
+              modal="true"
+              responsive="true"
+              width="750"
+              style="max-width: 95vw; max-height: 90vh;"
+              styleClass="border-round shadow-2">
 
-    <h:form id="themeForm">
-        <p:outputLabel value="#{dlgCtrl.message}"
-                       style="text-align:left; display:block; font-weight: bold; margin-bottom:15px; #{dlgCtrl.style}"
-                       escape="false"/>
+        <h:form id="themeForm" styleClass="flex flex-column gap-3 py-2">
+            <h:panelGroup rendered="#{not empty dlgCtrl.message}">
+                <p:outputLabel value="#{dlgCtrl.message}"
+                               styleClass="block font-semibold mb-2 p-2 border-round surface-100"
+                               style="#{dlgCtrl.style}"
+                               escape="false"/>
+            </h:panelGroup>
 
-        <h:outputText value="Görünüm Ayarları"
-                      style="font-weight:bold; font-size:20px; display:block; margin-bottom:10px;"/>
+            <div class="text-xl font-bold text-900 border-bottom-1 surface-border pb-2">
+                <i class="pi pi-palette mr-2"></i>Görünüm Ayarları
+            </div>
 
-        <p:panel header="Yerleşim : #{templateThemeHandler.layout}" style="margin-bottom:15px;">
-            <p:commandButton value="Web Layout"
-                             actionListener="#{templateThemeHandler.changeLayout('web-layout')}"
-                             process="@this"
-                             update="@none"
-                             styleClass="ui-button-outlined"
-                             style="min-width: 100px;"/>
-            <p:commandButton value="Web Layout - No Description"
-                             actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description')}"
-                             process="@this"
-                             update="@none"
-                             styleClass="ui-button-outlined"
-                             style="min-width: 100px;"/>
-            <p:commandButton value="Web Layout - No Description"
-                             actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description-sidebar')}"
-                             process="@this"
-                             update="@none"
-                             styleClass="ui-button-outlined"
-                             style="min-width: 100px;"/>
-        </p:panel>
-
-        <p:panel header="Tema Seçimi : #{templateThemeHandler.theme}">
-            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
-                <c:forEach items="#{templateThemeHandler.themes}" var="theme" varStatus="status">
-
-                    <p:commandButton value="#{theme}"
-                                     actionListener="#{templateThemeHandler.changeContract(theme)}"
-                                     oncomplete="PrimeFaces.changeTheme('#{theme}')"
+            <p:panel header="Yerleşim : #{templateThemeHandler.layout}" styleClass="surface-card mb-2">
+                <div class="flex flex-wrap gap-2">
+                    <p:commandButton value="Web Layout"
+                                     actionListener="#{templateThemeHandler.changeLayout('web-layout')}"
                                      process="@this"
                                      update="@none"
-                                     styleClass="ui-button-outlined"
-                                     style="min-width: 100px;"/>
+                                     styleClass="#{templateThemeHandler.layout eq 'web-layout' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
+                    <p:commandButton value="Web Layout - No Description"
+                                     actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description')}"
+                                     process="@this"
+                                     update="@none"
+                                     styleClass="#{templateThemeHandler.layout eq 'web-layout-no-description' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
+                    <p:commandButton value="Web Layout - No Description Sidebar"
+                                     actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description-sidebar')}"
+                                     process="@this"
+                                     update="@none"
+                                     styleClass="#{templateThemeHandler.layout eq 'web-layout-no-description-sidebar' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
+                </div>
+            </p:panel>
 
-                    <c:if test="#{!status.last}">
-                        <div style="width: 1px; height: 24px; background-color: #ccc; margin: 0 4px;"/>
-                    </c:if>
+            <p:panel header="Yazı Boyutu / Font Size : #{templateThemeHandler.fontSize}" styleClass="surface-card mb-2">
+                <div class="flex flex-wrap align-items-center gap-2">
+                    <c:forEach items="#{templateThemeHandler.fontSizes}" var="fs">
+                        <p:commandButton value="#{fs}"
+                                         actionListener="#{templateThemeHandler.changeFontSize(fs)}"
+                                         oncomplete="document.documentElement.style.setProperty('--fms-font-size-base', '#{templateThemeHandler.fontSizePx}'); document.body.style.fontSize='#{templateThemeHandler.fontSizePx}';"
+                                         process="@this"
+                                         update="themeForm"
+                                         styleClass="#{templateThemeHandler.fontSize eq fs ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm text-capitalize"/>
+                    </c:forEach>
+                </div>
+            </p:panel>
 
-                </c:forEach>
-            </div>
-        </p:panel>
-    </h:form>
-</p:dialog>
-
-</html>
+            <p:panel header="Tema Seçimi : #{templateThemeHandler.theme}" styleClass="surface-card">
+                <div class="flex flex-wrap align-items-center gap-2">
+                    <c:forEach items="#{templateThemeHandler.themes}" var="theme" varStatus="status">
+                        <p:commandButton value="#{theme}"
+                                         actionListener="#{templateThemeHandler.changeContract(theme)}"
+                                         oncomplete="PrimeFaces.changeTheme('#{theme}')"
+                                         process="@this"
+                                         update="@none"
+                                         styleClass="#{templateThemeHandler.theme eq theme ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
+                    </c:forEach>
+                </div>
+            </p:panel>
+        </h:form>
+    </p:dialog>
+</ui:composition>

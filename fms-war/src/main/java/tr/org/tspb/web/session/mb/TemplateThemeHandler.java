@@ -28,11 +28,13 @@ public class TemplateThemeHandler implements Serializable {
 
     private String theme = "saga";//replace varaible name to theme
     private String layout = "web-layout";
+    private String fontSize = "normal";
 
     private static final String DB_NAME = "uysdb";
     private static final String COLLECTION_NAME = "theme-template";
     private static final String FIELD_THEME = "theme";
     private static final String FIELD_LAYOUT = "layout";
+    private static final String FIELD_FONT_SIZE = "fontSize";
     private static final String FIELD_MEMBER_ID = "ldapUID";
 
     @Inject
@@ -57,6 +59,8 @@ public class TemplateThemeHandler implements Serializable {
                     ifPresent(t -> this.theme = t.toString());
             Optional.ofNullable(settings.get(FIELD_LAYOUT)).
                     ifPresent(l -> this.layout = l.toString());
+            Optional.ofNullable(settings.get(FIELD_FONT_SIZE)).
+                    ifPresent(fs -> this.fontSize = fs.toString());
         }
         /*
         db.getCollection("theme-template").update({ldapUID:"DENEME_PYS_1"},{$set:{theme:"saga"}})
@@ -75,6 +79,7 @@ public class TemplateThemeHandler implements Serializable {
         Map<String, Object> record = new HashMap<>();
         record.put(FIELD_THEME, this.theme);
         record.put(FIELD_LAYOUT, this.layout);
+        record.put(FIELD_FONT_SIZE, this.fontSize);
 
         repositoryService.updateMany(DB_NAME, COLLECTION_NAME, filter, record,
                 true);
@@ -87,6 +92,11 @@ public class TemplateThemeHandler implements Serializable {
 
     public void changeLayout(String layout) {
         this.layout = layout;
+        savePreferences();
+    }
+
+    public void changeFontSize(String fontSize) {
+        this.fontSize = fontSize;
         savePreferences();
     }
 
@@ -104,6 +114,35 @@ public class TemplateThemeHandler implements Serializable {
 
     public void setLayout(String layout) {
         this.layout = layout;
+    }
+
+    public String getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(String fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public String getFontSizePx() {
+        if (fontSize == null) {
+            return "14px";
+        }
+        switch (fontSize.toLowerCase()) {
+            case "small":
+                return "13px";
+            case "large":
+                return "15px";
+            case "xlarge":
+                return "16px";
+            case "normal":
+            default:
+                return "14px";
+        }
+    }
+
+    public List<String> getFontSizes() {
+        return Arrays.asList("small", "normal", "large", "xlarge");
     }
 
     public List<String> getThemes() {

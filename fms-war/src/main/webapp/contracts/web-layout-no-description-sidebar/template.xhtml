@@ -18,6 +18,7 @@
         <ui:insert name="title">#{mainFrame.companyTitle}</ui:insert>
     </title>
 
+    <h:outputStylesheet name="css/fms-design-system.css"/>
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
     <h:outputScript library="telmangrid" name="handsontable/handsontable.full.js"/>
@@ -32,6 +33,7 @@
             :root {
                 --sidebar-width: 280px;
                 --transition-timing: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                --fms-font-size-base: #{templateThemeHandler.fontSizePx};
             }
 
             body {
@@ -40,7 +42,8 @@
                 min-height: 100vh;
                 background-color: var(--surface-ground, #f8fafc);
                 color: var(--text-color, #334155);
-                font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+                font-family: var(--fms-font-family, var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif));
+                font-size: var(--fms-font-size-base, 14px);
                 overflow-x: hidden;
             }
 
@@ -124,6 +127,7 @@
                position="left"
                modal="false"
                visible="true"
+               showCloseIcon="false"
                styleClass="push-sidebar"
                onShow="$('#layout-main').addClass('layout-shifted');"
                onHide="$('#layout-main').removeClass('layout-shifted');"

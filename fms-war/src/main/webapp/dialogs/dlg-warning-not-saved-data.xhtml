@@ -11,6 +11,7 @@
         closeOnEscape="false"
         closable="false"
         modal="true"
+        header="Uyarı"
         widgetVar="wv_are_you_escape"
         >        
         <p:panel>
@@ -24,13 +25,16 @@
             <h:panelGrid 
                 style="width:100%"
                 columns="2"
-                columnClasses="leftColumn,rightColumn"         
+                cellspacing="10"
+                columnClasses="VTopHLeftW50pNowrap,VTopHLeftW50pNowrap"         
                 > 
                 <p:button 
                     value="Kaydet" 
+                    style="width:100%"
                     onclick="falseAndCloseAll();return false;"/>
                 <p:button 
                     value="Kaydetmeden Kapat" 
+                    style="width:100%"
                     onclick="justClose();return false;"/>
             </h:panelGrid>
         </f:facet>
