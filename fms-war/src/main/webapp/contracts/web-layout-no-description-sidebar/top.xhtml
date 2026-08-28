@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <div class="flex align-items-center justify-content-between w-full gap-2">
+        <!-- Left Side: Sidebar Toggle Button & Logo -->
+        <div class="flex align-items-center gap-2">
+            <p:commandButton id="btnToggleSidebar"
+                             icon="pi pi-bars"
+                             type="button"
+                             onclick="PF('sidebar1').toggle()"
+                             styleClass="ui-button-outlined ui-button-secondary p-button-sm"
+                             title="Menü Aç / Kapat"/>
+
+            <p:graphicImage value="#{mainFrame.logoSmall}" 
+                            style="max-height: 32px; width: auto; display: block;" 
+                            alt="Logo" 
+                            rendered="#{not empty mainFrame.logoSmall}"/>
+        </div>
+
+        <!-- Right Side: User Info & Action Buttons -->
+        <div class="flex align-items-center gap-2 ml-auto">
+            <h:panelGroup rendered="#{roleMB['uysdesigner']}" styleClass="text-xs mr-1">
+                <span class="font-bold text-600">SPK İlk Bildirim Tarihi: </span>
+                <h:panelGroup rendered="#{not empty loginController.loggedUserDetail}">
+                    <h:outputText value="Belirtilmemiş" 
+                                  rendered="#{empty loginController.loggedUserDetail.mapProjectInfo}" 
+                                  styleClass="text-500 italic"/>
+                    <h:outputText value="#{loginController.loggedUserDetail.mapProjectInfo['spk_notifacation_date']}"
+                                  rendered="#{not empty loginController.loggedUserDetail.mapProjectInfo}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="#{twoDimModifyCtrl.timeZone}"/>
+                    </h:outputText>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <p:chip label="&#160;#{loginController.loggedUserDetail.username}" 
+                    icon="pi pi-user" 
+                    styleClass="surface-200 text-800 font-semibold text-xs border-round"/>
+
+            <div class="flex align-items-center gap-1">
+                <p:linkButton icon="pi pi-share-alt" 
+                              target="_blank" 
+                              href="https://git.tspb.org.tr/explore/projects" 
+                              title="Git Projeleri"
+                              styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
+
+                <p:commandButton value="Profil"
+                                 icon="pi pi-user-edit"
+                                 action="#{loginController.showRoles}"
+                                 update="#{updateAjaxMB.btnDetay},id-dlg-user-info"
+                                 styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
+
+                <p:commandButton value="Çıkış"
+                                 icon="pi pi-sign-out"
+                                 action="#{loginController.logout}"
+                                 immediate="true"
+                                 update="#{updateAjaxMB.msgDlg}"
+                                 styleClass="ui-button-outlined ui-button-danger p-button-sm">
+                    <f:attribute name="toPage" value="PERSONNEL"/>
+                </p:commandButton>
+            </div>
+        </div>
+    </div>
+</ui:composition>
