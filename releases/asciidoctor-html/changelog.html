@@ -517,6 +517,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_git_commands_7">Git Commands</a></li>
 </ul>
 </li>
+<li><a href="#_release_notes_v1_6_3_beta">Release Notes — v1.6.3-beta</a>
+<ul class="sectlevel2">
+<li><a href="#_overview_8">Overview</a></li>
+<li><a href="#_git_commands_8">Git Commands</a></li>
+</ul>
+</li>
 <li><a href="#_asccidoc">Asccidoc</a></li>
 </ul>
 </div>
@@ -1201,6 +1207,72 @@ git describe --tags</pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_release_notes_v1_6_3_beta">Release Notes — v1.6.3-beta</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_overview_8">Overview</h3>
+<div class="paragraph">
+<p>Even though your backend myObject is refreshed and loaded with clean data, the input values still show up when you reopen the dialog because of how JSF and PrimeFaces handle local state caching during validation failures.</p>
+</div>
+<div class="paragraph">
+<p><strong>When a validation error happens, JSF stores the failed user input values in the component&#8217;s internal local state</strong>.</p>
+</div>
+<div class="paragraph">
+<p><strong>When you call PrimeFaces.current().ajax().update("idCrudOperation"), PrimeFaces re-renders the markup, but JSF&#8217;s component tree keeps those cached local values instead of falling back to your freshly loaded bean properties.</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>To clear this cached component state programmatically from Java or reset it cleanly, use PrimeFaces' built-in utility: RequestContext / PrimeFaces.current().resetInputs().</strong></p>
+</div>
+<div class="paragraph">
+<p>Alternative (From XHTML Trigger)</p>
+</div>
+<div class="paragraph">
+<p>If you ever trigger this dialog via a p:commandButton from the UI layer, you can use the &lt;p:resetInput&gt; tag directly inside the button to handle it automatically:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;p:commandButton value="Open" action="#{myBean.openDialog}" update="idCrudOperation" oncomplete="PF('crudOperationDialog2').show()"&gt;
+    &lt;p:resetInput target="idTwoDlgTabView:crud2dForm" /&gt;
+&lt;/p:commandButton&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By calling PrimeFaces.current().resetInputs("idTwoDlgTabView:crud2dForm") right before your AJAX update, JSF will drop its local error cache, allowing your freshly loaded myObject values to display properly.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_git_commands_8">Git Commands</h3>
+<div class="paragraph">
+<p>Delete the local and remote tags if they already exist</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">git tag -d v1.6.3-beta
+git push origin --delete v1.6.3-beta</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create and push the fresh annotated release tag</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">git tag -a v1.6.3-beta -m "Release version 1.6.3-beta"
+git push origin v1.6.3-beta</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify the changes</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>git tag
+git describe --tags</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_asccidoc">Asccidoc</h2>
 <div class="sectionbody">
 <div class="listingblock">
@@ -1213,7 +1285,7 @@ git describe --tags</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-08-17 17:47:28 +0300
+Last updated 2026-08-28 17:42:58 +0300
 </div>
 </div>
 </body>

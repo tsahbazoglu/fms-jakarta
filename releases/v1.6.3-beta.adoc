@@ -1,0 +1,46 @@
+:version: 1.6.3-beta
+
+= Release Notes — v{version}
+
+== Overview
+Even though your backend myObject is refreshed and loaded with clean data, the input values still show up when you reopen the dialog because of how JSF and PrimeFaces handle local state caching during validation failures.
+
+*When a validation error happens, JSF stores the failed user input values in the component's internal local state*.
+
+*When you call PrimeFaces.current().ajax().update("idCrudOperation"), PrimeFaces re-renders the markup, but JSF's component tree keeps those cached local values instead of falling back to your freshly loaded bean properties.*
+
+*To clear this cached component state programmatically from Java or reset it cleanly, use PrimeFaces' built-in utility: RequestContext / PrimeFaces.current().resetInputs().*
+
+Alternative (From XHTML Trigger)
+
+If you ever trigger this dialog via a p:commandButton from the UI layer, you can use the <p:resetInput> tag directly inside the button to handle it automatically:
+----
+<p:commandButton value="Open" action="#{myBean.openDialog}" update="idCrudOperation" oncomplete="PF('crudOperationDialog2').show()">
+    <p:resetInput target="idTwoDlgTabView:crud2dForm" />
+</p:commandButton>
+----
+
+By calling PrimeFaces.current().resetInputs("idTwoDlgTabView:crud2dForm") right before your AJAX update, JSF will drop its local error cache, allowing your freshly loaded myObject values to display properly.
+
+
+== Git Commands
+
+Delete the local and remote tags if they already exist
+[source,bash,js,subs="attributes,verbatim,quotes"]
+----
+git tag -d v{version}
+git push origin --delete v{version}
+----
+
+Create and push the fresh annotated release tag
+[source,bash,js,subs="attributes,verbatim,quotes"]
+----
+git tag -a v{version} -m "Release version {version}"
+git push origin v{version}
+----
+
+Verify the changes
+----
+git tag
+git describe --tags
+----
