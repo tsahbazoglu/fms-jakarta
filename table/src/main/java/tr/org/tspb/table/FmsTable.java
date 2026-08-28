@@ -121,6 +121,7 @@ public abstract class FmsTable extends FmsTableView {
     private List versionHistory = new ArrayList<>();
     private List historyColumnModel = new ArrayList();
 
+    public static final String WV_BULK_COPY = "wv-bulk-copy";
     public static final String CRUD_OPERATION_DIALOG2 = "crudOperationDialog2";
     public static final String DLG_CRUD_JSON = "wv-dlg-crud-json";
 

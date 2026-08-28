@@ -101,7 +101,13 @@
             onclick="rcCreateTestData();return false;"
             rendered="false"
     />
-
+    <p:button
+            id="id-table-bulk-copy"
+            icon="pi pi-copy"
+            title="Toplu Kopyalama"
+            disabled="#{not formService.myForm.myActions.create}"
+            onclick="rcBulkCopyTool();return false;"
+    />
     <p:commandButton
             icon="pi pi-filter"
             title="filtrele"

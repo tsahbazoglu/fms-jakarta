@@ -1014,6 +1014,16 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         return "Yeni Ekle";
     }
 
+    public String bulkCopy() {
+        try {
+            dialogController.showPopup("idTwoDlgTabView:crud2dForm", WV_BULK_COPY);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            dialogController.showPopupError(ex.toString());
+        }
+        return null;
+    }
+
     public String newObject() {
         try {
 

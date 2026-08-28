@@ -6,54 +6,58 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="jakarta.faces.core">
 
-    <p:dialog id="id-dlg-user-info"
-              widgetVar="wv-dlg-user-info"
-              header="Kullanıcı Bilgileri"
-              modal="true"
-              responsive="true"
-              width="700"
-              height="250" 
-              style="max-height: 90vh;">
+<p:dialog id="id-dlg-user-info"
+          widgetVar="wv-dlg-user-info"
+          header="Kullanıcı Bilgileri"
+          modal="true"
+          responsive="true"
+          width="700"
+          height="250"
+          style="max-height: 90vh;">
 
-        <h:form id="themeForm">
-            <p:outputLabel value="#{dlgCtrl.message}"
-                           style="text-align:left; display:block; font-weight: bold; margin-bottom:15px; #{dlgCtrl.style}"
-                           escape="false"/>
+    <h:form id="themeForm">
+        <p:outputLabel value="#{dlgCtrl.message}"
+                       style="text-align:left; display:block; font-weight: bold; margin-bottom:15px; #{dlgCtrl.style}"
+                       escape="false"/>
 
-            <h:outputText value="Görünüm Ayarları" style="font-weight:bold; font-size:20px; display:block; margin-bottom:10px;"/>
+        <h:outputText value="Görünüm Ayarları"
+                      style="font-weight:bold; font-size:20px; display:block; margin-bottom:10px;"/>
 
-            <p:panel header="Yerleşim" style="margin-bottom:15px;">
-                <p:splitButton value="Web Layout (lo1)" 
-                               icon="pi pi-desktop"
-                               actionListener="#{templateThemeHandler.changeTemplate('web-layout')}" 
-                               ajax="false">
-                    <p:menuitem value="Mobile View" icon="pi pi-mobile" disabled="true"/>
-                </p:splitButton>
-            </p:panel>
+        <p:panel header="Yerleşim : #{templateThemeHandler.layout}" style="margin-bottom:15px;">
+            <p:commandButton value="Web Layout"
+                             actionListener="#{templateThemeHandler.changeLayout('web-layout')}"
+                             process="@this"
+                             update="@none"
+                             styleClass="ui-button-outlined"
+                             style="min-width: 100px;"/>
+            <p:commandButton value="Web Layout - No Description"
+                             actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description')}"
+                             process="@this"
+                             update="@none"
+                             styleClass="ui-button-outlined"
+                             style="min-width: 100px;"/>
+        </p:panel>
 
-            <p:panel header="Tema Seçimi">
-                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+        <p:panel header="Tema Seçimi : #{templateThemeHandler.theme}">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+                <c:forEach items="#{templateThemeHandler.themes}" var="theme" varStatus="status">
 
-                    <h:outputText value="Temalar:" style="font-weight:bold; margin-right:10px;"/>
+                    <p:commandButton value="#{theme}"
+                                     actionListener="#{templateThemeHandler.changeContract(theme)}"
+                                     oncomplete="PrimeFaces.changeTheme('#{theme}')"
+                                     process="@this"
+                                     update="@none"
+                                     styleClass="ui-button-outlined"
+                                     style="min-width: 100px;"/>
 
-                    <c:forEach items="#{templateThemeHandler.themes}" var="theme" varStatus="status">
+                    <c:if test="#{!status.last}">
+                        <div style="width: 1px; height: 24px; background-color: #ccc; margin: 0 4px;"/>
+                    </c:if>
 
-                        <p:commandButton value="#{theme}" 
-                                         actionListener="#{templateThemeHandler.changeContract(theme)}"
-                                         oncomplete="PrimeFaces.changeTheme('#{theme}')"
-                                         process="@this"
-                                         update="@none"
-                                         styleClass="ui-button-outlined"
-                                         style="min-width: 100px;"/>
-
-                        <c:if test="#{!status.last}">
-                            <div style="width: 1px; height: 24px; background-color: #ccc; margin: 0 4px;"/>
-                        </c:if>
-
-                    </c:forEach>
-                </div>
-            </p:panel>
-        </h:form>
-    </p:dialog>
+                </c:forEach>
+            </div>
+        </p:panel>
+    </h:form>
+</p:dialog>
 
 </html>

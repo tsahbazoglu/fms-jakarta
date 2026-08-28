@@ -129,11 +129,12 @@
             <dependency>
                 <groupId>org.primefaces</groupId>
                 <artifactId>primefaces</artifactId>
-                <version>15.0.14</version>
+                <version>16.0.0-RC2</version>
+                <!--<version>15.0.14</version>-->
                 <!--<version>11.0.0</version>-->
-                <classifier>jakarta</classifier>
+                <!--<classifier>jakarta</classifier>-->
                 <type>jar</type>
-                <scope>${dependency.scope}</scope>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.webjars.npm</groupId>
@@ -144,21 +145,11 @@
             </dependency>
 
             <dependency>
-                <groupId>org.primefaces.themes</groupId>
-                <artifactId>all-themes</artifactId>
-                <version>1.1.0</version>
-                <scope>${dependency.scope}</scope>
+                <groupId>org.primefaces</groupId>
+                <artifactId>primefaces-themes</artifactId>
+                <version>16.0.0-RC2</version>
+                <scope>compile</scope>
             </dependency>
-
-            <!--
-            <dependency>
-                <groupId>org.primefaces.themes</groupId>
-                <artifactId>redmond</artifactId>
-                <version>1.1.0</version>
-                <scope>${dependency.scope}</scope>
-            </dependency>
-            -->
-
             <dependency>
                 <groupId>org.graalvm.js</groupId>
                 <artifactId>js-scriptengine</artifactId>

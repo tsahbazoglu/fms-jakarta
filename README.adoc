@@ -5,7 +5,7 @@
 :sectnumlevels: 3
 :docinfo: shared
 :server-path: ~/apps/glassfish8/glassfish
-:project_version: 1.0.0
+:project_version: 1.6.3-alpha
 :project_path: ~/github/fms-jakarta
 :ma3api-version-2-2-1-4: 2.2.1.4
 :ma3api-version-2-2-15: 2.2.15
@@ -26,6 +26,53 @@ v1.0.0, 2018-03-06
 == Asccidoc
 ----
 asciidoctor -b html5 -r asciidoctor-diagram README.adoc
+----
+
+== About Primefaces Themes
+
+From Original Doc at https://showcase.primefaces.org
+
+it says
+----
+Built-in Themes
+
+PrimeFaces ships with three free themes to choose from named saga-blue (default), vela-blue and arya-blue. Even more themes such as material and bootstrap are available at primefaces-sass-theme repository at github. For a live preview of themes, use the configurator to switch themes.
+----
+
+What it means in act::
+----
+You dont need add dependency for saga-blue(default) themes it comes with core
+<dependency>
+    <groupId>org.primefaces</groupId>
+    <artifactId>primefaces</artifactId>
+    <version>15.0.14</version>
+    <!--<version>11.0.0</version>-->
+    <classifier>jakarta</classifier>
+    <type>jar</type>
+    <scope>${dependency.scope}</scope>
+</dependency>
+
+For other themes (saga-blue,vela-blue,arya-blue) you cand set maven dependency as
+<dependency>
+     <groupId>org.primefaces</groupId>
+     <artifactId>primefaces-themes</artifactId>
+     <version>16.0.0-RC2</version>
+     <scope>compile</scope>
+</dependency>
+or
+
+cd github
+git clone https://github.com/primefaces/primefaces.git
+cd primefaces
+git pull
+cd ~/github/primefaces/primefaces-themes/themes
+mvn clean install
+
+ls -1
+
+ls -1d primefaces-* | sed 's/^primefaces-/"/' | sed 's/$/"/' | paste -sd, - | sed 's/,/, /g'
+"arya-blue", "aura-common", "aura-common-dark", "aura-dark-emerald", "aura-light-emerald", "bootstrap4-blue-dark", "bootstrap4-blue-light", "bootstrap4-dark-common", "bootstrap4-light-common", "bootstrap4-purple-dark", "bootstrap4-purple-light", "luna-amber", "luna-blue", "luna-common", "luna-green", "luna-pink", "material-compact-deeppurple-dark", "material-compact-deeppurple-light", "material-compact-indigo-dark", "material-compact-indigo-light", "material-dark-common", "material-deeppurple-dark", "material-deeppurple-light", "material-indigo-dark", "material-indigo-light", "material-light-common", "mytheme", "nova-colored", "nova-common", "nova-dark", "nova-light", "saga-blue", "vela-blue"
+BUT they are not maven injectable. you can not add them as maven dependancy
 ----
 
 == Readme Customizaiton
@@ -352,20 +399,15 @@ rm -rf {server-path}/domains/domain1/lib/fms-*
 rm -rf {server-path}/domains/domain1/lib/muhurdar-*
 
 # MA3API Jars
-rm -rf {server-path}/domains/domain1/lib/ma3api-cmssignature-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-infra-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-crypto-sunprovider-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-common-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-smartcard-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-signature-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-crypto-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-crypto-gnuprovider-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-asn-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-certvalidation-{ma3api-version}.jar
-rm -rf {server-path}/domains/domain1/lib/ma3api-certstore-{ma3api-version}.jar
+rm -rf {server-path}/domains/domain1/lib/ma3api-*
 
 # MA3API Additional Jars
 rm -rf {server-path}/domains/domain1/lib/akiscif-3.3.20.jar
+
+# Primefaces Jars
+rm -rf {server-path}/domains/domain1/lib/primefaces*
+rm -rf {server-path}/domains/domain1/lib/primeflex*
+
 ----
 
 ==== Restart the domain to refresh the ClassLoader

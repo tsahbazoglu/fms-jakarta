@@ -54,7 +54,7 @@ public enum EnumPage {
             "İşlemler | Dönem",
             "/2d/2dSelectObject.xhtml",
             "/2d/table-form-history.xhtml",
-            "/2d/table-form-header.xhtml",
+            "/2d/table-form-header-name-and-desc.xhtml",
             "/common/esignHistory.xhtml",
             "/2d/table-dialogs.xhtml",
             "/2d/ui-upload-table-list.xhtml"

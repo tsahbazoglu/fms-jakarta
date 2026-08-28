@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core"
+>
+
+<h:head>
+    <title></title>
+</h:head>
+
+<div class="ui-g">
+    <div class="ui-g-12 ui-md-12 ui-lg-12">
+        <p:panel>
+            <div style="height: 35px;">
+                <p:outputLabel value="#{formService.myForm.name}"/>
+            </div>
+        </p:panel>
+    </div>
+    <div class="ui-g-12 ui-md-12 ui-lg-12" style="font-size: 0.75rem;">
+        <p:panel
+                rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
+        >
+            <ul>
+                <li>
+                    <p:outputLabel value="Önemli açıklamalar mevcuttur. Detaylar için &nbsp;" escape="false"/>
+                    <p:button icon="pi pi-info-circle"
+                              title="İlgili detaylara ulaşabilirsiniz"
+                              onclick="rcTableDesc();return false;"/>
+                </li>
+            </ul>
+        </p:panel>
+    </div>
+</div>
+
+</html>

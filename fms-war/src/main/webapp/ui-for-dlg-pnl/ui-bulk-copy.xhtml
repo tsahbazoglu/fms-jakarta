@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+
+
+<h:form id="bulkCopyForm">
+    <!-- Info Message Box -->
+    <p:staticMessage severity="info"
+                     summary="Bilgilendirme:"
+                     detail="Verilerinizi dönemler arasında toplu olarak kopyalayabilirsiniz. Lütfen kaynak ve hedef dönemleri seçiniz."
+                     style="width: 100%; margin-bottom: 1.5rem;"/>
+
+    <!-- Form Grid -->
+    <div class="ui-fluid p-formgrid p-grid"
+         style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+
+        <!-- Source Period -->
+        <div class="p-field">
+            <p:outputLabel for="sourcePeriod" value="Kaynak Dönem"
+                           style="font-weight: 600; margin-bottom: 0.5rem; display: block;"/>
+            <p:selectOneMenu id="sourcePeriod"
+                             value="#{bulkCopyBean.sourcePeriod}"
+                             required="true"
+                             requiredMessage="Kaynak dönem seçilmelidir."
+                             style="width: 100%;">
+                <f:selectItem itemLabel="Dönem Seçiniz" itemValue="" noSelectionOption="true"/>
+                <f:selectItems value="#{bulkCopyBean.periodList}" var="p" itemLabel="#{p.label}"
+                               itemValue="#{p.value}"/>
+            </p:selectOneMenu>
+        </div>
+
+        <!-- Target Period -->
+        <div class="p-field">
+            <p:outputLabel for="targetPeriod" value="Hedef Dönem"
+                           style="font-weight: 600; margin-bottom: 0.5rem; display: block;"/>
+            <p:selectOneMenu id="targetPeriod"
+                             value="#{bulkCopyBean.targetPeriod}"
+                             required="true"
+                             requiredMessage="Hedef dönem seçilmelidir."
+                             style="width: 100%;">
+                <f:selectItem itemLabel="Dönem Seçiniz" itemValue="" noSelectionOption="true"/>
+                <f:selectItems value="#{bulkCopyBean.periodList}" var="p" itemLabel="#{p.label}"
+                               itemValue="#{p.value}"/>
+            </p:selectOneMenu>
+        </div>
+
+    </div>
+
+    <!-- Warning / Note -->
+    <div style="font-size: 0.85rem; color: #6c757d; margin-bottom: 1.5rem;">
+        <i class="pi pi-exclamation-triangle" style="margin-right: 4px;"></i>
+        Hedef dönemde mevcut veriler varsa üzerine yazılabilir veya mükerrer kayıt oluşmaması için kontrol edilecektir.
+    </div>
+
+    <p:divider/>
+
+    <!-- Action Buttons Footer -->
+    <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+        <p:commandButton value="İptal"
+                         type="button"
+                         icon="pi pi-times"
+                         styleClass="ui-button-outlined ui-button-secondary"
+                         onclick="PF('yourDialogWidgetVar').hide()"/>
+
+        <p:commandButton value="Verileri Kopyala"
+                         action="#{bulkCopyBean.copyData}"
+                         icon="pi pi-copy"
+                         update="@form"
+                         process="@form"
+                         styleClass="ui-button-primary">
+            <p:confirm header="Onay" message="Seçilen dönemler arası veri aktarımı başlatılsın mı?"
+                       icon="pi pi-exclamation-triangle"/>
+        </p:commandButton>
+    </div>
+</h:form>
+
+
+</html>

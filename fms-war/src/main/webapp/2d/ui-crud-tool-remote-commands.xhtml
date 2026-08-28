@@ -14,6 +14,14 @@
             rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
             update="#{updateAjaxMB.msgDlg}"
             />
+        <p:remoteCommand
+                name="rcBulkCopyTool"
+                value="Toplu Kopyalama"
+                action="#{twoDimModifyCtrl.bulkCopy}"
+                immediate="true"
+                rendered="#{formService.myForm.myActions.create}"
+                update="#{updateAjaxMB.btnNewRecord}"
+        />
         <p:remoteCommand  
             name="rcTableNew"
             value="Yeni Ekle" 

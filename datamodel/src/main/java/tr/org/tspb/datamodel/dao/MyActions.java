@@ -29,6 +29,7 @@ public class MyActions {
     private boolean delete;
     private boolean save;
     private boolean saveAs;
+    private boolean bulkCopy;
     private boolean download;
     private boolean esign;
     private boolean checkAll;
@@ -211,7 +212,8 @@ public class MyActions {
                 "customDownload",
                 "payment",
                 "pdf",
-                "ldap"
+                "ldap",
+                "bulk-copy"
         ));
 
         private String viewerRole;

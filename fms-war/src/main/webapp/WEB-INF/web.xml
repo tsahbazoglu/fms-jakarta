@@ -33,7 +33,7 @@
     </context-param>
     <context-param>
         <param-name>primefaces.THEME</param-name>
-        <param-value>#{templateThemeHandler.contract}</param-value>
+        <param-value>#{templateThemeHandler.theme}</param-value>
     </context-param>
     <context-param>
         <param-name>com.sun.faces.validateXml</param-name>

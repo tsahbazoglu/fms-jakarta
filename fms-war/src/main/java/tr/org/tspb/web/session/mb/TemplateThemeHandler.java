@@ -26,7 +26,7 @@ public class TemplateThemeHandler implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String contract = "redmond";
+    private String theme = "saga";//replace varaible name to theme
     private String layout = "web-layout";
 
     private static final String DB_NAME = "uysdb";
@@ -54,10 +54,14 @@ public class TemplateThemeHandler implements Serializable {
 
         if (settings != null) {
             Optional.ofNullable(settings.get(FIELD_THEME)).
-                    ifPresent(t -> this.contract = t.toString());
+                    ifPresent(t -> this.theme = t.toString());
             Optional.ofNullable(settings.get(FIELD_LAYOUT)).
                     ifPresent(l -> this.layout = l.toString());
         }
+        /*
+        db.getCollection("theme-template").update({ldapUID:"DENEME_PYS_1"},{$set:{theme:"saga"}})
+        db.getCollection("theme-template").update({ldapUID:"DENEME_PYS_2"},{$set:{theme:"saga"}})
+         */
 
     }
 
@@ -69,7 +73,7 @@ public class TemplateThemeHandler implements Serializable {
         filter.put(FIELD_MEMBER_ID, username);
 
         Map<String, Object> record = new HashMap<>();
-        record.put(FIELD_THEME, this.contract);
+        record.put(FIELD_THEME, this.theme);
         record.put(FIELD_LAYOUT, this.layout);
 
         repositoryService.updateMany(DB_NAME, COLLECTION_NAME, filter, record,
@@ -77,7 +81,7 @@ public class TemplateThemeHandler implements Serializable {
     }
 
     public void changeContract(String contract) {
-        this.contract = contract;
+        this.theme = contract;
         savePreferences();
     }
 
@@ -86,12 +90,12 @@ public class TemplateThemeHandler implements Serializable {
         savePreferences();
     }
 
-    public String getContract() {
-        return contract;
+    public String getTheme() {
+        return theme;
     }
 
-    public void setContract(String contract) {
-        this.contract = contract;
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 
     public String getLayout() {
@@ -103,8 +107,40 @@ public class TemplateThemeHandler implements Serializable {
     }
 
     public List<String> getThemes() {
-        return Arrays.asList("redmond", "nova-light", "nova-dark", "luna-blue",
-                "omega", "blitzer","south-street");
+        return Arrays.asList(
+                "saga-blue",
+                "vela-blue",
+                "arya-blue",
+                // "aura-common",
+                // "aura-common-dark",
+                "aura-dark-emerald",
+                "aura-light-emerald",
+                "bootstrap4-blue-dark",
+                "bootstrap4-blue-light",
+                //"bootstrap4-dark-common",
+                //"bootstrap4-light-common",
+                "bootstrap4-purple-dark",
+                "bootstrap4-purple-light",
+                "luna-amber",
+                "luna-blue",
+                // "luna-common",
+                "luna-green",
+                "luna-pink",
+                "material-compact-deeppurple-dark",
+                "material-compact-deeppurple-light",
+                "material-compact-indigo-dark",
+                "material-compact-indigo-light",
+                //"material-dark-common",
+                "material-deeppurple-dark",
+                "material-deeppurple-light",
+                "material-indigo-dark",
+                "material-indigo-light",
+                //"material-light-common",
+                "mytheme",
+                "nova-colored",
+                //"nova-common",
+                "nova-dark",
+                "nova-light");
     }
 
 }
