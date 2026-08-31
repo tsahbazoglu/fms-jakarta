@@ -1,17 +1,17 @@
 package tr.org.tspb.common.services;
 
 import com.mongodb.client.model.Filters;
-import htmlflow.HtmlPage;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import jakarta.inject.Inject;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import tr.org.tspb.datamodel.pojo.UserDetail;
 import tr.org.tspb.datamodel.pojo.html.HtmlCompany;
 import tr.org.tspb.datamodel.pojo.html.HtmlRole;
-import tr.org.tspb.datamodel.pojo.html.HtmlUsrDetail;
 import tr.org.tspb.util.qualifier.KeepOpenQualifier;
 import tr.org.tspb.util.stereotype.MyServices;
 import tr.org.tspb.util.tools.MongoDbUtilIntr;
@@ -30,8 +30,7 @@ public class MyHtmlTemplates implements Serializable {
     private static Map<String, HtmlRole> roleCache = new HashMap<>();
     private static Map<ObjectId, HtmlCompany> companyCache = new HashMap<>();
 
-    HtmlCompany getCompany(ObjectId companyId) {
-
+    public HtmlCompany getCompany(ObjectId companyId) {
         HtmlCompany htmlCompany = companyCache.get(companyId);
 
         if (htmlCompany == null) {
@@ -46,8 +45,7 @@ public class MyHtmlTemplates implements Serializable {
         return htmlCompany;
     }
 
-    HtmlRole getRole(String role) {
-
+    public HtmlRole getRole(String role) {
         HtmlRole htmlRole = roleCache.get(role);
 
         if (htmlRole == null) {
@@ -59,313 +57,116 @@ public class MyHtmlTemplates implements Serializable {
         return htmlRole;
     }
 
-    public static void userDetailTemplate(HtmlPage view) {
-        view.
-                div().
-                attrStyle("font-size:18px;") // First Name
-                .
-                dynamic((body, model) -> {
-                    if (model instanceof HtmlUsrDetail htmlUsrDetail) {
-                        body.span().
-                                attrStyle("font-weight:bold;").
-                                text("Ad : ").
-                                __().
-                                text(htmlUsrDetail.getFirstname());
-                    }
-                }).
+    public String buildUserDetailHtml(UserDetail userDetail, List<HtmlRole> roles, List<HtmlCompany> companies) {
+        StringBuilder sb = new StringBuilder();
 
-                br().
-                __().
+        String uidStr = userDetail != null && userDetail.getUsername() != null ? userDetail.getUsername() : "";
+        String cnStr = userDetail != null && userDetail.getCommonName() != null ? userDetail.getCommonName() : "";
+        if (cnStr.isEmpty() && userDetail != null) {
+            String fn = userDetail.getFirstName() != null ? userDetail.getFirstName() : "";
+            String ln = userDetail.getLastName() != null ? userDetail.getLastName() : "";
+            cnStr = (fn + " " + ln).trim();
+        }
 
-                // Last Name
-                dynamic((body, model) -> {
-                    if (model instanceof HtmlUsrDetail htmlUsrDetail) {
-                        body.span().
-                                attrStyle("font-weight:bold;").
-                                text("Soyad : ").
-                                __().
-                                text(htmlUsrDetail.getLastname());
-                    }
-                }).
-                br().
-                __().
+        // Top Card: User Profile Details
+        sb.append("<div class=\"surface-card p-3 border-round border-1 surface-border mb-3\">");
+        sb.append("<div class=\"text-lg font-bold text-900 mb-3\"><i class=\"pi pi-user mr-2\"></i>Kullanıcı Bilgileri</div>");
+        sb.append("<div class=\"flex flex-column gap-2\">");
+        sb.append("<div><span class=\"font-bold\">Kullanıcı Kodu (uid) : </span>").append(escapeHtml(uidStr)).append("</div>");
+        sb.append("<div><span class=\"font-bold\">Adı Soyadı (cn) : </span>").append(escapeHtml(cnStr)).append("</div>");
+        sb.append("<div><span class=\"font-bold\">Eposta : </span>").append("__@__.com").append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
 
-                // Email
-                dynamic((body, model) -> {
-                    if (model instanceof HtmlUsrDetail htmlUsrDetail) {
-                        body.span().
-                                attrStyle("font-weight:bold;").
-                                text("Eposta : ").
-                                __().
-                                text(htmlUsrDetail.getEmail());
-                    }
-                }).
-                br().
-                __().
-                br().
-                __().
+        // Middle Card: Roles Section (Comma-separated list)
+        sb.append("<div class=\"surface-card p-3 border-round border-1 surface-border mb-3\">");
+        sb.append("<div class=\"text-lg font-bold text-900 mb-2\"><i class=\"pi pi-user-edit mr-2\"></i>Roller</div>");
+        sb.append("<div class=\"text-base\">");
+        if (roles == null || roles.isEmpty()) {
+            sb.append("<span class=\"text-500\">Kayıt bulunamadı</span>");
+        } else {
+            String roleNames = roles.stream()
+                    .filter(r -> r != null && r.getRole() != null)
+                    .map(r -> escapeHtml(r.getRole()))
+                    .collect(Collectors.joining(", "));
+            sb.append(roleNames);
+        }
+        sb.append("</div>");
+        sb.append("</div>");
 
-                // Roles Section
-                span().
-                attrStyle("font-weight:bold;").
-                text("Roller : ").
-                __().
-                dynamic((body, model) -> {
-                    if (model instanceof HtmlUsrDetail htmlUsrDetail) {
-                        body.text(htmlUsrDetail.getRolesTable());
-                    }
-                }).
-                br().
-                __().
-                br().
-                __().
+        // Bottom Card: Companies Section
+        sb.append("<div class=\"surface-card p-3 border-round border-1 surface-border mb-3\">");
+        sb.append("<div class=\"text-lg font-bold text-900 mb-2\"><i class=\"pi pi-building mr-2\"></i>Yetkilendirildiği Kuruluşlar</div>");
+        sb.append(buildCompanyTable(companies));
+        sb.append("</div>");
 
-                // Companies Section
-                span().
-                attrStyle("font-weight:bold;font-size:18px;").
-                text("Yetkilendirildiği Kuruluşlar : ").
-                __().
-                br().
-                __().
-                dynamic((body, model) -> {
-                    if (model instanceof HtmlUsrDetail htmlUsrDetail) {
-                        body.text(htmlUsrDetail.getCompaniesTable());
-                    }
-                }).
-                __(); // html
-
+        return sb.toString();
     }
 
-    static void companyTableTemplate(HtmlPage view) {
+    public String buildRoleTable(List<HtmlRole> roles) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"ui-datatable ui-widget ui-datatable-resizable mb-2\">");
+        sb.append("<div class=\"ui-datatable-tablewrapper\">");
+        sb.append("<table role=\"grid\" class=\"w-full\">");
+        sb.append("<thead><tr>");
+        sb.append("<th class=\"ui-state-default ui-resizable-column\" role=\"columnheader\"><span class=\"ui-column-title\">Rol Adı</span></th>");
+        sb.append("<th class=\"ui-state-default ui-resizable-column\" role=\"columnheader\"><span class=\"ui-column-title\">Rol Grubu</span></th>");
+        sb.append("<th class=\"ui-state-default ui-resizable-column\" role=\"columnheader\"><span class=\"ui-column-title\">Ünvanı</span></th>");
+        sb.append("<th class=\"ui-state-default ui-resizable-column\" role=\"columnheader\"><span class=\"ui-column-title\">Açıklama</span></th>");
+        sb.append("<th class=\"ui-state-default ui-resizable-column\" role=\"columnheader\"><span class=\"ui-column-title\">Ek Bilgi</span></th>");
+        sb.append("</tr></thead>");
 
-        StringBuilder tableStyle = new StringBuilder(
-                ".mytable {border-collapse: collapse;} ");
-        tableStyle.append(".mytable td{border: 1px solid black;} ");
-        tableStyle.append(
-                ".mytable th{border: 1px solid black; background: #e4e2e2;} ");
-
-        view
-                .html().
-                head() //.style().text(tableStyle.toString()).__()
-                .
-                title().
-                text("Roller").
-                __().
-                __().
-                body().
-                div().
-                attrClass("ui-datatable ui-widget ui-datatable-resizable").
-                div().
-                attrClass("ui-datatable-tablewrapper").
-                table().
-                addAttr("role", "grid") //.attrClass("mytable")
-                .
-                thead().
-                tr().
-                th().
-                attrClass("ui-state-default ui-resizable-column").
-                addAttr("role", "columnheader").
-                span().
-                attrClass("ui-column-title").
-                text("Kuruluş Kodu").
-                __().
-                __().
-                th().
-                attrClass("ui-state-default ui-resizable-column").
-                addAttr("role", "columnheader").
-                span().
-                attrClass("ui-column-title").
-                text("Ünvan").
-                __().
-                __().
-                __().
-                __().
-                tbody().
-                attrClass("ui-datatable-data ui-widget-content").
-                dynamic((tbody, model) -> {
-                    if (model instanceof Stream<?> stream) {
-                        stream.
-                                map(item -> (HtmlCompany) item).
-                                forEach(htmlCompany -> tbody
-                                .tr().
-                                attrClass(
-                                        "ui-widget-content ui-datatable-even ui-datatable-selectable").
-                                addAttr("role", "row").
-                                td().
-                                addAttr("role", "gridcell").
-                                span().
-                                attrStyle(
-                                        "white-space:nowrap;font-family: monospace;text-align:left;").
-                                text(htmlCompany.getCode()).
-                                __().
-                                __().
-                                td().
-                                addAttr("role", "gridcell").
-                                span().
-                                attrStyle(
-                                        "white-space:nowrap;font-family: monospace;text-align:left;").
-                                text(htmlCompany.getTitle()).
-                                __().
-                                __().
-                                __() // tr
-                                );
-                    }
-                }
-                // forEach
-                ) // dynamic
-                .
-                __() // tbody
-                .
-                __() // table
-                .
-                __() // div
-                .
-                __() // div
-                .
-                __() // body
-                .
-                __(); // html
-
+        sb.append("<tbody class=\"ui-datatable-data ui-widget-content\">");
+        if (roles == null || roles.isEmpty()) {
+            sb.append("<tr class=\"ui-widget-content\"><td colspan=\"5\" style=\"text-align:center; padding:10px;\">Kayıt bulunamadı</td></tr>");
+        } else {
+            for (HtmlRole role : roles) {
+                if (role == null) continue;
+                sb.append("<tr class=\"ui-widget-content ui-datatable-even ui-datatable-selectable\" role=\"row\">");
+                sb.append("<td role=\"gridcell\"><span style=\"white-space:nowrap;font-family: monospace;text-align:left;\">").append(escapeHtml(role.getRole())).append("</span></td>");
+                sb.append("<td role=\"gridcell\"><span style=\"white-space:nowrap;font-family: monospace;text-align:left;\">").append(escapeHtml(role.getGroup())).append("</span></td>");
+                sb.append("<td role=\"gridcell\"><span style=\"white-space:nowrap;font-family: monospace;text-align:left;\">").append(escapeHtml(role.getTitle())).append("</span></td>");
+                sb.append("<td role=\"gridcell\"><span style=\"white-space:nowrap;font-family: monospace;text-align:left;\">").append(escapeHtml(role.getDesc())).append("</span></td>");
+                sb.append("<td role=\"gridcell\"><span style=\"white-space:nowrap;font-family: monospace;text-align:left;\">").append(escapeHtml(role.getInfo())).append("</span></td>");
+                sb.append("</tr>");
+            }
+        }
+        sb.append("</tbody></table></div></div>");
+        return sb.toString();
     }
 
-    static void roleTableTemplate(HtmlPage v) {
+    public String buildCompanyTable(List<HtmlCompany> companies) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"ui-datatable ui-widget ui-datatable-resizable mb-2\">");
+        sb.append("<div class=\"ui-datatable-tablewrapper\">");
+        sb.append("<table role=\"grid\" class=\"w-full\">");
+        sb.append("<thead><tr>");
+        sb.append("<th class=\"ui-state-default ui-resizable-column\" role=\"columnheader\"><span class=\"ui-column-title\">Kuruluş Kodu</span></th>");
+        sb.append("<th class=\"ui-state-default ui-resizable-column\" role=\"columnheader\"><span class=\"ui-column-title\">Ünvan</span></th>");
+        sb.append("</tr></thead>");
 
-        StringBuilder tableStyle = new StringBuilder(
-                ".mytable {border-collapse: collapse;} ");
-        tableStyle.append(".mytable td{border: 1px solid black;} ");
-        tableStyle.append(
-                ".mytable th{border: 1px solid black; background: #e4e2e2;} ");
-
-        v.html() //.style().text(tableStyle.toString()).__()
-                .
-                head().
-                title().
-                text("Roller").
-                __().
-                __().
-                body().
-                div().
-                attrClass("ui-datatable ui-widget ui-datatable-resizable").
-                div().
-                attrClass("ui-datatable-tablewrapper").
-                table().
-                addAttr("role", "grid") //.attrClass("mytable")
-                .
-                thead().
-                tr().
-                th().
-                attrClass("ui-state-default ui-resizable-column").
-                addAttr("role", "columnheader").
-                span().
-                attrClass("ui-column-title").
-                text("Rol Adı").
-                __().
-                __().
-                th().
-                attrClass("ui-state-default ui-resizable-column").
-                addAttr("role", "columnheader").
-                span().
-                attrClass("ui-column-title").
-                text("Rol Grubu").
-                __().
-                __().
-                th().
-                attrClass("ui-state-default ui-resizable-column").
-                addAttr("role", "columnheader").
-                span().
-                attrClass("ui-column-title").
-                text("Ünvanı").
-                __().
-                __().
-                th().
-                attrClass("ui-state-default ui-resizable-column").
-                addAttr("role", "columnheader").
-                span().
-                attrClass("ui-column-title").
-                text("Açıklama").
-                __().
-                __().
-                th().
-                attrClass("ui-state-default ui-resizable-column").
-                addAttr("role", "columnheader").
-                span().
-                attrClass("ui-column-title").
-                text("Ek Bilgi").
-                __().
-                __().
-                __().
-                __().
-                tbody().
-                attrClass("ui-datatable-data ui-widget-content").
-                dynamic((tbody, model) -> {
-
-                    if (model instanceof Stream<?> stream) {
-                        stream.
-                                map(item -> (HtmlRole) item).
-                                forEach((role) -> tbody
-                                .tr().
-                                attrClass(
-                                        "ui-widget-content ui-datatable-even ui-datatable-selectable").
-                                addAttr("role", "row").
-                                td().
-                                addAttr("role", "gridcell").
-                                span().
-                                attrStyle(
-                                        "white-space:nowrap;font-family: monospace;text-align:left;").
-                                text(role.getRole()).
-                                __().
-                                __().
-                                td().
-                                addAttr("role", "gridcell").
-                                span().
-                                attrStyle(
-                                        "white-space:nowrap;font-family: monospace;text-align:left;").
-                                text(role.getGroup()).
-                                __().
-                                __().
-                                td().
-                                addAttr("role", "gridcell").
-                                span().
-                                attrStyle(
-                                        "white-space:nowrap;font-family: monospace;text-align:left;").
-                                text(role.getTitle()).
-                                __().
-                                __().
-                                td().
-                                addAttr("role", "gridcell").
-                                span().
-                                attrStyle(
-                                        "white-space:nowrap;font-family: monospace;text-align:left;").
-                                text(role.getDesc()).
-                                __().
-                                __().
-                                td().
-                                addAttr("role", "gridcell").
-                                span().
-                                attrStyle(
-                                        "white-space:nowrap;font-family: monospace;text-align:left;").
-                                text(role.getInfo()).
-                                __().
-                                __().
-                                __() // tr
-                                );
-                    }
-                }
-                // forEach
-                ) // dynamic
-                .
-                __() // tbody
-                .
-                __() // table
-                .
-                __() // div
-                .
-                __() // div
-                .
-                __() // body
-                .
-                __(); // html
-
+        sb.append("<tbody class=\"ui-datatable-data ui-widget-content\">");
+        if (companies == null || companies.isEmpty()) {
+            sb.append("<tr class=\"ui-widget-content\"><td colspan=\"2\" style=\"text-align:center; padding:10px;\">Kayıt bulunamadı</td></tr>");
+        } else {
+            for (HtmlCompany company : companies) {
+                if (company == null) continue;
+                sb.append("<tr class=\"ui-widget-content ui-datatable-even ui-datatable-selectable\" role=\"row\">");
+                sb.append("<td role=\"gridcell\"><span style=\"white-space:nowrap;font-family: monospace;text-align:left;\">").append(escapeHtml(company.getCode())).append("</span></td>");
+                sb.append("<td role=\"gridcell\"><span style=\"white-space:nowrap;font-family: monospace;text-align:left;\">").append(escapeHtml(company.getTitle())).append("</span></td>");
+                sb.append("</tr>");
+            }
+        }
+        sb.append("</tbody></table></div></div>");
+        return sb.toString();
     }
 
+    private String escapeHtml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;")
+                   .replace("<", "&lt;")
+                   .replace(">", "&gt;")
+                   .replace("\"", "&quot;")
+                   .replace("'", "&#39;");
+    }
 }

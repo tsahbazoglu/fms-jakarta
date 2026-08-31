@@ -497,22 +497,9 @@ public class LoginController implements Serializable {
             }
         }
 
-        //views
-        HtmlView<Stream<HtmlRole>> viewRolesTable = HtmlFlow.view(
-                MyHtmlTemplates::roleTableTemplate);
+        String userDetailHtml = myHtmlTemplates.buildUserDetailHtml(loggedUserDetail, listOfRole, listCompany);
 
-        HtmlView<Stream<HtmlCompany>> viewCompaniesTable = HtmlFlow.view(
-                MyHtmlTemplates::companyTableTemplate);
-
-        HtmlView<HtmlUsrDetail> viewDetail = HtmlFlow.view(
-                MyHtmlTemplates::userDetailTemplate);
-
-        //apply models
-        HtmlUsrDetail htmlUsrDetail = new HtmlUsrDetail(loggedUserDetail,
-                viewRolesTable.render(listOfRole.stream()),
-                viewCompaniesTable.render(listCompany.stream()));
-
-        dialogController.showDlgUserInfo(viewDetail.render(htmlUsrDetail));
+        dialogController.showDlgUserInfo(userDetailHtml);
 
         return null;
 

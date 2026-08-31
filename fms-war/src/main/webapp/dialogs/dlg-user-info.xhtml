@@ -12,16 +12,15 @@
               header="Kullanıcı Bilgileri &amp; Görünüm Ayarları"
               modal="true"
               responsive="true"
+              closeOnEscape="true"
               width="750"
               style="max-width: 95vw; max-height: 90vh;"
               styleClass="border-round shadow-2">
 
         <h:form id="themeForm" styleClass="flex flex-column gap-3 py-2">
-            <h:panelGroup rendered="#{not empty dlgCtrl.message}">
-                <p:outputLabel value="#{dlgCtrl.message}"
-                               styleClass="block font-semibold mb-2 p-2 border-round surface-100"
-                               style="#{dlgCtrl.style}"
-                               escape="false"/>
+            <h:panelGroup rendered="#{not empty dlgCtrl.message}" layout="block">
+                <h:outputText value="#{dlgCtrl.message}"
+                              escape="false"/>
             </h:panelGroup>
 
             <div class="text-xl font-bold text-900 border-bottom-1 surface-border pb-2">

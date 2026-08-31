@@ -13,19 +13,5 @@
                 </div>
             </p:panel>
         </h:panelGroup>
-
-        <h:panelGroup rendered="#{twoDimModifyCtrl.selectedFormUserNote}">
-            <p:panel styleClass="p-0 border-round">
-                <div class="flex align-items-center gap-2 py-1 px-3">
-                    <p:outputLabel value="Önemli açıklamalar mevcuttur. Detaylar için &#160;" 
-                                   escape="false" 
-                                   styleClass="text-xs font-semibold text-700"/>
-                    <p:button icon="pi pi-info-circle"
-                              title="İlgili detaylara ulaşabilirsiniz"
-                              onclick="rcTableDesc();return false;"
-                              styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
-                </div>
-            </p:panel>
-        </h:panelGroup>
     </div>
 </ui:composition>
