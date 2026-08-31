@@ -18,7 +18,7 @@
         <ui:insert name="title">#{mainFrame.companyTitle}</ui:insert>
     </title>
 
-    <h:outputStylesheet name="css/fms-design-system.css"/>
+    <h:outputStylesheet name="css/fms.css"/>
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
     <h:outputScript library="telmangrid" name="handsontable/handsontable.full.js"/>
@@ -26,35 +26,7 @@
 
 
     <f:facet name="last">
-        <h:outputStylesheet name="css/noneie.css" library="web-layout"/>
-        <h:outputStylesheet name="css/fms-core.css" library="web-layout"/>
         <h:outputStylesheet library="telmangrid" name="handsontable/fms.handsontable.override.css"/>
-        <style>
-            :root {
-                --fms-font-size-base: #{templateThemeHandler.fontSizePx};
-            }
-
-            body {
-                margin: 0;
-                padding: 0;
-                min-height: 100vh;
-                background-color: var(--surface-ground, #f8fafc);
-                color: var(--text-color, #334155);
-                font-family: var(--fms-font-family, var(--font-family));
-                font-size: var(--fms-font-size-base, 14px);
-            }
-
-            .ui-tabs .ui-tabs-panel {
-                padding: 0 !important;
-            }
-
-            /* Ensure the layout takes full height */
-            .main-wrapper {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-        </style>
     </f:facet>
 
     <h:outputScript name="js/fms-core.js" library="web-layout"/>

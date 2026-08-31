@@ -18,6 +18,7 @@
         <ui:insert name="title">#{mainFrame.companyTitle}</ui:insert>
     </title>
 
+    <h:outputStylesheet name="css/fms.css"/>
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
     <h:outputScript library="telmangrid" name="handsontable/handsontable.full.js"/>
@@ -25,39 +26,15 @@
 
 
     <f:facet name="last">
-        <h:outputStylesheet name="css/noneie.css" library="web-layout"/>
-        <h:outputStylesheet name="css/fms-core.css" library="web-layout"/>
         <h:outputStylesheet library="telmangrid" name="handsontable/fms.handsontable.override.css"/>
-        <style>
-            body {
-                margin: 0;
-                padding: 0;
-                min-height: 100vh;
-                background-color: var(--surface-ground);
-                color: var(--text-color, #ffffff);
-                font-family: var(--font-family);
-            }
-
-            .ui-tabs .ui-tabs-panel {
-                padding: 0 !important;
-            }
-
-            /* Ensure the layout takes full height */
-            .main-wrapper {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-        </style>
     </f:facet>
 
     <h:outputScript name="js/fms-core.js" library="web-layout"/>
     <h:outputScript library="telmangrid" name="handsontable/init3dHandson.v1.js"/>
 
-
 </h:head>
 
-<h:body>
+<h:body style="--fms-font-size-base: #{templateThemeHandler.fontSizePx}">
     <div class="main-wrapper p-2 md:p-4">
 
         <div class="grid">

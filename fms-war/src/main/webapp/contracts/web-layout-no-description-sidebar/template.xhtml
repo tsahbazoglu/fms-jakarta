@@ -27,11 +27,6 @@
 
     <f:facet name="last">
         <h:outputStylesheet name="handsontable/fms.handsontable.override.css" library="telmangrid"/>
-        <style>
-            :root {
-                --fms-font-size-base: #{templateThemeHandler.fontSizePx};
-            }
-        </style>
     </f:facet>
 
     <h:outputScript name="js/fms-core.js" library="web-layout-no-description-sidebar"/>
@@ -40,7 +35,7 @@
 
 </h:head>
 
-<h:body>
+<h:body style="--fms-font-size-base: #{templateThemeHandler.fontSizePx}">
 
     <!-- 1. Top Bar: Fixed at top of viewport, 100% FULL WIDTH across window edge, OVER sidebar -->
     <div class="layout-topbar-fixed">
