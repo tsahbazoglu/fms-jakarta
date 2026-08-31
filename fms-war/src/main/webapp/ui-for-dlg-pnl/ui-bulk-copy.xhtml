@@ -54,8 +54,14 @@
 
     <!-- Warning / Note -->
     <div style="font-size: 0.85rem; color: #6c757d; margin-bottom: 1.5rem;">
-        <i class="pi pi-exclamation-triangle" style="margin-right: 4px;"></i>
-        Hedef dönemde mevcut veriler varsa üzerine yazılabilir veya mükerrer kayıt oluşmaması için kontrol edilecektir.
+        <div style="margin-bottom: 0.25rem;">
+            <i class="pi pi-exclamation-triangle" style="margin-right: 4px;"></i>
+            Hedef dönemde mevcut veriler varsa üzerine yazılabilir veya mükerrer kayıt oluşmaması için kontrol edilecektir.
+        </div>
+        <div>
+            <i class="pi pi-info-circle" style="margin-right: 4px;"></i>
+            Not: Yalnızca aktif durumda olan (durum kodu '000') üyelere ait veriler kopyalanacaktır.
+        </div>
     </div>
 
     <p:divider/>
@@ -69,14 +75,11 @@
                          onclick="PF('wv-bulk-copy').hide()"/>
 
         <p:commandButton value="Verileri Kopyala"
-                         action="#{bulkCopyBean.copyData}"
+                         actionListener="#{bulkCopyBean.copyData}"
                          icon="pi pi-copy"
                          update="@form"
                          process="@form"
-                         styleClass="ui-button-primary">
-            <p:confirm header="Onay" message="Seçilen dönemler arası veri aktarımı başlatılsın mı?"
-                       icon="pi pi-exclamation-triangle"/>
-        </p:commandButton>
+                         styleClass="ui-button-primary"/>
     </div>
 </h:form>
 

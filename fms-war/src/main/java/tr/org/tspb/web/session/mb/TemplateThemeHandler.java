@@ -62,6 +62,7 @@ public class TemplateThemeHandler implements Serializable {
 */
 
 /*
+        mongosh uysdb
         db.getCollection("theme-template").updateMany({},{$set:{theme:"saga"}})
         db.getCollection("theme-template").updateMany({},{$set:{theme:"aura-dark-emerald"}})
 
