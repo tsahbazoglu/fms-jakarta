@@ -46,15 +46,18 @@
             }
 
             function cleanUysCalendar(widgetVar) {
-            var widget = PF(widgetVar);
-            if (widget) {
-            widget.setDate(null);
-            }
+                var widget = PF(widgetVar);
+                if (widget) {
+                    widget.setDate(null);
+                    if (widget.jq) {
+                        widget.jq.find('input').trigger('change');
+                    }
+                }
             }
         </h:outputScript>
 
-        <div class="ui-g" style="padding:0px;margin:0px;">
-            <div class="ui-g-10 ui-md-10" style="padding:0px;margin:0px;">
+        <h:panelGroup layout="block" rendered="#{not cc.attrs.myreadonly}" style="display: flex; align-items: center; width: 100%; gap: 4px;">
+            <div class="ui-fluid" style="flex: 1; min-width: 0;">
                 <p:calendar 
                     converter="fmsDateTimeConverter" 
                     value="#{cc.attrs.myvalue}"
@@ -67,7 +70,6 @@
                     pattern="#{cc.attrs.mypattern}"
                     mask="true"
                     requiredMessage="#{cc.attrs.label} zorunlu alandır."
-                    rendered="#{not cc.attrs.myreadonly}"
                     >
                     <f:attribute name="label" value="#{cc.attrs.label}"/>
                     <f:validator validatorId="primeDateRangeValidator"/>
@@ -87,16 +89,13 @@
                 </p:calendar>
             </div>
 
-            <div class="ui-g-2 ui-md-2" style="padding:0px;margin:0px;">
-                <p:commandButton
-                    icon="pi pi-trash"
-                    type="button"
-                    title="temizle"
-                    onclick="cleanUysCalendar('widget_#{cc.clientId.replace(':', '_')}');"
-                    rendered="#{not cc.attrs.myreadonly}"
-                    />
-            </div>
-        </div>
+            <p:commandButton
+                icon="pi pi-trash"
+                type="button"
+                title="temizle"
+                onclick="cleanUysCalendar('widget_#{cc.clientId.replace(':', '_')}');"
+                />
+        </h:panelGroup>
 
         <p:inputText
             style="width: 100%;" 
