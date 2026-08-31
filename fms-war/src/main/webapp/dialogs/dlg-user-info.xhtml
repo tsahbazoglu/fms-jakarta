@@ -29,17 +29,17 @@
 
             <p:panel header="Yerleşim : #{templateThemeHandler.layout}" styleClass="surface-card mb-2">
                 <div class="flex flex-wrap gap-2">
-                    <p:commandButton value="Web Layout"
+                    <p:commandButton value="Web Layout + Fixed Menu + Opened description per page"
                                      actionListener="#{templateThemeHandler.changeLayout('web-layout')}"
                                      process="@this"
                                      oncomplete="window.location.reload();"
                                      styleClass="#{templateThemeHandler.layout eq 'web-layout' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
-                    <p:commandButton value="Web Layout - No Description"
+                    <p:commandButton value="Web Layout + Fixed Menu + Hidden description per page"
                                      actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description')}"
                                      process="@this"
                                      oncomplete="window.location.reload();"
                                      styleClass="#{templateThemeHandler.layout eq 'web-layout-no-description' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
-                    <p:commandButton value="Web Layout - No Description Sidebar"
+                    <p:commandButton value="Web Layout + Sidebar Menu + Hidden description per page"
                                      actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description-sidebar')}"
                                      process="@this"
                                      oncomplete="window.location.reload();"
