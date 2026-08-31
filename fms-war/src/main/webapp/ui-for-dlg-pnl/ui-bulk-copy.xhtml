@@ -8,10 +8,12 @@
 
 
 <h:form id="bulkCopyForm">
+    <p:messages id="bulkCopyMsgs" showDetail="true" closable="true"/>
+
     <!-- Info Message Box -->
     <p:staticMessage severity="info"
                      summary="Bilgilendirme:"
-                     detail="Verilerinizi dönemler arasında toplu olarak kopyalayabilirsiniz. Lütfen kaynak ve hedef dönemleri seçiniz."
+                     detail="Verilerinizi '#{bulkCopyBean.targetCollection}' koleksiyonunda dönemler arasında kopyalayabilirsiniz. Lütfen kaynak ve hedef dönemleri seçiniz."
                      style="width: 100%; margin-bottom: 1.5rem;"/>
 
     <!-- Form Grid -->
@@ -64,7 +66,7 @@
                          type="button"
                          icon="pi pi-times"
                          styleClass="ui-button-outlined ui-button-secondary"
-                         onclick="PF('yourDialogWidgetVar').hide()"/>
+                         onclick="PF('wv-bulk-copy').hide()"/>
 
         <p:commandButton value="Verileri Kopyala"
                          action="#{bulkCopyBean.copyData}"
