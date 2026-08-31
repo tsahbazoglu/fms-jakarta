@@ -18,7 +18,7 @@
         <ui:insert name="title">#{mainFrame.companyTitle}</ui:insert>
     </title>
 
-    <h:outputStylesheet name="css/fms-design-system.css"/>
+    <h:outputStylesheet name="css/fms.css"/>
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
     <h:outputScript library="telmangrid" name="handsontable/handsontable.full.js"/>
@@ -26,91 +26,10 @@
 
 
     <f:facet name="last">
-        <h:outputStylesheet name="css/noneie.css" library="web-layout-no-description-sidebar"/>
-        <h:outputStylesheet name="css/fms-core.css" library="web-layout-no-description-sidebar"/>
         <h:outputStylesheet name="handsontable/fms.handsontable.override.css" library="telmangrid"/>
         <style>
             :root {
-                --sidebar-width: 280px;
-                --transition-timing: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 --fms-font-size-base: #{templateThemeHandler.fontSizePx};
-            }
-
-            body {
-                margin: 0;
-                padding: 0;
-                min-height: 100vh;
-                background-color: var(--surface-ground, #f8fafc);
-                color: var(--text-color, #334155);
-                font-family: var(--fms-font-family, var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif));
-                font-size: var(--fms-font-size-base, 14px);
-                overflow-x: hidden;
-            }
-
-            .ui-tabs .ui-tabs-panel {
-                padding: 0 !important;
-            }
-
-            /* Ensure the layout takes full height */
-            .main-wrapper {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            /* PrimeFaces Sidebar custom push styles */
-            .ui-sidebar.push-sidebar {
-                width: var(--sidebar-width) !important;
-                background-color: var(--surface-card, #ffffff);
-                border-right: 1px solid var(--surface-border, #e2e8f0);
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                overflow-y: auto;
-                padding: 0.25rem !important;
-            }
-
-            /* Main Content Wrapper */
-            .layout-wrapper {
-                min-height: 100vh;
-                padding: 0.25rem;
-                box-sizing: border-box;
-                width: 100%;
-                margin-left: 0;
-                /* Smooth transitions during toggles */
-                transition: margin-left var(--transition-timing), width var(--transition-timing);
-            }
-
-            /* Default open state (Shifted center component) */
-            .layout-wrapper.layout-shifted {
-                margin-left: var(--sidebar-width);
-                width: calc(100% - var(--sidebar-width));
-            }
-
-            /* Prevents visual shift animation on initial page load */
-            .layout-wrapper.preload {
-                transition: none !important;
-            }
-
-            /* Topbar header inside main content wrapper */
-            .layout-topbar {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.35rem 0.75rem;
-                background-color: var(--surface-card, #ffffff);
-                border: 1px solid var(--surface-border, #e2e8f0);
-                border-radius: 6px;
-                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
-                margin-bottom: 0.5rem;
-                position: sticky;
-                top: 0.25rem;
-                z-index: 100;
-            }
-
-            @media screen and (max-width: 768px) {
-                .layout-wrapper.layout-shifted {
-                    margin-left: 0 !important;
-                    width: 100% !important;
-                }
             }
         </style>
     </f:facet>
@@ -123,6 +42,14 @@
 
 <h:body>
 
+    <!-- 1. Top Bar: Fixed at top of viewport, 100% FULL WIDTH across window edge, OVER sidebar -->
+    <div class="layout-topbar-fixed">
+        <h:form id="iceformTop" styleClass="w-full">
+            <ui:include src="top.xhtml"/>
+        </h:form>
+    </div>
+
+    <!-- 2. Push Sidebar: Positioned UNDER fixed top bar -->
     <p:sidebar widgetVar="sidebar1"
                position="left"
                modal="false"
@@ -137,14 +64,8 @@
         </h:form>
     </p:sidebar>
 
-
+    <!-- 3. Center Content Area: Positioned UNDER top bar, shifted by sidebar -->
     <div id="layout-main" class="layout-wrapper layout-shifted preload">
-
-        <div class="layout-topbar">
-            <h:form id="iceformTop" styleClass="w-full">
-                <ui:include src="top.xhtml"/>
-            </h:form>
-        </div>
 
         <div class="main-wrapper p-0">
 
