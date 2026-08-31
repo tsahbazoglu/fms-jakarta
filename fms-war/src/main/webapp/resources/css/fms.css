@@ -326,3 +326,18 @@ ul.ui-menu-child {
     border-top: 1px solid #eee;
     padding-top: 15px;
 }
+
+/* --------------------------------------------------------------------------
+   6. Dynamic Dialog Sizing (Auto-height based on content)
+   -------------------------------------------------------------------------- */
+.ui-dialog {
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+}
+
+.ui-dialog .ui-dialog-content {
+    height: auto !important;
+    max-height: calc(85vh - 70px) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+}
