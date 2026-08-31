@@ -27,7 +27,7 @@
                 <i class="pi pi-palette mr-2"></i>Görünüm Ayarları
             </div>
 
-            <p:panel header="Yerleşim : #{templateThemeHandler.layout}" styleClass="surface-card mb-2">
+            <p:panel header="Yerleşim" styleClass="surface-card mb-2">
                 <div class="flex flex-wrap gap-2">
                     <p:commandButton value="Web Layout + Fixed Menu + Opened description per page"
                                      actionListener="#{templateThemeHandler.changeLayout('web-layout')}"
@@ -47,7 +47,7 @@
                 </div>
             </p:panel>
 
-            <p:panel header="Yazı Boyutu / Font Size : #{templateThemeHandler.fontSize}" styleClass="surface-card mb-2">
+            <p:panel header="Yazı Boyutu" styleClass="surface-card mb-2">
                 <div class="flex flex-wrap align-items-center gap-2">
                     <c:forEach items="#{templateThemeHandler.fontSizes}" var="fs">
                         <p:commandButton value="#{fs}"
@@ -60,7 +60,7 @@
                 </div>
             </p:panel>
 
-            <p:panel header="Tema Seçimi : #{templateThemeHandler.theme}" styleClass="surface-card">
+            <p:panel header="Tema Seçimi" styleClass="surface-card">
                 <div class="flex flex-wrap align-items-center gap-2">
                     <c:forEach items="#{templateThemeHandler.themes}" var="theme" varStatus="status">
                         <p:commandButton value="#{theme}"
