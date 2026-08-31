@@ -167,12 +167,12 @@
 
     <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
     <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
-              showHeader="false">
+              showHeader="false" appendTo="@(body)">
         <p:graphicImage url="/images/ajax-loader.gif"/>
     </p:dialog>
 
     <p:dialog widgetVar="statusDialogDownload" modal="true" draggable="false" closable="false" resizable="false"
-              showHeader="false">
+              showHeader="false" appendTo="@(body)">
         <p:graphicImage url="/images/downloading.gif" width="80"/>
     </p:dialog>
     <script type="text/javascript">
