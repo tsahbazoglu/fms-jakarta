@@ -308,7 +308,9 @@ public class FmsFieldItems {
         public Builder withQuerySchemaVersion110(ObjectId loginMemberId,
                                                  boolean admin, Set<String> roles) {
             this.myItems.itemsDoc = (Document) items;
-            this.myItems.createCurrentQuery(loginMemberId, admin, filter,
+            this.myItems.createEditQuery(loginMemberId, admin, filter,
+                    fmsScriptRunner, roles);
+            this.myItems.createFilterQuery(loginMemberId, admin, filter,
                     fmsScriptRunner, roles);
             return this;
         }
@@ -464,14 +466,42 @@ public class FmsFieldItems {
             boolean admin = roleMap.isUserInRole(myField.getMyForm().
                     getMyProject().
                     getAdminAndViewerRole());
-            createCurrentQuery(loginMemberId, admin, filter, fmsScriptRunner,
+            createEditQuery(loginMemberId, admin, filter, fmsScriptRunner,
+                    roleMap.keySet());
+            createFilterQuery(loginMemberId, admin, filter, fmsScriptRunner,
                     roleMap.keySet());
         }
     }
 
-    private void createCurrentQuery(ObjectId loginMemberId, boolean admin,
-                                    Map filter,
-                                    FmsScriptRunner fmsScriptRunner, Set<String> roles) throws
+
+    private void createFilterQuery(ObjectId loginMemberId, boolean admin,
+                                   Map filter, FmsScriptRunner fmsScriptRunner, Set<String> roles)
+            throws RuntimeException {
+
+        if (itemsDoc == null) {
+            return;
+        }
+
+        Document q = itemsDoc.get(USER_FILTER_QUERY, Document.class);
+
+        if (q == null) {
+            q = itemsDoc.get(QUERY, Document.class);
+        }
+
+        if (admin && itemsDoc.get(ADMIN_QUERY) != null) {
+            q = itemsDoc.get(ADMIN_QUERY, Document.class);
+        }
+
+        List<Document> listOfFilter = q.get("list", List.class);
+
+        this.filterQuery = handleListOfQuery(listOfFilter, filter,
+                fmsScriptRunner, loginMemberId, roles);
+
+    }
+
+    private void createEditQuery(ObjectId loginMemberId, boolean admin,
+                                 Map filter,
+                                 FmsScriptRunner fmsScriptRunner, Set<String> roles) throws
             RuntimeException {
 
         if (itemsDoc != null) {

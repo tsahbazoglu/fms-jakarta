@@ -367,6 +367,7 @@ public class ProjectConstants {
     public static final String PROJECT_PROPERTIES_CHECK_JSON_SCHEMA = "CHECK_JSON_SCHEMA";
 
     //Q
+    public static final String USER_FILTER_QUERY = "user-filter-query";
     public static final String QUERY = "query";
     public static final String QUERY_CODE = "queryCode";
 
