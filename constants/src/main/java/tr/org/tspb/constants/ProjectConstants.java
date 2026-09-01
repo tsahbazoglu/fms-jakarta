@@ -177,6 +177,7 @@ public class ProjectConstants {
     public static final String DISABLED = "disabled";
     public static final String DOT = ".";
     public static final String FORM_DB = "db";
+    public static final String FIELD_ITEMS_REF = "ref";
     public static final String DB_EIMZA = "eimzadb";
     public static final String DROOLS_VERTICAL = "droolsVertical";
     public static final String DROOLS_HORIZONTAL = "droolsHorizontal";
