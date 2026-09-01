@@ -316,7 +316,7 @@ public class FilterService extends CommonSrv {
 
     public List<Document> createZetDimensionCurrentDocuments(MyItems myItems, FmsForm selectedForm, Map<String, Object> filter) {
 
-        Object queryObject = myItems.getQuery();
+        Object queryObject = myItems.getEditQuery();
 
         if (queryObject instanceof Code) {
             Code func = new Code(((Code) queryObject).getCode().replace(DIEZ, DOLAR));
@@ -349,7 +349,7 @@ public class FilterService extends CommonSrv {
 
             logger.warn("history query object is resolved to null");
 
-            queryObject = myItems.getQuery();
+            queryObject = myItems.getEditQuery();
         }
 
         String collectionName = myItems.getTable();

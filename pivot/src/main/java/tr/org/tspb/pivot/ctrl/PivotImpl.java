@@ -180,7 +180,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
         List<Document> cursor = mongoDbUtil
                 .findProjectLookup(myForm.getDb(), (String) collectionName,
                         mongoDbUtil.expandQuery(myField.getItemsAsMyItems().
-                                getQuery(), getFilter()),
+                                getEditQuery(), getFilter()),
                         myField.getItemsAsMyItems().
                                 getSort(),
                         myField.getItemsAsMyItems().

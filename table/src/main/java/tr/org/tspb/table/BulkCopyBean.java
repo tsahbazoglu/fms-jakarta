@@ -66,7 +66,7 @@ public class BulkCopyBean implements Serializable {
         String dbName = myForm.getDb();
 
         MyField periodField = myForm.getField("period");
-        MyItems periodItems = periodField != null ? periodField.getEditItemsAsMyItems() : null;
+        MyItems periodItems = periodField != null ? periodField.getItemsAsMyItems() : null;
         String periodCollection = periodItems != null && periodItems.getTable() != null ? periodItems.getTable() : "gsy_pys_period";
         String periodDbName = periodItems != null && periodItems.getDb() != null ? periodItems.getDb() : "gsy_pys_db";
 
@@ -199,7 +199,7 @@ public class BulkCopyBean implements Serializable {
             if (fKey.equalsIgnoreCase("period") || fKey.equalsIgnoreCase(loginFkField)) {
                 continue;
             }
-            MyItems items = field.getEditItemsAsMyItems();
+            MyItems items = field.getItemsAsMyItems();
             if (items != null && items.getTable() != null && !items.getTable().trim().isEmpty()) {
                 String refTable = items.getTable();
                 if (!refTable.equalsIgnoreCase(periodCollection) && !refTable.equalsIgnoreCase(targetCollection)) {
@@ -242,7 +242,7 @@ public class BulkCopyBean implements Serializable {
             return true; // Optional field, skip check
         }
 
-        MyItems items = refField.getEditItemsAsMyItems();
+        MyItems items = refField.getItemsAsMyItems();
         String refTable = items.getTable();
         String refDb = items.getDb() != null ? items.getDb() : dbName;
 

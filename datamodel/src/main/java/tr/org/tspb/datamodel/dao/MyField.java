@@ -697,7 +697,7 @@ public class MyField {
                     fmsAutoComplete.getRoleMap(), fmsScriptRunner);
         }
         Document resultFilter = new Document(search);
-        resultFilter.putAll(itemsAsMyItems.getQuery());
+        resultFilter.putAll(itemsAsMyItems.getEditQuery());
         return fmsAutoComplete.completeMethod(resultFilter);
     }
 

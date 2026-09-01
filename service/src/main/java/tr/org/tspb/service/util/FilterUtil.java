@@ -869,10 +869,10 @@ public class FilterUtil {
         String database = myItems.getDb();
 
         Object queryObject = history ? myItems.getHistoryQuery() : myItems.
-                getQuery();
+                getEditQuery();
 
         if (queryObject == null) {
-            queryObject = myItems.getQuery();
+            queryObject = myItems.getEditQuery();
         }
 
         if (queryObject instanceof Code) {

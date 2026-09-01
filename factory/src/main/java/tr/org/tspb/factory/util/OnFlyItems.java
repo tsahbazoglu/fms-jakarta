@@ -39,7 +39,6 @@ import tr.org.tspb.datamodel.dp.nullobj.PlainRecordData;
 import tr.org.tspb.datamodel.pojo.ComponentType;
 import tr.org.tspb.datamodel.pojo.RoleMap;
 import tr.org.tspb.datamodel.pojo.UserDetail;
-import tr.org.tspb.converter.base.ConverterAttrs;
 import tr.org.tspb.util.tools.MongoDbUtilIntr;
 
 /**
@@ -285,7 +284,7 @@ public class OnFlyItems implements FmsAutoComplete {
                 getItemType()) {
             case doc:
                 Document query = new Document(myField.getItemsAsMyItems().
-                        getQuery());
+                        getEditQuery());
                 if (autoCompleteSearch != null) {
                     query.putAll(autoCompleteSearch);
                 }
@@ -422,7 +421,7 @@ public class OnFlyItems implements FmsAutoComplete {
 
     private List<SelectItem> documentToItems(MyItems myItems) throws
             MongoException {
-        return documentToItems(myItems.getQuery(), myItems, myItems.getLimit());
+        return documentToItems(myItems.getEditQuery(), myItems, myItems.getLimit());
     }
 
     private List<SelectItem> documentToItems(Document query, MyItems myItems,

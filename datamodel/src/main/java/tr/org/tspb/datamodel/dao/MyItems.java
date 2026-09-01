@@ -2,12 +2,13 @@ package tr.org.tspb.datamodel.dao;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import org.bson.Document;
@@ -51,7 +52,8 @@ public class MyItems {
     private String labelStringFormat;
     private String searchField;//this is a filed regarding to wich the p:autocomplete completeMethod will be executed
     private List<String> view;
-    private Document query;
+    private Document filterQuery;
+    private Document editQuery;
     private Document historyQuery;
     private Document sort;
     private Document queryProjection;
@@ -71,7 +73,7 @@ public class MyItems {
         sb.append(":");
         sb.append(view == null ? "" : view);
         sb.append(":");
-        sb.append(query == null ? "" : query);
+        sb.append(editQuery == null ? "" : editQuery);
         sb.append(":");
         sb.append(historyQuery == null ? "" : historyQuery);
         sb.append(":");
@@ -127,6 +129,10 @@ public class MyItems {
         }
     }
 
+    public Document getFilterQuery() {
+        return filterQuery;
+    }
+
     public String getLocale() {
         return locale;
     }
@@ -155,8 +161,8 @@ public class MyItems {
         return labelStringFormat;
     }
 
-    public Document getQuery() {
-        return query;
+    public Document getEditQuery() {
+        return editQuery;
     }
 
     public Document getHistoryQuery() {
@@ -201,7 +207,7 @@ public class MyItems {
         private final Object items;
         private final FmsScriptRunner fmsScriptRunner;
         private final Document defaultQueryProjection = new Document().append(
-                CODE, true).
+                        CODE, true).
                 append(ORDER, true).
                 append(NAME, true);
 
@@ -213,7 +219,7 @@ public class MyItems {
         }
 
         public Builder(Map filter, Object items, MyField myField,
-                FmsScriptRunner fmsScriptRunner) {
+                       FmsScriptRunner fmsScriptRunner) {
             this.filter = filter;
             this.items = items;
             this.fmsScriptRunner = fmsScriptRunner;
@@ -266,7 +272,7 @@ public class MyItems {
                 try {
                     this.myItems.sort = (Document) fmsScriptRunner
                             .runCommand(this.myItems.db, sort.get("func",
-                                    String.class).
+                                            String.class).
                                     replace(DIEZ, DOLAR), roleSet).
                             get(RETVAL);
                 } catch (Exception exception) {
@@ -300,7 +306,7 @@ public class MyItems {
         }
 
         public Builder withQuerySchemaVersion110(ObjectId loginMemberId,
-                boolean admin, Set<String> roles) {
+                                                 boolean admin, Set<String> roles) {
             this.myItems.itemsDoc = (Document) items;
             this.myItems.createCurrentQuery(loginMemberId, admin, filter,
                     fmsScriptRunner, roles);
@@ -308,7 +314,7 @@ public class MyItems {
         }
 
         public Builder withHistoryQuerySchemaVersion110(ObjectId loginMemberId,
-                boolean admin, Set<String> roles) {
+                                                        boolean admin, Set<String> roles) {
             this.myItems.itemsDoc = (Document) items;
             this.myItems.createHistoryQuery(loginMemberId, admin, filter,
                     fmsScriptRunner, roles);
@@ -338,14 +344,14 @@ public class MyItems {
                                     intValue();
                             list.add(new ViewOrder(entry.get("key").
                                     toString(), order == null ? 0 : order.
-                                                    intValue()));
+                                    intValue()));
                         }
                     }
 
                     Collections.sort(list, new Comparator<ViewOrder>() {
                         @Override
                         public int compare(ViewOrder viewOrder,
-                                ViewOrder viewOrder1) {
+                                           ViewOrder viewOrder1) {
                             return Integer.compare(viewOrder.order,
                                     viewOrder1.order);
                         }
@@ -396,7 +402,7 @@ public class MyItems {
         }
 
         public Boolean isUserInRole(Set<String> myroles,
-                Object commaSplittedRoles) {
+                                    Object commaSplittedRoles) {
             if (commaSplittedRoles != null) {
                 if (commaSplittedRoles instanceof List) {
                     for (String string : (Iterable<? extends String>) commaSplittedRoles) {
@@ -432,12 +438,12 @@ public class MyItems {
     public void changeDbTableQuery(String db, String table, Document query) {
         this.db = db;
         this.table = table;
-        this.query = query;
+        this.editQuery = query;
     }
 
     public void reCreateQuery(ObjectId loginMemberId, Map filter,
-            MyMap crudObject, RoleMap roleMap,
-            FmsScriptRunner fmsScriptRunner) {
+                              MyMap crudObject, RoleMap roleMap,
+                              FmsScriptRunner fmsScriptRunner) {
         if (queryCode != null) {
             Document tempDbObject = new Document(crudObject);
             tempDbObject.remove(INODE); // INODE is not serialized
@@ -450,9 +456,9 @@ public class MyItems {
                     get(RETVAL);
 
             if (object instanceof Document) {
-                this.query = (Document) object;
+                this.editQuery = (Document) object;
             } else {
-                this.query = new Document("noresult", "noresult");
+                this.editQuery = new Document("noresult", "noresult");
             }
         } else {
             boolean admin = roleMap.isUserInRole(myField.getMyForm().
@@ -464,8 +470,8 @@ public class MyItems {
     }
 
     private void createCurrentQuery(ObjectId loginMemberId, boolean admin,
-            Map filter,
-            FmsScriptRunner fmsScriptRunner, Set<String> roles) throws
+                                    Map filter,
+                                    FmsScriptRunner fmsScriptRunner, Set<String> roles) throws
             RuntimeException {
 
         if (itemsDoc != null) {
@@ -475,7 +481,7 @@ public class MyItems {
                 query_ = itemsDoc.get(ADMIN_QUERY, Document.class);
             }
 
-            this.query = new Document();
+            this.editQuery = new Document();
 
             String func = query_.get("func", String.class);
             List<Document> listOfFilter = query_.get("list", List.class);
@@ -483,24 +489,24 @@ public class MyItems {
             if (func != null) {
                 this.queryCode = new Code(func);
                 try {
-                    this.query = (Document) fmsScriptRunner
+                    this.editQuery = (Document) fmsScriptRunner
                             .runCommand(this.db, this.queryCode.getCode(),
                                     filter).
                             get(RETVAL);
                 } catch (Exception exception) {
-                    this.query = new Document("fms_item_query_code_error",
+                    this.editQuery = new Document("fms_item_query_code_error",
                             "fms_item_query_code_error");
                 }
             } else if (listOfFilter != null) {
-                this.query.putAll(handleListOfQuery(listOfFilter, filter,
+                this.editQuery.putAll(handleListOfQuery(listOfFilter, filter,
                         fmsScriptRunner, loginMemberId, roles));
             }
         }
     }
 
     private void createHistoryQuery(ObjectId loginMemberId, boolean admin,
-            Map filter,
-            FmsScriptRunner fmsScriptRunner, Set<String> roles)
+                                    Map filter,
+                                    FmsScriptRunner fmsScriptRunner, Set<String> roles)
             throws RuntimeException {
 
         Document historyQuery_ = itemsDoc.get(HISTORY_QUERY, Document.class);
@@ -509,7 +515,7 @@ public class MyItems {
         }
 
         if (historyQuery_ == null) {
-            this.historyQuery = this.query;
+            this.historyQuery = this.editQuery;
             return;
         }
 
@@ -535,8 +541,8 @@ public class MyItems {
     }
 
     private Document handleListOfQuery(List<Document> listOfFilter, Map filter,
-            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
-            Set<String> roles) throws RuntimeException {
+                                       FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
+                                       Set<String> roles) throws RuntimeException {
 
         Document result = new Document();
 
@@ -589,12 +595,12 @@ public class MyItems {
                         case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_PERIOD:
                             result.put(key,
                                     filter.get("period") == null ? "no result" : filter.
-                                    get("period"));
+                                            get("period"));
                             break;
                         case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_TEMPLATE:
                             result.put(key,
                                     filter.get("template") == null ? "no result" : filter.
-                                    get("template"));
+                                            get("template"));
                             break;
                         case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_ID:
                             result.put(key,
@@ -643,12 +649,12 @@ public class MyItems {
                         break;
                     case "ne":
                         result.put(key, new Document(DOLAR_NE, d.get(VALUE,
-                                String.class).
+                                        String.class).
                                 replaceAll(DIEZ, DOLAR)));
                         break;
                     case "regex":
                         result.put(key, new Document(DOLAR_REGEX, d.get(VALUE,
-                                String.class).
+                                        String.class).
                                 replaceAll(DIEZ, DOLAR)));
                         break;
                     default:
