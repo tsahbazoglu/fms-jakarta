@@ -22,7 +22,7 @@ import static tr.org.tspb.constants.ProjectConstants.RETVAL;
 
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
 import tr.org.tspb.common.qualifier.MyLoginQualifier;
 
@@ -120,7 +120,7 @@ public class FilterService extends CommonSrv {
 
             if (myField.isAutoComplete()) {
                 if (!(currentFilterValue instanceof PlainRecord)) {
-                    MyItems myItems = myField.getItemsAsMyItems();
+                    FmsFieldItems myItems = myField.getItemsAsMyItems();
 
                     Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.getTable(), Filters.eq(MONGO_ID, currentFilterValue));
                     putUiCurrentFilter(myField.getKey(), PlainRecordData.getPlainRecord(doc, myItems));
@@ -314,7 +314,7 @@ public class FilterService extends CommonSrv {
         }
     }
 
-    public List<Document> createZetDimensionCurrentDocuments(MyItems myItems, FmsForm selectedForm, Map<String, Object> filter) {
+    public List<Document> createZetDimensionCurrentDocuments(FmsFieldItems myItems, FmsForm selectedForm, Map<String, Object> filter) {
 
         Object queryObject = myItems.getEditQuery();
 
@@ -342,7 +342,7 @@ public class FilterService extends CommonSrv {
         this.guiFiltersCurrent.clear();
     }
 
-    public List<Document> createZetDimensionHistoryDocuments(MyItems myItems, FmsForm selectedForm, Map<String, Object> filter) {
+    public List<Document> createZetDimensionHistoryDocuments(FmsFieldItems myItems, FmsForm selectedForm, Map<String, Object> filter) {
 
         Object queryObject = myItems.getHistoryQuery();
         if (queryObject == null) {
@@ -433,7 +433,7 @@ public class FilterService extends CommonSrv {
             Object currentFilterValue = fetchUiCurrentFilter(fieldKey);
 
             if (myField.isAutoComplete() && !(currentFilterValue instanceof PlainRecord)) {
-                MyItems myItems = myField.getItemsAsMyItems();
+                FmsFieldItems myItems = myField.getItemsAsMyItems();
                 Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.getTable(), Filters.eq(MONGO_ID, currentFilterValue));
                 putUiCurrentFilter(fieldKey, PlainRecordData.getPlainRecord(doc, myItems));
             }

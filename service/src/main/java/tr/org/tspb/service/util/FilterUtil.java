@@ -40,7 +40,7 @@ import tr.org.tspb.converter.base.TelmanStringConverter;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.MyFieldReportComparator;
 import tr.org.tspb.datamodel.dao.FmsForm;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.datamodel.dao.refs.PlainRecord;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
 import tr.org.tspb.datamodel.pojo.RoleMap;
@@ -472,7 +472,7 @@ public class FilterUtil {
 
             Object filterValue = filter.get(myField.getKey());
             if (filterValue == null) {
-                if (MyItems.ItemType.doc.equals(myField.getItemsAsMyItems().
+                if (FmsFieldItems.ItemType.doc.equals(myField.getItemsAsMyItems().
                         getItemType())) {
                     Document document = resolveAutosetValue(myField.
                             getItemsAsMyItems(), myForm, filter, false);
@@ -677,7 +677,7 @@ public class FilterUtil {
 
             Object filterValue = filter.get(myField.getKey());
             if (filterValue == null) {
-                if (MyItems.ItemType.doc.equals(myField.getItemsAsMyItems().
+                if (FmsFieldItems.ItemType.doc.equals(myField.getItemsAsMyItems().
                         getItemType())) {
                     Document document = resolveAutosetValue(myField.
                             getItemsAsMyItems(), myForm, filter, false);
@@ -863,8 +863,8 @@ public class FilterUtil {
         }
     }
 
-    private Document resolveAutosetValue(MyItems myItems, FmsForm selectedForm,
-            Map<String, Object> filter, boolean history) {
+    private Document resolveAutosetValue(FmsFieldItems myItems, FmsForm selectedForm,
+                                         Map<String, Object> filter, boolean history) {
         String collectionName = myItems.getTable();
         String database = myItems.getDb();
 

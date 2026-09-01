@@ -23,7 +23,7 @@ import tr.org.tspb.datamodel.pojo.RoleMap;
  *
  * @author Telman Şahbazoğlu
  */
-public class MyItems {
+public class FmsFieldItems {
 
     public Code getQueryCode() {
         return queryCode;
@@ -92,10 +92,10 @@ public class MyItems {
     public static final String ITEM_TABLE = "itemTable";
     public static final String ITEM_DB = "db";
 
-    private MyItems() {
+    private FmsFieldItems() {
     }
 
-    private MyItems(Object items) {
+    private FmsFieldItems(Object items) {
         Document dbo = (Document) items;
 
         this.db = (String) dbo.get(FORM_DB);
@@ -202,7 +202,7 @@ public class MyItems {
 
     public static class Builder {
 
-        private final MyItems myItems;
+        private final FmsFieldItems myItems;
         private final Map filter;
         private final Object items;
         private final FmsScriptRunner fmsScriptRunner;
@@ -215,7 +215,7 @@ public class MyItems {
             this.filter = null;
             this.items = items;
             this.fmsScriptRunner = null;
-            this.myItems = new MyItems();
+            this.myItems = new FmsFieldItems();
         }
 
         public Builder(Map filter, Object items, MyField myField,
@@ -223,7 +223,7 @@ public class MyItems {
             this.filter = filter;
             this.items = items;
             this.fmsScriptRunner = fmsScriptRunner;
-            this.myItems = new MyItems(items);
+            this.myItems = new FmsFieldItems(items);
             this.myItems.myField = myField;
         }
 
@@ -397,7 +397,7 @@ public class MyItems {
             return this;
         }
 
-        public MyItems build() {
+        public FmsFieldItems build() {
             return this.myItems;
         }
 

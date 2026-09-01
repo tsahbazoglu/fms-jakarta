@@ -3,7 +3,7 @@ package tr.org.tspb.datamodel.dp.nullobj;
 import jakarta.faces.model.SelectItem;
 import org.bson.Document;
 import tr.org.tspb.datamodel.dao.MyBaseRecord;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.datamodel.dao.NullRecord;
 import tr.org.tspb.datamodel.dao.refs.PlainRecord;
 
@@ -15,7 +15,7 @@ public class PlainRecordData {
 
     private static final PlainRecord NULL_RECORD = new NullRecord();
 
-    public static PlainRecord getPlainRecord(Document doc, MyItems myItem) {
+    public static PlainRecord getPlainRecord(Document doc, FmsFieldItems myItem) {
         if (doc == null) {
             return NULL_RECORD;
         }

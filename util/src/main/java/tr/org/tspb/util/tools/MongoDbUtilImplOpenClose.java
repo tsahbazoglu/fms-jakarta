@@ -61,7 +61,7 @@ import tr.org.tspb.datamodel.codec.NullRecordCodec;
 import tr.org.tspb.datamodel.dao.MyBaseRecord;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.MyFile;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.datamodel.dao.MyLookup;
 import tr.org.tspb.datamodel.dao.refs.PlainRecord;
 import tr.org.tspb.datamodel.pojo.RoleMap;
@@ -234,7 +234,7 @@ public class MongoDbUtilImplOpenClose implements MongoDbUtilIntr {
         return dbCollection;
     }
 
-    public void createIndex(MyItems myItems) {
+    public void createIndex(FmsFieldItems myItems) {
         createIndex(myItems.getDb(), myItems.getTable(), myItems.getSort());
     }
 
@@ -461,7 +461,7 @@ public class MongoDbUtilImplOpenClose implements MongoDbUtilIntr {
                 MyField field = myForm.getField(key);
 
                 if (field != null) {
-                    MyItems itemsDbo = field.getItemsAsMyItems();
+                    FmsFieldItems itemsDbo = field.getItemsAsMyItems();
                     if (itemsDbo != null) {
                         String myDb = (String) itemsDbo.getDb();
                         def.put(FORM_DB, myDb == null ? myForm.getDb() : myDb);
@@ -652,7 +652,7 @@ public class MongoDbUtilImplOpenClose implements MongoDbUtilIntr {
                 if (subQuery.containsKey("db")) {
                     Document subResult = findOneWithProjection(subQuery.
                             getString("db"),
-                            subQuery.getString(MyItems.ITEM_TABLE),
+                            subQuery.getString(FmsFieldItems.ITEM_TABLE),
                             expandQuery(subQuery.get("query", Document.class),
                                     filter),
                             new Document(subQuery.getString("projection"), true));

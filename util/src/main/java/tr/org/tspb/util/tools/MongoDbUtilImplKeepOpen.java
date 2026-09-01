@@ -72,7 +72,7 @@ import tr.org.tspb.datamodel.dao.MyBaseRecord;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.MyFile;
 import tr.org.tspb.datamodel.dao.MyFileNoContent;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.datamodel.dao.MyLookup;
 import tr.org.tspb.datamodel.dao.refs.PlainRecord;
 import tr.org.tspb.datamodel.pojo.RoleMap;
@@ -260,7 +260,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
         return dbCollection;
     }
 
-    public void createIndex(MyItems myItems) {
+    public void createIndex(FmsFieldItems myItems) {
         createIndex(myItems.getDb(), myItems.getTable(), myItems.getSort());
     }
 
@@ -468,7 +468,7 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
                 MyField field = myForm.getField(key);
 
                 if (field != null) {
-                    MyItems itemsDbo = field.getItemsAsMyItems();
+                    FmsFieldItems itemsDbo = field.getItemsAsMyItems();
                     if (itemsDbo != null) {
                         String myDb = itemsDbo.getDb();
                         def.put(FORM_DB, myDb == null ? myForm.getDb() : myDb);
@@ -686,12 +686,12 @@ public class MongoDbUtilImplKeepOpen implements MongoDbUtilIntr {
                 }
             } else if (query.get(key) instanceof Document) {
                 Document subQuery = query.get(key, Document.class);
-                if (subQuery.containsKey(MyItems.ITEM_DB)) {
+                if (subQuery.containsKey(FmsFieldItems.ITEM_DB)) {
                     Document q = expandQuery(subQuery.get("query",
                             Document.class), filter);
                     Document subResult = findOneWithProjection(
-                            subQuery.getString(MyItems.ITEM_DB),
-                            subQuery.getString(MyItems.ITEM_TABLE),
+                            subQuery.getString(FmsFieldItems.ITEM_DB),
+                            subQuery.getString(FmsFieldItems.ITEM_TABLE),
                             q,
                             new Document(subQuery.getString("projection"), true));
                     query.put(key, subResult == null ? null : subResult.get(

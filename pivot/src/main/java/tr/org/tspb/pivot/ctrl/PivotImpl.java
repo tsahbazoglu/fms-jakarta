@@ -27,7 +27,7 @@ import tr.org.tspb.converter.base.SelectOneStringConverter;
 import tr.org.tspb.converter.base.TelmanStringConverter;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.datamodel.dao.MyMap;
 import tr.org.tspb.common.qualifier.MyLoginQualifier;
 import tr.org.tspb.common.services.AppScopeSrvCtrl;
@@ -295,7 +295,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
     public List<SelectItem> createItems(MyField myField) {
         List<SelectItem> listSelectItems = new ArrayList();
 
-        if (MyItems.ItemType.list.equals(myField.getItemsAsMyItems().
+        if (FmsFieldItems.ItemType.list.equals(myField.getItemsAsMyItems().
                 getItemType())) {
             List docItems = myField.getItemsAsMyItems().
                     getList();
@@ -551,7 +551,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
 
                     if (zetDimensionItems == null) {
 
-                        MyItems myItems = myField.getItemsAsMyItems();
+                        FmsFieldItems myItems = myField.getItemsAsMyItems();
                         List<Document> cursor = null;
                         if (history) {
                             cursor = filterService.

@@ -1034,7 +1034,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
                 if (myField != null && myField.isAutoComplete()) {
 
-                    MyItems myItems = myField.getItemsAsMyItems();
+                    FmsFieldItems myItems = myField.getItemsAsMyItems();
 
                     Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.getTable(), Filters.eq(MONGO_ID, myField.getKey()));
 

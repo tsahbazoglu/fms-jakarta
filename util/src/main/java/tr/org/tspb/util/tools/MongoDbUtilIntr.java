@@ -9,7 +9,7 @@ import java.util.Map;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import tr.org.tspb.datamodel.dao.FmsForm;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.datamodel.dao.MyLookup;
 import tr.org.tspb.datamodel.pojo.RoleMap;
 import tr.org.tspb.datamodel.dao.TagEvent;
@@ -33,7 +33,7 @@ public interface MongoDbUtilIntr extends FmsMongoGridFsIntr {
     public MongoCollection getCollection(String db, String collectionName,
             Document indexObject, boolean unique);
 
-    public void createIndex(MyItems myItems);
+    public void createIndex(FmsFieldItems myItems);
 
     public void createIndex(FmsForm myForm, Document indexObject);
 

@@ -63,7 +63,7 @@ import tr.org.tspb.constants.exceptions.UserException;
 import tr.org.tspb.converter.props.MessageBundleLoaderv1;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.datamodel.dao.MyMap;
 import tr.org.tspb.datamodel.dao.MyNotifies;
 import tr.org.tspb.datamodel.dp.nullobj.PlainRecordData;
@@ -872,7 +872,7 @@ public abstract class FmsTable extends FmsTableView {
 
             if (myField != null && myField.isAutoComplete()) {
 
-                MyItems myItems = myField.getItemsAsMyItems();
+                FmsFieldItems myItems = myField.getItemsAsMyItems();
 
                 Document doc = mongoDbUtil.findOne(myItems.getDb(), myItems.getTable(), Filters.eq(MONGO_ID, rowData.get(key)));
 

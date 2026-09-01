@@ -31,7 +31,7 @@ import tr.org.tspb.converter.base.SelectOneStringConverter;
 import tr.org.tspb.converter.mb.MySessionStore;
 import tr.org.tspb.datamodel.dao.FmsAutoComplete;
 import tr.org.tspb.datamodel.dao.MyField;
-import tr.org.tspb.datamodel.dao.MyItems;
+import tr.org.tspb.datamodel.dao.FmsFieldItems;
 import tr.org.tspb.datamodel.dao.MyMap;
 import tr.org.tspb.datamodel.dao.MyProject;
 import tr.org.tspb.datamodel.dao.refs.PlainRecord;
@@ -413,18 +413,18 @@ public class OnFlyItems implements FmsAutoComplete {
         return items;
     }
 
-    private List<SelectItem> documentToItemsHistory(MyItems myItems) throws
+    private List<SelectItem> documentToItemsHistory(FmsFieldItems myItems) throws
             MongoException {
         return documentToItems(myItems.getHistoryQuery(), myItems, myItems.
                 getLimit());
     }
 
-    private List<SelectItem> documentToItems(MyItems myItems) throws
+    private List<SelectItem> documentToItems(FmsFieldItems myItems) throws
             MongoException {
         return documentToItems(myItems.getEditQuery(), myItems, myItems.getLimit());
     }
 
-    private List<SelectItem> documentToItems(Document query, MyItems myItems,
+    private List<SelectItem> documentToItems(Document query, FmsFieldItems myItems,
             Number limit) throws MongoException {
 
         List<SelectItem> items = new ArrayList<>();

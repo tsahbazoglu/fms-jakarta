@@ -33,7 +33,7 @@ public class MyBaseRecord extends PlainRecord {
         this.name = item.getLabel();
     }
 
-    public MyBaseRecord(Document doc, MyItems myItem) {
+    public MyBaseRecord(Document doc, FmsFieldItems myItem) {
 
         StringBuilder view = new StringBuilder();
         for (String viewKey : myItem.getView()) {

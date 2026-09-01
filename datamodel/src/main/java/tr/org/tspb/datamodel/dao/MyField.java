@@ -115,7 +115,7 @@ public class MyField {
     private Object maxFractationDigits;
     private List<SelectItem> selectItemsCurrent = new ArrayList<>();
     private List<SelectItem> selectItemsHistory = new ArrayList<>();
-    private MyItems itemsAsMyItems;
+    private FmsFieldItems itemsAsMyItems;
     private String myDatePattern;
     private String mask;
     private String myFormKey;
@@ -181,7 +181,7 @@ public class MyField {
     }
 
 // <editor-fold defaultstate="collapsed" desc="getters">
-    public MyItems getItemsAsMyItems() {
+    public FmsFieldItems getItemsAsMyItems() {
         return itemsAsMyItems;
     }
 
@@ -1119,8 +1119,8 @@ public class MyField {
                 }
                 Object items;
                 if ((items = itemsDoc.get(CONFIG_ATTR_FIELD_ITEMS_LIST)) != null) {
-                    this.myField.itemsAsMyItems = new MyItems.Builder(items)
-                            .withItemType(MyItems.ItemType.list).
+                    this.myField.itemsAsMyItems = new FmsFieldItems.Builder(items)
+                            .withItemType(FmsFieldItems.ItemType.list).
                             withList().
                             withParent(this.myField).
                             build();
@@ -1128,7 +1128,7 @@ public class MyField {
                     throw new UnsupportedOperationException(
                             "maskItemsAsMyItems.code");
                 } else if ((items = itemsDoc.get(CONFIG_ATTR_REF)) != null) {
-                    this.myField.itemsAsMyItems = new MyItems.Builder(filter,
+                    this.myField.itemsAsMyItems = new FmsFieldItems.Builder(filter,
                             items, myField, myField.fmsScriptRunner)
                             .withQuerySchemaVersion110(
                                     this.myField.loginMemberId, admin, roles).
@@ -1136,7 +1136,7 @@ public class MyField {
                             withViewSchemaVersion110(roles).
                             withHistoryQuerySchemaVersion110(
                                     this.myField.loginMemberId, admin, roles).
-                            withItemType(MyItems.ItemType.doc).
+                            withItemType(FmsFieldItems.ItemType.doc).
                             withLookup().
                             withQueryProjection().
                             withResultProjection().
@@ -1176,7 +1176,7 @@ public class MyField {
 
                 if (this.myField.getItemsAsMyItems() != null) {
 
-                    if (MyItems.ItemType.list.equals(this.myField.
+                    if (FmsFieldItems.ItemType.list.equals(this.myField.
                             getItemsAsMyItems().
                             getItemType())) {
                         Map<String, String> itemMap = new HashMap();
