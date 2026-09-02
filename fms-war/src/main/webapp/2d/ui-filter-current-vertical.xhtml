@@ -30,6 +30,7 @@
                             dateChange="#{twoDimModifyCtrl.dateChange}"
                     />
                     <p:selectOneMenu
+                            id="id-filter-current-vertical-select-one-menu"
                             value="#{filterService.guiFilterCurrent[columnMap.field]}"
                             rendered="#{columnMap!=null and columnMap.componentType eq twoDimModifyCtrl.selectOneMenu}"
                             converter="#{columnMap.myconverter}"
@@ -45,7 +46,7 @@
                                 itemValue="#{columnMap.myconverter.selectAllItem}"
                                 itemLabel="Tümü"
                         />
-                        <f:selectItems value="#{columnMap.selectItemsCurrent}"/>
+                        <f:selectItems value="#{columnMap.selectItemsFilter}"/>
 
                         <f:attribute name="myField" value="#{columnMap}"/>
                         <f:attribute name="myKey" value="#{columnMap.field}"/>
@@ -67,7 +68,7 @@
                                 process="@form"
                                 update="#{updateAjaxMB.action2DSearch}"
                         />
-                        <f:selectItems value="#{columnMap.selectItemsCurrent}"/>
+                        <f:selectItems value="#{columnMap.selectItemsFilter}"/>
                         <f:attribute name="myKey" value="#{columnMap.field}"/>
                     </p:selectOneMenu>
                     <p:autoComplete

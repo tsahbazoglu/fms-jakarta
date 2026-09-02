@@ -15,10 +15,12 @@ public interface FmsAutoComplete {
 
     public List<PlainRecord> completeMethod(Document query);
 
-    public List<SelectItem> createSelectItems(Map searchObject, MyMap crudObject);
+    public List<SelectItem> createSelectItemsFilter(Map searchObject, MyMap crudObject);
+
+    public List<SelectItem> createSelectItemsEdit(Map searchObject, MyMap crudObject);
 
     public List<SelectItem> createSelectItemsHistory(Map searchObject,
-            MyMap crudObject);
+                                                     MyMap crudObject);
 
     public Map<String, Object> getFilter();
 

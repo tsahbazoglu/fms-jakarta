@@ -469,15 +469,20 @@ public class FmsFieldItems {
             if (itemsDoc == null) {
                 return;
             }
+            if (!ItemType.ref.equals(this.itemType)) {
+                return;
+            }
+            Document refDocument = itemsDoc.get(FIELD_ITEMS_REF, Document.class);
 
-            Document q = itemsDoc.get(USER_FILTER_QUERY, Document.class);
+
+            Document q = refDocument.get(USER_FILTER_QUERY, Document.class);
 
             if (q == null) {
-                q = itemsDoc.get(QUERY, Document.class);
+                q = refDocument.get(QUERY, Document.class);
             }
 
-            if (admin && itemsDoc.get(ADMIN_QUERY) != null) {
-                q = itemsDoc.get(ADMIN_QUERY, Document.class);
+            if (admin && refDocument.get(ADMIN_QUERY) != null) {
+                q = refDocument.get(ADMIN_QUERY, Document.class);
             }
 
             List<Document> listOfFilter = q.get("list", List.class);

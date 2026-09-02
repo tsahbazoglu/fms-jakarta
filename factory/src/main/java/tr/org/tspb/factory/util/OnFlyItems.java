@@ -81,6 +81,71 @@ public class OnFlyItems implements FmsAutoComplete {
         return plainRecords;
     }
 
+    @Override
+    public List<SelectItem> createSelectItemsFilter(Map searchObject, MyMap crudObject) {
+
+        boolean isMulti = ComponentType.selectOneMenu.name().
+                equals(myField.getComponentType());
+
+        isMulti = isMulti || ComponentType.selectManyListbox.name().
+                equals(myField.getComponentType());
+
+        isMulti = isMulti || myField.isAutoComplete();
+
+        if (!isMulti) {
+            return null;
+        }
+
+        String loginFk = (String) docForm.get(LOGIN_FK);
+
+        if (myField.getKey().
+                equals(loginFk) && !roleMap.isUserInRole(myProject.
+                getAdminRole())) {
+
+            List listOfIds = new ArrayList();
+            for (UserDetail.EimzaPersonel ep : userDetail.getEimzaPersonels()) {
+                listOfIds.add(ep.getDelegatingMember());
+            }
+
+            List<Document> documents = mongoDbUtil.find(myField.
+                    getItemsAsMyItems().
+                    getDb(), myField.getItemsAsMyItems().
+                    getTable(), new Document(MONGO_ID, new Document(
+                    DOLAR_IN, listOfIds)));
+
+            if (!ComponentType.selectManyListbox.name().
+                    equals(myField.getComponentType())) {
+//                items.add(new SelectItem(SelectOneObjectIdConverter.NULL_VALUE, SELECT_PLEASE));
+            }
+
+            return documentsToSelectItems(documents, myField.
+                    getItemsAsMyItems().
+                    getView());
+        }
+
+        FmsFieldItems.ItemType itemType = myField.getItemsAsMyItems().getItemType();
+
+        List<SelectItem> items = switch (itemType) {
+            case doc, ref -> documentToItems(
+                    myField.getItemsAsMyItems().getFilterQuery(),
+                    myField.getItemsAsMyItems(),
+                    myField.getItemsAsMyItems().getLimit());
+            case list -> listToItems(myField.getItemsAsMyItems().getList());
+            case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
+            default -> throw new RuntimeException("itemType : " + itemType + " is not supported.");
+        };
+
+        myField.setSessionKey(MySessionStore.createSessionKey(
+                docForm.getString(ProjectConstants.PROJECT_KEY),
+                docForm.get(UPPER_NODES).toString(),
+                docForm.getString(FORM_KEY),
+                myField.getKey()));
+
+        return items;
+
+    }
+
+
     /**
      *
      * @param searchObject
@@ -88,7 +153,7 @@ public class OnFlyItems implements FmsAutoComplete {
      * @return
      */
     @Override
-    public List<SelectItem> createSelectItems(Map searchObject, MyMap crudObject) {
+    public List<SelectItem> createSelectItemsEdit(Map searchObject, MyMap crudObject) {
 
         boolean isMulti = ComponentType.selectOneMenu.name().
                 equals(myField.getComponentType());
@@ -136,7 +201,10 @@ public class OnFlyItems implements FmsAutoComplete {
         FmsFieldItems.ItemType itemType = myField.getItemsAsMyItems().getItemType();
 
         items = switch (itemType) {
-            case doc, ref -> documentToItems(myField.getItemsAsMyItems());
+            case doc, ref -> documentToItems(
+                    myField.getItemsAsMyItems().getEditQuery(),
+                    myField.getItemsAsMyItems(),
+                    myField.getItemsAsMyItems().getLimit());
             case list -> listToItems(myField.getItemsAsMyItems().getList());
             case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
             default -> throw new RuntimeException("itemType : " + itemType + " is not supported.");
@@ -144,8 +212,7 @@ public class OnFlyItems implements FmsAutoComplete {
 
         myField.setSessionKey(MySessionStore.createSessionKey(
                 docForm.getString(ProjectConstants.PROJECT_KEY),
-                docForm.get(UPPER_NODES).
-                        toString(),
+                docForm.get(UPPER_NODES).toString(),
                 docForm.getString(FORM_KEY),
                 myField.getKey()));
 
@@ -175,7 +242,6 @@ public class OnFlyItems implements FmsAutoComplete {
             return null;
         }
 
-        List<SelectItem> items = new ArrayList();
 
         String loginFk = (String) docForm.get(LOGIN_FK);
 
@@ -199,15 +265,16 @@ public class OnFlyItems implements FmsAutoComplete {
 //                items.add(new SelectItem(SelectOneObjectIdConverter.NULL_VALUE, SELECT_PLEASE));
             }
 
-            items.addAll(documentsToSelectItems(documents, myField.
+            return documentsToSelectItems(documents, myField.
                     getItemsAsMyItems().
-                    getView()));
+                    getView());
 
-            return items;
         }
-
-        items = switch (myField.getItemsAsMyItems().getItemType()) {
-            case doc, ref -> documentToItemsHistory(myField.getItemsAsMyItems());
+        List<SelectItem> items = switch (myField.getItemsAsMyItems().getItemType()) {
+            case doc, ref -> documentToItems(
+                    myField.getItemsAsMyItems().getHistoryQuery(),
+                    myField.getItemsAsMyItems(),
+                    myField.getItemsAsMyItems().getLimit());
             case list -> listToItems(myField.getItemsAsMyItems().getList());
             case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
             default ->
@@ -265,8 +332,7 @@ public class OnFlyItems implements FmsAutoComplete {
         switch (myField.getItemsAsMyItems().
                 getItemType()) {
             case doc:
-                Document query = new Document(myField.getItemsAsMyItems().
-                        getEditQuery());
+                Document query = new Document(myField.getItemsAsMyItems().getEditQuery());
                 if (autoCompleteSearch != null) {
                     query.putAll(autoCompleteSearch);
                 }
@@ -395,51 +461,34 @@ public class OnFlyItems implements FmsAutoComplete {
         return items;
     }
 
-    private List<SelectItem> documentToItemsHistory(FmsFieldItems myItems) throws
-            MongoException {
-        return documentToItems(myItems.getHistoryQuery(), myItems, myItems.
-                getLimit());
-    }
-
-    private List<SelectItem> documentToItems(FmsFieldItems myItems) throws
-            MongoException {
-        return documentToItems(myItems.getEditQuery(), myItems, myItems.getLimit());
-    }
-
     private List<SelectItem> documentToItems(Document query, FmsFieldItems myItems,
                                              Number limit) throws MongoException {
-
-        List<SelectItem> items = new ArrayList<>();
 
         if (!"selectManyListbox".equals(myField.getComponentType())) {
 //            items.add(new SelectItem(SelectOneObjectIdConverter.NULL_VALUE, SELECT_PLEASE));
         }
-
         if (myField.getObserver() instanceof Map) {
-            return items;
+            return Collections.emptyList();
         }
-
         String db = myItems.getDb();
         String collectionName = myItems.getTable();
         Document sortDocument = myItems.getSort();
-
-        if (sortDocument == null || sortDocument.isEmpty()) {
-            if (collectionName == null) {
-                throw new RuntimeException("config error : collectionName is required");
-            }
-            List<Document> cursor = mongoDbUtil.find(db, collectionName, query,
-                    null, limit);
-            items.addAll(documentsToSelectItems(cursor, myItems.getView()));
-            sortItemsByLabel(items);
-        } else {
-            mongoDbUtil.createIndex(myItems);
-            List<Document> documents = mongoDbUtil.find(db, collectionName,
-                    query, myItems.getSort(), limit);
-            items.addAll(documentsToSelectItems(documents, myItems.getView()));
+        if (collectionName == null) {
+            throw new RuntimeException("config error : collectionName is required");
         }
-
-        return items;
-
+        List<Document> documents;
+        boolean hasSortDocument = sortDocument != null && !sortDocument.isEmpty();
+        if (hasSortDocument) {
+            documents = mongoDbUtil.find(db, collectionName, query, sortDocument, limit);
+            mongoDbUtil.createIndex(myItems);
+        } else {
+            documents = mongoDbUtil.find(db, collectionName, query, null, limit);
+        }
+        List<SelectItem> selectItems = documentsToSelectItems(documents, myItems.getView());
+        if (!hasSortDocument) {
+            sortItemsByLabel(selectItems);
+        }
+        return selectItems;
     }
 
     private void sortItemsByLabel(List<SelectItem> items) {

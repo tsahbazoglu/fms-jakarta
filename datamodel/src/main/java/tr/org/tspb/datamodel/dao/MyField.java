@@ -115,6 +115,7 @@ public class MyField {
     // M
     private Object minFractationDigits;
     private Object maxFractationDigits;
+    private List<SelectItem> selectItemsFilter = new ArrayList<>();
     private List<SelectItem> selectItemsCurrent = new ArrayList<>();
     private List<SelectItem> selectItemsHistory = new ArrayList<>();
     private FmsFieldItems itemsAsMyItems;
@@ -176,6 +177,10 @@ public class MyField {
     // </editor-fold>
     public MyField() {
 
+    }
+
+    public List<SelectItem> getSelectItemsFilter() {
+        return selectItemsFilter;
     }
 
     public String getGenererate() {
@@ -706,16 +711,19 @@ public class MyField {
 
     public void createSelectItems(Map filter, MyMap crudObject, RoleMap roleMap,
                                   UserDetail userDetail, boolean ajax) {
-        if (this.itemsAsMyItems != null) {
-            if (ajax) {
-                this.itemsAsMyItems = this.itemsAsMyItems.reCreateQuery(loginMemberId, filter,
-                        crudObject, roleMap, fmsScriptRunner);
-            }
-            this.selectItemsCurrent = fmsAutoComplete.createSelectItems(filter,
-                    crudObject);
-            this.selectItemsHistory = fmsAutoComplete.createSelectItemsHistory(
-                    filter, crudObject);
+        if (this.itemsAsMyItems == null) {
+            return;
         }
+        if (ajax) {
+            this.itemsAsMyItems = this.itemsAsMyItems.reCreateQuery(loginMemberId, filter,
+                    crudObject, roleMap, fmsScriptRunner);
+        }
+        this.selectItemsFilter = fmsAutoComplete.createSelectItemsFilter(filter,
+                crudObject);
+        this.selectItemsCurrent = fmsAutoComplete.createSelectItemsEdit(filter,
+                crudObject);
+        this.selectItemsHistory = fmsAutoComplete.createSelectItemsHistory(
+                filter, crudObject);
     }
 
     public Boolean getLoginFK() {
@@ -1118,12 +1126,14 @@ public class MyField {
                 return this;
             }
             try {
+                ObjectId loginMemberId = this.myField.loginMemberId;
                 this.myField.itemsAsMyItems = new FmsFieldItems
                         .Builder(filter, itemsDoc, myField, myField.fmsScriptRunner)
-                        .withQuerySchemaVersion110(this.myField.loginMemberId, admin, roles)
+                        .withFilterQuery(loginMemberId, admin, roles)
+                        .withQuerySchemaVersion110(loginMemberId, admin, roles)
                         .withSortSchemaVersion110(roles)
                         .withViewSchemaVersion110(roles)
-                        .withHistoryQuerySchemaVersion110(this.myField.loginMemberId, admin, roles)
+                        .withHistoryQuerySchemaVersion110(loginMemberId, admin, roles)
                         .withLookup()
                         .withQueryProjection()
                         .withResultProjection()
