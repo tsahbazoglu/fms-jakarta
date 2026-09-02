@@ -485,7 +485,7 @@ public class FmsFieldItems {
                 q = refDocument.get(ADMIN_QUERY, Document.class);
             }
 
-            List<Document> listOfFilter = q.get("list", List.class);
+            List<Document> listOfFilter = q.getList("list", Document.class, new ArrayList<>());
 
             this.filterQuery = handleListOfQuery(listOfFilter, filter,
                     fmsScriptRunner, loginMemberId, roles);
