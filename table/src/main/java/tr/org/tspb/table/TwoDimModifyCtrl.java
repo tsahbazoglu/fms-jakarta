@@ -2097,7 +2097,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
                 }
 
                 if (field.getMyconverter() instanceof BsonConverter) {
-                    Document doc = (Document) field.getItemsAsMyItems().getList().get(0);
+                    Document doc = (Document) field.getItemsAsMyItems().getListOfDocument().get(0);
                     crudObject.put(field.getKey(), doc.getString("code"));
                 }
 

@@ -15,7 +15,6 @@ import java.util.regex.Matcher;
 import org.bson.Document;
 import org.bson.types.Code;
 import org.bson.types.ObjectId;
-import org.xmlet.htmlapifaster.S;
 import tr.org.tspb.constants.ProjectConstants;
 import tr.org.tspb.datamodel.expected.FmsScriptRunner;
 import tr.org.tspb.constants.exceptions.FormConfigException;
@@ -47,7 +46,7 @@ public class FmsFieldItems {
     private Document queryProjection;
     private Document resultProjection;
     private Number limit;
-    private List<Document> list;
+    private List<Document> listOfDocument;
     private List<SelectItem> listOfSelectItem;
     private List<String> listOfString;
     private Code code;
@@ -110,7 +109,15 @@ public class FmsFieldItems {
         this.scriptEnv = builder.scriptEnv;
         this.myField = builder.myField;
         this.itemsDoc = builder.itemsDoc;
-        this.list = builder.list;
+        this.listOfDocument = builder.listOfDocuments;
+        if (this.listOfDocument != null) {
+            this.listOfString = builder.listOfDocuments.stream()
+                    .map(document -> document.getString(CODE))
+                    .collect(java.util.stream.Collectors.toList());
+        } else {
+            this.listOfString = Collections.emptyList();
+        }
+
     }
 
     public Document getFilterQuery() {
@@ -133,8 +140,8 @@ public class FmsFieldItems {
         return itemType;
     }
 
-    public List<Document> getList() {
-        return list;
+    public List<Document> getListOfDocument() {
+        return listOfDocument;
     }
 
     public Code getCode() {
@@ -201,7 +208,7 @@ public class FmsFieldItems {
         private String labelStringFormat;
         private MyField myField;
         private ItemType itemType;
-        private List<Document> list;
+        private List<Document> listOfDocuments;
         private List<String> view;
         private Number limit;
         private ScriptEnv scriptEnv;
@@ -449,7 +456,7 @@ public class FmsFieldItems {
         }
 
         public Builder withList() {
-            this.list = this.itemsDoc.getList("list", Document.class);
+            this.listOfDocuments = this.itemsDoc.getList("list", Document.class);
             return this;
         }
 

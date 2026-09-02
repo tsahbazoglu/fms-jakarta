@@ -1289,7 +1289,7 @@ public class MyField {
 
         public Builder cacheBsonConverter(boolean isBsonConverter) {
             if (isBsonConverter) {
-                List<Document> list = this.myField.getItemsAsMyItems().getList();
+                List<Document> list = this.myField.getItemsAsMyItems().getListOfDocument();
                 for (Document doc : list) {
                     FmsCodeName fmsCodeName = new FmsCodeName(doc);
                     this.myField.getCacheBsonConverter().

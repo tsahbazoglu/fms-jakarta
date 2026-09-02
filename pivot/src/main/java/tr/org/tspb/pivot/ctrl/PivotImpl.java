@@ -299,7 +299,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
         if (FmsFieldItems.ItemType.list.equals(myField.getItemsAsMyItems().
                 getItemType())) {
             List docItems = myField.getItemsAsMyItems().
-                    getList();
+                    getListOfDocument();
             listSelectItems.add(new SelectItem(
                     SelectOneStringConverter.NULL_VALUE, SELECT_PLEASE));
             for (Object itemValue : docItems) {

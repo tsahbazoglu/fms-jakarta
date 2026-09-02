@@ -130,7 +130,7 @@ public class OnFlyItems implements FmsAutoComplete {
                     myField.getItemsAsMyItems().getFilterQuery(),
                     myField.getItemsAsMyItems(),
                     myField.getItemsAsMyItems().getLimit());
-            case list -> listToItems(myField.getItemsAsMyItems().getList());
+            case list -> listToItems(myField.getItemsAsMyItems().getListOfDocument());
             case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
             default -> throw new RuntimeException("itemType : " + itemType + " is not supported.");
         };
@@ -205,7 +205,7 @@ public class OnFlyItems implements FmsAutoComplete {
                     myField.getItemsAsMyItems().getEditQuery(),
                     myField.getItemsAsMyItems(),
                     myField.getItemsAsMyItems().getLimit());
-            case list -> listToItems(myField.getItemsAsMyItems().getList());
+            case list -> listToItems(myField.getItemsAsMyItems().getListOfDocument());
             case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
             default -> throw new RuntimeException("itemType : " + itemType + " is not supported.");
         };
@@ -275,7 +275,7 @@ public class OnFlyItems implements FmsAutoComplete {
                     myField.getItemsAsMyItems().getHistoryQuery(),
                     myField.getItemsAsMyItems(),
                     myField.getItemsAsMyItems().getLimit());
-            case list -> listToItems(myField.getItemsAsMyItems().getList());
+            case list -> listToItems(myField.getItemsAsMyItems().getListOfDocument());
             case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
             default ->
                     throw new RuntimeException("itemType : " + myField.getItemsAsMyItems().getItemType() + " is not supported.");
