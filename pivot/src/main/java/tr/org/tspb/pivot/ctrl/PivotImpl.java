@@ -1,6 +1,7 @@
 package tr.org.tspb.pivot.ctrl;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import java.io.Serializable;
 import java.text.Collator;
 import tr.org.tspb.common.util.CustomOlapHashMap;
@@ -126,7 +127,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
      * @throws Exception
      */
     private List<MyField> createDimensionFieldItems(FmsForm myForm,
-            MyField myField) throws MongoOrmFailedException {
+                                                    MyField myField) throws MongoOrmFailedException {
 
         StringBuilder sb = new StringBuilder();
         sb.append(myForm.getKey());
@@ -200,7 +201,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
                     isEmpty() || listOfCode.contains(code))) {
                 throw new MongoOrmFailedException(String.format(
                         "<br/>A dimesion field does not have a \"code\" on its record list or duplicate it."
-                        + "<br/>Detail : fieldKey=%s, data=%s", myField.getKey(),
+                                + "<br/>Detail : fieldKey=%s, data=%s", myField.getKey(),
                         dbObject.get(NAME)));
             } else {
                 listOfCode.add(code);
@@ -236,7 +237,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
                         measureConverter = new SelectOneStringConverter();
                         break;
                     default:
-                    // nothing
+                        // nothing
                 }
             }
 
@@ -499,19 +500,10 @@ public abstract class PivotImpl implements Serializable, PivotApi {
 
             Document map = new Document();
 
-            switch (myField.getItemsAsMyItems().
-                    getItemType()) {
+            switch (myField.getItemsAsMyItems().getItemType()) {
                 case list:
-                    List<SelectItem> listDimensionZAXIS = new ArrayList<>();
-                    Iterator it = ((Iterable<Object>) myField.
-                            getItemsAsMyItems().
-                            getList()).iterator();
-                    while (it.hasNext()) {
-                        Object object = it.next();
-                        listDimensionZAXIS.add(new SelectItem(object,
-                                (String) object));
-                    }
-
+                    List<SelectItem> listDimensionZAXIS = new ArrayList<>(myField.getItemsAsMyItems().
+                            getListOfSelectItem());
                     map.put(FORM_KEY, key);
                     map.put(FIELD, field);
                     map.put(SHORT_NAME, myForm.getField(key).
@@ -633,8 +625,8 @@ public abstract class PivotImpl implements Serializable, PivotApi {
      * @return
      */
     private List<SelectItem> createSelectItems(List<Document> cursor,
-            Document viewObject, Document sortObject, String labelStringFormat,
-            boolean all, String locale) {
+                                               Document viewObject, Document sortObject, String labelStringFormat,
+                                               boolean all, String locale) {
 
         List<SelectItem> selectItems = new ArrayList<>();
         List<Document> lists = new ArrayList<>();
@@ -690,7 +682,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
             try {
                 label = String.format(labelStringFormat == null ? format.
                         toString() : labelStringFormat, toBeVieweeValues.
-                                toArray());
+                        toArray());
             } catch (Exception ex) {
                 logger.error("stop here");
             }

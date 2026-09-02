@@ -3,7 +3,9 @@ package tr.org.tspb.datamodel.dao;
 import tr.org.tspb.datamodel.pojo.ForumColumnCellKey;
 import tr.org.tspb.datamodel.pojo.UserDetail;
 import tr.org.tspb.datamodel.pojo.RoleMap;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -171,7 +173,7 @@ public class MyField {
     private List<Object> selectAllValues;
     private String db;//this is the case for nd
 
-// </editor-fold>
+    // </editor-fold>
     public MyField() {
 
     }
@@ -180,7 +182,7 @@ public class MyField {
         return genererate;
     }
 
-// <editor-fold defaultstate="collapsed" desc="getters">
+    // <editor-fold defaultstate="collapsed" desc="getters">
     public FmsFieldItems getItemsAsMyItems() {
         return itemsAsMyItems;
     }
@@ -505,6 +507,7 @@ public class MyField {
     }
 
 // </editor-fold>
+
     /**
      * @return the measureConverter
      */
@@ -596,10 +599,10 @@ public class MyField {
             crudDoc.remove(INODE);
 
             Document commandResult = fmsScriptRunner.runCommand(this.dbo.get(
-                    FORM_DB).
-                    toString(),
+                                    FORM_DB).
+                            toString(),
                     appearFunction.getCode(), crudDoc, searchObject, roleMap.
-                    keySet());
+                            keySet());
 
             localRendered = Boolean.TRUE.equals(commandResult.get(RETVAL));
         }
@@ -689,11 +692,11 @@ public class MyField {
         Map search = new HashMap(fmsAutoComplete.getFilter());
         if (query != null && query.length() >= 1) {
             Document queryRexegIgnoreCaseQuery = new Document().append(
-                    DOLAR_REGEX, query).
+                            DOLAR_REGEX, query).
                     append(DOLAR_OPTIONS, "i");
             search.put(itemsAsMyItems.getSearchField(),
                     queryRexegIgnoreCaseQuery);
-            itemsAsMyItems.reCreateQuery(loginMemberId, search, crudRecord,
+            itemsAsMyItems = itemsAsMyItems.reCreateQuery(loginMemberId, search, crudRecord,
                     fmsAutoComplete.getRoleMap(), fmsScriptRunner);
         }
         Document resultFilter = new Document(search);
@@ -702,10 +705,10 @@ public class MyField {
     }
 
     public void createSelectItems(Map filter, MyMap crudObject, RoleMap roleMap,
-            UserDetail userDetail, boolean ajax) {
+                                  UserDetail userDetail, boolean ajax) {
         if (this.itemsAsMyItems != null) {
             if (ajax) {
-                this.itemsAsMyItems.reCreateQuery(loginMemberId, filter,
+                this.itemsAsMyItems = this.itemsAsMyItems.reCreateQuery(loginMemberId, filter,
                         crudObject, roleMap, fmsScriptRunner);
             }
             this.selectItemsCurrent = fmsAutoComplete.createSelectItems(filter,
@@ -827,7 +830,7 @@ public class MyField {
         }
 
         public Builder(ObjectId loginMemberId, MyProject myProject,
-                Document docField, FmsScriptRunner fmsScriptRunner) {
+                       Document docField, FmsScriptRunner fmsScriptRunner) {
 
             this.myProject = myProject;
             this.myField = new MyField();
@@ -1093,7 +1096,7 @@ public class MyField {
         }
 
         public Builder maskItemsAsMyItems(String schemaVersion, Map filter,
-                boolean admin, Set<String> roles)
+                                          boolean admin, Set<String> roles)
                 throws FormConfigException {
 
             //if (MyForm.SCHEMA_VERSION_110.equals(schemaVersion)) {
@@ -1106,44 +1109,25 @@ public class MyField {
             return this;
         }
 
-        private Builder maskItemsAsMyItemsSchemaVersion110(String schemaVersion,
-                Map filter, boolean admin, Set<String> roles)
+        private Builder maskItemsAsMyItemsSchemaVersion110(String schemaVersion, Map filter, boolean admin,
+                                                           Set<String> roles)
                 throws FormConfigException {
 
+            Document itemsDoc = this.myField.dbo.get(ITEMS, Document.class);
+            if (itemsDoc == null) {
+                return this;
+            }
             try {
-
-                Document itemsDoc = this.myField.dbo.get(ITEMS, Document.class);
-
-                if (itemsDoc == null) {
-                    return this;
-                }
-                Object items;
-                if ((items = itemsDoc.get(CONFIG_ATTR_FIELD_ITEMS_LIST)) != null) {
-                    this.myField.itemsAsMyItems = new FmsFieldItems.Builder(items)
-                            .withItemType(FmsFieldItems.ItemType.list).
-                            withList().
-                            withParent(this.myField).
-                            build();
-                } else if ((items = itemsDoc.get(CONFIG_ATTR_FIELD_ITEMS_FUNC)) != null) {
-                    throw new UnsupportedOperationException(
-                            "maskItemsAsMyItems.code");
-                } else if ((items = itemsDoc.get(CONFIG_ATTR_REF)) != null) {
-                    this.myField.itemsAsMyItems = new FmsFieldItems.Builder(filter,
-                            items, myField, myField.fmsScriptRunner)
-                            .withQuerySchemaVersion110(
-                                    this.myField.loginMemberId, admin, roles).
-                            withSortSchemaVersion110(roles).
-                            withViewSchemaVersion110(roles).
-                            withHistoryQuerySchemaVersion110(
-                                    this.myField.loginMemberId, admin, roles).
-                            withItemType(FmsFieldItems.ItemType.doc).
-                            withLookup().
-                            withQueryProjection().
-                            withResultProjection().
-                            withParent(this.myField).
-                            build();
-                }
-
+                this.myField.itemsAsMyItems = new FmsFieldItems
+                        .Builder(filter, itemsDoc, myField, myField.fmsScriptRunner)
+                        .withQuerySchemaVersion110(this.myField.loginMemberId, admin, roles)
+                        .withSortSchemaVersion110(roles)
+                        .withViewSchemaVersion110(roles)
+                        .withHistoryQuerySchemaVersion110(this.myField.loginMemberId, admin, roles)
+                        .withLookup()
+                        .withQueryProjection()
+                        .withResultProjection()
+                        .build();
             } catch (Exception e) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("field : ");
@@ -1152,7 +1136,6 @@ public class MyField {
                 sb.append(e.getLocalizedMessage());
                 throw new FormConfigException(sb.toString(), e);
             }
-
             return this;
         }
 
@@ -1176,23 +1159,16 @@ public class MyField {
 
                 if (this.myField.getItemsAsMyItems() != null) {
 
-                    if (FmsFieldItems.ItemType.list.equals(this.myField.
-                            getItemsAsMyItems().
-                            getItemType())) {
+                    if (FmsFieldItems.ItemType.list.equals(this.myField.getItemsAsMyItems().getItemType())) {
                         Map<String, String> itemMap = new HashMap();
-                        for (SelectItem selectItem : (Iterable<? extends SelectItem>) this.myField.
-                                getItemsAsMyItems().
-                                getList()) {
+                        for (SelectItem selectItem : this.myField.getItemsAsMyItems().getListOfSelectItem()) {
                             itemMap.put(selectItem.getValue().
-                                    toString(),
+                                            toString(),
                                     selectItem.getLabel());
                         }
                         // ((SelectOneObjectIdConverter) this.myField.converterValue).setItemMap(itemMap);
                     }
-
-                    this.myField.viewKey = this.myField.getItemsAsMyItems().
-                            getView();
-
+                    this.myField.viewKey = this.myField.getItemsAsMyItems().getView();
                 }
 
             } else if (converterValue.getClass().
@@ -1233,7 +1209,7 @@ public class MyField {
             this.myField.style = (this.myField.dbo.get(STYLE) == null)
                     ? "white-space:nowrap;font-family: monospace;text-align:left;"
                     : "white-space:nowrap;".concat(this.myField.dbo.getString(
-                            STYLE));
+                    STYLE));
 
             Object datePattern = this.myField.dbo.get(MY_DATE_PATTERN);
 
@@ -1244,7 +1220,7 @@ public class MyField {
             this.myField.labelStyle = (this.myField.dbo.get(LABEL_STYLE) == null)
                     ? ""
                     : "".concat(this.myField.dbo.get(LABEL_STYLE).
-                            toString());
+                    toString());
 
             return this;
         }
@@ -1303,10 +1279,9 @@ public class MyField {
 
         public Builder cacheBsonConverter(boolean isBsonConverter) {
             if (isBsonConverter) {
-                List list = this.myField.getItemsAsMyItems().
-                        getList();
-                for (Object obj : list) {
-                    FmsCodeName fmsCodeName = new FmsCodeName((Map) obj);
+                List<Document> list = this.myField.getItemsAsMyItems().getList();
+                for (Document doc : list) {
+                    FmsCodeName fmsCodeName = new FmsCodeName(doc);
                     this.myField.getCacheBsonConverter().
                             put(fmsCodeName.
                                     getCode(), fmsCodeName.getName());

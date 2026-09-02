@@ -12,6 +12,7 @@ import jakarta.faces.model.SelectItem;
 import org.bson.Document;
 import org.bson.types.Code;
 import tr.org.tspb.constants.ProjectConstants;
+
 import static tr.org.tspb.constants.ProjectConstants.CODE;
 import static tr.org.tspb.constants.ProjectConstants.DIEZ;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR;
@@ -25,6 +26,7 @@ import static tr.org.tspb.constants.ProjectConstants.RETVAL;
 import static tr.org.tspb.constants.ProjectConstants.SELECT_PLEASE;
 import static tr.org.tspb.constants.ProjectConstants.SIMPLE_DATE_FORMAT__0;
 import static tr.org.tspb.constants.ProjectConstants.UPPER_NODES;
+
 import tr.org.tspb.converter.base.BsonConverter;
 import tr.org.tspb.converter.base.SelectOneDBObjectConverter;
 import tr.org.tspb.converter.base.SelectOneStringConverter;
@@ -56,10 +58,10 @@ public class OnFlyItems implements FmsAutoComplete {
     private final MongoDbUtilIntr mongoDbUtil;
 
     public OnFlyItems(MyProject myProject, MyField myField, Document docForm,
-            Map<String, Object> filter,
-            RoleMap roleMap,
-            UserDetail userDetail,
-            MongoDbUtilIntr mongoDbUtil) {
+                      Map<String, Object> filter,
+                      RoleMap roleMap,
+                      UserDetail userDetail,
+                      MongoDbUtilIntr mongoDbUtil) {
         this.myProject = myProject;
         this.myField = myField;
         this.docForm = docForm;
@@ -116,8 +118,8 @@ public class OnFlyItems implements FmsAutoComplete {
             List<Document> documents = mongoDbUtil.find(myField.
                     getItemsAsMyItems().
                     getDb(), myField.getItemsAsMyItems().
-                            getTable(), new Document(MONGO_ID, new Document(
-                            DOLAR_IN, listOfIds)));
+                    getTable(), new Document(MONGO_ID, new Document(
+                    DOLAR_IN, listOfIds)));
 
             if (!ComponentType.selectManyListbox.name().
                     equals(myField.getComponentType())) {
@@ -131,23 +133,14 @@ public class OnFlyItems implements FmsAutoComplete {
             return items;
         }
 
-        switch (myField.getItemsAsMyItems().
-                getItemType()) {
-            case doc:
-                items = documentToItems(myField.getItemsAsMyItems());
-                break;
-            case list:
-                items = listToItems(myField.getItemsAsMyItems().
-                        getList());
-                break;
-            case code:
-                items = codeToItems(myField.getItemsAsMyItems().
-                        getCode(), searchObject, roleMap);
-                break;
-            default:
-                throw new UnsupportedOperationException();
+        FmsFieldItems.ItemType itemType = myField.getItemsAsMyItems().getItemType();
 
-        }
+        items = switch (itemType) {
+            case doc, ref -> documentToItems(myField.getItemsAsMyItems());
+            case list -> listToItems(myField.getItemsAsMyItems().getList());
+            case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
+            default -> throw new RuntimeException("itemType : " + itemType + " is not supported.");
+        };
 
         myField.setSessionKey(MySessionStore.createSessionKey(
                 docForm.getString(ProjectConstants.PROJECT_KEY),
@@ -168,7 +161,7 @@ public class OnFlyItems implements FmsAutoComplete {
      */
     @Override
     public List<SelectItem> createSelectItemsHistory(Map searchObject,
-            MyMap crudObject) {
+                                                     MyMap crudObject) {
 
         boolean isMulti = ComponentType.selectOneMenu.name().
                 equals(myField.getComponentType());
@@ -198,8 +191,8 @@ public class OnFlyItems implements FmsAutoComplete {
             List<Document> documents = mongoDbUtil.find(myField.
                     getItemsAsMyItems().
                     getDb(), myField.getItemsAsMyItems().
-                            getTable(), new Document(MONGO_ID, new Document(
-                            DOLAR_IN, listOfIds)));
+                    getTable(), new Document(MONGO_ID, new Document(
+                    DOLAR_IN, listOfIds)));
 
             if (!ComponentType.selectManyListbox.name().
                     equals(myField.getComponentType())) {
@@ -213,28 +206,17 @@ public class OnFlyItems implements FmsAutoComplete {
             return items;
         }
 
-        switch (myField.getItemsAsMyItems().
-                getItemType()) {
-            case doc:
-                items = documentToItemsHistory(myField.getItemsAsMyItems());
-                break;
-            case list:
-                items = listToItems(myField.getItemsAsMyItems().
-                        getList());
-                break;
-            case code:
-                items = codeToItems(myField.getItemsAsMyItems().
-                        getCode(), searchObject, roleMap);
-                break;
-            default:
-                throw new UnsupportedOperationException();
-
-        }
+        items = switch (myField.getItemsAsMyItems().getItemType()) {
+            case doc, ref -> documentToItemsHistory(myField.getItemsAsMyItems());
+            case list -> listToItems(myField.getItemsAsMyItems().getList());
+            case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
+            default ->
+                    throw new RuntimeException("itemType : " + myField.getItemsAsMyItems().getItemType() + " is not supported.");
+        };
 
         myField.setSessionKey(MySessionStore.createSessionKey(
                 docForm.getString(ProjectConstants.PROJECT_KEY),
-                docForm.get(UPPER_NODES).
-                        toString(),
+                docForm.get(UPPER_NODES).toString(),
                 docForm.getString(FORM_KEY),
                 myField.getKey()));
 
@@ -243,7 +225,7 @@ public class OnFlyItems implements FmsAutoComplete {
     }
 
     private List<SelectItem> createAutoCompleteItems(Map autoCompleteSearch,
-            MyMap crudObject) {
+                                                     MyMap crudObject) {
 
         if (!myField.isAutoComplete()) {
             return new ArrayList<>();
@@ -265,8 +247,8 @@ public class OnFlyItems implements FmsAutoComplete {
             List<Document> docs = mongoDbUtil
                     .find(myField.getItemsAsMyItems().
                             getDb(), myField.getItemsAsMyItems().
-                                    getTable(), new Document(MONGO_ID,
-                                    new Document(DOLAR_IN, listOfIds)));
+                            getTable(), new Document(MONGO_ID,
+                            new Document(DOLAR_IN, listOfIds)));
 
             if (!ComponentType.selectManyListbox.name().
                     equals(myField.getComponentType())) {
@@ -305,7 +287,7 @@ public class OnFlyItems implements FmsAutoComplete {
     }
 
     private List<SelectItem> documentsToSelectItems(List<Document> documents,
-            List<String> viewObjectKeySet)
+                                                    List<String> viewObjectKeySet)
             throws MongoException {
 
         List<SelectItem> items = new ArrayList<>();
@@ -332,7 +314,7 @@ public class OnFlyItems implements FmsAutoComplete {
     }
 
     private List<SelectItem> codeToItems(Code itemsObject, Map searchObject,
-            RoleMap loginController) {
+                                         RoleMap loginController) {
 
         List<SelectItem> items = new ArrayList<>();
 
@@ -340,8 +322,8 @@ public class OnFlyItems implements FmsAutoComplete {
                 SELECT_PLEASE));
 
         Document commandResult = mongoDbUtil.runCommand(myField.getDbo().
-                get(FORM_DB).
-                toString(),
+                        get(FORM_DB).
+                        toString(),
                 itemsObject.getCode().
                         replace(DIEZ, DOLAR),
                 searchObject, loginController.keySet());
@@ -425,7 +407,7 @@ public class OnFlyItems implements FmsAutoComplete {
     }
 
     private List<SelectItem> documentToItems(Document query, FmsFieldItems myItems,
-            Number limit) throws MongoException {
+                                             Number limit) throws MongoException {
 
         List<SelectItem> items = new ArrayList<>();
 
@@ -439,18 +421,16 @@ public class OnFlyItems implements FmsAutoComplete {
 
         String db = myItems.getDb();
         String collectionName = myItems.getTable();
+        Document sortDocument = myItems.getSort();
 
-        if (myItems.getSort().
-                isEmpty()) {
+        if (sortDocument == null || sortDocument.isEmpty()) {
+            if (collectionName == null) {
+                throw new RuntimeException("config error : collectionName is required");
+            }
             List<Document> cursor = mongoDbUtil.find(db, collectionName, query,
                     null, limit);
-
             items.addAll(documentsToSelectItems(cursor, myItems.getView()));
-
-            if (myItems.getSort().
-                    isEmpty()) {
-                sortItemsByLabel(items);
-            }
+            sortItemsByLabel(items);
         } else {
             mongoDbUtil.createIndex(myItems);
             List<Document> documents = mongoDbUtil.find(db, collectionName,

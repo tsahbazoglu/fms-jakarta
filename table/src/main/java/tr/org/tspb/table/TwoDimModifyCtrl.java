@@ -1506,7 +1506,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
                     targetList = (List<String>) crudObject.get(fieldStructure.getKey());
                 }
 
-                List<String> sourceList = new ArrayList<>(fieldStructure.getItemsAsMyItems().getList());
+                List<String> sourceList = new ArrayList<>(fieldStructure.getItemsAsMyItems().getListOfString());
                 sourceList.removeAll(targetList);
 
                 crudObject.put(fieldStructure.getKey(), new DualListModel<String>(sourceList, targetList));

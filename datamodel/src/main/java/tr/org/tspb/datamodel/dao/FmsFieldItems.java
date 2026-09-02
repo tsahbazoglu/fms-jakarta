@@ -1,5 +1,6 @@
 package tr.org.tspb.datamodel.dao;
 
+import jakarta.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -14,6 +15,7 @@ import java.util.regex.Matcher;
 import org.bson.Document;
 import org.bson.types.Code;
 import org.bson.types.ObjectId;
+import org.xmlet.htmlapifaster.S;
 import tr.org.tspb.constants.ProjectConstants;
 import tr.org.tspb.datamodel.expected.FmsScriptRunner;
 import tr.org.tspb.constants.exceptions.FormConfigException;
@@ -22,27 +24,13 @@ import tr.org.tspb.datamodel.pojo.RoleMap;
 /**
  *
  * @author Telman Şahbazoğlu
+ * son of Alifettah Shahbazov (Şahbazoğlu)
  */
 public class FmsFieldItems {
-
-    public Code getQueryCode() {
-        return queryCode;
-    }
-
-    public enum ItemType {
-        list,
-        doc,
-        code,
-        listOfString
-    }
-
-    public enum ScriptEnv {
-        app,
-        mongo
-    }
-
+    public static final String ITEM_TABLE = "itemTable";
+    public static final String ITEM_DB = "db";
+    //
     private MyField myField;
-
     private ScriptEnv scriptEnv;
     private ItemType itemType;
     private MyLookup lookup;
@@ -59,7 +47,9 @@ public class FmsFieldItems {
     private Document queryProjection;
     private Document resultProjection;
     private Number limit;
-    private List list;
+    private List<Document> list;
+    private List<SelectItem> listOfSelectItem;
+    private List<String> listOfString;
     private Code code;
     private Code queryCode;
     private Document itemsDoc;
@@ -89,44 +79,38 @@ public class FmsFieldItems {
         return sb.toString(); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public static final String ITEM_TABLE = "itemTable";
-    public static final String ITEM_DB = "db";
+
+    public List<String> getListOfString() {
+        return listOfString;
+    }
+
+    public List<SelectItem> getListOfSelectItem() {
+        return listOfSelectItem;
+    }
 
     private FmsFieldItems() {
     }
 
-    private FmsFieldItems(Object items) {
-        Document dbo = (Document) items;
-
-        this.db = (String) dbo.get(FORM_DB);
-        if (db == null) {
-            throw new RuntimeException(myField.getKey().
-                    concat(" items.db is resolved to null"));
-        }
-
-        this.searchField = (String) dbo.get("searchField");
-        if (searchField == null) {
-            searchField = "fullTextSearch";
-        }
-
-        this.table = (String) dbo.get(ITEM_TABLE);
-        if (table == null) {
-            throw new RuntimeException("itemTable is resolved to null");
-        }
-
-        Object labelStringFormat_ = dbo.get(LABEL_STRING_FORMAT);
-
-        if (labelStringFormat_ != null) {
-            this.labelStringFormat = labelStringFormat_.toString();
-        }
-
-        this.limit = (Number) dbo.get(LIMIT);
-        this.locale = (String) dbo.get(LOCALE);
-
-        String script = (String) dbo.get("script");
-        if (script != null) {
-            this.scriptEnv = ScriptEnv.valueOf(script);
-        }
+    private FmsFieldItems(Builder builder) {
+        this.db = builder.db;
+        this.table = builder.table;
+        this.searchField = builder.searchField;
+        this.view = builder.view;
+        this.editQuery = builder.editQuery;
+        this.filterQuery = builder.filterQuery;
+        this.historyQuery = builder.historyQuery;
+        this.sort = builder.sort;
+        this.queryProjection = builder.queryProjection;
+        this.resultProjection = builder.resultProjection;
+        this.limit = builder.limit;
+        this.locale = builder.locale;
+        this.labelStringFormat = builder.labelStringFormat;
+        this.lookup = builder.lookup;
+        this.itemType = builder.itemType;
+        this.scriptEnv = builder.scriptEnv;
+        this.myField = builder.myField;
+        this.itemsDoc = builder.itemsDoc;
+        this.list = builder.list;
     }
 
     public Document getFilterQuery() {
@@ -149,7 +133,7 @@ public class FmsFieldItems {
         return itemType;
     }
 
-    public List getList() {
+    public List<Document> getList() {
         return list;
     }
 
@@ -200,88 +184,139 @@ public class FmsFieldItems {
         return lookup;
     }
 
+    public Code getQueryCode() {
+        return queryCode;
+    }
+
+
     public static class Builder {
+        private final Document itemsDoc;
+        private Document filterQuery;
+        private Document editQuery;
+        private Document historyQuery;
+        private String searchField;
+        private String table;
+        private String db;
+        private String locale;
+        private String labelStringFormat;
+        private MyField myField;
+        private ItemType itemType;
+        private List<Document> list;
+        private List<String> view;
+        private Number limit;
+        private ScriptEnv scriptEnv;
+        private Map filter;
+        private Document sort;
+        private Document queryProjection;
+        private Document resultProjection;
+        private MyLookup lookup;
+        private Code queryCode;
+        private FmsScriptRunner fmsScriptRunner;
+        private final Document defaultQueryProjection = new Document()
+                .append(CODE, true)
+                .append(ORDER, true)
+                .append(NAME, true);
 
-        private final FmsFieldItems myItems;
-        private final Map filter;
-        private final Object items;
-        private final FmsScriptRunner fmsScriptRunner;
-        private final Document defaultQueryProjection = new Document().append(
-                        CODE, true).
-                append(ORDER, true).
-                append(NAME, true);
-
-        public Builder(Object items) {
-            this.filter = null;
-            this.items = items;
-            this.fmsScriptRunner = null;
-            this.myItems = new FmsFieldItems();
-        }
-
-        public Builder(Map filter, Object items, MyField myField,
+        public Builder(Map filter,
+                       Document itemsDoc,
+                       MyField myField,
                        FmsScriptRunner fmsScriptRunner) {
+
+            String itemTypeAsString = itemsDoc.getString(TYPE);
+            if (itemTypeAsString == null) {
+                String errMsg = String.format("\"fields.%s.items.type\" resolved to empty.", myField.getKey());
+                throw new RuntimeException(errMsg);
+            }
+            this.itemType = ItemType.valueOf(itemTypeAsString);
             this.filter = filter;
-            this.items = items;
+            this.itemsDoc = itemsDoc;
             this.fmsScriptRunner = fmsScriptRunner;
-            this.myItems = new FmsFieldItems(items);
-            this.myItems.myField = myField;
+            this.myField = myField;
+            switch (itemType) {
+                case list -> {
+                    this.withList();
+                }
+                case func -> {
+                    throw new UnsupportedOperationException("maskItemsAsMyItems.code");
+                }
+                case ref -> {
+                    Document itemsDoc_ = itemsDoc.get(FIELD_ITEMS_REF, Document.class);
+                    this.db = itemsDoc_.getString(FORM_DB);
+                    this.searchField = itemsDoc_.getString("searchField");
+                    this.table = itemsDoc_.getString(ITEM_TABLE);
+                    this.limit = itemsDoc_.getInteger(LIMIT);
+                    this.locale = itemsDoc_.getString(LOCALE);
+                    String script = itemsDoc_.getString("script");
+                    Object labelStringFormat_ = itemsDoc_.get(LABEL_STRING_FORMAT);
+
+                    if (this.db == null) {
+                        String errMsg = String.format("\"fields.%s.items.ref.db\" resolved to empty.", myField.getKey());
+                        throw new RuntimeException(errMsg);
+                    }
+                    if (table == null) {
+                        String errMsg = String.format("\"fields.%s.items.ref.itemTable\" resolved to empty.", myField.getKey());
+                        throw new RuntimeException(errMsg);
+                    }
+                    if (searchField == null) {
+                        searchField = "fullTextSearch";
+                    }
+                    if (labelStringFormat_ != null) {
+                        this.labelStringFormat = labelStringFormat_.toString();
+                    }
+                    if (script != null) {
+                        this.scriptEnv = ScriptEnv.valueOf(script);
+                    }
+                }
+            }
         }
 
         public Builder withItemType(ItemType itemType) {
-            this.myItems.itemType = itemType;
+            this.itemType = itemType;
             return this;
         }
 
         public Builder withLookup() {
-            if (items instanceof Document) {
-                Document lookup = ((Document) items).get("lookup",
+            if (itemsDoc instanceof Document) {
+                Document lookup = ((Document) itemsDoc).get("lookup",
                         Document.class);
                 if (lookup != null) {
-                    this.myItems.lookup = new MyLookup(lookup);
+                    this.lookup = new MyLookup(lookup);
                 }
-            }
-            return this;
-        }
-
-        public Builder withSort(Set<String> roleSet) {
-            Document dbo = (Document) items;
-            Object sort_ = dbo.get(SORT);
-
-            if (sort_ instanceof Code) {
-                Code codeSorter = (Code) sort_;
-                codeSorter = new Code(codeSorter.getCode().
-                        replace(DIEZ, DOLAR));
-                this.myItems.sort = (Document) fmsScriptRunner
-                        .runCommand(this.myItems.getDb(), codeSorter.getCode(),
-                                filter, roleSet).
-                        get(RETVAL);
-            } else if (sort_ instanceof Document) {
-                this.myItems.sort = (Document) sort_;
             }
             return this;
         }
 
         public Builder withSortSchemaVersion110(Set<String> roleSet) {
 
-            Document dbo = (Document) items;
-            Document sort = dbo.get(SORT, Document.class);
+            if (this.itemsDoc == null) {
+                return this;
+            }
+            if (!ItemType.ref.equals(this.itemType)) {
+                return this;
+            }
 
-            this.myItems.sort = new Document();
+            Document refDocument = this.itemsDoc.get(FIELD_ITEMS_REF, Document.class);
 
-            if (sort.get("func") != null) {
+            Document sortDocument = refDocument.get(SORT, Document.class);
+
+            if (sortDocument == null) {
+                return this;
+            }
+
+            this.sort = new Document();
+
+            if (sortDocument.get("func") != null) {
                 try {
-                    this.myItems.sort = (Document) fmsScriptRunner
-                            .runCommand(this.myItems.db, sort.get("func",
+                    this.sort = (Document) fmsScriptRunner
+                            .runCommand(this.db, sortDocument.get("func",
                                             String.class).
                                     replace(DIEZ, DOLAR), roleSet).
                             get(RETVAL);
                 } catch (Exception exception) {
                     //nothing
                 }
-            } else if (sort.get(CONFIG_ATTR_FIELD_ITEMS_SORT_LIST) != null) {
-                for (Document d : sort.
-                        getList(CONFIG_ATTR_FIELD_ITEMS_SORT_LIST,
-                                Document.class)) {
+            } else if (sortDocument.get(CONFIG_ATTR_FIELD_ITEMS_SORT_LIST) != null) {
+                for (Document d : sortDocument.getList(CONFIG_ATTR_FIELD_ITEMS_SORT_LIST, Document.class)) {
 
                     List<String> roles_ = d.getList("roles", String.class);
 
@@ -296,9 +331,9 @@ public class FmsFieldItems {
                             continue;
                         }
                     }
-
-                    this.myItems.sort.put(d.get("key", String.class), d.get(
-                            "value", Integer.class));
+                    this.sort.put(
+                            d.get("key", String.class),
+                            d.get("value", Integer.class));
                 }
             }
 
@@ -307,18 +342,21 @@ public class FmsFieldItems {
 
         public Builder withQuerySchemaVersion110(ObjectId loginMemberId,
                                                  boolean admin, Set<String> roles) {
-            this.myItems.itemsDoc = (Document) items;
-            this.myItems.createEditQuery(loginMemberId, admin, filter,
+            this.createEditQuery(loginMemberId, admin, filter,
                     fmsScriptRunner, roles);
-            this.myItems.createFilterQuery(loginMemberId, admin, filter,
+            return this;
+        }
+
+        public Builder withFilterQuery(ObjectId loginMemberId,
+                                       boolean admin, Set<String> roles) {
+            this.createFilterQuery(loginMemberId, admin, filter,
                     fmsScriptRunner, roles);
             return this;
         }
 
         public Builder withHistoryQuerySchemaVersion110(ObjectId loginMemberId,
                                                         boolean admin, Set<String> roles) {
-            this.myItems.itemsDoc = (Document) items;
-            this.myItems.createHistoryQuery(loginMemberId, admin, filter,
+            this.createHistoryQuery(loginMemberId, admin, filter,
                     fmsScriptRunner, roles);
             return this;
         }
@@ -326,13 +364,19 @@ public class FmsFieldItems {
         public Builder withViewSchemaVersion110(Set<String> roleSet) throws
                 FormConfigException {
 
+            if (this.itemsDoc == null) {
+                return this;
+            }
+            if (!ItemType.ref.equals(this.itemType)) {
+                return this;
+            }
+
+            Document refDocument = this.itemsDoc.get(FIELD_ITEMS_REF, Document.class);
+
             try {
+                List<Document> viewList = refDocument.get(VIEW, List.class);
 
-                Document dbo = (Document) items;
-
-                List<Document> viewList = dbo.get(VIEW, List.class);
-
-                this.myItems.view = new ArrayList<>();
+                this.view = new ArrayList<>();
 
                 if (viewList != null) {
 
@@ -360,10 +404,10 @@ public class FmsFieldItems {
                     });
 
                     for (ViewOrder viewOrder : list) {
-                        this.myItems.view.add(viewOrder.key);
+                        this.view.add(viewOrder.key);
                     }
                 } else {
-                    this.myItems.view.add("_id");
+                    this.view.add("_id");
                 }
             } catch (Exception ex) {
                 throw new FormConfigException("failed on getting items view", ex);
@@ -373,35 +417,279 @@ public class FmsFieldItems {
         }
 
         public Builder withQueryProjection() {
-            Document dbo = (Document) items;
-            this.myItems.queryProjection = dbo.get("queryProjection",
+            if (this.itemsDoc == null) {
+                return this;
+            }
+            if (!ItemType.ref.equals(this.itemType)) {
+                return this;
+            }
+
+            Document refDocument = this.itemsDoc.get(FIELD_ITEMS_REF, Document.class);
+
+
+            this.queryProjection = refDocument.get("queryProjection",
                     Document.class);
-            if (this.myItems.queryProjection == null) {
-                this.myItems.queryProjection = defaultQueryProjection;
+            if (this.queryProjection == null) {
+                this.queryProjection = defaultQueryProjection;
             }
             return this;
         }
 
         public Builder withResultProjection() {
-            Document dbo = (Document) items;
-            this.myItems.resultProjection = dbo.get("resultProjection",
+            if (this.itemsDoc == null) {
+                return this;
+            }
+            if (!ItemType.ref.equals(this.itemType)) {
+                return this;
+            }
+            Document refDocument = this.itemsDoc.get(FIELD_ITEMS_REF, Document.class);
+            this.resultProjection = refDocument.get("resultProjection",
                     Document.class);
             return this;
         }
 
         public Builder withList() {
-            this.myItems.list = (List) items;
+            this.list = this.itemsDoc.getList("list", Document.class);
             return this;
         }
 
         public Builder withParent(MyField myField) {
-            this.myItems.myField = myField;
+            this.myField = myField;
             return this;
         }
 
         public FmsFieldItems build() {
-            return this.myItems;
+            return new FmsFieldItems(this);
         }
+
+        private void createFilterQuery(ObjectId loginMemberId, boolean admin,
+                                       Map filter, FmsScriptRunner fmsScriptRunner, Set<String> roles)
+                throws RuntimeException {
+
+            if (itemsDoc == null) {
+                return;
+            }
+
+            Document q = itemsDoc.get(USER_FILTER_QUERY, Document.class);
+
+            if (q == null) {
+                q = itemsDoc.get(QUERY, Document.class);
+            }
+
+            if (admin && itemsDoc.get(ADMIN_QUERY) != null) {
+                q = itemsDoc.get(ADMIN_QUERY, Document.class);
+            }
+
+            List<Document> listOfFilter = q.get("list", List.class);
+
+            this.filterQuery = handleListOfQuery(listOfFilter, filter,
+                    fmsScriptRunner, loginMemberId, roles);
+
+        }
+
+        private void createEditQuery(ObjectId loginMemberId, boolean admin,
+                                     Map filter,
+                                     FmsScriptRunner fmsScriptRunner, Set<String> roles) throws
+                RuntimeException {
+
+            if (itemsDoc == null) {
+                return;
+            }
+            if (!ItemType.ref.equals(this.itemType)) {
+                return;
+            }
+            Document refDocument = itemsDoc.get(FIELD_ITEMS_REF, Document.class);
+
+            Document query_ = refDocument.get(QUERY, Document.class);
+            if (admin && refDocument.get(ADMIN_QUERY) != null) {
+                query_ = refDocument.get(ADMIN_QUERY, Document.class);
+            }
+
+            this.editQuery = new Document();
+
+            String func = query_.get("func", String.class);
+            List<Document> listOfFilter = query_.get("list", List.class);
+
+            if (func != null) {
+                this.queryCode = new Code(func);
+                try {
+                    this.editQuery = (Document) fmsScriptRunner
+                            .runCommand(this.db, this.queryCode.getCode(),
+                                    filter).
+                            get(RETVAL);
+                } catch (Exception exception) {
+                    this.editQuery = new Document("fms_item_query_code_error",
+                            "fms_item_query_code_error");
+                }
+            } else if (listOfFilter != null) {
+                this.editQuery = handleListOfQuery(listOfFilter, filter,
+                        fmsScriptRunner, loginMemberId, roles);
+            }
+
+        }
+
+        private void createHistoryQuery(ObjectId loginMemberId, boolean admin,
+                                        Map filter,
+                                        FmsScriptRunner fmsScriptRunner, Set<String> roles)
+                throws RuntimeException {
+            if (itemsDoc == null) {
+                return;
+            }
+            if (!ItemType.ref.equals(this.itemType)) {
+                return;
+            }
+            Document refDocument = itemsDoc.get(FIELD_ITEMS_REF, Document.class);
+            Document historyQuery_ = refDocument.get(HISTORY_QUERY, Document.class);
+            if (historyQuery_ == null) {
+                historyQuery_ = refDocument.get(QUERY, Document.class);
+            }
+            if (admin && refDocument.get(ADMIN_QUERY) != null) {
+                historyQuery_ = refDocument.get(ADMIN_QUERY, Document.class);
+            }
+            this.historyQuery = new Document();
+            String func = historyQuery_.get("func", String.class);
+            List<Document> listOfFilter = historyQuery_.get("list", List.class);
+            if (func != null) {
+                try {
+                    this.historyQuery = (Document) fmsScriptRunner
+                            .runCommand(this.db, func, filter).
+                            get(RETVAL);
+                } catch (Exception exception) {
+                    this.historyQuery = new Document("fms_item_query_code_error",
+                            "fms_item_query_code_error");
+                }
+            } else if (listOfFilter != null) {
+                this.historyQuery = handleListOfQuery(listOfFilter, filter,
+                        fmsScriptRunner, loginMemberId, roles);
+            }
+        }
+
+        private Document handleListOfQuery(List<Document> listOfFilter, Map filter,
+                                           FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
+                                           Set<String> roles) throws RuntimeException {
+
+            Document result = new Document();
+
+            for (Document d : listOfFilter) {
+
+                List<String> roles_ = d.getList("roles", String.class);
+
+                if (roles_ != null) {
+                    boolean access = false;
+                    for (String schemaRole : roles_) {
+                        if (roles.contains(schemaRole)) {
+                            access = true;
+                        }
+                    }
+                    if (!access) {
+                        continue;
+                    }
+                }
+
+                String key = d.get("key", String.class);
+
+                Document refValue = d.get("ref-value", Document.class);
+                Document inRef = d.get("in-ref", Document.class);
+                String fmsValue = d.get(REPLACEABLE_KEY_FMS_VALUE, String.class);
+                String strValue = d.get("string-value", String.class);
+                Number numberValue = d.get("number-value", Number.class);
+                List<String> listOfString = d.getList("array-value", String.class);
+                List<Number> listOfNumber = d.getList("array-number", Number.class);
+
+                if (refValue != null) {
+                    result.put(key,
+                            new TagItemsQueryRef(refValue, filter, fmsScriptRunner,
+                                    loginMemberId,
+                                    null, null).value());
+                } else if (inRef != null) {
+                    result.put(key, new Document(DOLAR_IN,
+                            new TagItemsQueryRef(inRef, filter, fmsScriptRunner,
+                                    loginMemberId,
+                                    myField, null).values()));
+                } else if (fmsValue != null) {
+                    Matcher m;
+                    if ((m = pattern_fms_crud.matcher(fmsValue)).find()) {
+//                    Object crudValue = crud.get(m.group(1));
+//                    result.put(key, crudValue == null ? "no result" : crudValue);
+                    } else if ((m = pattern_fms_filter.matcher(fmsValue)).find()) {
+                        result.put(key, filter == null ? null : filter.get(m.
+                                group(1)));
+                    } else {
+                        switch (fmsValue) {
+                            case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_PERIOD:
+                                result.put(key,
+                                        filter.get("period") == null ? "no result" : filter.
+                                                get("period"));
+                                break;
+                            case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_TEMPLATE:
+                                result.put(key,
+                                        filter.get("template") == null ? "no result" : filter.
+                                                get("template"));
+                                break;
+                            case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_ID:
+                                result.put(key,
+                                        loginMemberId == null ? "no result" : loginMemberId);
+                                break;
+                            case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_TYPE:
+                                Document user = fmsScriptRunner
+                                        .findOne("uysdb", "common", new Document(
+                                                "_id", loginMemberId));
+                                result.
+                                        put(key, user.
+                                                get("memberType", String.class));
+                                break;
+                            default:
+                                throw new RuntimeException(
+                                        "could not find replaceble word");
+                        }
+                    }
+                } else if (strValue != null) {
+                    result.put(key, strValue);
+                } else if (numberValue != null) {
+                    result.put(key, numberValue);
+                } else if (listOfString != null) {
+                    result.put(key, new Document(DOLAR_IN, listOfString));
+                } else if (listOfNumber != null) {
+                    result.put(key, new Document(DOLAR_IN, listOfNumber));
+                } else {
+
+                    String type = d.get("type", String.class);
+                    if (type == null) {
+                        type = "string";
+                    }
+                    switch (type) {
+                        case "number":
+                            result.put(key, d.get(VALUE, Number.class));
+                            break;
+                        case "string":
+                            result.put(key, d.get(VALUE, String.class).
+                                    replaceAll(DIEZ, DOLAR));
+                            break;
+                        case "in":
+                            result.put(key, new Document(DOLAR_IN, Arrays.asList(d.
+                                    get(VALUE, String.class).
+                                    replaceAll(DIEZ, DOLAR).
+                                    split(","))));
+                            break;
+                        case "ne":
+                            result.put(key, new Document(DOLAR_NE, d.get(VALUE,
+                                            String.class).
+                                    replaceAll(DIEZ, DOLAR)));
+                            break;
+                        case "regex":
+                            result.put(key, new Document(DOLAR_REGEX, d.get(VALUE,
+                                            String.class).
+                                    replaceAll(DIEZ, DOLAR)));
+                            break;
+                        default:
+                            throw new UnsupportedOperationException(
+                                    "field.items.query.type is not supported  : " + type);
+                    }
+                }
+            }
+            return result;
+        }
+
 
         public Boolean isUserInRole(Set<String> myroles,
                                     Object commaSplittedRoles) {
@@ -443,9 +731,9 @@ public class FmsFieldItems {
         this.editQuery = query;
     }
 
-    public void reCreateQuery(ObjectId loginMemberId, Map filter,
-                              MyMap crudObject, RoleMap roleMap,
-                              FmsScriptRunner fmsScriptRunner) {
+    public FmsFieldItems reCreateQuery(ObjectId loginMemberId, Map filter,
+                                       MyMap crudObject, RoleMap roleMap,
+                                       FmsScriptRunner fmsScriptRunner) {
         if (queryCode != null) {
             Document tempDbObject = new Document(crudObject);
             tempDbObject.remove(INODE); // INODE is not serialized
@@ -462,238 +750,31 @@ public class FmsFieldItems {
             } else {
                 this.editQuery = new Document("noresult", "noresult");
             }
+            throw new UnsupportedOperationException("Query code is not supported");
         } else {
             boolean admin = roleMap.isUserInRole(myField.getMyForm().
                     getMyProject().
                     getAdminAndViewerRole());
-            createEditQuery(loginMemberId, admin, filter, fmsScriptRunner,
-                    roleMap.keySet());
-            createFilterQuery(loginMemberId, admin, filter, fmsScriptRunner,
-                    roleMap.keySet());
+            return new Builder(filter, this.itemsDoc, this.myField, fmsScriptRunner)
+                    .withQuerySchemaVersion110(loginMemberId, admin, roleMap.keySet())
+                    .withFilterQuery(loginMemberId, admin, roleMap.keySet())
+                    .withSortSchemaVersion110(roleMap.keySet())
+                    .build();
         }
     }
 
-
-    private void createFilterQuery(ObjectId loginMemberId, boolean admin,
-                                   Map filter, FmsScriptRunner fmsScriptRunner, Set<String> roles)
-            throws RuntimeException {
-
-        if (itemsDoc == null) {
-            return;
-        }
-
-        Document q = itemsDoc.get(USER_FILTER_QUERY, Document.class);
-
-        if (q == null) {
-            q = itemsDoc.get(QUERY, Document.class);
-        }
-
-        if (admin && itemsDoc.get(ADMIN_QUERY) != null) {
-            q = itemsDoc.get(ADMIN_QUERY, Document.class);
-        }
-
-        List<Document> listOfFilter = q.get("list", List.class);
-
-        this.filterQuery = handleListOfQuery(listOfFilter, filter,
-                fmsScriptRunner, loginMemberId, roles);
-
+    public enum ItemType {
+        list,
+        doc,
+        code,
+        listOfString,
+        ref,
+        func
     }
 
-    private void createEditQuery(ObjectId loginMemberId, boolean admin,
-                                 Map filter,
-                                 FmsScriptRunner fmsScriptRunner, Set<String> roles) throws
-            RuntimeException {
-
-        if (itemsDoc != null) {
-
-            Document query_ = itemsDoc.get(QUERY, Document.class);
-            if (admin && itemsDoc.get(ADMIN_QUERY) != null) {
-                query_ = itemsDoc.get(ADMIN_QUERY, Document.class);
-            }
-
-            this.editQuery = new Document();
-
-            String func = query_.get("func", String.class);
-            List<Document> listOfFilter = query_.get("list", List.class);
-
-            if (func != null) {
-                this.queryCode = new Code(func);
-                try {
-                    this.editQuery = (Document) fmsScriptRunner
-                            .runCommand(this.db, this.queryCode.getCode(),
-                                    filter).
-                            get(RETVAL);
-                } catch (Exception exception) {
-                    this.editQuery = new Document("fms_item_query_code_error",
-                            "fms_item_query_code_error");
-                }
-            } else if (listOfFilter != null) {
-                this.editQuery.putAll(handleListOfQuery(listOfFilter, filter,
-                        fmsScriptRunner, loginMemberId, roles));
-            }
-        }
-    }
-
-    private void createHistoryQuery(ObjectId loginMemberId, boolean admin,
-                                    Map filter,
-                                    FmsScriptRunner fmsScriptRunner, Set<String> roles)
-            throws RuntimeException {
-
-        Document historyQuery_ = itemsDoc.get(HISTORY_QUERY, Document.class);
-        if (admin && itemsDoc.get(ADMIN_QUERY) != null) {
-            historyQuery_ = itemsDoc.get(ADMIN_QUERY, Document.class);
-        }
-
-        if (historyQuery_ == null) {
-            this.historyQuery = this.editQuery;
-            return;
-        }
-
-        this.historyQuery = new Document();
-
-        String func = historyQuery_.get("func", String.class);
-        List<Document> listOfFilter = historyQuery_.get("list", List.class);
-
-        if (func != null) {
-            try {
-                this.historyQuery = (Document) fmsScriptRunner
-                        .runCommand(this.db, func, filter).
-                        get(RETVAL);
-            } catch (Exception exception) {
-                this.historyQuery = new Document("fms_item_query_code_error",
-                        "fms_item_query_code_error");
-            }
-        } else if (listOfFilter != null) {
-            this.historyQuery.putAll(handleListOfQuery(listOfFilter, filter,
-                    fmsScriptRunner, loginMemberId, roles));
-        }
-
-    }
-
-    private Document handleListOfQuery(List<Document> listOfFilter, Map filter,
-                                       FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
-                                       Set<String> roles) throws RuntimeException {
-
-        Document result = new Document();
-
-        for (Document d : listOfFilter) {
-
-            List<String> roles_ = d.getList("roles", String.class);
-
-            if (roles_ != null) {
-                boolean access = false;
-                for (String schemaRole : roles_) {
-                    if (roles.contains(schemaRole)) {
-                        access = true;
-                    }
-                }
-                if (!access) {
-                    continue;
-                }
-            }
-
-            String key = d.get("key", String.class);
-
-            Document refValue = d.get("ref-value", Document.class);
-            Document inRef = d.get("in-ref", Document.class);
-            String fmsValue = d.get(REPLACEABLE_KEY_FMS_VALUE, String.class);
-            String strValue = d.get("string-value", String.class);
-            Number numberValue = d.get("number-value", Number.class);
-            List<String> listOfString = d.getList("array-value", String.class);
-            List<Number> listOfNumber = d.getList("array-number", Number.class);
-
-            if (refValue != null) {
-                result.put(key,
-                        new TagItemsQueryRef(refValue, filter, fmsScriptRunner,
-                                loginMemberId,
-                                null, null).value());
-            } else if (inRef != null) {
-                result.put(key, new Document(DOLAR_IN,
-                        new TagItemsQueryRef(inRef, filter, fmsScriptRunner,
-                                loginMemberId,
-                                myField, null).values()));
-            } else if (fmsValue != null) {
-                Matcher m;
-                if ((m = pattern_fms_crud.matcher(fmsValue)).find()) {
-//                    Object crudValue = crud.get(m.group(1));
-//                    result.put(key, crudValue == null ? "no result" : crudValue);
-                } else if ((m = pattern_fms_filter.matcher(fmsValue)).find()) {
-                    result.put(key, filter == null ? null : filter.get(m.
-                            group(1)));
-                } else {
-                    switch (fmsValue) {
-                        case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_PERIOD:
-                            result.put(key,
-                                    filter.get("period") == null ? "no result" : filter.
-                                            get("period"));
-                            break;
-                        case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_TEMPLATE:
-                            result.put(key,
-                                    filter.get("template") == null ? "no result" : filter.
-                                            get("template"));
-                            break;
-                        case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_ID:
-                            result.put(key,
-                                    loginMemberId == null ? "no result" : loginMemberId);
-                            break;
-                        case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_TYPE:
-                            Document user = fmsScriptRunner
-                                    .findOne("uysdb", "common", new Document(
-                                            "_id", loginMemberId));
-                            result.
-                                    put(key, user.
-                                            get("memberType", String.class));
-                            break;
-                        default:
-                            throw new RuntimeException(
-                                    "could not find replaceble word");
-                    }
-                }
-            } else if (strValue != null) {
-                result.put(key, strValue);
-            } else if (numberValue != null) {
-                result.put(key, numberValue);
-            } else if (listOfString != null) {
-                result.put(key, new Document(DOLAR_IN, listOfString));
-            } else if (listOfNumber != null) {
-                result.put(key, new Document(DOLAR_IN, listOfNumber));
-            } else {
-
-                String type = d.get("type", String.class);
-                if (type == null) {
-                    type = "string";
-                }
-                switch (type) {
-                    case "number":
-                        result.put(key, d.get(VALUE, Number.class));
-                        break;
-                    case "string":
-                        result.put(key, d.get(VALUE, String.class).
-                                replaceAll(DIEZ, DOLAR));
-                        break;
-                    case "in":
-                        result.put(key, new Document(DOLAR_IN, Arrays.asList(d.
-                                get(VALUE, String.class).
-                                replaceAll(DIEZ, DOLAR).
-                                split(","))));
-                        break;
-                    case "ne":
-                        result.put(key, new Document(DOLAR_NE, d.get(VALUE,
-                                        String.class).
-                                replaceAll(DIEZ, DOLAR)));
-                        break;
-                    case "regex":
-                        result.put(key, new Document(DOLAR_REGEX, d.get(VALUE,
-                                        String.class).
-                                replaceAll(DIEZ, DOLAR)));
-                        break;
-                    default:
-                        throw new UnsupportedOperationException(
-                                "field.items.query.type is not supported  : " + type);
-                }
-            }
-        }
-        return result;
+    public enum ScriptEnv {
+        app,
+        mongo
     }
 
 }
