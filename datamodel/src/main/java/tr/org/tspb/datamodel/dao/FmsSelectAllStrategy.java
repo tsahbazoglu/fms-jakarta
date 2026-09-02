@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import tr.org.tspb.constants.ProjectConstants;
 import tr.org.tspb.datamodel.expected.FmsScriptRunner;
 import tr.org.tspb.datamodel.tags.FmsQuery;
 
@@ -42,7 +43,7 @@ public class FmsSelectAllStrategy {
     private List listOfObjectIds;
 
     public FmsSelectAllStrategy(FmsScriptRunner fmsScriptRunner,
-            Document selectAllQuery, ObjectId loginMemberId, Map filter) {
+                                Document selectAllQuery, ObjectId loginMemberId, Map filter) {
 
         String strategy = selectAllQuery.getString("strategy");
         String db = selectAllQuery.getString("db");
@@ -51,10 +52,10 @@ public class FmsSelectAllStrategy {
 
         switch (strategy) {
             case "QUERY":
-                List<Document> queryList = selectAllQuery.get("query",
-                        Document.class).
-                        getList("list", Document.class);
-                Document query = FmsQuery.buildListQuery(queryList, filter,
+                List<Document> listOfQueries = selectAllQuery
+                        .get(ProjectConstants.QUERY, Document.class)
+                        .getList("list", Document.class);
+                Document query = FmsQuery.buildListQuery(listOfQueries, filter,
                         fmsScriptRunner, loginMemberId);
                 this.listOfObjectIds = fmsScriptRunner.findObjectIds(db, table,
                         query, projection);

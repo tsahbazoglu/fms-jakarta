@@ -14,6 +14,7 @@ import org.bson.Document;
 import org.bson.types.Code;
 import org.bson.types.ObjectId;
 import tr.org.tspb.constants.ProjectConstants;
+
 import static tr.org.tspb.constants.ProjectConstants.COMMA;
 import static tr.org.tspb.constants.ProjectConstants.CREATE_SESSIONID;
 import static tr.org.tspb.constants.ProjectConstants.DEFAULT_QUERY;
@@ -32,6 +33,7 @@ import static tr.org.tspb.constants.ProjectConstants.MONGO_LDAP_UID;
 import static tr.org.tspb.constants.ProjectConstants.ON_USER_ROLE;
 import static tr.org.tspb.constants.ProjectConstants.QUERY;
 import static tr.org.tspb.constants.ProjectConstants.RETVAL;
+
 import tr.org.tspb.converter.base.BsonConverter;
 import tr.org.tspb.converter.base.NumberConverter;
 import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
@@ -57,7 +59,7 @@ public class FilterUtil {
     private static final FilterUtil instance = new FilterUtil();
 
     public static FilterUtil instance(MongoDbUtilIntr mongoDbUtil,
-            OgmCreatorIntr ogmCreator) {
+                                      OgmCreatorIntr ogmCreator) {
         instance.mongoDbUtil = mongoDbUtil;
         instance.ogmCreator = ogmCreator;
         return instance;
@@ -67,7 +69,7 @@ public class FilterUtil {
     private OgmCreatorIntr ogmCreator;
 
     public List<MyField> createCurrentQuickFilters(FmsForm myForm,
-            RoleMap roleMap, UserDetail userDetail, Document filter) {
+                                                   RoleMap roleMap, UserDetail userDetail, Document filter) {
 
         List<MyField> filterFields = new ArrayList<>();
 
@@ -85,7 +87,7 @@ public class FilterUtil {
                 if (roleMap.isUserInRole(accesscontrol)
                         || roleMap.isUserInRole(visibleValue)
                         || roleMap.isUserInRole(myForm.getMyProject().
-                                getAdminAndViewerRole())) {
+                        getAdminAndViewerRole())) {
                     myField.createSelectItems(filter,
                             ogmCreator.getCrudObject(),
                             roleMap,
@@ -103,7 +105,7 @@ public class FilterUtil {
     }
 
     public List<MyField> createCurrentFilters(FmsForm myForm, RoleMap roleMap,
-            UserDetail userDetail, Document filter) {
+                                              UserDetail userDetail, Document filter) {
 
         List<MyField> filterFields = new ArrayList<>();
 
@@ -121,7 +123,7 @@ public class FilterUtil {
                 if (roleMap.isUserInRole(accesscontrol)
                         || roleMap.isUserInRole(visibleValue)
                         || roleMap.isUserInRole(myForm.getMyProject().
-                                getAdminAndViewerRole())) {
+                        getAdminAndViewerRole())) {
                     myField.createSelectItems(filter,
                             ogmCreator.getCrudObject(),
                             roleMap,
@@ -139,8 +141,8 @@ public class FilterUtil {
     }
 
     public Document createTableHistory(FmsForm selectedForm,
-            Map<String, Object> baseCurrent, Map<String, Object> guiHistory,
-            boolean admin, UserDetail userDetail, RoleMap roleMap)
+                                       Map<String, Object> baseCurrent, Map<String, Object> guiHistory,
+                                       boolean admin, UserDetail userDetail, RoleMap roleMap)
             throws NullNotExpectedException {
 
         Document filter = new Document();
@@ -265,8 +267,8 @@ public class FilterUtil {
                         if (roleQuery == null) {
                             throw new NullNotExpectedException(
                                     "</br>You are not a priveleged user for this query or you a not found in ths project database.</br>"
-                                    + "It seems the related module config file is not set properly.</br>"
-                                    + "Please contact with module architect.");
+                                            + "It seems the related module config file is not set properly.</br>"
+                                            + "Please contact with module architect.");
                         }
                         priority = rolePriority;
                         query = mongoDbUtil.
@@ -281,8 +283,8 @@ public class FilterUtil {
                     } else {
                         throw new NullNotExpectedException(
                                 "</br>You are not a priveleged user for this query or you a not found in ths project database.</br>"
-                                + "It seems the related module config file is not set properly.</br>"
-                                + "Please contact with module architect.");
+                                        + "It seems the related module config file is not set properly.</br>"
+                                        + "Please contact with module architect.");
                     }
                 }
                 modifiedSearchObject.putAll(query);
@@ -299,7 +301,7 @@ public class FilterUtil {
     }
 
     private void selectAll(FmsForm selectedForm, Document filter,
-            String filterKey, boolean admin) {
+                           String filterKey, boolean admin) {
 
         if (admin) {
             filter.remove(filterKey);
@@ -313,8 +315,7 @@ public class FilterUtil {
             return;
         }
 
-        List selectAllValues = selectedForm.getField(filterKey).
-                getSelectAllValues();
+        List selectAllValues = myField.getSelectAllValues();
 
         if (selectAllValues == null) {
             filter.remove(filterKey);
@@ -326,8 +327,8 @@ public class FilterUtil {
     }
 
     public Document createTableHistoryScemaVersion110(FmsForm selectedForm,
-            Map<String, Object> baseCurrent, Map<String, Object> guiHistory,
-            boolean admin, UserDetail userDetail, RoleMap roleMap)
+                                                      Map<String, Object> baseCurrent, Map<String, Object> guiHistory,
+                                                      boolean admin, UserDetail userDetail, RoleMap roleMap)
             throws NullNotExpectedException {
 
         Document filter = new Document();
@@ -431,8 +432,8 @@ public class FilterUtil {
     }
 
     public Document createTableFilter(FmsForm myForm, Document baseCurrent,
-            Map<String, Object> guiCurrent,
-            boolean admin, UserDetail userDetail, RoleMap roleMap)
+                                      Map<String, Object> guiCurrent,
+                                      boolean admin, UserDetail userDetail, RoleMap roleMap)
             throws NullNotExpectedException {
 
         Document filter = new Document();
@@ -450,7 +451,7 @@ public class FilterUtil {
         }
 
         for (Iterator<String> iterator = filter.keySet().
-                iterator(); iterator.hasNext();) {
+                iterator(); iterator.hasNext(); ) {
             String key = iterator.next();
             Object value = filter.get(key);
             if ((value == null || SelectOneObjectIdConverter.NULL_VALUE.equals(
@@ -517,7 +518,7 @@ public class FilterUtil {
                     || "null".equals(filterValue)
                     || SelectOneStringConverter.NULL_VALUE.equals(filterValue)
                     || filterValue instanceof String && ((String) filterValue).
-                            isEmpty()) {
+                    isEmpty()) {
                 continue;
             }
 
@@ -589,8 +590,8 @@ public class FilterUtil {
                         if (roleQuery == null) {
                             throw new NullNotExpectedException(
                                     "</br>You are not a priveleged user for this query or you a not found in ths project database.</br>"
-                                    + "It seems the related module config file is not set properly.</br>"
-                                    + "Please contact with module architect.");
+                                            + "It seems the related module config file is not set properly.</br>"
+                                            + "Please contact with module architect.");
                         }
                         priority = rolePriority;
                         query = mongoDbUtil.
@@ -605,8 +606,8 @@ public class FilterUtil {
                     } else {
                         throw new NullNotExpectedException(
                                 "</br>You are not a priveleged user for this query or you a not found in ths project database.</br>"
-                                + "It seems the related module config file is not set properly.</br>"
-                                + "Please contact with module architect.");
+                                        + "It seems the related module config file is not set properly.</br>"
+                                        + "Please contact with module architect.");
                     }
                 }
                 modifiedFilter.putAll(query);
@@ -625,8 +626,8 @@ public class FilterUtil {
     }
 
     public Document createTableFilterSchemaVersion110(FmsForm myForm,
-            Document baseCurrent, Map<String, Object> guiCurrent,
-            boolean admin, UserDetail userDetail, RoleMap roleMap)
+                                                      Document baseCurrent, Map<String, Object> guiCurrent,
+                                                      boolean admin, UserDetail userDetail, RoleMap roleMap)
             throws NullNotExpectedException {
 
         Document filter = new Document();
@@ -647,7 +648,7 @@ public class FilterUtil {
                 keySet());
 
         for (Iterator<String> iterator = concurrentModificationException.
-                iterator(); iterator.hasNext();) {
+                iterator(); iterator.hasNext(); ) {
             String key = iterator.next();
             Object value = filter.get(key);
             if (value == null
@@ -726,7 +727,7 @@ public class FilterUtil {
                     || "null".equals(filterValue)
                     || SelectOneStringConverter.NULL_VALUE.equals(filterValue)
                     || filterValue instanceof String && ((String) filterValue).
-                            isEmpty()) {
+                    isEmpty()) {
                 continue;
             }
 
@@ -780,8 +781,8 @@ public class FilterUtil {
     }
 
     private void handlleFilterStrValue(MyField myField, Document modifiedFilter,
-            String filterField, Object filterValue,
-            Map.Entry<String, Object> entry, Object filterType) throws
+                                       String filterField, Object filterValue,
+                                       Map.Entry<String, Object> entry, Object filterType) throws
             NumberFormatException {
         if (myField.getMyconverter() instanceof BsonConverter) {
             modifiedFilter.put(filterField, filterValue);
