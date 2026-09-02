@@ -1529,7 +1529,13 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             }
 
             if (!getAutoComplete().equals(fieldStructure.getComponentType())) {
-                fieldStructure.createSelectItems(filterService.getTableFilterCurrent(), crudObject, loginController.getRoleMap(), loginController.getLoggedUserDetail(), false);
+                fieldStructure
+                        .createSelectItems(
+                                filterService.getTableFilterCurrent(),
+                                crudObject,
+                                loginController.getRoleMap(),
+                                loginController.getLoggedUserDetail(),
+                                false);
             }
 
             fieldStructure.setCrudRecord(crudObject);

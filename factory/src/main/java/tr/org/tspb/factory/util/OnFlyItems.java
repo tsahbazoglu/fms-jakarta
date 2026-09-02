@@ -1,16 +1,11 @@
 package tr.org.tspb.factory.util;
 
 import com.mongodb.MongoException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import jakarta.faces.model.SelectItem;
 import org.bson.Document;
 import org.bson.types.Code;
+import org.bson.types.ObjectId;
 import tr.org.tspb.constants.ProjectConstants;
 
 import static tr.org.tspb.constants.ProjectConstants.CODE;
@@ -167,48 +162,67 @@ public class OnFlyItems implements FmsAutoComplete {
             return null;
         }
 
-        List<SelectItem> items = new ArrayList();
-
         String loginFk = (String) docForm.get(LOGIN_FK);
 
-        if (myField.getKey().
-                equals(loginFk) && !roleMap.isUserInRole(myProject.
-                getAdminRole())) {
+        String fieldKey = myField.getKey();
+
+        FmsFieldItems fmsFieldItems = myField.getItemsAsMyItems();
+
+        String dbName = fmsFieldItems.getDb();
+        String tableName = fmsFieldItems.getTable();
+
+        if (fieldKey.equals(loginFk) && !roleMap.isUserInRole(myProject.getAdminRole())) {
 
             List listOfIds = new ArrayList();
             for (UserDetail.EimzaPersonel ep : userDetail.getEimzaPersonels()) {
                 listOfIds.add(ep.getDelegatingMember());
             }
 
-            List<Document> documents = mongoDbUtil.find(myField.
-                    getItemsAsMyItems().
-                    getDb(), myField.getItemsAsMyItems().
-                    getTable(), new Document(MONGO_ID, new Document(
-                    DOLAR_IN, listOfIds)));
+            List<Document> documents = mongoDbUtil.find(
+                    dbName,
+                    tableName,
+                    new Document(MONGO_ID, new Document(DOLAR_IN, listOfIds)));
 
             if (!ComponentType.selectManyListbox.name().
                     equals(myField.getComponentType())) {
 //                items.add(new SelectItem(SelectOneObjectIdConverter.NULL_VALUE, SELECT_PLEASE));
             }
-
-            items.addAll(documentsToSelectItems(documents, myField.
+            return documentsToSelectItems(documents, myField.
                     getItemsAsMyItems().
-                    getView()));
-
-            return items;
+                    getView());
         }
 
-        FmsFieldItems.ItemType itemType = myField.getItemsAsMyItems().getItemType();
 
-        items = switch (itemType) {
+        FmsFieldItems.ItemType itemType = fmsFieldItems.getItemType();
+
+        List<SelectItem> items = switch (itemType) {
             case doc, ref -> documentToItems(
-                    myField.getItemsAsMyItems().getEditQuery(),
-                    myField.getItemsAsMyItems(),
-                    myField.getItemsAsMyItems().getLimit());
-            case list -> listToItems(myField.getItemsAsMyItems().getListOfDocument());
-            case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
+                    fmsFieldItems.getEditQuery(),
+                    fmsFieldItems,
+                    fmsFieldItems.getLimit());
+            case list -> listToItems(fmsFieldItems.getListOfDocument());
+            case code -> codeToItems(fmsFieldItems.getCode(), searchObject, roleMap);
             default -> throw new RuntimeException("itemType : " + itemType + " is not supported.");
         };
+
+        if (crudObject.get(fieldKey) instanceof ObjectId id && !items.stream().filter(item -> id.equals(item.getValue())).findFirst().isPresent()) {
+            Document document = mongoDbUtil.findOne(dbName, tableName, new Document(MONGO_ID, id));
+            StringBuilder value = new StringBuilder();
+            Iterator<String> iterator = fmsFieldItems.getView().iterator();
+            while (iterator.hasNext()) {
+                String field = iterator.next();
+                Object fieldValue = document.get(field);
+                if (fieldValue instanceof Date) {
+                    value.append(SIMPLE_DATE_FORMAT__0.format(fieldValue));
+                } else {
+                    value.append(fieldValue);
+                }
+                if (iterator.hasNext()) {
+                    value.append(" - ");
+                }
+            }
+            items.add(new SelectItem(id, value.toString()));
+        }
 
         myField.setSessionKey(MySessionStore.createSessionKey(
                 docForm.getString(ProjectConstants.PROJECT_KEY),
