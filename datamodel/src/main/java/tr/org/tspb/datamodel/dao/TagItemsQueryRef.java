@@ -6,8 +6,10 @@ import java.util.regex.Matcher;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import tr.org.tspb.constants.ProjectConstants;
+
 import static tr.org.tspb.constants.ProjectConstants.pattern_fms_crud;
 import static tr.org.tspb.constants.ProjectConstants.pattern_fms_filter;
+
 import tr.org.tspb.datamodel.expected.FmsScriptRunner;
 import tr.org.tspb.datamodel.tags.FmsQuery;
 
@@ -37,8 +39,8 @@ public class TagItemsQueryRef {
     private MyField myField;
 
     public TagItemsQueryRef(Document ref, Map filter,
-            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
-            MyField myField, MyMap crudObject) {
+                            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
+                            String formKey, MyMap crudObject) {
 
         this.fmsScriptRunner = fmsScriptRunner;
 
@@ -53,7 +55,7 @@ public class TagItemsQueryRef {
 
         if (listOfFilter != null) {
             this.query = FmsQuery.buildListQuery(listOfFilter, filter,
-                    fmsScriptRunner, loginMemberId, myField, crudObject);
+                    fmsScriptRunner, loginMemberId, formKey, crudObject);
         } else {
             for (String key : query_.keySet()) {
                 Object value = query_.get(key);

@@ -29,7 +29,8 @@ public class FmsFieldItems {
     public static final String ITEM_TABLE = "itemTable";
     public static final String ITEM_DB = "db";
     //
-    private MyField myField;
+    private String formKey;
+    private String fieldKey;
     private ScriptEnv scriptEnv;
     private ItemType itemType;
     private MyLookup lookup;
@@ -52,6 +53,40 @@ public class FmsFieldItems {
     private Code code;
     private Code queryCode;
     private Document itemsDoc;
+    private String adminAndViewerRole;
+
+    private FmsFieldItems() {
+    }
+
+    private FmsFieldItems(Builder builder) {
+        this.db = builder.db;
+        this.table = builder.table;
+        this.searchField = builder.searchField;
+        this.view = builder.view;
+        this.editQuery = builder.editQuery;
+        this.filterQuery = builder.filterQuery;
+        this.historyQuery = builder.historyQuery;
+        this.sort = builder.sort;
+        this.queryProjection = builder.queryProjection;
+        this.resultProjection = builder.resultProjection;
+        this.limit = builder.limit;
+        this.locale = builder.locale;
+        this.labelStringFormat = builder.labelStringFormat;
+        this.lookup = builder.lookup;
+        this.itemType = builder.itemType;
+        this.scriptEnv = builder.scriptEnv;
+        this.itemsDoc = builder.itemsDoc;
+        this.listOfDocument = builder.listOfDocuments;
+        this.adminAndViewerRole = builder.adminAndViewerRole;
+        if (this.listOfDocument != null) {
+            this.listOfString = builder.listOfDocuments.stream()
+                    .map(document -> document.getString(CODE))
+                    .collect(java.util.stream.Collectors.toList());
+        } else {
+            this.listOfString = Collections.emptyList();
+        }
+
+    }
 
     @Override
     public String toString() {
@@ -87,38 +122,6 @@ public class FmsFieldItems {
         return listOfSelectItem;
     }
 
-    private FmsFieldItems() {
-    }
-
-    private FmsFieldItems(Builder builder) {
-        this.db = builder.db;
-        this.table = builder.table;
-        this.searchField = builder.searchField;
-        this.view = builder.view;
-        this.editQuery = builder.editQuery;
-        this.filterQuery = builder.filterQuery;
-        this.historyQuery = builder.historyQuery;
-        this.sort = builder.sort;
-        this.queryProjection = builder.queryProjection;
-        this.resultProjection = builder.resultProjection;
-        this.limit = builder.limit;
-        this.locale = builder.locale;
-        this.labelStringFormat = builder.labelStringFormat;
-        this.lookup = builder.lookup;
-        this.itemType = builder.itemType;
-        this.scriptEnv = builder.scriptEnv;
-        this.myField = builder.myField;
-        this.itemsDoc = builder.itemsDoc;
-        this.listOfDocument = builder.listOfDocuments;
-        if (this.listOfDocument != null) {
-            this.listOfString = builder.listOfDocuments.stream()
-                    .map(document -> document.getString(CODE))
-                    .collect(java.util.stream.Collectors.toList());
-        } else {
-            this.listOfString = Collections.emptyList();
-        }
-
-    }
 
     public Document getFilterQuery() {
         return filterQuery;
@@ -197,6 +200,9 @@ public class FmsFieldItems {
 
 
     public static class Builder {
+        private String adminAndViewerRole;
+        private String formKey;
+        private String fieldKey;
         private final Document itemsDoc;
         private Document filterQuery;
         private Document editQuery;
@@ -206,7 +212,6 @@ public class FmsFieldItems {
         private String db;
         private String locale;
         private String labelStringFormat;
-        private MyField myField;
         private ItemType itemType;
         private List<Document> listOfDocuments;
         private List<String> view;
@@ -224,21 +229,25 @@ public class FmsFieldItems {
                 .append(ORDER, true)
                 .append(NAME, true);
 
-        public Builder(Map filter,
-                       Document itemsDoc,
-                       MyField myField,
-                       FmsScriptRunner fmsScriptRunner) {
-
+        public Builder(
+                String adminAndViewerRole,
+                String formKey,
+                String fieldKey,
+                Map filter,
+                Document itemsDoc,
+                FmsScriptRunner fmsScriptRunner) {
+            this.formKey = formKey;
+            this.fieldKey = fieldKey;
+            this.adminAndViewerRole = adminAndViewerRole;
             String itemTypeAsString = itemsDoc.getString(TYPE);
             if (itemTypeAsString == null) {
-                String errMsg = String.format("\"fields.%s.items.type\" resolved to empty.", myField.getKey());
+                String errMsg = String.format("\"forms.%s.fields.%s.items.type\" resolved to empty.", formKey, fieldKey);
                 throw new RuntimeException(errMsg);
             }
             this.itemType = ItemType.valueOf(itemTypeAsString);
             this.filter = filter;
             this.itemsDoc = itemsDoc;
             this.fmsScriptRunner = fmsScriptRunner;
-            this.myField = myField;
             switch (itemType) {
                 case list -> {
                     this.withList();
@@ -248,6 +257,12 @@ public class FmsFieldItems {
                 }
                 case ref -> {
                     Document itemsDoc_ = itemsDoc.get(FIELD_ITEMS_REF, Document.class);
+                    if (itemsDoc_ == null) {
+                        String errMsg = String
+                                .format("\"forms.%s.fields.%s.items.ref\" resolved to empty.",
+                                        formKey, fieldKey);
+                        throw new RuntimeException(errMsg);
+                    }
                     this.db = itemsDoc_.getString(FORM_DB);
                     this.searchField = itemsDoc_.getString("searchField");
                     this.table = itemsDoc_.getString(ITEM_TABLE);
@@ -257,11 +272,11 @@ public class FmsFieldItems {
                     Object labelStringFormat_ = itemsDoc_.get(LABEL_STRING_FORMAT);
 
                     if (this.db == null) {
-                        String errMsg = String.format("\"fields.%s.items.ref.db\" resolved to empty.", myField.getKey());
+                        String errMsg = String.format("\"forms.%s.fields.%s.items.ref.db\" resolved to empty.", formKey, fieldKey);
                         throw new RuntimeException(errMsg);
                     }
                     if (table == null) {
-                        String errMsg = String.format("\"fields.%s.items.ref.itemTable\" resolved to empty.", myField.getKey());
+                        String errMsg = String.format("\"forms.%s.fields.%s.items.ref.itemTable\" resolved to empty.", formKey, fieldKey);
                         throw new RuntimeException(errMsg);
                     }
                     if (searchField == null) {
@@ -460,11 +475,6 @@ public class FmsFieldItems {
             return this;
         }
 
-        public Builder withParent(MyField myField) {
-            this.myField = myField;
-            return this;
-        }
-
         public FmsFieldItems build() {
             return new FmsFieldItems(this);
         }
@@ -615,9 +625,13 @@ public class FmsFieldItems {
                                     null, null).value());
                 } else if (inRef != null) {
                     result.put(key, new Document(DOLAR_IN,
-                            new TagItemsQueryRef(inRef, filter, fmsScriptRunner,
+                            new TagItemsQueryRef(
+                                    inRef,
+                                    filter,
+                                    fmsScriptRunner,
                                     loginMemberId,
-                                    myField, null).values()));
+                                    formKey,
+                                    null).values()));
                 } else if (fmsValue != null) {
                     Matcher m;
                     if ((m = pattern_fms_crud.matcher(fmsValue)).find()) {
@@ -743,9 +757,13 @@ public class FmsFieldItems {
         this.editQuery = query;
     }
 
-    public FmsFieldItems reCreateQuery(ObjectId loginMemberId, Map filter,
-                                       MyMap crudObject, RoleMap roleMap,
-                                       FmsScriptRunner fmsScriptRunner) {
+    public FmsFieldItems reCreateQuery(
+            ObjectId loginMemberId,
+            Map filter,
+            MyMap crudObject,
+            RoleMap roleMap,
+            FmsScriptRunner fmsScriptRunner) {
+
         if (queryCode != null) {
             Document tempDbObject = new Document(crudObject);
             tempDbObject.remove(INODE); // INODE is not serialized
@@ -764,10 +782,8 @@ public class FmsFieldItems {
             }
             throw new UnsupportedOperationException("Query code is not supported");
         } else {
-            boolean admin = roleMap.isUserInRole(myField.getMyForm().
-                    getMyProject().
-                    getAdminAndViewerRole());
-            return new Builder(filter, this.itemsDoc, this.myField, fmsScriptRunner)
+            boolean admin = roleMap.isUserInRole(adminAndViewerRole);
+            return new Builder(formKey, fieldKey, adminAndViewerRole, filter, this.itemsDoc, fmsScriptRunner)
                     .withQuerySchemaVersion110(loginMemberId, admin, roleMap.keySet())
                     .withFilterQuery(loginMemberId, admin, roleMap.keySet())
                     .withSortSchemaVersion110(roleMap.keySet())

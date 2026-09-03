@@ -175,8 +175,112 @@ public class MyField {
     private String db;//this is the case for nd
 
     // </editor-fold>
-    public MyField() {
-
+    private MyField(Builder builder) {
+        this.loginMemberId = builder.loginMemberId;
+        this.myForm = builder.myForm;
+        this.accesscontrol = builder.accesscontrol;
+        this.searchAccess = builder.searchAccess;
+        this.quickFilter = builder.quickFilter;
+        this.autoset = builder.autoset;
+        this.hasAjaxEffectedInputFileField = builder.hasAjaxEffectedInputFileField;
+        this.ajaxUpdate = builder.ajaxUpdate;
+        this.filterSelectOneMenuAjaxUpdate = builder.filterSelectOneMenuAjaxUpdate;
+        this.tagAjax = builder.tagAjax;
+        this.code = builder.code;
+        this.calculateEngine = builder.calculateEngine;
+        this.componentType = builder.componentType;
+        this.calculateOnClient = builder.calculateOnClient;
+        this.calculate = builder.calculate;
+        this.calculateOnListView = builder.calculateOnListView;
+        this.calculateOnCrudView = builder.calculateOnCrudView;
+        this.calculateAfterSave = builder.calculateAfterSave;
+        this.calculateAfterDelete = builder.calculateAfterDelete;
+        this.calculateOnSave = builder.calculateOnSave;
+        this.measureConverter = builder.measureConverter;
+        this.converterValue = builder.converterValue;
+        this.converterInstance = builder.converterInstance;
+        this.converterFormat = builder.converterFormat;
+        this.converterParam = builder.converterParam;
+        this.converterMinStrLength = builder.converterMinStrLength;
+        this.cacheBsonConverter = builder.cacheBsonConverter;
+        this.cacheMapConverter = builder.cacheMapConverter;
+        this.description = builder.description;
+        this.renderDesc = builder.renderDesc;
+        this.renderPopupDesc = builder.renderPopupDesc;
+        this.dateRangeBeginKey = builder.dateRangeBeginKey;
+        this.dateRangeEndKey = builder.dateRangeEndKey;
+        this.defaultCurrentValue = builder.defaultCurrentValue;
+        this.defaultHistoryValue = builder.defaultHistoryValue;
+        this.disabled = builder.disabled;
+        this.dbo = builder.dbo;
+        this.dateRangeControl = builder.dateRangeControl;
+        this.dateRangeValidate = builder.dateRangeValidate;
+        this.divider = builder.divider;
+        this.defaultValue = builder.defaultValue;
+        this.embeddedAsList = builder.embeddedAsList;
+        this.filterProjection = builder.filterProjection;
+        this.fieldNote = builder.fieldNote;
+        this.field = builder.field;
+        this.fileType = builder.fileType;
+        this.fileLimit = builder.fileLimit;
+        this.genererate = builder.genererate;
+        this._id = builder._id;
+        this.immediate = builder.immediate;
+        this.href = builder.href;
+        this.key = builder.key;
+        this.listOfValues = builder.listOfValues;
+        this.loginFK = builder.loginFK;
+        this.minFractationDigits = builder.minFractationDigits;
+        this.maxFractationDigits = builder.maxFractationDigits;
+        this.selectItemsFilter = builder.selectItemsFilter;
+        this.selectItemsCurrent = builder.selectItemsCurrent;
+        this.selectItemsHistory = builder.selectItemsHistory;
+        this.itemsAsMyItems = builder.itemsAsMyItems;
+        this.myDatePattern = builder.myDatePattern;
+        this.mask = builder.mask;
+        this.myFormKey = builder.myFormKey;
+        this.maxValue = builder.maxValue;
+        this.maxMoney = builder.maxMoney;
+        this.money = builder.money;
+        this.name = builder.name;
+        this.ndType = builder.ndType;
+        this.ndAxis = builder.ndAxis;
+        this.order = builder.order;
+        this.observer = builder.observer;
+        this.observableAttr = builder.observableAttr;
+        this.observerAttr = builder.observerAttr;
+        this.observable = builder.observable;
+        this.popupDesc = builder.popupDesc;
+        this.refCollection = builder.refCollection;
+        this.reportOrder = builder.reportOrder;
+        this.rendered = builder.rendered;
+        this.required = builder.required;
+        this.reportRendered = builder.reportRendered;
+        this.roleCheck = builder.roleCheck;
+        this.readonly = builder.readonly;
+        this.initialReadonly = builder.initialReadonly;
+        this.sessionKey = builder.sessionKey;
+        this.subGroup = builder.subGroup;
+        this.shortName = builder.shortName;
+        this.style = builder.style;
+        this.labelStyle = builder.labelStyle;
+        this.styleClass = builder.styleClass;
+        this.filterCssClass = builder.filterCssClass;
+        this.shouldCheckNegative = builder.shouldCheckNegative;
+        this.uysformat = builder.uysformat;
+        this.valueChangeListenerAction = builder.valueChangeListenerAction;
+        this.valueType = builder.valueType;
+        this.visible = builder.visible;
+        this.viewKey = builder.viewKey;
+        this.version = builder.version;
+        this.width = builder.width;
+        this.workflow = builder.workflow;
+        this.crudRecord = builder.crudRecord;
+        this.fmsAutoComplete = builder.fmsAutoComplete;
+        this.fmsScriptRunner = builder.fmsScriptRunner;
+        this.isAutoComplete = builder.isAutoComplete;
+        this.selectAllValues = builder.selectAllValues;
+        this.db = builder.db;
     }
 
     public List<SelectItem> getSelectItemsFilter() {
@@ -829,121 +933,239 @@ public class MyField {
 
     public static class Builder {
 
-        private final MyField myField;
         private MyProject myProject;
 
+        private ObjectId loginMemberId;
+        private FmsForm myForm;
+
+// <editor-fold defaultstate="collapsed" desc="encapsulated fields">
+
+        /*
+         * Aa	Bb	Cc	Dd	Ee	Ff	Gg
+         * Hh	Ii	Jj	Kk      Ll	Mm	Nn
+         * Oo	Pp	Qq	Rr	Ss	Tt	Uu
+         * Vv	Ww	Xx	Yy	Zz
+         */
+        // A
+        private String accesscontrol;
+        private Boolean searchAccess;
+        private Boolean quickFilter;
+        private Boolean autoset;
+        private Boolean hasAjaxEffectedInputFileField;
+        private String ajaxUpdate;
+        private String filterSelectOneMenuAjaxUpdate;
+        private TagAjax tagAjax;
+        // C
+        private String code;//this is the case for nd
+        private String calculateEngine;
+        private String componentType;
+        private String calculateOnClient;
+        private String calculate;
+        private Boolean calculateOnListView;
+        private Boolean calculateOnCrudView;
+        private Boolean calculateAfterSave;
+        private Boolean calculateAfterDelete;
+        private Boolean calculateOnSave;
+        private Converter measureConverter;
+        private Converter converterValue;
+        private String converterInstance;
+        private String converterFormat;
+        private String converterParam;
+        private Integer converterMinStrLength;
+        private Map<String, String> cacheBsonConverter = new HashMap<>();
+        private Map<ForumColumnCellKey, Converter> cacheMapConverter = new HashMap<>();
+        // D
+        private String description;
+        private boolean renderDesc;
+        private boolean renderPopupDesc;
+        private String dateRangeBeginKey;
+        private String dateRangeEndKey;
+        private ObjectId defaultCurrentValue;
+        private ObjectId defaultHistoryValue;
+        private boolean disabled;
+        private Document dbo;
+        private Boolean dateRangeControl;
+        private Boolean dateRangeValidate;
+        private Object divider;
+        private Object defaultValue;
+        // E
+        private boolean embeddedAsList;
+        // F
+        private String filterProjection;
+        private String fieldNote;
+        private String field;
+        private String fileType = "/(\\.|\\/)(pdf)$/";
+        private int fileLimit;
+        // G
+        private String genererate;
+        // I
+        private ObjectId _id;//this is the case for nd
+        private boolean immediate;
+        // H
+        private FmsHref href;
+        // K
+        private String key;
+        // L
+        private List<SelectItem> listOfValues;
+        private Boolean loginFK;
+        // M
+        private Object minFractationDigits;
+        private Object maxFractationDigits;
+        private List<SelectItem> selectItemsFilter = new ArrayList<>();
+        private List<SelectItem> selectItemsCurrent = new ArrayList<>();
+        private List<SelectItem> selectItemsHistory = new ArrayList<>();
+        private FmsFieldItems itemsAsMyItems;
+        private String myDatePattern;
+        private String mask;
+        private String myFormKey;
+        private Double maxValue;
+        private String maxMoney;
+        private boolean money;
+        // N
+        private String name;
+        private String ndType;
+        private String ndAxis;
+        // O
+        private Integer order;
+        private Object observer;
+        private Object observableAttr;
+        private Object observerAttr;
+        private Object observable;
+        // P
+        private String popupDesc;
+        // R
+        private String refCollection;
+        private Integer reportOrder;
+        private boolean rendered;
+        private boolean required;
+        private boolean reportRendered;
+        private boolean roleCheck;
+        private boolean readonly;
+        private boolean initialReadonly;
+        // S
+        private String sessionKey;
+        private String subGroup;
+        private String shortName;
+        private String style;
+        private String labelStyle;
+        private String styleClass;
+        private String filterCssClass;
+        private Boolean shouldCheckNegative;
+        // U
+        private String uysformat;
+        // V
+        private Object valueChangeListenerAction;
+        private String valueType;
+        private String visible;
+        private List<String> viewKey;
+        private boolean version;
+        // W
+        private int width;
+        private boolean workflow;
+        private MyMap crudRecord = new MyMap();
+        private FmsAutoComplete fmsAutoComplete;
+        private FmsScriptRunner fmsScriptRunner;
+        //
+        private boolean isAutoComplete;
+        private List<Object> selectAllValues;
+        private String db;//this is the case for nd
+
         public Builder(Document docField) {
-            this.myField = new MyField();
-            this.myField.dbo = docField;
+            this.dbo = docField;
         }
 
         public Builder(ObjectId loginMemberId, MyProject myProject,
                        Document docField, FmsScriptRunner fmsScriptRunner) {
 
             this.myProject = myProject;
-            this.myField = new MyField();
             //
-            this.myField.loginMemberId = loginMemberId;
+            this.loginMemberId = loginMemberId;
             //
-            this.myField.fmsScriptRunner = fmsScriptRunner;
-            this.myField._id = (ObjectId) docField.get(MONGO_ID);
-            this.myField.code = docField.getString(CODE);
+            this.fmsScriptRunner = fmsScriptRunner;
+            this._id = (ObjectId) docField.get(MONGO_ID);
+            this.code = docField.getString(CODE);
 
             maskCalculate(docField);
 
-            this.myField.converterInstance = docField.getString(
-                    CONVERTER_INSTANCE);
-            this.myField.converterFormat = docField.getString(CONVERTER_FORMAT);
-            this.myField.converterParam = docField.getString(CONVERTER_PARAM);
+            this.converterInstance = docField.getString(CONVERTER_INSTANCE);
+            this.converterFormat = docField.getString(CONVERTER_FORMAT);
+            this.converterParam = docField.getString(CONVERTER_PARAM);
 
-            this.myField.dbo = docField;
-            this.myField.dateRangeControl = Boolean.TRUE.equals(docField.get(
-                    DATE_RANGE_CONTROL));
-            this.myField.dateRangeValidate = Boolean.TRUE.equals(docField.get(
-                    DATE_RANGE_VALIDATE));
-            this.myField.dateRangeBeginKey = docField.getString(
-                    DATE_RANGE_BEGIN_KEY);
-            this.myField.dateRangeEndKey = docField.
-                    getString(DATE_RANGE_END_KEY);
-            this.myField.divider = docField.get(DIVIDER);
-            this.myField.disabled = Boolean.TRUE.equals(docField.get(DISABLED));
-            this.myField.field = docField.getString(FIELD);
-            this.myField.fieldNote = docField.getString(FIELD_NOTE);
-            this.myField.immediate = Boolean.TRUE.
-                    equals(docField.get(IMMEDIATE));
-            this.myField.key = docField.getString(FORM_KEY);
-            this.myField.loginFK = Boolean.TRUE.equals(docField.get("loginFK"));
-            this.myField.money = Boolean.TRUE.equals(docField.get(MONEY));
-            this.myField.maxMoney = docField.getString(MAX_MONEY);
+            this.dbo = docField;
+            this.dateRangeControl = Boolean.TRUE.equals(docField.get(DATE_RANGE_CONTROL));
+            this.dateRangeValidate = Boolean.TRUE.equals(docField.get(DATE_RANGE_VALIDATE));
+            this.dateRangeBeginKey = docField.getString(DATE_RANGE_BEGIN_KEY);
+            this.dateRangeEndKey = docField.getString(DATE_RANGE_END_KEY);
+            this.divider = docField.get(DIVIDER);
+            this.disabled = Boolean.TRUE.equals(docField.get(DISABLED));
+            this.field = docField.getString(FIELD);
+            this.fieldNote = docField.getString(FIELD_NOTE);
+            this.immediate = Boolean.TRUE.equals(docField.get(IMMEDIATE));
+            this.key = docField.getString(FORM_KEY);
+            this.loginFK = Boolean.TRUE.equals(docField.get("loginFK"));
+            this.money = Boolean.TRUE.equals(docField.get(MONEY));
+            this.maxMoney = docField.getString(MAX_MONEY);
 
             Number number = docField.get(MAX_VALUE, Number.class);
             if (number != null) {
-                this.myField.maxValue = number.doubleValue();
+                this.maxValue = number.doubleValue();
             }
 
-            this.myField.mask = docField.getString(MASK);
-            this.myField.minFractationDigits = docField.get(
-                    MIN_FRACTATION_DIGITIS);
-            this.myField.maxFractationDigits = docField.get(
-                    MAX_FRACTATION_DIGITIS);
-            this.myField.name = docField.getString(NAME);
-            this.myField.observable = docField.get(OBSERVABLE);
-            this.myField.observableAttr = docField.get(OBSERVABLE);
-            this.myField.observerAttr = docField.get(OBSERVER);
-            this.myField.observer = docField.get(OBSERVER);
-            this.myField.required = Boolean.TRUE.equals(docField.get(REQUIRED));
-            this.myField.roleCheck = Boolean.TRUE.
-                    equals(docField.get(ROLECHECK));
-            this.myField.reportRendered = Boolean.TRUE.equals(docField.get(
-                    REPORT_RENDERED));
-            this.myField.refCollection = docField.getString(REF_COLLECTION);
-            this.myField.subGroup = docField.getString(SUB_GROUP);
-            this.myField.shouldCheckNegative = Boolean.TRUE.equals(docField.get(
-                    SHOULD_CHECK_NEGOTIF));
-            this.myField.uysformat = docField.getString(FORMAT);
-            this.myField.version = Boolean.TRUE.equals(docField.get(VERSION));
-            this.myField.valueType = docField.getString(VALUE_TYPE);
-            this.myField.visible = docField.getString(VISIBLE);
-            this.myField.valueChangeListenerAction = docField.get(
-                    VALUE_CHANGE_LISTENER_ACTION);
-            this.myField.workflow = Boolean.TRUE.equals(docField.get(WORKFLOW));
-            this.myField.filterProjection = docField.
-                    getString(FILTER_PROJECTION);
+            this.mask = docField.getString(MASK);
+            this.minFractationDigits = docField.get(MIN_FRACTATION_DIGITIS);
+            this.maxFractationDigits = docField.get(MAX_FRACTATION_DIGITIS);
+            this.name = docField.getString(NAME);
+            this.observable = docField.get(OBSERVABLE);
+            this.observableAttr = docField.get(OBSERVABLE);
+            this.observerAttr = docField.get(OBSERVER);
+            this.observer = docField.get(OBSERVER);
+            this.required = Boolean.TRUE.equals(docField.get(REQUIRED));
+            this.roleCheck = Boolean.TRUE.equals(docField.get(ROLECHECK));
+            this.reportRendered = Boolean.TRUE.equals(docField.get(REPORT_RENDERED));
+            this.refCollection = docField.getString(REF_COLLECTION);
+            this.subGroup = docField.getString(SUB_GROUP);
+            this.shouldCheckNegative = Boolean.TRUE.equals(docField.get(SHOULD_CHECK_NEGOTIF));
+            this.uysformat = docField.getString(FORMAT);
+            this.version = Boolean.TRUE.equals(docField.get(VERSION));
+            this.valueType = docField.getString(VALUE_TYPE);
+            this.visible = docField.getString(VISIBLE);
+            this.valueChangeListenerAction = docField.get(VALUE_CHANGE_LISTENER_ACTION);
+            this.workflow = Boolean.TRUE.equals(docField.get(WORKFLOW));
+            this.filterProjection = docField.getString(FILTER_PROJECTION);
             maskConverterJson(docField);
 
             Document pleaseSelect = docField.
                     get("please-select", Document.class);
             if (pleaseSelect != null) {
-                this.myField.selectAllValues = new FmsSelectAllStrategy(
+                this.selectAllValues = new FmsSelectAllStrategy(
                         fmsScriptRunner,
                         pleaseSelect, loginMemberId, null).getListOfObjectIds();
             }
 
-            this.myField.genererate = docField.getString("generate");
+            this.genererate = docField.getString("generate");
 
             Document href = docField.get("href", Document.class);
             if (href != null) {
                 String projectKey = href.getString("projectKey");
                 String formKey = href.getString("formKey");
                 String callBackFormKey = href.getString("callBackFormKey");
-                this.myField.href = new FmsHref(projectKey, formKey,
-                        callBackFormKey, this.myField.getKey());
+                this.href = new FmsHref(projectKey, formKey, callBackFormKey, this.key);
             }
 
-            this.myField.db = docField.getString("db");
+            this.db = docField.getString("db");
         }
 
         private Builder maskConverterJson(Document docField) {
             Document converterJson = docField.get("converter-json",
                     Document.class);
             if (converterJson != null) {
-                this.myField.converterInstance = converterJson.getString(
+                this.converterInstance = converterJson.getString(
                         CONVERTER_INSTANCE);
-                this.myField.converterFormat = converterJson.getString(
+                this.converterFormat = converterJson.getString(
                         CONVERTER_FORMAT);
-                this.myField.converterParam = converterJson.getString(
+                this.converterParam = converterJson.getString(
                         CONVERTER_PARAM);
-                this.myField.converterMinStrLength = converterJson.getInteger(
+                this.converterMinStrLength = converterJson.getInteger(
                         CONVERTER_MIN_STR_LENGTH);
             }
             return this;
@@ -953,85 +1175,85 @@ public class MyField {
 
             Document docCalc = docField.get(CALCULATE, Document.class);
             if (docCalc != null) {
-                this.myField.calculate = docCalc.getString(CALCULATE_ACTION);
-                this.myField.calculateOnSave = Boolean.TRUE.equals(docCalc.get(
+                this.calculate = docCalc.getString(CALCULATE_ACTION);
+                this.calculateOnSave = Boolean.TRUE.equals(docCalc.get(
                         CALCULATE_ON_SAVE));
-                this.myField.calculateAfterSave = Boolean.TRUE.equals(docCalc.
+                this.calculateAfterSave = Boolean.TRUE.equals(docCalc.
                         get(CALCULATE_AFTER_SAVE));
-                this.myField.calculateAfterDelete = Boolean.TRUE.equals(docCalc.
+                this.calculateAfterDelete = Boolean.TRUE.equals(docCalc.
                         get(CALCULATE_AFTER_DELETE));
-                this.myField.calculateOnListView = Boolean.TRUE.equals(docCalc.
+                this.calculateOnListView = Boolean.TRUE.equals(docCalc.
                         get(CALCULATE_ON_LIST_VIEW));
-                this.myField.calculateOnCrudView = Boolean.TRUE.equals(docCalc.
+                this.calculateOnCrudView = Boolean.TRUE.equals(docCalc.
                         get(CALCULATE_ON_CRUD_VIEW));
-                this.myField.calculateOnClient = docCalc.getString(
+                this.calculateOnClient = docCalc.getString(
                         CALCULATE_ON_CLIENT);
-                this.myField.calculateEngine = docCalc.getString(
+                this.calculateEngine = docCalc.getString(
                         CALCULATE_ENGINE);//FIXME
             } else {
-                this.myField.calculateOnSave = false;
-                this.myField.calculateAfterSave = false;
-                this.myField.calculateAfterDelete = false;
-                this.myField.calculateOnListView = false;
-                this.myField.calculateOnCrudView = false;
+                this.calculateOnSave = false;
+                this.calculateAfterSave = false;
+                this.calculateAfterDelete = false;
+                this.calculateOnListView = false;
+                this.calculateOnCrudView = false;
             }
 
             return this;
         }
 
         public Builder maskFormKey(String formKey) {
-            this.myField.myFormKey = formKey;
+            this.myFormKey = formKey;
             return this;
         }
 
         public Builder maskId() {
-            this.myField._id = this.myField.dbo.get(MONGO_ID, ObjectId.class);
+            this._id = this.dbo.get(MONGO_ID, ObjectId.class);
             return this;
         }
 
         public Builder maskField() {
-            this.myField.field = (String) this.myField.dbo.get(FIELD);
+            this.field = (String) this.dbo.get(FIELD);
             return this;
         }
 
         public Builder maskKey() {
-            this.myField.key = (String) this.myField.dbo.get(FORM_KEY);
+            this.key = (String) this.dbo.get(FORM_KEY);
             return this;
         }
 
         public Builder maskCode() {
-            this.myField.code = (String) this.myField.dbo.get(CODE);
-            if (this.myField.code == null || MEASURE.equals(this.myField.dbo.
+            this.code = (String) this.dbo.get(CODE);
+            if (this.code == null || MEASURE.equals(this.dbo.
                     get(ND_TYPE))) {
-                this.myField.code = (String) this.myField.dbo.get(FORM_KEY);
+                this.code = (String) this.dbo.get(FORM_KEY);
             }
             return this;
         }
 
         public Builder maskSearchAccess() {
-            Object searchAccess = this.myField.dbo.get(SEARCH_ACCESS);
-            this.myField.searchAccess = !Boolean.FALSE.equals(searchAccess);
+            Object searchAccess = this.dbo.get(SEARCH_ACCESS);
+            this.searchAccess = !Boolean.FALSE.equals(searchAccess);
 
-            Object quickFilter = this.myField.dbo.get(QUICK_FILTER);
-            this.myField.quickFilter = !Boolean.FALSE.equals(quickFilter);
+            Object quickFilter = this.dbo.get(QUICK_FILTER);
+            this.quickFilter = !Boolean.FALSE.equals(quickFilter);
             return this;
         }
 
         public Builder withRendered(boolean rendered) {
-            this.myField.rendered = rendered;
+            this.rendered = rendered;
             return this;
         }
 
         public Builder withReadonly(boolean readOnly) {
-            this.myField.readonly = readOnly;
-            this.myField.initialReadonly = readOnly;
+            this.readonly = readOnly;
+            this.initialReadonly = readOnly;
             return this;
         }
 
         public Builder maskAccesscontrol() {
             StringBuilder accesscontrolSB = new StringBuilder();
 
-            Object objAccessControl = this.myField.dbo.get(ACCESS_CONTROL);
+            Object objAccessControl = this.dbo.get(ACCESS_CONTROL);
 
             if (objAccessControl == null) {
                 throw new RuntimeException(ACCESS_CONTROL.concat(" = null"));
@@ -1043,7 +1265,7 @@ public class MyField {
                     accesscontrolSB.append(",");
                 }
             } else {
-                accesscontrolSB.append((String) this.myField.dbo.get(
+                accesscontrolSB.append((String) this.dbo.get(
                         ACCESS_CONTROL));
             }
 
@@ -1071,45 +1293,46 @@ public class MyField {
                 }
             }
 
-            this.myField.accesscontrol = accesscontrolSB.toString();
+            this.accesscontrol = accesscontrolSB.toString();
             return this;
         }
 
         public Builder maskNdTypeAndNdAxis() {
-            this.myField.ndType = (String) this.myField.dbo.get(ND_TYPE);
-            this.myField.ndAxis = (String) this.myField.dbo.get(ND_AXIS);
+            this.ndType = (String) this.dbo.get(ND_TYPE);
+            this.ndAxis = (String) this.dbo.get(ND_AXIS);
 
-            if (this.myField.ndType != null && (!MEASURE.equals(
-                    this.myField.ndType)) && this.myField.ndAxis == null) {
+            if (this.ndType != null && (!MEASURE.equals(
+                    this.ndType)) && this.ndAxis == null) {
                 throw new RuntimeException("ndAxis == null");
             }
             return this;
         }
 
         public Builder maskComponentType() {
-            this.myField.componentType = (String) this.myField.dbo.get(
+            this.componentType = (String) this.dbo.get(
                     COMPONENTTYPE);
-            if (this.myField.componentType == null || this.myField.componentType.
+            if (this.componentType == null || this.componentType.
                     isEmpty()) {
-                this.myField.componentType = "inputText";
+                this.componentType = "inputText";
             }
-            this.myField.isAutoComplete = "autoComplete".equals(
-                    this.myField.componentType);
+            this.isAutoComplete = "autoComplete".equals(
+                    this.componentType);
             return this;
         }
 
         public Builder withDefaultValue(Object defaultValue) {
-            this.myField.defaultValue = defaultValue;
+            this.defaultValue = defaultValue;
             return this;
         }
 
-        public Builder maskItemsAsMyItems(String schemaVersion, Map filter,
-                                          boolean admin, Set<String> roles)
-                throws FormConfigException {
+        public Builder maskItemsAsMyItems(
+                String schemaVersion,
+                Map filter,
+                boolean admin,
+                Set<String> roles) throws FormConfigException {
 
             //if (MyForm.SCHEMA_VERSION_110.equals(schemaVersion)) {
-            maskItemsAsMyItemsSchemaVersion110(schemaVersion, filter, admin,
-                    roles);
+            maskItemsAsMyItemsSchemaVersion110(this.myFormKey, schemaVersion, filter, admin, roles);
             //} else {
             //  maskItemsAsMyItemsNoScema(schemaVersion, filter, admin, roles);
             //}
@@ -1117,18 +1340,27 @@ public class MyField {
             return this;
         }
 
-        private Builder maskItemsAsMyItemsSchemaVersion110(String schemaVersion, Map filter, boolean admin,
-                                                           Set<String> roles)
-                throws FormConfigException {
+        private Builder maskItemsAsMyItemsSchemaVersion110(
+                String formKey,
+                String schemaVersion,
+                Map filter,
+                boolean admin,
+                Set<String> roles) throws FormConfigException {
 
-            Document itemsDoc = this.myField.dbo.get(ITEMS, Document.class);
+            Document itemsDoc = this.dbo.get(ITEMS, Document.class);
             if (itemsDoc == null) {
                 return this;
             }
             try {
-                ObjectId loginMemberId = this.myField.loginMemberId;
-                this.myField.itemsAsMyItems = new FmsFieldItems
-                        .Builder(filter, itemsDoc, myField, myField.fmsScriptRunner)
+                ObjectId loginMemberId = this.loginMemberId;
+                this.itemsAsMyItems = new FmsFieldItems
+                        .Builder(
+                        formKey,
+                        this.key,
+                        myProject.getAdminAndViewerRole(),
+                        filter, itemsDoc,
+                        this.fmsScriptRunner
+                )
                         .withFilterQuery(loginMemberId, admin, roles)
                         .withQuerySchemaVersion110(loginMemberId, admin, roles)
                         .withSortSchemaVersion110(roles)
@@ -1141,7 +1373,7 @@ public class MyField {
             } catch (Exception e) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("field : ");
-                sb.append(this.myField.key);
+                sb.append(this.key);
                 sb.append(" : error in getting field.items<br/><br/> ");
                 sb.append(e.getLocalizedMessage());
                 throw new FormConfigException(sb.toString(), e);
@@ -1155,38 +1387,38 @@ public class MyField {
                 return this;
             }
 
-            this.myField.converterValue = converterValue;
+            this.converterValue = converterValue;
 
             if (converterValue.getClass().
                     getSimpleName().
                     equalsIgnoreCase(
                             CONVERTER_BSON_CONVERTER)) {
-                // this.myField.createMyItemsOnSession(null, null, roleMap, this.myField.myForm.userDetail);
-                this.myField.viewKey = Arrays.asList("name");
+                // this.createMyItemsOnSession(null, null, roleMap, this.myForm.userDetail);
+                this.viewKey = Arrays.asList("name");
             } else if (converterValue.getClass().
                     getSimpleName().
                     equalsIgnoreCase(CONVERTER_SELECT_ONE_OBJECTID_CONVERTER)) {
 
-                if (this.myField.getItemsAsMyItems() != null) {
+                if (this.itemsAsMyItems != null) {
 
-                    if (FmsFieldItems.ItemType.list.equals(this.myField.getItemsAsMyItems().getItemType())) {
+                    if (FmsFieldItems.ItemType.list.equals(this.itemsAsMyItems.getItemType())) {
                         Map<String, String> itemMap = new HashMap();
-                        for (SelectItem selectItem : this.myField.getItemsAsMyItems().getListOfSelectItem()) {
+                        for (SelectItem selectItem : this.itemsAsMyItems.getListOfSelectItem()) {
                             itemMap.put(selectItem.getValue().
                                             toString(),
                                     selectItem.getLabel());
                         }
-                        // ((SelectOneObjectIdConverter) this.myField.converterValue).setItemMap(itemMap);
+                        // ((SelectOneObjectIdConverter) this.converterValue).setItemMap(itemMap);
                     }
-                    this.myField.viewKey = this.myField.getItemsAsMyItems().getView();
+                    this.viewKey = this.itemsAsMyItems.getView();
                 }
 
             } else if (converterValue.getClass().
                     getSimpleName().
                     equalsIgnoreCase(CONVERTER_TELMAN_STRING_CONVERTER)) {
-                if (this.myField.getItemsAsMyItems() != null) {
+                if (this.itemsAsMyItems != null) {
                     throw new RuntimeException(new StringBuilder()
-                            .append(this.myField.getKey()).
+                            .append(this.key).
                             append("<br/>").
                             append("\"TelmanStringConverter\" converter conflicts with \"items\" attribute.").
                             append("<br/>").
@@ -1204,32 +1436,30 @@ public class MyField {
         }
 
         public Builder maskRestOfThem() {
-            if (this.myField.dbo.get(LIST_OF_VALUES) != null) {
-                this.myField.listOfValues = (List<SelectItem>) this.myField.dbo.
-                        get(LIST_OF_VALUES);
+            if (this.dbo.get(LIST_OF_VALUES) != null) {
+                this.listOfValues = (List<SelectItem>) this.dbo.get(LIST_OF_VALUES);
             }
-            this.myField.fileLimit = this.myField.dbo.get(FILE_LIMIT) == null ? 1 : ((Number) this.myField.dbo.
+            this.fileLimit = this.dbo.get(FILE_LIMIT) == null ? 1 : ((Number) this.dbo.
                     get(FILE_LIMIT)).intValue();
-            if (this.myField.dbo.get(FILE_TYPE) instanceof String) {
-                this.myField.fileType = (String) this.myField.dbo.get(FILE_TYPE);
+            if (this.dbo.get(FILE_TYPE) instanceof String) {
+                this.fileType = (String) this.dbo.get(FILE_TYPE);
             }
-            Object tmpWidth = this.myField.dbo.get("width");
-            this.myField.width = tmpWidth == null ? 100 : ((Number) tmpWidth).
+            Object tmpWidth = this.dbo.get("width");
+            this.width = tmpWidth == null ? 100 : ((Number) tmpWidth).
                     intValue();
-            this.myField.style = (this.myField.dbo.get(STYLE) == null)
+            this.style = (this.dbo.get(STYLE) == null)
                     ? "white-space:nowrap;font-family: monospace;text-align:left;"
-                    : "white-space:nowrap;".concat(this.myField.dbo.getString(
-                    STYLE));
+                    : "white-space:nowrap;".concat(this.dbo.getString(STYLE));
 
-            Object datePattern = this.myField.dbo.get(MY_DATE_PATTERN);
+            Object datePattern = this.dbo.get(MY_DATE_PATTERN);
 
-            this.myField.myDatePattern = (datePattern instanceof String) ? datePattern.
+            this.myDatePattern = (datePattern instanceof String) ? datePattern.
                     toString() : "yyyy.MM.dd HH:mm";
 
             // maskLabelStyle
-            this.myField.labelStyle = (this.myField.dbo.get(LABEL_STYLE) == null)
+            this.labelStyle = (this.dbo.get(LABEL_STYLE) == null)
                     ? ""
-                    : "".concat(this.myField.dbo.get(LABEL_STYLE).
+                    : "".concat(this.dbo.get(LABEL_STYLE).
                     toString());
 
             return this;
@@ -1237,31 +1467,31 @@ public class MyField {
 
         public Builder maskDescription() {
 
-            this.myField.description = (String) this.myField.dbo.
+            this.description = (String) this.dbo.
                     get(DESCRIPTION);
-            this.myField.renderDesc = this.myField.rendered && this.myField.description != null;
+            this.renderDesc = this.rendered && this.description != null;
 
-            this.myField.popupDesc = (String) this.myField.dbo.get(
+            this.popupDesc = (String) this.dbo.get(
                     POPUP_DESCRIPTION);
-            this.myField.renderPopupDesc = this.myField.rendered && this.myField.popupDesc != null;
+            this.renderPopupDesc = this.rendered && this.popupDesc != null;
 
             return this;
         }
 
         public Builder maskOrders() {
 
-            if (this.myField.dbo.get(ORDER) instanceof Number) {
-                this.myField.order = ((Number) this.myField.dbo.get(ORDER)).
+            if (this.dbo.get(ORDER) instanceof Number) {
+                this.order = ((Number) this.dbo.get(ORDER)).
                         intValue();
             } else {
-                this.myField.order = 0;
+                this.order = 0;
             }
 
-            if (this.myField.dbo.get(REPORT_ORDER) instanceof Number) {
-                this.myField.reportOrder = ((Number) this.myField.dbo.get(
+            if (this.dbo.get(REPORT_ORDER) instanceof Number) {
+                this.reportOrder = ((Number) this.dbo.get(
                         REPORT_ORDER)).intValue();
             } else {
-                this.myField.reportOrder = 0;
+                this.reportOrder = 0;
             }
 
             return this;
@@ -1269,32 +1499,30 @@ public class MyField {
 
         public Builder maskAjax() {
 
-            this.myField.tagAjax = new TagAjax(new Document());
+            this.tagAjax = new TagAjax(new Document());
 
-            Document ajax = this.myField.dbo.get(AJAX, Document.class);
+            Document ajax = this.dbo.get(AJAX, Document.class);
             if (ajax == null) {
                 return this;
             }
 
-            this.myField.tagAjax = new TagAjax(ajax);
+            this.tagAjax = new TagAjax(ajax);
 
             return this;
         }
 
         public Builder maskEmbeddedAsList() {
-            this.myField.embeddedAsList = Boolean.TRUE.equals(this.myField.dbo.
+            this.embeddedAsList = Boolean.TRUE.equals(this.dbo.
                     get("embeddedAsList"));
             return this;
         }
 
         public Builder cacheBsonConverter(boolean isBsonConverter) {
             if (isBsonConverter) {
-                List<Document> list = this.myField.getItemsAsMyItems().getListOfDocument();
+                List<Document> list = this.itemsAsMyItems.getListOfDocument();
                 for (Document doc : list) {
                     FmsCodeName fmsCodeName = new FmsCodeName(doc);
-                    this.myField.getCacheBsonConverter().
-                            put(fmsCodeName.
-                                    getCode(), fmsCodeName.getName());
+                    this.cacheBsonConverter.put(fmsCodeName.getCode(), fmsCodeName.getName());
                 }
             }
             return this;
@@ -1320,10 +1548,10 @@ public class MyField {
 
         private void maskAutosetSchemaVersion110(RoleMap roleMap) {
 
-            Document autoset = this.myField.dbo.get(AUTOSET, Document.class);
+            Document autoset = this.dbo.get(AUTOSET, Document.class);
 
             if (autoset == null) {
-                this.myField.autoset = false;
+                this.autoset = false;
                 return;
             }
 
@@ -1351,34 +1579,34 @@ public class MyField {
                 }
             }
 
-            this.myField.autoset = Boolean.TRUE.equals(value);
+            this.autoset = Boolean.TRUE.equals(value);
 
         }
 
         private void maskAutosetNoSchema() {
-            this.myField.autoset = this.myField.dbo.get(AUTOSET, Boolean.class);
+            this.autoset = this.dbo.get(AUTOSET, Boolean.class);
         }
 
         public Builder maskShortName() {
-            this.myField.shortName = (String) this.myField.dbo.get(SHORT_NAME);
-            if (this.myField.shortName == null) {
-                this.myField.shortName = (String) this.myField.dbo.get(NAME);
+            this.shortName = (String) this.dbo.get(SHORT_NAME);
+            if (this.shortName == null) {
+                this.shortName = (String) this.dbo.get(NAME);
             }
             return this;
         }
 
         public Builder maskName() {
-            this.myField.name = (String) this.myField.dbo.get(NAME);
+            this.name = (String) this.dbo.get(NAME);
             return this;
         }
 
         public Builder maskPivotMeaseureConverter(Converter measureConverter) {
-            this.myField.measureConverter = measureConverter;
+            this.measureConverter = measureConverter;
             return this;
         }
 
         public MyField build() {
-            return this.myField;
+            return new MyField(this);
         }
 
     }

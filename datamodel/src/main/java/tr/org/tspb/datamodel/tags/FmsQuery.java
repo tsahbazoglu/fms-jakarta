@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import tr.org.tspb.constants.ProjectConstants;
+
 import static tr.org.tspb.constants.ProjectConstants.DIEZ;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR_IN;
@@ -20,6 +21,7 @@ import static tr.org.tspb.constants.ProjectConstants.MENU_ORDER;
 import static tr.org.tspb.constants.ProjectConstants.REPLACEABLE_KEY_FMS_VALUE;
 import static tr.org.tspb.constants.ProjectConstants.VALUE;
 import static tr.org.tspb.constants.ProjectConstants.pattern_fms_crud;
+
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.MyMap;
 import tr.org.tspb.datamodel.dao.TagItemsQueryRef;
@@ -33,8 +35,8 @@ import tr.org.tspb.datamodel.pojo.RoleMap;
 public class FmsQuery {
 
     private static Document build(Document queryDoc, Map filter,
-            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
-            MyField myField, MyMap crudObject) {
+                                  FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
+                                  String formKey, MyMap crudObject) {
 
         Document q = new Document();
 
@@ -78,19 +80,19 @@ public class FmsQuery {
                     case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_PERIOD:
                         q.put(key,
                                 filter.get("period") == null ? "no result" : filter.
-                                get("period"));
+                                        get("period"));
                         break;
                     case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_TEMPLATE:
                         q.put(key,
                                 filter.get("template") == null ? "no result" : filter.
-                                get("template"));
+                                        get("template"));
                         break;
                     case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_ID:
                         q.put(key,
                                 loginMemberId == null ? "no result" : loginMemberId);
                         break;
                     case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_THIS_FORM_KEY:
-                        q.put(key, myField.getMyFormKey());
+                        q.put(key, formKey);
                         break;
                     default:
                         throw new RuntimeException(
@@ -129,12 +131,12 @@ public class FmsQuery {
                     break;
                 case "ne":
                     q.put(key, new Document(DOLAR_NE, queryDoc.get(VALUE,
-                            String.class).
+                                    String.class).
                             replaceAll(DIEZ, DOLAR)));
                     break;
                 case "regex":
                     q.put(key, new Document(DOLAR_REGEX, queryDoc.get(VALUE,
-                            String.class).
+                                    String.class).
                             replaceAll(DIEZ, DOLAR)));
                     break;
                 default:
@@ -146,23 +148,23 @@ public class FmsQuery {
     }
 
     public static Document buildListQuery(List<Document> listOfFilter,
-            Map filter,
-            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
-            MyField myField, MyMap crudObject) {
+                                          Map filter,
+                                          FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
+                                          String formKey, MyMap crudObject) {
         Document result = new Document();
         if (listOfFilter != null) {
             for (Document doc : listOfFilter) {
                 result.putAll(FmsQuery.build(doc, filter, fmsScriptRunner,
                         loginMemberId,
-                        myField, crudObject));
+                        formKey, crudObject));
             }
         }
         return result;
     }
 
     public static Document buildListQuery(List<Document> listOfFilter,
-            Map filter,
-            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId)
+                                          Map filter,
+                                          FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId)
             throws RuntimeException {
 
         Document result = new Document();
@@ -177,9 +179,9 @@ public class FmsQuery {
     }
 
     public static Document buildListQueryAjax(List<Document> listOfFilter,
-            Map filter,
-            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
-            MyMap crud, RoleMap roleMap) throws RuntimeException {
+                                              Map filter,
+                                              FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
+                                              MyMap crud, RoleMap roleMap) throws RuntimeException {
 
         Document result = new Document();
 
@@ -202,8 +204,8 @@ public class FmsQuery {
     }
 
     public static Document buildAjax(Document queryDoc, Map filter,
-            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
-            MyMap crud, RoleMap roleMap) {
+                                     FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId,
+                                     MyMap crud, RoleMap roleMap) {
 
         Document resolvedQuery = new Document();
 
@@ -247,12 +249,12 @@ public class FmsQuery {
                     case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_PERIOD:
                         resolvedQuery.put(key,
                                 filter.get("period") == null ? "no result" : filter.
-                                get("period"));
+                                        get("period"));
                         break;
                     case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_FILTER_TEMPLATE:
                         resolvedQuery.put(key,
                                 filter.get("template") == null ? "no result" : filter.
-                                get("template"));
+                                        get("template"));
                         break;
                     case ProjectConstants.REPLACEABLE_KEY_WORD_FOR_FUNCTONS_LOGIN_MEMBER_ID:
                         resolvedQuery.put(key,
@@ -295,7 +297,7 @@ public class FmsQuery {
                     break;
                 case "ne":
                     resolvedQuery.put(key, new Document(DOLAR_NE, queryDoc.get(
-                            VALUE, String.class).
+                                    VALUE, String.class).
                             replaceAll(DIEZ, DOLAR)));
                     break;
                 case "regex":
@@ -312,7 +314,7 @@ public class FmsQuery {
     }
 
     private static Object aggregate(Document aggregateValue,
-            FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId) {
+                                    FmsScriptRunner fmsScriptRunner, ObjectId loginMemberId) {
         String db = aggregateValue.getString("db");
         String table = aggregateValue.getString("table");
         List<Document> pipline = aggregateValue.getList("pipline",

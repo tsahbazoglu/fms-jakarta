@@ -171,8 +171,8 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                                     UserDetail userDetail) {
 
         ObjectId loginDataBaseUserId = (userDetail == null) ? null : userDetail.
-                                                                     getDbo().
-                                                                     getObjectId();
+                getDbo().
+                getObjectId();
 
         if (docField.get(DEFAULT_VALUE) == null) {
             return null;
@@ -1150,10 +1150,13 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
         return fields;
     }
 
-    private Map<String, MyField> createFields(MyProject myProject,
-                                              Document docForm, Map filter,
-                                              RoleMap roleMap, UserDetail userDetail) throws
-            NullNotExpectedException, FormConfigException {
+    private Map<String, MyField> createFields(
+            MyProject myProject,
+            Document docForm,
+            Map filter,
+            RoleMap roleMap,
+            UserDetail userDetail)
+            throws NullNotExpectedException, FormConfigException {
 
         if (docForm.get(FORMFIELDS) == null) {
             throw new NullNotExpectedException(
@@ -1171,34 +1174,38 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
                 Converter converter = createConverter(docForm, docField);
 
-                MyField myField = new MyField.Builder(userDetail.getDbo().
-                        getObjectId(), myProject, docField, fmsScriptRunner)
-                        .maskFormKey(docForm.get("key", String.class)).
-                        maskAutoset((String) docForm.get(FmsForm.SCHEMA_VERSION),
-                                roleMap).
-                        maskShortName().
-                        maskCode().
-                        withRendered(calcRendered(roleMap, docField, filter,
-                                userDetail)).
-                        withReadonly(calcReadOnly(docField, filter, roleMap)).
-                        maskAccesscontrol().
-                        maskNdTypeAndNdAxis().
-                        withDefaultValue(calcDefaultValue(myProject, docForm,
-                                docField, roleMap, filter, userDetail)).
-                        maskComponentType().
-                        maskItemsAsMyItems((String) docForm.get(
-                                        MyForm.SCHEMA_VERSION), filter, roleMap.
-                                        isUserInRole(myProject.getAdminRole()),
-                                roleMap.keySet()).
-                        withConverter(converter, null).
-                        maskRestOfThem().
-                        maskDescription().
-                        maskOrders().
-                        maskAjax().
-                        maskSearchAccess().
-                        maskEmbeddedAsList().
-                        cacheBsonConverter(converter instanceof BsonConverter).
-                        build();
+                String schemaVersion = docForm.getString(FmsForm.SCHEMA_VERSION);
+                String formKey = docForm.getString(FmsForm.KEY);
+
+                MyField myField = new MyField
+                        .Builder(userDetail.getDbo().getObjectId(), myProject, docField, fmsScriptRunner)
+                        .maskFormKey(formKey)
+                        .maskAutoset(schemaVersion, roleMap)
+                        .maskShortName()
+                        .maskCode()
+                        .withRendered(calcRendered(roleMap, docField, filter, userDetail))
+                        .withReadonly(calcReadOnly(docField, filter, roleMap))
+                        .maskAccesscontrol()
+                        .maskNdTypeAndNdAxis()
+                        .withDefaultValue(calcDefaultValue(
+                                myProject,
+                                docForm,
+                                docField, roleMap, filter, userDetail))
+                        .maskComponentType()
+                        .maskItemsAsMyItems(
+                                schemaVersion,
+                                filter,
+                                roleMap.isUserInRole(myProject.getAdminRole()),
+                                roleMap.keySet())
+                        .withConverter(converter, null)
+                        .maskRestOfThem()
+                        .maskDescription()
+                        .maskOrders()
+                        .maskAjax()
+                        .maskSearchAccess()
+                        .maskEmbeddedAsList()
+                        .cacheBsonConverter(converter instanceof BsonConverter)
+                        .build();
 
                 FmsAutoComplete autoComplete = new OnFlyItems(myProject, myField,
                         docForm, filter, roleMap, userDetail, mongoDbUtil);

@@ -19,6 +19,7 @@ public interface FmsForm {
     public static final String SCHEMA_VERSION_110 = "1.1.0";
     public static final String SCHEMA_VERSION_111 = "1.1.1";
     public static final String SCHEMA_VERSION = "schemaVersion";
+    public static final String KEY = "key";
     public static final String ION_SETTING_ACTIVITY_STATUS = "ion_setting_activity_status";
 
     public List<MyField> getChildFields();
