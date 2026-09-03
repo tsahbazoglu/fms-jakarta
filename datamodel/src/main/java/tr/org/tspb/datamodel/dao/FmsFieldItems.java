@@ -230,9 +230,9 @@ public class FmsFieldItems {
                 .append(NAME, true);
 
         public Builder(
-                String adminAndViewerRole,
                 String formKey,
                 String fieldKey,
+                String adminAndViewerRole,
                 Map filter,
                 Document itemsDoc,
                 FmsScriptRunner fmsScriptRunner) {

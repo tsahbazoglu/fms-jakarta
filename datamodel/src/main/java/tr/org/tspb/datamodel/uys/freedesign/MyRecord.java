@@ -1,6 +1,7 @@
 package tr.org.tspb.datamodel.uys.freedesign;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -36,13 +37,12 @@ public class MyRecord {
     private Boolean renderedInOut;
 
     private MyRecord(RoleMap roleMap, UserDetail userDetail, FmsForm myForm,
-            Map<String, String> cacheDbMamberMap) {
+                     Map<String, String> cacheDbMamberMap) {
         crudFieldMap = new HashMap<>(myForm.getFields());
         for (String key : crudFieldMap.keySet()) {
-            if (myForm.getField(key).
-                    getItemsAsMyItems() != null) {
-                myForm.getField(key).
-                        createSelectItems(null, null, roleMap, userDetail, false);
+            MyField myField = crudFieldMap.get(key);
+            if (myField.getItemsAsMyItems() != null) {
+                myField.createSelectItems(null, null, roleMap, userDetail, false);
             }
         }
         crudMap.put(FORM_NAME, myForm.getField(FORM_NAME).
@@ -54,7 +54,7 @@ public class MyRecord {
     }
 
     public MyRecord(RoleMap roleMap, UserDetail userDetail, Map o,
-            FmsForm myForm, Map<String, String> cacheDbMamberMap) {
+                    FmsForm myForm, Map<String, String> cacheDbMamberMap) {
         this(roleMap, userDetail, myForm, cacheDbMamberMap);
 
         crudMap = o;

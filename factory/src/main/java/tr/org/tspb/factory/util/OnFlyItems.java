@@ -205,7 +205,9 @@ public class OnFlyItems implements FmsAutoComplete {
             default -> throw new RuntimeException("itemType : " + itemType + " is not supported.");
         };
 
-        if (crudObject.get(fieldKey) instanceof ObjectId id && !items.stream().filter(item -> id.equals(item.getValue())).findFirst().isPresent()) {
+        if (crudObject != null
+                && crudObject.get(fieldKey) instanceof ObjectId id
+                && !items.stream().filter(item -> id.equals(item.getValue())).findFirst().isPresent()) {
             Document document = mongoDbUtil.findOne(dbName, tableName, new Document(MONGO_ID, id));
             StringBuilder value = new StringBuilder();
             Iterator<String> iterator = fmsFieldItems.getView().iterator();
