@@ -22,15 +22,16 @@ if (!telmangrid.clarity) {
             if (typeof rowHeaderWidth === "string") {
                 rowHeaderWidth = eval("(" + rowHeaderWidth + ')') + 80;
             }
-            var colCount = colHeaders.length;
+            var colCount = colHeaders ? colHeaders.length : 0;
             var colWidthsArray = [];
             for (var i = 0; i < colCount; i++) {
                 colWidthsArray.push(colWidths);
             }
             var offset = 20;
-            var rowHeigth = 24;
+            var rowHeigth = 30; // Handsontable 18.1.0 row height (~28-30px)
+            var rowCount = (data && data.length) ? data.length : (rowHeaders ? rowHeaders.length : 1);
             var divWidth = offset + rowHeaderWidth + colCount * colWidths + "px";
-            var divHeigth = 100 + offset + rowHeigth + rowHeaders.length * rowHeigth + "px";
+            var divHeigth = 60 + offset + (rowCount * rowHeigth) + "px";
 
             /**
              * jsf id include a char ":" wich is not recognized by jquery as $("#ccid")
@@ -53,10 +54,15 @@ if (!telmangrid.clarity) {
 //                "background-color": "blue",
                 "width": divWidth,
                 "height": divHeigth,
-                "overflow": "hidden"
+                "overflow": "hidden",
+                "pointer-events": "auto"
             });
 
-            var container = document.getElementById(ccid);
+            var textRenderer = (Handsontable.renderers && Handsontable.renderers.getRenderer) ? 
+                Handsontable.renderers.getRenderer('text') : Handsontable.renderers.TextRenderer;
+            var checkboxRenderer = (Handsontable.renderers && Handsontable.renderers.getRenderer) ? 
+                Handsontable.renderers.getRenderer('checkbox') : Handsontable.renderers.CheckboxRenderer;
+
             var hot = new Handsontable(container, {
                 data: data,
                 colHeaders: colHeaders,
@@ -65,7 +71,19 @@ if (!telmangrid.clarity) {
                 colWidths: colWidthsArray,
                 manualColumnResize: true,
                 width: divWidth,
-                height: 500,
+                height: 'auto',
+                afterRender: function () {
+                    var instance = this;
+                    setTimeout(function () {
+                        if (!instance || instance.isDestroyed) return;
+                        var wtHider = container.querySelector('.wtHider');
+                        if (wtHider && wtHider.offsetHeight > 0) {
+                            var neededHeight = wtHider.offsetHeight + 20;
+                            jqueryDiv.css("height", neededHeight + "px");
+                            jqueryDiv.parent('#parentContainer').css("height", neededHeight + "px");
+                        }
+                    }, 50);
+                },
                 afterGetRowHeader: function (col, TH) {
                     $(TH).css("text-align", "left");
                 },

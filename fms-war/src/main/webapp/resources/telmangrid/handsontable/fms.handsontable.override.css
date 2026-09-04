@@ -37,3 +37,39 @@
     font-size: 14px;
     color: gray;
 } 
+
+/* Handsontable 18.1.0 Cell Editor overlay overrides */
+.handsontableInputHolder {
+    z-index: 1000 !important;
+}
+
+textarea.handsontableInput {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    font-size: 12px !important;
+    box-sizing: border-box !important;
+}
+
+/* Guarantee pointer events and selection in PrimeFaces 16 container widgets */
+.ui-scrollpanel-content,
+.ui-tabs-panel,
+.hot,
+.handsontable,
+.handsontable .wtHolder,
+.handsontable table.htCore,
+.handsontable td,
+.handsontable th {
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+/* Dynamic container height expansion for wrapper panels */
+#parentContainer {
+    height: auto !important;
+    min-height: min-content;
+}
+
+.ht-theme-main {
+    max-height: none !important;
+}
