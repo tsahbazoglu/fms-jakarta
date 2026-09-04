@@ -46,9 +46,19 @@ if (!telmangrid.clarity) {
             });
 
             var container = document.getElementById(ccid);
+
+            var nestedHeaders = null;
+            if (colHeaders.join() === "Kadın,Erkek,Kadın,Erkek,Toplam") {
+                nestedHeaders = [
+                    [{"label": "T.C. Vatandaşı", "colspan": 2}, {"label": "Yabancı Uyruklu", "colspan": 2}, "-"],
+                    ["Kadın", "Erkek", "Kadın", "Erkek", "Toplam"]
+                ];
+            }
             var hot = new Handsontable(container, {
+                licenseKey: 'non-commercial-and-evaluation',
                 data: data,
                 colHeaders: colHeaders,
+                nestedHeaders: nestedHeaders,
                 rowHeaders: rowHeaders,
                 rowHeaderWidth: rowHeaderWidth,
                 colWidths: colWidthsArray,
@@ -106,8 +116,7 @@ if (!telmangrid.clarity) {
                             }
                         };
                     }
-                },
-                licenseKey: "non-commercial-and-evaluation"
+                }
             });
             $('.handsontable table tbody tr th').css({"text-align": "left"});
             $('.handsontable table tbody tr td').css({"text-align": "right"});

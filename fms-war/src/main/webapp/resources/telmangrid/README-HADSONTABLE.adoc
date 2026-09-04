@@ -1,0 +1,74 @@
+== Download
+downlod https://handsontable.com/download
+unzip handsontable-master.zip
+cd handsontable-master-v18.1.0
+
+== Run the build command from the workspace root:
+----
+npm install
+npm --prefix handsontable run build
+----
+
+== This will generate the dist folder at: ~/Downloads/handsontable-master-v18.1.0/handsontable/dist/ containing:
+----
+~/Downloads/handsontable-master-v18.1.0/handsontable/dist/handsontable.full.min.js
+~/Downloads/handsontable-master-v18.1.0/handsontable/dist/handsontable.full.min.css
+----
+
+== Option 2: Download pre-built files directly (No build step required)
+----
+Instead of building from source, download the compiled NPM release package:
+
+Direct ZIP Download from NPM:
+https://registry.npmjs.org/handsontable/-/handsontable-18.1.0.tgz (Extracting this tarball will give you a package/dist/ directory with handsontable.full.min.js and handsontable.full.min.css ready to use).
+Direct CDN Downloads:
+JS: https://cdn.jsdelivr.net/npm/handsontable@18.1.0/dist/handsontable.full.min.js
+CSS: https://cdn.jsdelivr.net/npm/handsontable@18.1.0/dist/handsontable.full.min.css
+----
+
+bulk download::
+----
+curl -L https://registry.npmjs.org/handsontable/-/handsontable-18.1.0.tgz | tar -xz
+
+This extracts a package/ folder containing the ready-to-use dist/ directory:
+
+package/dist/handsontable.full.min.js
+package/dist/handsontable.full.min.css
+----
+
+Or download individual files directly using curl::
+----
+cd /home/telman/github/fms-jakarta/fms-war/src/main/webapp/resources/telmangrid/handsontable-18.1.0
+
+curl -O https://cdn.jsdelivr.net/npm/handsontable@18.1.0/dist/handsontable.full.min.js
+curl -O https://cdn.jsdelivr.net/npm/handsontable@18.1.0/dist/handsontable.full.js
+
+curl -O https://cdn.jsdelivr.net/npm/handsontable@18.1.0/styles/handsontable.min.css
+curl -O https://cdn.jsdelivr.net/npm/handsontable@18.1.0/styles/ht-theme-main.min.css
+
+
+----
+
+----
+<h:outputStylesheet library="handsontable" name="styles/handsontable.min.css" />
+<h:outputStylesheet library="handsontable" name="styles/ht-theme-main.min.css" />
+<h:outputScript library="handsontable" name="dist/handsontable.full.min.js" />
+----
+
+
+----
+Important UI change in v18+
+Add the ht-theme-main CSS class to your table container <div id="example">:
+
+html
+￼
+￼
+<div id="example" class="ht-theme-main"></div>
+javascript
+￼
+￼
+const hot = new Handsontable(document.getElementById('example'), {
+  data: myData,
+  licenseKey: 'non-commercial-and-evaluation'
+});
+----
