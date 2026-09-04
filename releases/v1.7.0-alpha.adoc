@@ -1,4 +1,4 @@
-:version: 1.6.3-beta
+:version: 1.7.0-alpha
 
 = Release Notes — v{version}
 
