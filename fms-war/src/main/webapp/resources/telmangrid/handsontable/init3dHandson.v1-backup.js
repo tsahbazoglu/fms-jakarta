@@ -53,10 +53,15 @@ if (!telmangrid.clarity) {
 //                "background-color": "blue",
                 "width": divWidth,
                 "height": divHeigth,
-                "overflow": "hidden"
+                "overflow": "hidden",
+                "pointer-events": "auto"
             });
 
-            var container = document.getElementById(ccid);
+            var textRenderer = (Handsontable.renderers && Handsontable.renderers.getRenderer) ? 
+                Handsontable.renderers.getRenderer('text') : Handsontable.renderers.TextRenderer;
+            var checkboxRenderer = (Handsontable.renderers && Handsontable.renderers.getRenderer) ? 
+                Handsontable.renderers.getRenderer('checkbox') : Handsontable.renderers.CheckboxRenderer;
+
             var hot = new Handsontable(container, {
                 data: data,
                 colHeaders: colHeaders,
@@ -70,54 +75,74 @@ if (!telmangrid.clarity) {
                     $(TH).css("text-align", "left");
                 },
                 afterChange: function (changes) {
+                    if (!changes) return;
                     var jsfData = JSON.stringify(this.getData());
                     var hiddenTextJsonDataToModel = $(document.getElementById("id-tab-view:nd-form:id-hidden-text-json-data-to-model"));
                     hiddenTextJsonDataToModel.val(jsfData);
 
                     var hiddenTextStatusSaved = $(document.getElementById("id-tab-view:nd-form:id-hidden-text-saved-status"));
                     hiddenTextStatusSaved.prop("value", false);
-
                 },
                 cells: function (row, col, prop) {
-                    // Conditional formatting
-                    // https ://handsontable.com/docs/6.1.1/demo-conditional-formatting.html
-                    // press F12 go to console and type Handsontable.renderers
-                    var cellRender = colRenderers[row][col];
+                    var cellProperties = {};
+                    var cellRender = (colRenderers && colRenderers[row]) ? colRenderers[row][col] : null;
+
+                    if (!cellRender) {
+                        return cellProperties;
+                    }
+
+                    var isReadOnly = cellRender.readonly === true || cellRender.readonly === "true";
+
                     if (cellRender.component === "inputText") {
-                        return {
-                            renderer: function (instance, td, row, col, prop, value, cellProperties) {
-                                // Handsontable.TextCell.renderer.apply(this, arguments); -version 0.10.5
-                                Handsontable.renderers.TextRenderer.apply(this, arguments);
-                                $(td).css({
-                                    "background": cellRender.background,
-                                    "text-align": "right"
-                                });
-                            },
-                            readOnly: cellRender.readonly
+                        cellProperties.editor = isReadOnly ? false : 'text';
+                        cellProperties.readOnly = isReadOnly;
+                        cellProperties.renderer = function (instance, td, row, col, prop, value, cellProps) {
+                            textRenderer.apply(this, arguments);
+                            $(td).css({
+                                "background": cellRender.background || "white",
+                                "text-align": "right"
+                            });
                         };
                     } else if (cellRender.component === "checkBox") {
-                        return {
-                            renderer: function (instance, td, row, col, prop, value, cellProperties) {
-                                Handsontable.renderers.CheckboxRenderer.apply(this, arguments);
-                                $(td).css({
-                                    background: cellRender.background,
-                                    "text-align": "right"
-                                });
-                            },
-                            readOnly: false//cellRender.readonly
+                        cellProperties.type = 'checkbox';
+                        cellProperties.editor = 'checkbox';
+                        cellProperties.readOnly = isReadOnly;
+                        cellProperties.renderer = function (instance, td, row, col, prop, value, cellProps) {
+                            checkboxRenderer.apply(this, arguments);
+                            $(td).css({
+                                "background": cellRender.background || "white",
+                                "text-align": "right"
+                            });
                         };
                     } else {
-                        return {
-                            renderer: function (instance, td, row, col, prop, value, cellProperties) {
-                                Handsontable.renderers.TextRenderer.apply(this, arguments);
-                                $(td).css({
-                                    "background": "white",
-                                    "text-align": "right"
-                                });
-                            }
+                        cellProperties.editor = isReadOnly ? false : 'text';
+                        cellProperties.readOnly = isReadOnly;
+                        cellProperties.renderer = function (instance, td, row, col, prop, value, cellProps) {
+                            textRenderer.apply(this, arguments);
+                            $(td).css({
+                                "background": "white",
+                                "text-align": "right"
+                            });
                         };
                     }
+
+                    console.log("Cell [" + row + "][" + col + "] properties:", cellProperties, "cellRender:", cellRender);
+                    return cellProperties;
                 },
+                afterOnCellDblClick: function (event, coords, TD) {
+                    if (!coords || coords.row < 0 || coords.col < 0) return;
+                    var cellMeta = this.getCellMeta(coords.row, coords.col);
+                    if (!cellMeta.readOnly) {
+                        var activeEditor = this.getActiveEditor();
+                        if (activeEditor && !activeEditor.isOpened()) {
+                            activeEditor.beginEditing();
+                        }
+                    }
+                },
+                afterSelectionEnd: function (row, col) {
+                    this.listen();
+                },
+                sanitizer: false, // Suppresses header HTML sanitizer warning
                 licenseKey: "non-commercial-and-evaluation"
             });
 
