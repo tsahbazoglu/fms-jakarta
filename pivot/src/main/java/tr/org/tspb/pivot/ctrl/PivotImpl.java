@@ -500,7 +500,9 @@ public abstract class PivotImpl implements Serializable, PivotApi {
 
             Document map = new Document();
 
-            switch (myField.getItemsAsMyItems().getItemType()) {
+            FmsFieldItems.ItemType itemType = myField.getItemsAsMyItems().getItemType();
+
+            switch (itemType) {
                 case list:
                     List<SelectItem> listDimensionZAXIS = new ArrayList<>(myField.getItemsAsMyItems().
                             getListOfSelectItem());
@@ -520,7 +522,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
                                     loginController.getLoggedUserDetail()));
                     break;
                 case doc:
-
+                case ref:
                     StringBuilder sb = new StringBuilder();
                     sb.append(myForm.getKey());
                     sb.append(" : ");
