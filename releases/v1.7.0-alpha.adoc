@@ -3,6 +3,8 @@
 = Release Notes — v{version}
 
 == Overview
+
+=== Refresh input value issue
 Even though your backend myObject is refreshed and loaded with clean data, the input values still show up when you reopen the dialog because of how JSF and PrimeFaces handle local state caching during validation failures.
 
 *When a validation error happens, JSF stores the failed user input values in the component's internal local state*.
@@ -21,6 +23,107 @@ If you ever trigger this dialog via a p:commandButton from the UI layer, you can
 ----
 
 By calling PrimeFaces.current().resetInputs("idTwoDlgTabView:crud2dForm") right before your AJAX update, JSF will drop its local error cache, allowing your freshly loaded myObject values to display properly.
+
+
+=== Handsontable v18.1.0 & PrimeFaces 16.x Integration Fixes
+
+==== Issue Description
+After upgrading the application stack to **PrimeFaces 16.x** (from 15.x) and **Handsontable 18.1.0** (from 6.1.1 / 12.1.2), data grid cells in `<mygrid:mygrid>` became non-interactive:
+
+* **Single-Click Selection Failed**: Clicking on grid cells failed to select them or focus the table.
+* **Double-Click Cell Editing Failed**: Double-clicking cells failed to open the text/checkbox cell editor.
+
+==== Root Cause Analysis
+
+1. **PrimeFaces 16 Event Capture & Bubbling Interception**:
+   PrimeFaces 16 updated core layout scripts (`components.js`, `touchswipe.js`) and container widgets (`<p:scrollPanel>`, `<p:tabView>`, `<p:dialog>`). Parent widgets attached container-level event listeners for `mousedown`, `pointerdown`, and `touchstart` to manage scrollbars and touch gestures. Because Handsontable cell selection relies natively on `mousedown` and `pointerdown` (not `click`), PrimeFaces 16's bubbling listeners intercepted and cancelled these events before Handsontable's internal selection engine could process them.
+
+2. **JSF String vs. Boolean `readOnly` Type Coercion**:
+   JSF JSON serialization sends boolean flags as strings (`"false"` or `"true"`). In JavaScript, *`Boolean("false")` evaluates to `true`*. This coerced all grid cells into `readOnly = true`, locking the cells against editing.
+
+3. **Handsontable 18.x Cell `editor` Contract**:
+   In Handsontable 18.x, returning a custom renderer inside the `cells(row, col, prop)` callback requires explicitly setting the `editor` property (e.g. `editor: 'text'` or `editor: 'checkbox'`). Omitting `editor` when defining custom renderers disables cell editing.
+
+4. **JSF AJAX Container Re-rendering**:
+   When PrimeFaces executed AJAX updates (e.g., `update="id-tab-view:currentMyGrid"`), the underlying grid DOM node was replaced while old event listeners remained bound to the detached element, causing stale instance conflicts.
+
+5. **Theme Class & Overlay Z-Index**:
+   Handsontable 18.1.0 requires the `ht-theme-main` CSS class on the container element for editor overlays (`.handsontableInputHolder`) to calculate positions and z-index layers over PrimeFaces themes (`aura-dark-emerald`).
+
+=== Technical Solution & Implementation
+
+==== 1. Event Propagation Guard & Capture-Phase Listeners (`init3dHandson.v1.js`)
+* **Propagation Isolation**: Stopped `mousedown`, `pointerdown`, `touchstart`, `click`, and `dblclick` events from bubbling up out of the Handsontable container to parent PrimeFaces 16 widgets:
+[source,javascript]
+----
+['mousedown', 'pointerdown', 'touchstart', 'click', 'dblclick'].forEach(function (eventType) {
+    container.addEventListener(eventType, function (e) {
+        e.stopPropagation();
+        if (hot && !hot.isDestroyed) {
+            hot.listen();
+        }
+    }, false);
+});
+----
+* **Capture-Phase Double-Click Fallback**: Added a Capture-Phase (`useCapture = true`) listener to trigger `activeEditor.beginEditing()` before PrimeFaces handlers can intervene:
+[source,javascript]
+----
+container.addEventListener('dblclick', function (e) {
+    if (hot && !hot.isDestroyed) {
+        hot.listen();
+        var selected = hot.getSelectedLast();
+        if (selected) {
+            var cellMeta = hot.getCellMeta(selected[0], selected[1]);
+            if (cellMeta && !cellMeta.readOnly) {
+                var activeEditor = hot.getActiveEditor();
+                if (activeEditor && !activeEditor.isOpened()) {
+                    activeEditor.beginEditing();
+                }
+            }
+        }
+    }
+}, true);
+----
+
+==== 2. Boolean Normalization & Explicit Editor Assignment
+* Converted JSON string properties to strict booleans and assigned explicit cell editors:
+[source,javascript]
+----
+var isReadOnly = cellRender.readonly === true || cellRender.readonly === "true";
+cellProperties.editor = isReadOnly ? false : 'text';
+cellProperties.readOnly = isReadOnly;
+----
+
+==== 3. Clean JSF AJAX Lifecycle Management
+* Tracked instance references on `container.__hotInstance` and invoked `__hotInstance.destroy()` before creating new instances during JSF AJAX partial updates.
+
+==== 4. CSS Overrides & Overlay Layering (`fms.handsontable.override.css`)
+* Enforced pointer interactions and text selection on grid containers within PrimeFaces panels:
+[source,css]
+----
+.ui-scrollpanel-content,
+.ui-tabs-panel,
+.hot,
+.handsontable,
+.handsontable .wtHolder,
+.handsontable table.htCore,
+.handsontable td,
+.handsontable th {
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+.handsontableInputHolder {
+    z-index: 1000 !important;
+}
+textarea.handsontableInput {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    font-size: 12px !important;
+    box-sizing: border-box !important;
+}
+----
 
 
 == Git Commands

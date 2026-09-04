@@ -513,7 +513,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_release_notes_v1_7_0_alpha">Release Notes — v1.7.0-alpha</a>
 <ul class="sectlevel2">
-<li><a href="#_overview_7">Overview</a></li>
+<li><a href="#_overview_7">Overview</a>
+<ul class="sectlevel3">
+<li><a href="#_refresh_input_value_issue">Refresh input value issue</a></li>
+<li><a href="#_handsontable_v18_1_0_primefaces_16_x_integration_fixes">Handsontable v18.1.0 &amp; PrimeFaces 16.x Integration Fixes</a></li>
+<li><a href="#_technical_solution_implementation">Technical Solution &amp; Implementation</a></li>
+</ul>
+</li>
 <li><a href="#_git_commands_7">Git Commands</a></li>
 </ul>
 </li>
@@ -1139,6 +1145,8 @@ git describe --tags</pre>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_overview_7">Overview</h3>
+<div class="sect3">
+<h4 id="_refresh_input_value_issue">Refresh input value issue</h4>
 <div class="paragraph">
 <p>Even though your backend myObject is refreshed and loaded with clean data, the input values still show up when you reopen the dialog because of how JSF and PrimeFaces handle local state caching during validation failures.</p>
 </div>
@@ -1166,6 +1174,167 @@ git describe --tags</pre>
 </div>
 <div class="paragraph">
 <p>By calling PrimeFaces.current().resetInputs("idTwoDlgTabView:crud2dForm") right before your AJAX update, JSF will drop its local error cache, allowing your freshly loaded myObject values to display properly.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_handsontable_v18_1_0_primefaces_16_x_integration_fixes">Handsontable v18.1.0 &amp; PrimeFaces 16.x Integration Fixes</h4>
+<div class="sect4">
+<h5 id="_issue_description">Issue Description</h5>
+<div class="paragraph">
+<p>After upgrading the application stack to <strong>PrimeFaces 16.x</strong> (from 15.x) and <strong>Handsontable 18.1.0</strong> (from 6.1.1 / 12.1.2), data grid cells in <code>&lt;mygrid:mygrid&gt;</code> became non-interactive:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Single-Click Selection Failed</strong>: Clicking on grid cells failed to select them or focus the table.</p>
+</li>
+<li>
+<p><strong>Double-Click Cell Editing Failed</strong>: Double-clicking cells failed to open the text/checkbox cell editor.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_root_cause_analysis">Root Cause Analysis</h5>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>PrimeFaces 16 Event Capture &amp; Bubbling Interception</strong>:
+PrimeFaces 16 updated core layout scripts (<code>components.js</code>, <code>touchswipe.js</code>) and container widgets (<code>&lt;p:scrollPanel&gt;</code>, <code>&lt;p:tabView&gt;</code>, <code>&lt;p:dialog&gt;</code>). Parent widgets attached container-level event listeners for <code>mousedown</code>, <code>pointerdown</code>, and <code>touchstart</code> to manage scrollbars and touch gestures. Because Handsontable cell selection relies natively on <code>mousedown</code> and <code>pointerdown</code> (not <code>click</code>), PrimeFaces 16&#8217;s bubbling listeners intercepted and cancelled these events before Handsontable&#8217;s internal selection engine could process them.</p>
+</li>
+<li>
+<p><strong>JSF String vs. Boolean <code>readOnly</code> Type Coercion</strong>:
+JSF JSON serialization sends boolean flags as strings (<code>"false"</code> or <code>"true"</code>). In JavaScript, <strong><code>Boolean("false")</code> evaluates to <code>true</code></strong>. This coerced all grid cells into <code>readOnly = true</code>, locking the cells against editing.</p>
+</li>
+<li>
+<p><strong>Handsontable 18.x Cell <code>editor</code> Contract</strong>:
+In Handsontable 18.x, returning a custom renderer inside the <code>cells(row, col, prop)</code> callback requires explicitly setting the <code>editor</code> property (e.g. <code>editor: 'text'</code> or <code>editor: 'checkbox'</code>). Omitting <code>editor</code> when defining custom renderers disables cell editing.</p>
+</li>
+<li>
+<p><strong>JSF AJAX Container Re-rendering</strong>:
+When PrimeFaces executed AJAX updates (e.g., <code>update="id-tab-view:currentMyGrid"</code>), the underlying grid DOM node was replaced while old event listeners remained bound to the detached element, causing stale instance conflicts.</p>
+</li>
+<li>
+<p><strong>Theme Class &amp; Overlay Z-Index</strong>:
+Handsontable 18.1.0 requires the <code>ht-theme-main</code> CSS class on the container element for editor overlays (<code>.handsontableInputHolder</code>) to calculate positions and z-index layers over PrimeFaces themes (<code>aura-dark-emerald</code>).</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_technical_solution_implementation">Technical Solution &amp; Implementation</h4>
+<div class="sect4">
+<h5 id="_1_event_propagation_guard_capture_phase_listeners_init3dhandson_v1_js">1. Event Propagation Guard &amp; Capture-Phase Listeners (<code>init3dHandson.v1.js</code>)</h5>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Propagation Isolation</strong>: Stopped <code>mousedown</code>, <code>pointerdown</code>, <code>touchstart</code>, <code>click</code>, and <code>dblclick</code> events from bubbling up out of the Handsontable container to parent PrimeFaces 16 widgets:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>['mousedown', 'pointerdown', 'touchstart', 'click', 'dblclick'].forEach(function (eventType) {
+    container.addEventListener(eventType, function (e) {
+        e.stopPropagation();
+        if (hot &amp;&amp; !hot.isDestroyed) {
+            hot.listen();
+        }
+    }, false);
+});</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Capture-Phase Double-Click Fallback</strong>: Added a Capture-Phase (<code>useCapture = true</code>) listener to trigger <code>activeEditor.beginEditing()</code> before PrimeFaces handlers can intervene:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>container.addEventListener('dblclick', function (e) {
+    if (hot &amp;&amp; !hot.isDestroyed) {
+        hot.listen();
+        var selected = hot.getSelectedLast();
+        if (selected) {
+            var cellMeta = hot.getCellMeta(selected[0], selected[1]);
+            if (cellMeta &amp;&amp; !cellMeta.readOnly) {
+                var activeEditor = hot.getActiveEditor();
+                if (activeEditor &amp;&amp; !activeEditor.isOpened()) {
+                    activeEditor.beginEditing();
+                }
+            }
+        }
+    }
+}, true);</pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_2_boolean_normalization_explicit_editor_assignment">2. Boolean Normalization &amp; Explicit Editor Assignment</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Converted JSON string properties to strict booleans and assigned explicit cell editors:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>var isReadOnly = cellRender.readonly === true || cellRender.readonly === "true";
+cellProperties.editor = isReadOnly ? false : 'text';
+cellProperties.readOnly = isReadOnly;</pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_3_clean_jsf_ajax_lifecycle_management">3. Clean JSF AJAX Lifecycle Management</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Tracked instance references on <code>container.<em>hotInstance</code> and invoked <code></em>hotInstance.destroy()</code> before creating new instances during JSF AJAX partial updates.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_4_css_overrides_overlay_layering_fms_handsontable_override_css">4. CSS Overrides &amp; Overlay Layering (<code>fms.handsontable.override.css</code>)</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Enforced pointer interactions and text selection on grid containers within PrimeFaces panels:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>.ui-scrollpanel-content,
+.ui-tabs-panel,
+.hot,
+.handsontable,
+.handsontable .wtHolder,
+.handsontable table.htCore,
+.handsontable td,
+.handsontable th {
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+.handsontableInputHolder {
+    z-index: 1000 !important;
+}
+textarea.handsontableInput {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    font-size: 12px !important;
+    box-sizing: border-box !important;
+}</pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
