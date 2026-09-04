@@ -67,7 +67,7 @@
                         <h:inputTextarea
                             value="#{myField.label}" 
                             styleClass="textareastyled"
-                            style="#{myField.labelStyle}"
+                            style="font-family: inherit; font-size: inherit; color: inherit; #{myField.labelStyle}"
                             rendered="#{myField.rendered}"
                             readonly="true"
                             />
@@ -232,7 +232,8 @@
                         value="#{application.contextPath}/myDownloadServlet/#{x.fileID}"
                         style="
                         text-decoration:none;
-                        font-size: 14px;
+                        font-size: var(--fms-font-size-base, 14px);
+                        font-family: inherit;
                         color:#112978;
                         font-weight:bold;"
                         >

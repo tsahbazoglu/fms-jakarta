@@ -251,13 +251,13 @@ table.uploadedFiles td h { font-weight: bold; }
     margin: 0px;
     display: block;
     resize: none;
-    font-size: 10px;
+    font-size: var(--fms-font-size-base, 14px);
     width: 450px;
     height: auto;
     border: none;
-    font-family: Tahoma, sans-serif;
+    font-family: var(--fms-font-family, inherit);
     background-color: transparent;
-    color: grey;
+    color: var(--text-color, inherit);
 }
 
 .webservice td {

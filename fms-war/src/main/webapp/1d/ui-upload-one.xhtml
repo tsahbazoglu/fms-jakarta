@@ -20,7 +20,7 @@
         <p:panel
             rendered="#{formService.myForm.multiUpload.upload}"
             >
-            <h:outputText value="Dosya Yükleme Aracı" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+            <h:outputText value="Dosya Yükleme Aracı" style="font-size: var(--fms-font-size-2xl, 22px);font-weight: bolder;color: #b3b3b3;font-family: inherit;"/>
             <br/>
             <br/> 
             <h:form 
@@ -50,7 +50,7 @@
             id="id-uploaded-files"
             rendered="#{formService.myForm.multiUpload.list}"
             >
-            <h:outputText value="Ekli Dosyalar" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+            <h:outputText value="Ekli Dosyalar" style="font-size: var(--fms-font-size-2xl, 22px);font-weight: bolder;color: #b3b3b3;font-family: inherit;"/>
             <br/>
             <br/> 
             <p:dataTable 
@@ -102,7 +102,8 @@
                         value="#{application.contextPath}/myDownloadServlet/#{x.fileID}"
                         style="
                         text-decoration:none;
-                        font-size: 14px;
+                        font-size: var(--fms-font-size-base, 14px);
+                        font-family: inherit;
                         color:#112978;
                         font-weight:bold;"
                         >

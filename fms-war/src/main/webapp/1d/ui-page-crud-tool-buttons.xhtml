@@ -41,13 +41,13 @@
                 <p:commandButton 
                     value="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
                     action="#{crudOneDim.showAllNote}" 
-                    style="white-space: nowrap;"
+                    style="white-space: nowrap;font-family: inherit;"
                     rendered="#{crudOneDim.selectedFormUserNote}"
                     update="#{updateAjaxMB.msgDlg}"
                     />
                 <h:outputText 
                     value="Tarihçe Etkin(siz)leştir" 
-                    style="white-space: nowrap;" 
+                    style="white-space: nowrap;font-family: inherit;" 
                     rendered="#{mainFrame.adminRole}"
                     />
                 <h:selectBooleanCheckbox  
@@ -89,7 +89,7 @@
                     value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}" 
                     actionListener="#{twoDimModifyCtrl.sendForm}" 
                     rendered="#{formService.myForm.myActions.sendForms}"
-                    style="white-space: nowrap;"
+                    style="white-space: nowrap;font-family: inherit;"
                     />
             </h:panelGrid>
         </div>
