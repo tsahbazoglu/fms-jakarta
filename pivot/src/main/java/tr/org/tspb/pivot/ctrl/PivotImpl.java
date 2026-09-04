@@ -127,7 +127,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
      * @throws Exception
      */
     private List<MyField> createDimensionFieldItems(FmsForm myForm,
-                                                    MyField myField) throws MongoOrmFailedException {
+                                                    MyField myField) throws MongoOrmFailedException, FormConfigException {
 
         StringBuilder sb = new StringBuilder();
         sb.append(myForm.getKey());
@@ -428,7 +428,7 @@ public abstract class PivotImpl implements Serializable, PivotApi {
      * @throws tr.org.tspb.constants.exceptions.MongoOrmFailedException
      */
     protected void createDimensionIksIgrek(FmsForm myForm) throws
-            MongoOrmFailedException {
+            MongoOrmFailedException, FormConfigException {
 
         mapOfMeasureField = new HashMap<>();
         /**

@@ -320,7 +320,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
 
     public String getSelectedFormConstantNote() {
         return formService.getMyForm() == null ? " " : formService.getMyForm().
-                                                       getConstantNote();
+                getConstantNote();
     }
 
     public void drawGUI(FmsForm myForm) throws Exception {
@@ -485,7 +485,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
         return Collections.unmodifiableList(historyColumnModel);
     }
 
-    private void drawPopupGUI() {
+    private void drawPopupGUI() throws FormConfigException {
 
         componentMap = new HashMap();
 

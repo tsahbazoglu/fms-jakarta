@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.bson.Document;
+import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.datamodel.pojo.RoleMap;
 import tr.org.tspb.datamodel.pojo.UserDetail;
 import tr.org.tspb.datamodel.wf.MyRule;
@@ -105,10 +106,10 @@ public interface FmsForm {
     public Boolean getHistoryRendered();
 
     public void runAjaxBulkChild(Map<String, MyField> componentMap,
-            MyMap crudObject, RoleMap roleMap, UserDetail userDetail);
+                                 MyMap crudObject, RoleMap roleMap, UserDetail userDetail) throws FormConfigException;
 
     public void runAjaxBulk(Map<String, MyField> componentMap, MyMap crudObject,
-            RoleMap roleMap, UserDetail userDetail);
+                            RoleMap roleMap, UserDetail userDetail) throws FormConfigException;
 
     public List getUniqueIndexList();
 
@@ -163,43 +164,43 @@ public interface FmsForm {
     public boolean isJsonViewer();
 
     public void arrangeActions(RoleMap roleMap, Document searchObject,
-            MyMap crudObject);
+                               MyMap crudObject);
 
     public boolean isWorkFlowActive();
 
-    public List< MyField> getFieldsAsList();
+    public List<MyField> getFieldsAsList();
 
     public void runAjaxRender(MyField myField,
-            Map<String, MyField> componentMap,
-            final FmsForm selectedForm,
-            MyMap crudObject,
-            RoleMap roleMap,
-            UserDetail userDetail,
-            Document filter);
+                              Map<String, MyField> componentMap,
+                              final FmsForm selectedForm,
+                              MyMap crudObject,
+                              RoleMap roleMap,
+                              UserDetail userDetail,
+                              Document filter) throws FormConfigException;
 
     public void runAjaxRenderChild(MyField myField,
-            Map<String, MyField> componentMap,
-            final FmsForm selectedForm,
-            MyMap crudObject,
-            RoleMap roleMap,
-            UserDetail userDetail,
-            Document filter);
+                                   Map<String, MyField> componentMap,
+                                   final FmsForm selectedForm,
+                                   MyMap crudObject,
+                                   RoleMap roleMap,
+                                   UserDetail userDetail,
+                                   Document filter) throws FormConfigException;
 
     public void runAjaxRenderRef(MyField myField,
-            Map<String, MyField> componentMap,
-            final FmsForm selectedForm,
-            MyMap crudObject,
-            RoleMap roleMap,
-            UserDetail userDetail,
-            Document filter);
+                                 Map<String, MyField> componentMap,
+                                 final FmsForm selectedForm,
+                                 MyMap crudObject,
+                                 RoleMap roleMap,
+                                 UserDetail userDetail,
+                                 Document filter) throws FormConfigException;
 
     public void runAjaxList(MyField myField,
-            Map<String, MyField> componentMap,
-            final FmsForm selectedForm,
-            MyMap crudObject,
-            RoleMap roleMap,
-            UserDetail userDetail,
-            Document filter);
+                            Map<String, MyField> componentMap,
+                            final FmsForm selectedForm,
+                            MyMap crudObject,
+                            RoleMap roleMap,
+                            UserDetail userDetail,
+                            Document filter) throws FormConfigException;
 
     public void runAjax__uys_member_generate_ldapUID(Map crudObject);
 

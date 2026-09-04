@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.primefaces.model.file.UploadedFile;
+import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.datamodel.pojo.RoleMap;
@@ -37,7 +38,7 @@ public class MyRecord {
     private Boolean renderedInOut;
 
     private MyRecord(RoleMap roleMap, UserDetail userDetail, FmsForm myForm,
-                     Map<String, String> cacheDbMamberMap) {
+                     Map<String, String> cacheDbMamberMap) throws FormConfigException {
         crudFieldMap = new HashMap<>(myForm.getFields());
         for (String key : crudFieldMap.keySet()) {
             MyField myField = crudFieldMap.get(key);
@@ -54,7 +55,7 @@ public class MyRecord {
     }
 
     public MyRecord(RoleMap roleMap, UserDetail userDetail, Map o,
-                    FmsForm myForm, Map<String, String> cacheDbMamberMap) {
+                    FmsForm myForm, Map<String, String> cacheDbMamberMap) throws FormConfigException {
         this(roleMap, userDetail, myForm, cacheDbMamberMap);
 
         crudMap = o;

@@ -4,10 +4,12 @@ import tr.org.tspb.pivot.datamodel.PivotDataModelHandson;
 import tr.org.tspb.pivot.datamodel.PivotDataModelReadonly;
 import tr.org.tspb.pivot.datamodel.PivotDataModel;
 import tr.org.tspb.service.RepositoryService;
+
 import static tr.org.tspb.constants.ProjectConstants.ADMIN_QUERY;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR_SET;
 import static tr.org.tspb.constants.ProjectConstants.FIELDS_ROW;
 import static tr.org.tspb.constants.ProjectConstants.QUERY;
+
 import com.google.gson.Gson;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
@@ -26,6 +28,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import tr.org.tspb.common.pojo.CellMultiDimensionKey;
 import tr.org.tspb.common.services.LoginController;
+
 import static tr.org.tspb.constants.ProjectConstants.DIEZ;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR;
 import static tr.org.tspb.constants.ProjectConstants.FORMS;
@@ -41,6 +44,7 @@ import static tr.org.tspb.constants.ProjectConstants.RESULT;
 import static tr.org.tspb.constants.ProjectConstants.RETVAL;
 import static tr.org.tspb.constants.ProjectConstants.UPSERT_DATE;
 import static tr.org.tspb.constants.ProjectConstants.VALUE;
+
 import tr.org.tspb.converter.base.MoneyConverter;
 import tr.org.tspb.converter.base.NumberConverter;
 import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
@@ -145,9 +149,9 @@ public class PivotModifierCtrl extends PivotImpl {
                 getMyProject().
                 getAdminRole())//
                 && (!loginController.getLoggedUserDetail().
-                        getDbo().
-                        getObjectId().
-                        equals(member))) {
+                getDbo().
+                getObjectId().
+                equals(member))) {
             //FIXME messagebundle
             throw new UserException("Seçilen Kurum Sizin Kurum Değil");
         }
@@ -192,7 +196,7 @@ public class PivotModifierCtrl extends PivotImpl {
                 throw new Exception(customOlapHashMap.toString()//
                         .
                         concat(" does not have a \"field\" key<br/>")//
-                        .
+                                .
                         concat("It seems the new record Map missed the \"field\" key."));
             }
 
@@ -296,7 +300,7 @@ public class PivotModifierCtrl extends PivotImpl {
     }
 
     protected String deleteObject(LoginController loginMB, FmsForm myForm,
-            MyMap crudObject) throws Exception {
+                                  MyMap crudObject) throws Exception {
         String collection = myForm.getTable();
         mongoDbUtil.deleteMany(formService.getMyForm().
                 getDb(), collection, new Document(getFilter()));
@@ -345,7 +349,7 @@ public class PivotModifierCtrl extends PivotImpl {
                     snapshotMapMultiDimension, pivotData, formService.
                             getMyForm(), getFilter());
             snapshotNullHandler = mongoDbUtil.findOne(formService.getMyForm().
-                    getDb(), "snapshotNullHandler",
+                            getDb(), "snapshotNullHandler",
                     new Document(getFilter()));
         }
 
@@ -358,7 +362,7 @@ public class PivotModifierCtrl extends PivotImpl {
                 getForm());
         dBObject.put(formService.getMyForm().
                 getLoginFkField(), getSearchObjectValue(formService.getMyForm().
-                        getLoginFkField()));
+                getLoginFkField()));
 
         if (formService.getMyForm().
                 getField(PERIOD) != null) {
@@ -368,7 +372,7 @@ public class PivotModifierCtrl extends PivotImpl {
         List<Map> list = repositoryService
                 .list(formService.getMyForm().
                         getDb(), formService.getMyForm().
-                                getTable(), dBObject);
+                        getTable(), dBObject);
 
         if (list.isEmpty()) {
             //FIXME messagebundle
@@ -412,16 +416,16 @@ public class PivotModifierCtrl extends PivotImpl {
     public Boolean getSelectedFormUserNote() {
         return formService.getMyForm() != null //
                 && formService.getMyForm().
-                        getUserNote() != null //
+                getUserNote() != null //
                 && !formService.getMyForm().
-                        getUserNote().
-                        isEmpty();
+                getUserNote().
+                isEmpty();
     }
 
     private void resetActions() {
         MyActions myActions = ogmCreator
                 .getMyActions(formService.getMyForm(), loginController.
-                        getRoleMap(),
+                                getRoleMap(),
                         new Document(filterService.getGuiFilterCurrent()),
                         loginController.getLoggedUserDetail());
         formService.getMyForm().
@@ -438,8 +442,8 @@ public class PivotModifierCtrl extends PivotImpl {
                     getMyActions().
                     isSave());
         } catch (NullNotExpectedException | MongoOrmFailedException
-                | MoreThenOneInListException | UserException
-                | FormConfigException ex) {
+                 | MoreThenOneInListException | UserException
+                 | FormConfigException ex) {
             logger.error("error occured", ex);
             dialogController.showPopupInfo(ex.getMessage(), MESSAGE_DIALOG);
         }
@@ -497,21 +501,20 @@ public class PivotModifierCtrl extends PivotImpl {
 
     public Map<String, String> drawGUI() throws Exception {
 
-        createDimensionZet(formService.getMyForm(), false);
+        FmsForm myForm = formService.getMyForm();
 
-        createDimensionIksIgrek(formService.getMyForm());
+        createDimensionZet(myForm, false);
+
+        createDimensionIksIgrek(myForm);
 
         accesControlLevel2();
 
         // There is a requirenmenet to split editable and saveble properties
-        setEditable(formService.getMyForm().
-                getMyActions().
-                isSave());
+        setEditable(myForm.getMyActions().isSave());
 
-        selectedFormMessages = createFormMsg(formService.getMyForm());
+        selectedFormMessages = createFormMsg(myForm);
 
-        TagEvent trigger = formService.getMyForm().
-                getEventFormSelection();
+        TagEvent trigger = myForm.getEventFormSelection();
         if (trigger != null && TagEvent.TagEventType.showWarnErrPopup.equals(
                 trigger.getType())) {
             dialogController.showPopupInfoWithOk(trigger.getMsg(),
@@ -640,8 +643,8 @@ public class PivotModifierCtrl extends PivotImpl {
 
         if (formService.getMyForm().
                 getFieldsRowKeys() != null && !formService.getMyForm().
-                        getFieldsRowKeys().
-                        isEmpty()) {
+                getFieldsRowKeys().
+                isEmpty()) {
 
             if (!"001".equals(rowObject.get(DATA_STATUS)) && !"000".equals(
                     rowObject.get(DATA_STATUS))) {
@@ -673,16 +676,16 @@ public class PivotModifierCtrl extends PivotImpl {
                         getMyProject().
                         getAdminRole()) //
                         || loginController.getLoggedUserDetail().
-                                getDbo().
-                                getObjectId().
-                                equals(getSearchObjectValue(formService.
-                                        getMyForm().
-                                        getLoginFkField())))) {
+                        getDbo().
+                        getObjectId().
+                        equals(getSearchObjectValue(formService.
+                                getMyForm().
+                                getLoginFkField())))) {
                     return null;
                 }
 
                 mongoDbUtil.deleteMany(formService.getMyForm().
-                        getDb(), formService.getMyForm().
+                                getDb(), formService.getMyForm().
                                 getTable(),
                         new Document(getFilter()).append(FORMS, formService.
                                 getMyForm().
@@ -802,7 +805,7 @@ public class PivotModifierCtrl extends PivotImpl {
                             } else {
                                 try {
                                     value = Math.round(toModel.parse(value.
-                                            toString()).
+                                                    toString()).
                                             doubleValue() * div);
                                     value = Double.valueOf(value.toString());
                                     customOlapHaspMap.setValue(value);
@@ -885,10 +888,10 @@ public class PivotModifierCtrl extends PivotImpl {
         } catch (Exception ex) {
             dialogController
                     .showPopupInfo(formService.getMyForm().
-                            getMyActions().
-                            getSendFormAction().
-                            getEnableResult().
-                            getFailMessage(),
+                                    getMyActions().
+                                    getSendFormAction().
+                                    getEnableResult().
+                                    getFailMessage(),
                             MESSAGE_DIALOG);
         }
         return null;
@@ -901,6 +904,7 @@ public class PivotModifierCtrl extends PivotImpl {
 
     /* **************************  GETTER/SETTER  *************************** */
     //
+
     /**
      * @return
      */

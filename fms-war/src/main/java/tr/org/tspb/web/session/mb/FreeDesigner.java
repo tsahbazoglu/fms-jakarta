@@ -2,6 +2,7 @@ package tr.org.tspb.web.session.mb;
 
 import com.mongodb.client.model.Filters;
 import jakarta.faces.application.FacesMessage;
+import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.util.service.DlgCtrl;
 import tr.org.tspb.common.services.LoginController;
 
@@ -179,7 +180,7 @@ public class FreeDesigner implements Serializable {
         return null;
     }
 
-    public MyRecord getRowData(String rowKey) {
+    public MyRecord getRowData(String rowKey) throws FormConfigException {
         Map record = repositoryService.oneById(selectedForm.getDb(),
                 selectedForm.getTable(), rowKey);
 
@@ -203,7 +204,23 @@ public class FreeDesigner implements Serializable {
 
             @Override
             public MyRecord getRowData(String rowKey) {
-                return FreeDesigner.this.getRowData(rowKey);
+                try {
+                    return FreeDesigner.this.getRowData(rowKey);
+                } catch (FormConfigException e) {
+                    Logger.getLogger(FreeDesigner.class.getName()).log(Level.SEVERE, "Configuration error getting row data", e);
+
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Configuration Error", e.getMessage()));
+
+                    return null;
+                } catch (Exception e) {
+                    Logger.getLogger(FreeDesigner.class.getName()).log(Level.SEVERE, "Error getting row data", e);
+
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "System Error", "An unexpected error occurred while fetching row data."));
+
+                    return null;
+                }
             }
 
             @Override
@@ -233,6 +250,10 @@ public class FreeDesigner implements Serializable {
                     return (int) totalCount;
                 } catch (Exception e) {
                     Logger.getLogger(FreeDesigner.class.getName()).log(Level.SEVERE, "Error calculating lazy record count", e);
+
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "System Error", "An unexpected error occurred while counting records."));
+
                     return 0;
                 }
             }
@@ -243,7 +264,7 @@ public class FreeDesigner implements Serializable {
 
     }
 
-    public void init(FmsForm selectedForm) {
+    public void init(FmsForm selectedForm) throws FormConfigException {
         this.selectedForm = selectedForm;
         this.roles = loginController.getRolesAsSet();
 
@@ -508,7 +529,7 @@ public class FreeDesigner implements Serializable {
 
     }
 
-    public MyRecord findOne() {
+    public MyRecord findOne() throws FormConfigException {
 
         Map searchMap = new HashMap();
         searchMap.put(FIELD_GROUP, FIELD_GROUP_LICENSE);

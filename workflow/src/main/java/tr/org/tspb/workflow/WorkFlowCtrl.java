@@ -217,19 +217,19 @@ public class WorkFlowCtrl implements FmsWorkFlow {
 
         MyField smPreStateField = ogmCreator.getMyField(myForm, smPreState,
                 filter, loginController.getRoleMap(), loginController.
-                getLoggedUserDetail());
+                        getLoggedUserDetail());
         MyField smStateField = ogmCreator.getMyField(myForm, smState, filter,
                 loginController.getRoleMap(), loginController.
-                getLoggedUserDetail());
+                        getLoggedUserDetail());
         MyField smResultField = ogmCreator.getMyField(myForm, smResult, filter,
                 loginController.getRoleMap(), loginController.
-                getLoggedUserDetail());
+                        getLoggedUserDetail());
         MyField smTriggerField = ogmCreator.
                 getMyField(myForm, smTrigger, filter, loginController.
                         getRoleMap(), loginController.getLoggedUserDetail());
         MyField smTriggerDateField = ogmCreator.getMyField(myForm, smTrigerDate,
                 filter, loginController.getRoleMap(), loginController.
-                getLoggedUserDetail());
+                        getLoggedUserDetail());
 
         this.fieldsAsList = new ArrayList<>();
 
@@ -242,7 +242,7 @@ public class WorkFlowCtrl implements FmsWorkFlow {
         Collections.sort(fieldsAsList, new MyFieldComparator());
     }
 
-    public void trigWorkFlow(MyCommandResult smControlResult) {
+    public void trigWorkFlow(MyCommandResult smControlResult) throws FormConfigException {
 
         if (myStateMachine != null) {
             MyRule myRule = getMyRule(myStateMachine.getStateMachine());
@@ -380,6 +380,9 @@ public class WorkFlowCtrl implements FmsWorkFlow {
         } catch (WorkflowExcepiton ex) {
             logger.error("error occured", ex);
             dialogController.showPopupError(ex.getMessage());
+        } catch (FormConfigException ex) {
+            logger.error("error occured", ex);
+            dialogController.showPopupError(ex.getMessage());
         }
         return null;
     }
@@ -390,7 +393,7 @@ public class WorkFlowCtrl implements FmsWorkFlow {
         canstart = document.get(SM_STATE) == null;
     }
 
-    private String localShowWorkFlow() throws WorkflowExcepiton {
+    private String localShowWorkFlow() throws WorkflowExcepiton, FormConfigException {
 
         if (crudObject == null || crudObject.isNew()) {
             throw new WorkflowExcepiton(
@@ -468,7 +471,7 @@ public class WorkFlowCtrl implements FmsWorkFlow {
         return null;
     }
 
-    public String fireProcess() {
+    public String fireProcess() throws FormConfigException {
 
         if (myStateMachine != null) {
 
@@ -520,7 +523,7 @@ public class WorkFlowCtrl implements FmsWorkFlow {
     }
 
     public void highlightDiagramSmState(StateMachine<String, String> sm,
-            Map<String, Element> elementMap) {
+                                        Map<String, Element> elementMap) {
         if (sm == null) {
             return;
         }
@@ -553,7 +556,7 @@ public class WorkFlowCtrl implements FmsWorkFlow {
         }
     }
 
-    public MyCommandResult saveObjTrig(MyCommandResult smControlResult) {
+    public MyCommandResult saveObjTrig(MyCommandResult smControlResult) throws FormConfigException {
 
         if (myStateMachine != null) {
             MyRule myRule = getMyRule(myStateMachine.getStateMachine());
@@ -595,7 +598,7 @@ public class WorkFlowCtrl implements FmsWorkFlow {
     }
 
     private void saveSmStateOnObject(StateMachine stateMachine,
-            MyCommandResult mcr, String smTrigger) {
+                                     MyCommandResult mcr, String smTrigger) {
 
         Document crud = mongoDbUtil.findOne(myForm.getDb(), myForm.getTable(),
                 Filters.eq(MONGO_ID, crudObject.get(MONGO_ID)));
@@ -628,7 +631,7 @@ public class WorkFlowCtrl implements FmsWorkFlow {
 
     private void bringGuiImpactOfStateMachine(
             StateMachine<String, String> stateMachine, MyRule myRule,
-            MyCommandResult mcr) {
+            MyCommandResult mcr) throws FormConfigException {
 
         highlightDiagramSmState(stateMachine, uniqueMyRuleMap);
 
@@ -688,7 +691,7 @@ public class WorkFlowCtrl implements FmsWorkFlow {
         return Collections.unmodifiableList(fieldsAsList);
     }
 
-    private void renderFields(StateMachine<String, String> sm) {
+    private void renderFields(StateMachine<String, String> sm) throws FormConfigException {
         MyRule currentRule = (MyRule) getElement(sm.getState()).
                 getData();
         for (String fieldKey : currentRule.getFields().

@@ -440,7 +440,7 @@ public class MyForm extends FmsFormAbstract {
 
     @Override
     public void runAjaxBulk(Map<String, MyField> componentMap, MyMap crudObject,
-            RoleMap roleMap, UserDetail userDetail) {
+            RoleMap roleMap, UserDetail userDetail) throws FormConfigException{
 
         crudObject.initUnSet();
 
@@ -468,7 +468,7 @@ public class MyForm extends FmsFormAbstract {
 
     @Override
     public void runAjaxBulkChild(Map<String, MyField> componentMap,
-            MyMap crudObject, RoleMap roleMap, UserDetail userDetail) {
+            MyMap crudObject, RoleMap roleMap, UserDetail userDetail) throws FormConfigException{
 
         crudObject.initUnSet();
 
@@ -614,7 +614,7 @@ public class MyForm extends FmsFormAbstract {
             MyMap crudObject,
             RoleMap roleMap,
             UserDetail userDetail,
-            Document filter) {
+            Document filter) throws FormConfigException{
 
         myField.getAjax().
                 getEffectedKeys().
@@ -704,7 +704,7 @@ public class MyForm extends FmsFormAbstract {
             MyMap crudObject,
             RoleMap roleMap,
             UserDetail userDetail,
-            Document filter) {
+            Document filter) throws FormConfigException{
 
         myField.getAjax().
                 getEffectedKeys().
@@ -795,7 +795,7 @@ public class MyForm extends FmsFormAbstract {
             MyMap crudObject,
             RoleMap roleMap,
             UserDetail userDetail,
-            Document filter) {
+            Document filter) throws FormConfigException {
 
         List<TagAjax.AjaxElement> list = myField.getAjax().
                 getAjaxElements();
@@ -828,7 +828,7 @@ public class MyForm extends FmsFormAbstract {
             MyMap crudObject,
             RoleMap roleMap,
             UserDetail userDetail,
-            Document filter) {
+            Document filter) throws FormConfigException{
 
         myField.getAjax().
                 getEffectedKeys().

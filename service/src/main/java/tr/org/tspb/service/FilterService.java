@@ -104,7 +104,7 @@ public class FilterService extends CommonSrv {
         }
     }
 
-    public String bringFilters() {
+    public String bringFilters() throws FormConfigException, NullNotExpectedException{
 
         String key = createCacheKey("advanced-filter");
 
@@ -419,7 +419,7 @@ public class FilterService extends CommonSrv {
         return quickFilters;
     }
 
-    public void initQuickFilters() {
+    public void initQuickFilters() throws FormConfigException, NullNotExpectedException {
         String key = createCacheKey("quick-filter");
         quickFilters = filtersCache.get(key);
         if (quickFilters == null) {

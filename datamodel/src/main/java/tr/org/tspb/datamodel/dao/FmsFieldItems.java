@@ -762,7 +762,7 @@ public class FmsFieldItems {
             Map filter,
             MyMap crudObject,
             RoleMap roleMap,
-            FmsScriptRunner fmsScriptRunner) {
+            FmsScriptRunner fmsScriptRunner) throws FormConfigException {
 
         if (queryCode != null) {
             Document tempDbObject = new Document(crudObject);
@@ -770,11 +770,9 @@ public class FmsFieldItems {
             if (filter != null) {
                 tempDbObject.putAll(filter);
             }
-
             Object object = fmsScriptRunner
                     .runCommand(db, queryCode.getCode(), tempDbObject).
                     get(RETVAL);
-
             if (object instanceof Document) {
                 this.editQuery = (Document) object;
             } else {
@@ -783,10 +781,16 @@ public class FmsFieldItems {
             throw new UnsupportedOperationException("Query code is not supported");
         } else {
             boolean admin = roleMap.isUserInRole(adminAndViewerRole);
+            Set<String> roles = roleMap.keySet();
             return new Builder(formKey, fieldKey, adminAndViewerRole, filter, this.itemsDoc, fmsScriptRunner)
-                    .withQuerySchemaVersion110(loginMemberId, admin, roleMap.keySet())
-                    .withFilterQuery(loginMemberId, admin, roleMap.keySet())
-                    .withSortSchemaVersion110(roleMap.keySet())
+                    .withFilterQuery(loginMemberId, admin, roles)
+                    .withQuerySchemaVersion110(loginMemberId, admin, roles)
+                    .withSortSchemaVersion110(roles)
+                    .withViewSchemaVersion110(roles)
+                    .withHistoryQuerySchemaVersion110(loginMemberId, admin, roles)
+                    .withLookup()
+                    .withQueryProjection()
+                    .withResultProjection()
                     .build();
         }
     }

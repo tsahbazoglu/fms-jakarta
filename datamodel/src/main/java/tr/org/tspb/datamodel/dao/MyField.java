@@ -796,7 +796,7 @@ public class MyField {
         }
     }
 
-    public List<PlainRecord> completeMethod(String query) {
+    public List<PlainRecord> completeMethod(String query) throws FormConfigException {
 
         Map search = new HashMap(fmsAutoComplete.getFilter());
         if (query != null && query.length() >= 1) {
@@ -814,7 +814,7 @@ public class MyField {
     }
 
     public void createSelectItems(Map filter, MyMap crudObject, RoleMap roleMap,
-                                  UserDetail userDetail, boolean ajax) {
+                                  UserDetail userDetail, boolean ajax) throws FormConfigException {
         if (this.itemsAsMyItems == null) {
             return;
         }

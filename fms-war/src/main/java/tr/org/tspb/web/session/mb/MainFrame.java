@@ -1013,7 +1013,7 @@ public class MainFrame implements Serializable {
     }
 
     private void createFreeForm2(FmsForm myFormXs, String formKey) throws
-            MongoOrmFailedException, NullNotExpectedException {
+            MongoOrmFailedException, NullNotExpectedException, FormConfigException {
         filterService.createBaseFilter(myFormXs);
         FmsForm myFormLarge = repositoryService
                 .getMyFormLargeWithBaseFilter(myProject, formKey);
@@ -1035,7 +1035,7 @@ public class MainFrame implements Serializable {
     }
 
     private void createFreeForm(FmsForm myFormXs, String formKey) throws
-            NullNotExpectedException, MongoOrmFailedException {
+            NullNotExpectedException, MongoOrmFailedException, FormConfigException {
 
         filterService.createBaseFilter(myFormXs);
 

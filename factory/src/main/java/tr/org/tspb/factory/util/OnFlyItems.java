@@ -118,15 +118,17 @@ public class OnFlyItems implements FmsAutoComplete {
                     getView());
         }
 
-        FmsFieldItems.ItemType itemType = myField.getItemsAsMyItems().getItemType();
+        FmsFieldItems fmsFieldItems = myField.getItemsAsMyItems();
+
+        FmsFieldItems.ItemType itemType = fmsFieldItems.getItemType();
 
         List<SelectItem> items = switch (itemType) {
             case doc, ref -> documentToItems(
-                    myField.getItemsAsMyItems().getFilterQuery(),
-                    myField.getItemsAsMyItems(),
-                    myField.getItemsAsMyItems().getLimit());
-            case list -> listToItems(myField.getItemsAsMyItems().getListOfDocument());
-            case code -> codeToItems(myField.getItemsAsMyItems().getCode(), searchObject, roleMap);
+                    fmsFieldItems.getFilterQuery(),
+                    fmsFieldItems,
+                    fmsFieldItems.getLimit());
+            case list -> listToItems(fmsFieldItems.getListOfDocument());
+            case code -> codeToItems(fmsFieldItems.getCode(), searchObject, roleMap);
             default -> throw new RuntimeException("itemType : " + itemType + " is not supported.");
         };
 

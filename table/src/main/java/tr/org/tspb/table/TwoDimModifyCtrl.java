@@ -1434,7 +1434,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         return ldapUID;
     }
 
-    private void prepareJsfComponentMap(FmsForm inodeMyForm) {
+    private void prepareJsfComponentMap(FmsForm inodeMyForm) throws FormConfigException {
 
         setHeaderTitle(inodeMyForm.getName());
 
@@ -1565,44 +1565,47 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     }
 
     public void valueChangeListenerTableSearch(AjaxBehaviorEvent event) {
-        search();
-        resetActions();
+        try {
+            search();
+            resetActions();
 
-        String fieldKey = null;
+            String fieldKey = null;
 
-        if (event == null) {//it is when p:selectOneMenu is place inside ui:include
-            fieldKey = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(FIELD_KEY);
-        } else {
-            fieldKey = (String) event.getComponent().getAttributes().get(FIELD_KEY);
-        }
-
-        if (fieldKey == null) {
-            throw new MongoConfigurationException("fieldKey attribute missed on ajax component");
-        }
-
-        Map<String, MyField> componentMap = new HashMap<>();
-
-        MyField eventField = null;
-
-        for (MyField field : filterService.getQuickFilters()) {
-            if (field.getKey().equals(fieldKey)) {
-                eventField = field;
+            if (event == null) {//it is when p:selectOneMenu is place inside ui:include
+                fieldKey = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(FIELD_KEY);
+            } else {
+                fieldKey = (String) event.getComponent().getAttributes().get(FIELD_KEY);
             }
-            componentMap.put(field.getKey(), field);
+
+            if (fieldKey == null) {
+                throw new MongoConfigurationException("fieldKey attribute missed on ajax component");
+            }
+
+            Map<String, MyField> componentMap = new HashMap<>();
+
+            MyField eventField = null;
+
+            for (MyField field : filterService.getQuickFilters()) {
+                if (field.getKey().equals(fieldKey)) {
+                    eventField = field;
+                }
+                componentMap.put(field.getKey(), field);
+            }
+
+            MyMap filterAsMap = new MyMap();
+
+            Document doc = filterService.getTableFilterCurrent();
+
+            for (String key : doc.keySet()) {
+                filterAsMap.put(key, doc.get(key));
+            }
+
+            if (eventField != null) {
+                ajaxAction(eventField, componentMap, filterAsMap);
+            }
+        } catch (Exception e) {
+            logger.error("Error in valueChangeListenerTableSearch", e);
         }
-
-        MyMap filterAsMap = new MyMap();
-
-        Document doc = filterService.getTableFilterCurrent();
-
-        for (String key : doc.keySet()) {
-            filterAsMap.put(key, doc.get(key));
-        }
-
-        if (eventField != null) {
-            ajaxAction(eventField, componentMap, filterAsMap);
-        }
-
     }
 
     public void someaction(final AjaxBehaviorEvent event) {
@@ -1629,7 +1632,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         }
     }
 
-    public void ajaxAction(MyField myField, Map<String, MyField> componentMap, MyMap crudObject) {
+    public void ajaxAction(MyField myField, Map<String, MyField> componentMap, MyMap crudObject) throws FormConfigException {
 
         String ajaxAction = myField.getAjax().getAction();
 
@@ -1904,19 +1907,22 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     }
 
     public void selectChildListener(SelectEvent event) {
+        try {
+            formService.getMyForm().runAjaxBulkChild(getComponentMapChilds(), selectedChildRow, loginController.getRoleMap(), loginController.getLoggedUserDetail());
 
-        formService.getMyForm().runAjaxBulkChild(getComponentMapChilds(), selectedChildRow, loginController.getRoleMap(), loginController.getLoggedUserDetail());
-
-        for (String fieldKey : formService.getMyForm().getFieldsKeySet()) {
-            if (crudObject.get(fieldKey) == null) {
-                addMessage(null, null, formService.getMyForm().getField(fieldKey).getName().concat(" zorunlu alandır."), FacesMessage.SEVERITY_ERROR);
-                return;
+            for (String fieldKey : formService.getMyForm().getFieldsKeySet()) {
+                if (crudObject.get(fieldKey) == null) {
+                    addMessage(null, null, formService.getMyForm().getField(fieldKey).getName().concat(" zorunlu alandır."), FacesMessage.SEVERITY_ERROR);
+                    return;
+                }
             }
-        }
 
 //        formService.getMyForm().runAjaxBulk(getComponentMap(), selectedChildRow,
 //                loginController.getRoleMap(), loginController.getLoggedUserDetail());
-        dialogController.showPopup("wv-dlg-child-row-edit");
+            dialogController.showPopup("wv-dlg-child-row-edit");
+        } catch (Exception e) {
+            logger.error("Error in selectChildListener", e);
+        }
     }
 
     public String saveChildRow() {

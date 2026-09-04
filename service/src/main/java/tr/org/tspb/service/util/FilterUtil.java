@@ -34,6 +34,7 @@ import static tr.org.tspb.constants.ProjectConstants.ON_USER_ROLE;
 import static tr.org.tspb.constants.ProjectConstants.QUERY;
 import static tr.org.tspb.constants.ProjectConstants.RETVAL;
 
+import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.converter.base.BsonConverter;
 import tr.org.tspb.converter.base.NumberConverter;
 import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
@@ -69,7 +70,7 @@ public class FilterUtil {
     private OgmCreatorIntr ogmCreator;
 
     public List<MyField> createCurrentQuickFilters(FmsForm myForm,
-                                                   RoleMap roleMap, UserDetail userDetail, Document filter) {
+                                                   RoleMap roleMap, UserDetail userDetail, Document filter) throws NullNotExpectedException, FormConfigException {
 
         List<MyField> filterFields = new ArrayList<>();
 
@@ -105,7 +106,7 @@ public class FilterUtil {
     }
 
     public List<MyField> createCurrentFilters(FmsForm myForm, RoleMap roleMap,
-                                              UserDetail userDetail, Document filter) {
+                                              UserDetail userDetail, Document filter) throws NullNotExpectedException, FormConfigException {
 
         List<MyField> filterFields = new ArrayList<>();
 

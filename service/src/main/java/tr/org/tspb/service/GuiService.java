@@ -57,7 +57,7 @@ public class GuiService implements Serializable {
         return null;
     }
 
-    private TwoDimDlgUi createTwoDimUi(FmsForm myForm) {
+    private TwoDimDlgUi createTwoDimUi(FmsForm myForm) throws FormConfigException{
 
         TwoDimDlgUi twoDimDlgUi = new TwoDimDlgUi();
 
