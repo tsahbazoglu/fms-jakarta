@@ -28,6 +28,75 @@ v1.0.0, 2018-03-06
 asciidoctor -b html5 -r asciidoctor-diagram README.adoc
 ----
 
+
+== Github
+----
+ssh-keygen -t ed25519 -C "tsahbazoglu" -f ~/.ssh/id_ed25519_tsahbazoglu
+
+cat ~/.ssh/id_ed25519_tsahbazoglu.pub
+
+Add it to GitHub:
+
+Go to GitHub (logged in as tsahbazoglu) > Settings > SSH and GPG keys > New SSH key.
+
+Paste the copied key and save.
+
+nano ~/.ssh/config
+
+# tsahbazoglu account
+Host github-tsahbazoglu
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_tsahbazoglu
+    IdentitiesOnly yes
+
+chmod 600 ~/.ssh/config
+
+Test the SSH connection
+ssh -T git@github-tsahbazoglu
+
+git remote -v
+origin	git@github.com:tsahbazoglu/fms-jakarta.git (fetch)
+origin	git@github.com:tsahbazoglu/fms-jakarta.git (push)
+
+git remote set-url origin git@github-tsahbazoglu:tsahbazoglu/fms-jakarta.git
+git push
+
+git remote -v
+origin	git@github-tsahbazoglu:tsahbazoglu/fms-jakarta.git (fetch)
+origin	git@github-tsahbazoglu:tsahbazoglu/fms-jakarta.git (push)
+
+
+You change the remote host from github.com to github-tsahbazoglu because SSH uses the hostname to determine which private key to send.
+
+How Git over SSH Resolves Your Identity
+The Default Behavior (github.com):
+
+When your remote is git@github.com:..., Git connects to github.com.
+
+SSH checks your SSH agent or default key files (~/.ssh/id_ed25519, ~/.ssh/id_rsa).
+
+It sends the first matching key—which belongs to dadhawk-dev.
+
+GitHub receives the connection, sees dadhawk-dev's key, and rejects the push because dadhawk-dev lacks write access to tsahbazoglu/fms-jakarta.
+
+The Custom Host Alias (github-tsahbazoglu):
+
+When your remote is git@github-tsahbazoglu:..., Git asks SSH to connect to the alias github-tsahbazoglu.
+
+SSH reads your ~/.ssh/config file:
+
+Plaintext
+Host github-tsahbazoglu
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_tsahbazoglu
+    IdentitiesOnly yes
+SSH replaces the alias with the real destination (github.com), but strictly attaches the specific key defined in IdentityFile (~/.ssh/id_ed25519_tsahbazoglu).
+
+IdentitiesOnly yes prevents SSH from offering any other cached keys (like the one for dadhawk-dev).
+----
+
 == About Primefaces Themes
 
 From Original Doc at https://showcase.primefaces.org
