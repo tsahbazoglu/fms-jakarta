@@ -12,6 +12,11 @@
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="dadhawk-dhgrid-repo" />
+      <option name="name" value="dadhawk-dhgrid-repo" />
+      <option name="url" value="https://dadhawk-dev.github.io/dh-grid/maven-repo/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="KamuSM" />
       <option name="name" value="KamuSM" />
       <option name="url" value="http://nexus.ozguryazilim.com.tr/content/repositories/KamuSM" />

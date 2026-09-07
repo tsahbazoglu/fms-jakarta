@@ -26,5 +26,8 @@
         <module name="fms-constants" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="telmangrid-component" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>

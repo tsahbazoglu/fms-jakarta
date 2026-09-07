@@ -15,6 +15,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.dadhawk.faces</groupId>
+            <artifactId>dhgrid-component</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
         </dependency>

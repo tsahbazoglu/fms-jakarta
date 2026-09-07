@@ -7,6 +7,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid"
       xmlns:c="jakarta.tags.core"
+      xmlns:dh="http://dadhawk.com/faces"
       >
      <h:head>
         <title></title>
@@ -181,30 +182,21 @@
         </h:form>
     </p:panel>
 
+
+
     <p:scrollPanel mode="native" style="width:95%;">
         <p:outputPanel
             id="currentMyGrid"
             >
-            <mygrid:mygridHistory
-                id="idCurrentMyGridReadOnly"
-                rowHeaderWidh="#{pivotModifierCtrl.pivotDataModelRead.handsonRowHeaderWidth}"
-                colWidths="#{pivotModifierCtrl.pivotDataModelRead.handsonColWidths}"
-                columns="#{pivotModifierCtrl.pivotDataModelRead.columns}"
-                nestedHeaders="#{pivotModifierCtrl.pivotDataModelRead.nestedHeaders}"
-                rows="#{pivotModifierCtrl.pivotDataModelRead.rows}"
-                cell="#{pivotModifierCtrl.pivotDataModelRead.cell}"
-                rendered="#{not pivotModifierCtrl.editable}"
-                />
-            <mygrid:mygrid
-                id="idCurrentMyGrid"
-                rowHeaderWidh="#{pivotModifierCtrl.pivotDataModelEdit.handsonRowHeaderWidth}"
-                colWidths="#{pivotModifierCtrl.pivotDataModelEdit.handsonColWidths}"
-                data="#{pivotModifierCtrl.pivotDataModelEdit.jsonData}"
-                rowHeaders="#{pivotModifierCtrl.pivotDataModelEdit.jsonRowHeaders}"
-                colHeaders="#{pivotModifierCtrl.pivotDataModelEdit.jsonColHeaders}"
-                colRenderers="#{pivotModifierCtrl.pivotDataModelEdit.jsonColRenderers}"
-                rendered="#{pivotModifierCtrl.editable}"
-                />
+            <dh:dhGrid id="myGrid"
+                       rowCount="#{gridBean.rowCount}"
+                       colCount="#{gridBean.colCount}"
+                       content="#{gridBean.content}"
+                       captions="#{gridBean.captions}"
+                       componentMap="#{gridBean.componentMap}"
+                       readOnlyCells="#{gridBean.readOnlyCells}"
+                       cssCompatible="primethemes"
+                       cellStyles="#{gridBean.cellStyles}" />
         </p:outputPanel>
     </p:scrollPanel>
 

@@ -35,6 +35,11 @@
 
     <repositories>
 
+        <repository>
+            <id>dadhawk-dhgrid-repo</id>
+            <url>https://dadhawk-dev.github.io/dh-grid/maven-repo/</url>
+        </repository>
+
         <!--        
         https://backstage.forgerock.com/knowledge/kb/article/a15127846
         
@@ -108,6 +113,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.dadhawk.faces</groupId>
+                <artifactId>dhgrid-component</artifactId>
+                <version>1.0.0-delta</version>
+            </dependency>
             <!-- provided -->
             <dependency>
                 <groupId>jakarta.platform</groupId>
