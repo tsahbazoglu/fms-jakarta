@@ -2,11 +2,18 @@ package com.dadhawk.faces.demo;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+import tr.org.tspb.common.qualifier.MyQualifier;
+import tr.org.tspb.common.qualifier.ViewerController;
 import tr.org.tspb.pivot.ctrl.PivotModifierCtrl;
+import tr.org.tspb.pivot.datamodel.PivotDataModel;
+import tr.org.tspb.pivot.datamodel.PivotDataModelHandson;
 
 /**
  * GridBean — Demo backing bean for DhGridComponent showcase.
@@ -17,7 +24,8 @@ import tr.org.tspb.pivot.ctrl.PivotModifierCtrl;
 @SessionScoped
 public class GridBean implements Serializable {
 
-    @Named
+    @Inject
+    @MyQualifier(myEnum = ViewerController.crudPivot)
     PivotModifierCtrl pivotModifierCtrl;
 
     private static final long serialVersionUID = 1L;
@@ -41,27 +49,57 @@ public class GridBean implements Serializable {
 
     public void loadFinancialPreset() {
         this.selectedPreset = "financial";
-        this.rowCount = 5;
-        this.colCount = 5;
-/*
-        pivotModifierCtrl.pivotDataModelEdit.jsonColHeaders
-*/
 
+        PivotDataModelHandson pivotDataModelHandson = (pivotModifierCtrl != null)
+                ? (PivotDataModelHandson) pivotModifierCtrl.getPivotDataModelEdit()
+                : null;
 
-        this.captions = new String[] {
-                "Financial Performance / H1 (Q1-Q2) / Revenue ($)",
-                "Financial Performance / H1 (Q1-Q2) / Expenses ($)",
-                "Financial Performance / H2 (Q3-Q4) / Revenue ($)",
-                "Financial Performance / H2 (Q3-Q4) / Expenses ($)",
-                "Overall Status"
-        };
-        this.content = new String[][] {
-                {"Quarter", "Revenue ($)", "Expenses ($)", "Margin (%)", "Performance"},
-                {"Q1 2026", "120000", "85000", "29.1", "Completed"},
-                {"Q2 2026", "145000", "92000", "36.5", "Active"},
-                {"Q3 2026", "160000", "98000", "38.7", "Pending"},
-                {"Q4 2026", "210000", "110000", "47.6", "In Review"}
-        };
+        if (pivotDataModelHandson != null && pivotDataModelHandson.getColHeaders() != null) {
+            this.captions = Stream.concat(Stream.of(""), pivotDataModelHandson.getColHeaders().stream())
+                    .toArray(String[]::new);
+        } else {
+            this.captions = new String[]{
+                    "Financial Performance / H1 (Q1-Q2) / Revenue ($)",
+                    "Financial Performance / H1 (Q1-Q2) / Expenses ($)",
+                    "Financial Performance / H2 (Q3-Q4) / Revenue ($)",
+                    "Financial Performance / H2 (Q3-Q4) / Expenses ($)",
+                    "Overall Status"
+            };
+        }
+
+        this.colCount = (this.captions instanceof String[]) ? ((String[]) this.captions).length : 5;
+
+        if (pivotDataModelHandson != null && pivotDataModelHandson.getRowHeaders() != null && !pivotDataModelHandson.getRowHeaders().isEmpty()) {
+            List<String> rowHeaders = pivotDataModelHandson.getRowHeaders();
+            int numRows = rowHeaders.size();
+            String[][] sampleData = new String[][]{
+                    {"Q1 2026", "120000", "85000", "29.1", "Completed"},
+                    {"Q2 2026", "145000", "92000", "36.5", "Active"},
+                    {"Q3 2026", "160000", "98000", "38.7", "Pending"},
+                    {"Q4 2026", "210000", "110000", "47.6", "In Review"}
+            };
+            this.content = new String[numRows][this.colCount];
+            for (int i = 0; i < numRows; i++) {
+                this.content[i][0] = rowHeaders.get(i);
+                for (int j = 1; j < this.colCount; j++) {
+                    if (i < sampleData.length && j < sampleData[i].length) {
+                        this.content[i][j] = sampleData[i][j];
+                    } else {
+                        this.content[i][j] = "";
+                    }
+                }
+            }
+        } else {
+            this.content = new String[][]{
+                    {"Quarter", "Revenue ($)", "Expenses ($)", "Margin (%)", "Performance"},
+                    {"Q1 2026", "120000", "85000", "29.1", "Completed"},
+                    {"Q2 2026", "145000", "92000", "36.5", "Active"},
+                    {"Q3 2026", "160000", "98000", "38.7", "Pending"},
+                    {"Q4 2026", "210000", "110000", "47.6", "In Review"}
+            };
+        }
+
+        this.rowCount = (this.content != null) ? this.content.length : 5;
 
         this.componentMap = new HashMap<>();
         this.componentMap.put("c1", "input-money");
@@ -77,94 +115,6 @@ public class GridBean implements Serializable {
                 "r1_c3", "background-color: rgba(34, 197, 94, 0.15); color: #15803d; font-weight: 700;",
                 "c1", "color: #0284c7; font-weight: 600;"
         );
-    }
-
-    public void loadTaskBoardPreset() {
-        this.selectedPreset = "taskboard";
-        this.rowCount = 5;
-        this.colCount = 5;
-        this.captions = null;
-        this.content = new String[][] {
-                {"Task Name", "Owner", "Category", "Priority", "Status"},
-                {"Upgrade JSF Library", "Alex Rivera", "Core Dev", "High", "Active"},
-                {"Design Web Component", "Sarah Chen", "UI/UX", "Medium", "Completed"},
-                {"QA Matrix Test Suite", "Telman G.", "Testing", "High", "Pending"},
-                {"CI/CD Pipeline Setup", "DevOps Team", "Infrastructure", "Low", "In Review"}
-        };
-
-        this.componentMap = new HashMap<>();
-        this.componentMap.put("r1_c3", "priority-badge-editor");
-        this.componentMap.put("r2_c3", "priority-badge-editor");
-        this.componentMap.put("r3_c3", "priority-badge-editor");
-        this.componentMap.put("r4_c3", "priority-badge-editor");
-        this.componentMap.put("r1_c4", "status-selector");
-        this.componentMap.put("r2_c4", "status-selector");
-        this.componentMap.put("r3_c4", "status-selector");
-        this.componentMap.put("r4_c4", "status-selector");
-    }
-
-    public void loadProductCatalogPreset() {
-        this.selectedPreset = "catalog";
-        this.rowCount = 5;
-        this.colCount = 5;
-        this.captions = null;
-        this.content = new String[][] {
-                {"SKU Code", "Product Name", "Category", "User Rating", "Availability"},
-                {"SKU-9021", "Quantum Matrix Display", "Monitors", "★★★★★", "Active"},
-                {"SKU-4412", "Cyber Grid Keyboard", "Peripherals", "★★★★☆", "Active"},
-                {"SKU-1089", "Neuron Headset Pro", "Audio", "★★★☆☆", "Pending"},
-                {"SKU-3320", "UltraDock Station", "Accessories", "★★★★★", "Completed"}
-        };
-
-        this.componentMap = new HashMap<>();
-        this.componentMap.put("r1_c3", "rating-editor");
-        this.componentMap.put("r2_c3", "rating-editor");
-        this.componentMap.put("r3_c3", "rating-editor");
-        this.componentMap.put("r4_c3", "rating-editor");
-        this.componentMap.put("r1_c4", "status-selector");
-        this.componentMap.put("r2_c4", "status-selector");
-        this.componentMap.put("r3_c4", "status-selector");
-        this.componentMap.put("r4_c4", "status-selector");
-    }
-
-    public void addRow() {
-        int r = (this.content != null) ? this.content.length : 0;
-        int c = (r > 0 && this.content[0] != null) ? this.content[0].length : 1;
-        if (r == 0) {
-            this.content = new String[][] {{"Row 1 Col 1"}};
-            this.rowCount = 1;
-            this.colCount = 1;
-            return;
-        }
-        String[][] newContent = new String[r + 1][c];
-        for (int i = 0; i < r; i++) {
-            System.arraycopy(this.content[i], 0, newContent[i], 0, c);
-        }
-        for (int j = 0; j < c; j++) {
-            newContent[r][j] = "Row " + (r + 1) + " Col " + (j + 1);
-        }
-        this.content = newContent;
-        this.rowCount = r + 1;
-        this.colCount = c;
-    }
-
-    public void addColumn() {
-        int r = (this.content != null) ? this.content.length : 1;
-        int c = (r > 0 && this.content[0] != null) ? this.content[0].length : 0;
-        if (c == 0) {
-            this.content = new String[][] {{"Row 1 Col 1"}};
-            this.rowCount = 1;
-            this.colCount = 1;
-            return;
-        }
-        String[][] newContent = new String[r][c + 1];
-        for (int i = 0; i < r; i++) {
-            System.arraycopy(this.content[i], 0, newContent[i], 0, c);
-            newContent[i][c] = "Col " + (c + 1);
-        }
-        this.content = newContent;
-        this.rowCount = r;
-        this.colCount = c + 1;
     }
 
     // Getters and Setters
@@ -215,7 +165,18 @@ public class GridBean implements Serializable {
     }
 
     public Object getReadOnlyCells() {
-        return readOnlyCells;
+        Map<String, Object> map = new HashMap<>();
+        if (readOnlyCells instanceof Map) {
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) readOnlyCells).entrySet()) {
+                map.put(String.valueOf(entry.getKey()), entry.getValue());
+            }
+        }
+        map.put("c0", true);
+        int rows = getRowCount() != null ? getRowCount() : 0;
+        for (int i = 0; i < rows; i++) {
+            map.put("r" + i + "_c0", true);
+        }
+        return map;
     }
 
     public void setReadOnlyCells(Object readOnlyCells) {

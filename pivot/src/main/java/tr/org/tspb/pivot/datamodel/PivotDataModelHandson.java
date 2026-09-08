@@ -8,7 +8,9 @@ import java.util.Locale;
 import java.util.Map;
 import tr.org.tspb.common.pojo.CellMultiDimensionKey;
 import tr.org.tspb.common.util.CustomOlapHashMap;
+
 import static tr.org.tspb.constants.ProjectConstants.COLOR;
+
 import tr.org.tspb.converter.base.MoneyConverter;
 import tr.org.tspb.converter.base.NumberConverter;
 import tr.org.tspb.datamodel.dao.MyField;
@@ -27,6 +29,18 @@ public class PivotDataModelHandson implements PivotDataModel {
     private String jsonDataToModel;
     private String jsonCellRenderers;
 
+    public List<String> getColHeaders() {
+        return colHeaders;
+    }
+
+    private List<String> colHeaders = new ArrayList();
+
+    public List<String> getRowHeaders() {
+        return rowHeaders;
+    }
+
+    private List<String> rowHeaders = new ArrayList();
+
     public PivotDataModelHandson(
             int colWidth,
             int rowWidth,
@@ -39,8 +53,6 @@ public class PivotDataModelHandson implements PivotDataModel {
 
         Gson gson = new Gson();
 
-        List colHeaders = new ArrayList();
-        List rowHeaders = new ArrayList();
         List data = new ArrayList();
         List dataRenderers = new ArrayList();
 
@@ -132,7 +144,7 @@ public class PivotDataModelHandson implements PivotDataModel {
 
                     renderer.add(new HandsonTableColRenderer(
                             customOlapHaspMap.getComponentType() == null ? "inputText" : (String) customOlapHaspMap.
-                            getComponentType(),
+                                    getComponentType(),
                             background,
                             Boolean.TRUE.equals(customOlapHaspMap.isReadonly())));
 //#17D1E6
@@ -212,7 +224,7 @@ public class PivotDataModelHandson implements PivotDataModel {
         private Boolean readonly;
 
         HandsonTableColRenderer(String component, String background,
-                Boolean readonly) {
+                                Boolean readonly) {
             this.component = component;
             this.background = background;
             this.readonly = readonly;
