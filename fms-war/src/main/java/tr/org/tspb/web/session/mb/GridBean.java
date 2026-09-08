@@ -134,18 +134,16 @@ public class GridBean implements Serializable {
         if (pivotDataModelHandson != null && pivotDataModelHandson.getRowHeaders() != null && !pivotDataModelHandson.getRowHeaders().isEmpty()) {
             List<String> rowHeaders = pivotDataModelHandson.getRowHeaders();
             int numRows = rowHeaders.size();
-            String[][] sampleData = new String[][]{
-                    {"Q1 2026", "120000", "85000", "29.1", "Completed"},
-                    {"Q2 2026", "145000", "92000", "36.5", "Active"},
-                    {"Q3 2026", "160000", "98000", "38.7", "Pending"},
-                    {"Q4 2026", "210000", "110000", "47.6", "In Review"}
-            };
+            List<List<String>> data = pivotDataModelHandson.getData();
+
             this.content = new String[numRows][this.colCount];
             for (int i = 0; i < numRows; i++) {
                 this.content[i][0] = rowHeaders.get(i);
+                List<String> rowData = (data != null && i < data.size()) ? data.get(i) : null;
                 for (int j = 1; j < this.colCount; j++) {
-                    if (i < sampleData.length && j < sampleData[i].length) {
-                        this.content[i][j] = sampleData[i][j];
+                    int dataColIndex = j - 1;
+                    if (rowData != null && dataColIndex < rowData.size() && rowData.get(dataColIndex) != null) {
+                        this.content[i][j] = String.valueOf(rowData.get(dataColIndex));
                     } else {
                         this.content[i][j] = "";
                     }
