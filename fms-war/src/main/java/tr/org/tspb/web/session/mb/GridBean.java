@@ -6,6 +6,7 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import tr.org.tspb.pivot.ctrl.PivotModifierCtrl;
 
 /**
  * GridBean — Demo backing bean for DhGridComponent showcase.
@@ -15,6 +16,9 @@ import java.util.Map;
 @Named("gridBean")
 @SessionScoped
 public class GridBean implements Serializable {
+
+    @Named
+    PivotModifierCtrl pivotModifierCtrl;
 
     private static final long serialVersionUID = 1L;
 
@@ -39,6 +43,11 @@ public class GridBean implements Serializable {
         this.selectedPreset = "financial";
         this.rowCount = 5;
         this.colCount = 5;
+/*
+        pivotModifierCtrl.pivotDataModelEdit.jsonColHeaders
+*/
+
+
         this.captions = new String[] {
                 "Financial Performance / H1 (Q1-Q2) / Revenue ($)",
                 "Financial Performance / H1 (Q1-Q2) / Expenses ($)",
