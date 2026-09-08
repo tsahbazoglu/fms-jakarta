@@ -142,6 +142,13 @@ git tag -a v{version} -m "Release version {version}"
 git push origin v{version}
 ----
 
+Retag
+[source,bash,js,subs="attributes,verbatim,quotes"]
+----
+git tag -f v{version}
+git push origin v{version}
+----
+
 Verify the changes
 ----
 git tag
