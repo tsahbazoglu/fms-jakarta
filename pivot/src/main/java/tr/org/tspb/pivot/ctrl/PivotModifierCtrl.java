@@ -19,10 +19,12 @@ import tr.org.tspb.common.qualifier.ViewerController;
 import tr.org.tspb.common.qualifier.MyQualifier;
 import java.text.NumberFormat;
 import java.util.*;
+import jakarta.enterprise.event.Event;
 import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.inject.Inject;
 import org.apache.commons.collections4.map.HashedMap;
 import org.bson.types.ObjectId;
+import tr.org.tspb.pivot.event.PivotDataModelChangeEvent;
 import tr.org.tspb.util.stereotype.MyController;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -77,6 +79,9 @@ public class PivotModifierCtrl extends PivotImpl {
 
     @Inject
     private EsignDoor esignDoor;
+
+    @Inject
+    private Event<PivotDataModelChangeEvent> pivotDataModelChangeEvent;
 
     private List<MyConstraintFormula> successList;
     private List<MyConstraintFormula> failList = new ArrayList<>();
@@ -496,6 +501,10 @@ public class PivotModifierCtrl extends PivotImpl {
 
             ((PivotDataModelReadonly) pivotDataModelRead).setNestedHeaders(
                     nestedHeaders);
+        }
+
+        if (pivotDataModelChangeEvent != null) {
+            pivotDataModelChangeEvent.fire(new PivotDataModelChangeEvent());
         }
     }
 

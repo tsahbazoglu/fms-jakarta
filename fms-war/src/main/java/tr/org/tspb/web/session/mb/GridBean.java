@@ -2,6 +2,7 @@ package com.dadhawk.faces.demo;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
@@ -12,8 +13,9 @@ import java.util.stream.Stream;
 import tr.org.tspb.common.qualifier.MyQualifier;
 import tr.org.tspb.common.qualifier.ViewerController;
 import tr.org.tspb.pivot.ctrl.PivotModifierCtrl;
-import tr.org.tspb.pivot.datamodel.PivotDataModel;
 import tr.org.tspb.pivot.datamodel.PivotDataModelHandson;
+import tr.org.tspb.pivot.event.PivotDataModelChangeEvent;
+import tr.org.tspb.service.FormService;
 
 /**
  * GridBean — Demo backing bean for DhGridComponent showcase.
@@ -27,6 +29,9 @@ public class GridBean implements Serializable {
     @Inject
     @MyQualifier(myEnum = ViewerController.crudPivot)
     PivotModifierCtrl pivotModifierCtrl;
+
+    @Inject
+    protected FormService formService;
 
     private static final long serialVersionUID = 1L;
 
@@ -44,10 +49,56 @@ public class GridBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        loadFinancialPreset();
+        loremIpsumInit();
     }
 
-    public void loadFinancialPreset() {
+    public void onPivotDataModelChanged(@Observes PivotDataModelChangeEvent event) {
+        fmsInit();
+    }
+
+    public void loremIpsumInit() {
+        this.selectedPreset = "loremipsum";
+
+        this.captions = new String[]{
+                "*",
+                "Lorem Ipsum / Sector Alpha / Revenue ($)",
+                "Lorem Ipsum / Sector Alpha / Expenses ($)",
+                "Lorem Ipsum / Sector Beta / Profit ($)",
+                "Lorem Ipsum / Sector Beta / Growth (%)",
+                "Dolor Sit Amet / Status"
+        };
+
+        this.colCount = ((String[]) this.captions).length;
+
+        this.content = new String[][]{
+                {"Lorem Row 1", "125000", "84000", "41000", "32.8", "Active"},
+                {"Ipsum Row 2", "240000", "150000", "90000", "37.5", "Completed"},
+                {"Dolor Row 3", "310000", "195000", "115000", "37.1", "Pending"},
+                {"Sit Amet Row 4", "450000", "280000", "170000", "37.7", "In Review"},
+                {"Consectetur Row 5", "520000", "310000", "210000", "40.3", "Active"}
+        };
+
+        this.rowCount = this.content.length;
+
+        this.componentMap = new HashMap<>();
+        this.componentMap.put("c1", "input-money");
+        this.componentMap.put("c2", "input-money");
+        this.componentMap.put("c3", "input-money");
+        this.componentMap.put("c4", "input-number");
+        this.componentMap.put("r0_c5", "status-selector");
+        this.componentMap.put("r1_c5", "status-selector");
+        this.componentMap.put("r2_c5", "status-selector");
+        this.componentMap.put("r3_c5", "status-selector");
+        this.componentMap.put("r4_c5", "status-selector");
+
+        this.readOnlyCells = Map.of("c0", true);
+        this.cellStyles = Map.of(
+                "c1", "color: #0284c7; font-weight: 600;",
+                "c3", "background-color: rgba(34, 197, 94, 0.15); color: #15803d; font-weight: 700;"
+        );
+    }
+
+    public void fmsInit() {
         this.selectedPreset = "financial";
 
         PivotDataModelHandson pivotDataModelHandson = (pivotModifierCtrl != null)
@@ -57,6 +108,17 @@ public class GridBean implements Serializable {
         if (pivotDataModelHandson != null && pivotDataModelHandson.getColHeaders() != null) {
             this.captions = Stream.concat(Stream.of(""), pivotDataModelHandson.getColHeaders().stream())
                     .toArray(String[]::new);
+
+            if ("ume_form_02".equals(formService.getMyForm().getKey())) {
+                this.captions = new String[]{
+                        "*",
+                        "T.C. Vatandaşı / Kadın",
+                        "T.C. Vatandaşı / Erkek",
+                        "Yabancı Uyruklu / Kadın",
+                        "Yabancı Uyruklu / Erkek",
+                        "Toplam"
+                };
+            }
         } else {
             this.captions = new String[]{
                     "Financial Performance / H1 (Q1-Q2) / Revenue ($)",
@@ -116,6 +178,7 @@ public class GridBean implements Serializable {
                 "c1", "color: #0284c7; font-weight: 600;"
         );
     }
+
 
     // Getters and Setters
     public Integer getRowCount() {
