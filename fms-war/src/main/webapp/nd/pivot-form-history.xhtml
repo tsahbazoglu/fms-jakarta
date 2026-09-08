@@ -3,11 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:f="jakarta.faces.core"
       xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid"
       xmlns:c="jakarta.tags.core"
-      >
+      xmlns:dh="http://dadhawk.com/faces"
+>
 
     <h:head>
         <title></title>
@@ -109,16 +108,17 @@
     <p:outputPanel id="historyMyGridReadOnly">
         <p:scrollPanel mode="native" 
                        style="width:95%;">
-            <mygrid:mygridHistory 
-                id="idHistoryMyGridReadOnly"
-                rowHeaderWidh="#{pivotViewerCtrl.pivotDataModel.handsonRowHeaderWidth}"
-                colWidths="#{pivotViewerCtrl.pivotDataModel.handsonColWidths}"
-                columns="#{pivotViewerCtrl.pivotDataModel.columns}"
-                nestedHeaders="#{pivotViewerCtrl.pivotDataModel.nestedHeaders}"
-                rows="#{pivotViewerCtrl.pivotDataModel.rows}"
-                cell="#{pivotViewerCtrl.pivotDataModel.cell}"
-                rendered="#{formService.myForm.historyRendered}"
-                /> 
+            <dh:dhGrid id="id-grid-readonly"
+                       rowCount="#{gridBean.rowCount}"
+                       colCount="#{gridBean.colCount}"
+                       content="#{gridBean.content}"
+                       captions="#{gridBean.captions}"
+                       componentMap="#{gridBean.componentMap}"
+                       readOnlyCells="#{gridBean.readOnlyCells}"
+                       cssCompatible="primethemes"
+                       cellStyles="#{gridBean.cellStyles}"
+                       readOnly="true"
+            />
         </p:scrollPanel>
 
     </p:outputPanel>

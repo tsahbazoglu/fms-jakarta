@@ -1,4 +1,4 @@
-package tr.org.tspb.web.session.mb;
+package com.dadhawk.faces.demo;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -23,9 +23,12 @@ public class GridBean implements Serializable {
     private String[][] content;
     private Object captions;
     private Map<String, String> componentMap = new HashMap<>();
+    private Boolean readOnly = false;
     private Object readOnlyCells;
     private Object cellStyles;
     private String selectedPreset = "financial";
+    private String cssCompatible = "primethemes";
+    private String locale = "en-US";
 
     @PostConstruct
     public void init() {
@@ -37,21 +40,24 @@ public class GridBean implements Serializable {
         this.rowCount = 5;
         this.colCount = 5;
         this.captions = new String[] {
-            "Financial Performance / H1 (Q1-Q2) / Revenue ($)",
-            "Financial Performance / H1 (Q1-Q2) / Expenses ($)",
-            "Financial Performance / H2 (Q3-Q4) / Revenue ($)",
-            "Financial Performance / H2 (Q3-Q4) / Expenses ($)",
-            "Overall Status"
+                "Financial Performance / H1 (Q1-Q2) / Revenue ($)",
+                "Financial Performance / H1 (Q1-Q2) / Expenses ($)",
+                "Financial Performance / H2 (Q3-Q4) / Revenue ($)",
+                "Financial Performance / H2 (Q3-Q4) / Expenses ($)",
+                "Overall Status"
         };
         this.content = new String[][] {
-            {"Quarter", "Revenue ($)", "Expenses ($)", "Margin (%)", "Performance"},
-            {"Q1 2026", "$120,000", "$85,000", "29.1%", "Completed"},
-            {"Q2 2026", "$145,000", "$92,000", "36.5%", "Active"},
-            {"Q3 2026", "$160,000", "$98,000", "38.7%", "Pending"},
-            {"Q4 2026", "$210,000", "$110,000", "47.6%", "In Review"}
+                {"Quarter", "Revenue ($)", "Expenses ($)", "Margin (%)", "Performance"},
+                {"Q1 2026", "120000", "85000", "29.1", "Completed"},
+                {"Q2 2026", "145000", "92000", "36.5", "Active"},
+                {"Q3 2026", "160000", "98000", "38.7", "Pending"},
+                {"Q4 2026", "210000", "110000", "47.6", "In Review"}
         };
 
         this.componentMap = new HashMap<>();
+        this.componentMap.put("c1", "input-money");
+        this.componentMap.put("c2", "input-money");
+        this.componentMap.put("c3", "input-number");
         this.componentMap.put("r1_c4", "status-selector");
         this.componentMap.put("r2_c4", "status-selector");
         this.componentMap.put("r3_c4", "status-selector");
@@ -59,8 +65,8 @@ public class GridBean implements Serializable {
 
         this.readOnlyCells = Map.of("r1_c0", true, "r3", true);
         this.cellStyles = Map.of(
-            "r1_c3", "background-color: rgba(34, 197, 94, 0.15); color: #15803d; font-weight: 700;",
-            "c1", "color: #0284c7; font-weight: 600;"
+                "r1_c3", "background-color: rgba(34, 197, 94, 0.15); color: #15803d; font-weight: 700;",
+                "c1", "color: #0284c7; font-weight: 600;"
         );
     }
 
@@ -70,11 +76,11 @@ public class GridBean implements Serializable {
         this.colCount = 5;
         this.captions = null;
         this.content = new String[][] {
-            {"Task Name", "Owner", "Category", "Priority", "Status"},
-            {"Upgrade JSF Library", "Alex Rivera", "Core Dev", "High", "Active"},
-            {"Design Web Component", "Sarah Chen", "UI/UX", "Medium", "Completed"},
-            {"QA Matrix Test Suite", "Telman G.", "Testing", "High", "Pending"},
-            {"CI/CD Pipeline Setup", "DevOps Team", "Infrastructure", "Low", "In Review"}
+                {"Task Name", "Owner", "Category", "Priority", "Status"},
+                {"Upgrade JSF Library", "Alex Rivera", "Core Dev", "High", "Active"},
+                {"Design Web Component", "Sarah Chen", "UI/UX", "Medium", "Completed"},
+                {"QA Matrix Test Suite", "Telman G.", "Testing", "High", "Pending"},
+                {"CI/CD Pipeline Setup", "DevOps Team", "Infrastructure", "Low", "In Review"}
         };
 
         this.componentMap = new HashMap<>();
@@ -94,11 +100,11 @@ public class GridBean implements Serializable {
         this.colCount = 5;
         this.captions = null;
         this.content = new String[][] {
-            {"SKU Code", "Product Name", "Category", "User Rating", "Availability"},
-            {"SKU-9021", "Quantum Matrix Display", "Monitors", "★★★★★", "Active"},
-            {"SKU-4412", "Cyber Grid Keyboard", "Peripherals", "★★★★☆", "Active"},
-            {"SKU-1089", "Neuron Headset Pro", "Audio", "★★★☆☆", "Pending"},
-            {"SKU-3320", "UltraDock Station", "Accessories", "★★★★★", "Completed"}
+                {"SKU Code", "Product Name", "Category", "User Rating", "Availability"},
+                {"SKU-9021", "Quantum Matrix Display", "Monitors", "★★★★★", "Active"},
+                {"SKU-4412", "Cyber Grid Keyboard", "Peripherals", "★★★★☆", "Active"},
+                {"SKU-1089", "Neuron Headset Pro", "Audio", "★★★☆☆", "Pending"},
+                {"SKU-3320", "UltraDock Station", "Accessories", "★★★★★", "Completed"}
         };
 
         this.componentMap = new HashMap<>();
@@ -221,5 +227,59 @@ public class GridBean implements Serializable {
 
     public void setSelectedPreset(String selectedPreset) {
         this.selectedPreset = selectedPreset;
+    }
+
+    private String lastSaveStatus;
+
+    public String saveGrid() {
+        int r = (this.content != null) ? this.content.length : 0;
+        int c = (r > 0 && this.content[0] != null) ? this.content[0].length : 0;
+        this.lastSaveStatus = "💾 Grid data (" + r + " rows × " + c + " cols) saved to GridBean at " + java.time.LocalTime.now().toString().substring(0, 8);
+        return null;
+    }
+
+    public String saveData() {
+        return saveGrid();
+    }
+
+    public String getLastSaveStatus() {
+        return lastSaveStatus;
+    }
+
+    public void setLastSaveStatus(String lastSaveStatus) {
+        this.lastSaveStatus = lastSaveStatus;
+    }
+
+    public String getCssCompatible() {
+        return cssCompatible;
+    }
+
+    public void setCssCompatible(String cssCompatible) {
+        this.cssCompatible = cssCompatible;
+    }
+
+    public Boolean isReadOnly() {
+        return readOnly != null ? readOnly : false;
+    }
+
+    public Boolean getReadOnly() {
+        return isReadOnly();
+    }
+
+    public void setReadOnly(Boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    public String toggleReadOnly() {
+        this.readOnly = !isReadOnly();
+        return null;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }
