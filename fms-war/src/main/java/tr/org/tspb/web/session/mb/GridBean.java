@@ -6,6 +6,7 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,11 @@ public class GridBean implements Serializable {
     private String selectedPreset = "financial";
     private String cssCompatible = "primethemes";
     private String locale = "en-US";
+
+    private Map<String, String> componentMatch = Map.of(
+            "inputText", "input-number",
+            "inputNumber", "input-number"
+    );
 
     @PostConstruct
     public void init() {
@@ -105,7 +111,12 @@ public class GridBean implements Serializable {
                 ? (PivotDataModelHandson) pivotModifierCtrl.getPivotDataModelEdit()
                 : null;
 
-        if (pivotDataModelHandson != null && pivotDataModelHandson.getColHeaders() != null) {
+        if (pivotDataModelHandson == null) {
+            loremIpsumInit();
+            return;
+        }
+
+        if (pivotDataModelHandson.getColHeaders() != null) {
             this.captions = Stream.concat(Stream.of(""), pivotDataModelHandson.getColHeaders().stream())
                     .toArray(String[]::new);
 
@@ -131,7 +142,7 @@ public class GridBean implements Serializable {
 
         this.colCount = (this.captions instanceof String[]) ? ((String[]) this.captions).length : 5;
 
-        if (pivotDataModelHandson != null && pivotDataModelHandson.getRowHeaders() != null && !pivotDataModelHandson.getRowHeaders().isEmpty()) {
+        if (pivotDataModelHandson.getRowHeaders() != null && !pivotDataModelHandson.getRowHeaders().isEmpty()) {
             List<String> rowHeaders = pivotDataModelHandson.getRowHeaders();
             int numRows = rowHeaders.size();
             List<List<String>> data = pivotDataModelHandson.getData();
@@ -161,16 +172,56 @@ public class GridBean implements Serializable {
 
         this.rowCount = (this.content != null) ? this.content.length : 5;
 
-        this.componentMap = new HashMap<>();
-        this.componentMap.put("c1", "input-money");
-        this.componentMap.put("c2", "input-money");
-        this.componentMap.put("c3", "input-number");
-        this.componentMap.put("r1_c4", "status-selector");
-        this.componentMap.put("r2_c4", "status-selector");
-        this.componentMap.put("r3_c4", "status-selector");
-        this.componentMap.put("r4_c4", "status-selector");
+        List<PivotDataModelHandson.HandsonTableColRenderer> renderer = pivotDataModelHandson.getRenderer();
 
-        this.readOnlyCells = Map.of("r1_c0", true, "r3", true);
+        Map<String, String> compMap = new HashMap<>();
+        Map<String, Boolean> readOnlyMap = new HashMap<>();
+
+        if (renderer != null && !renderer.isEmpty()) {
+            int dataCols = (pivotDataModelHandson.getColHeaders() != null && !pivotDataModelHandson.getColHeaders().isEmpty())
+                    ? pivotDataModelHandson.getColHeaders().size()
+                    : (this.colCount != null ? this.colCount - 1 : 0);
+
+            if (dataCols > 0 && renderer.size() > dataCols) {
+                for (int i = 0; i < renderer.size(); i++) {
+                    int r = i / dataCols;
+                    int c = i % dataCols;
+                    PivotDataModelHandson.HandsonTableColRenderer item = renderer.get(i);
+                    if (item != null) {
+                        if (item.getComponent() != null && !item.getComponent().isEmpty()) {
+                            compMap.put("r" + r + "_c" + (c + 1), componentMatch.get(item.getComponent()));
+                        }
+                        if (Boolean.TRUE.equals(item.getReadonly())) {
+                            readOnlyMap.put("r" + r + "_c" + (c + 1), true);
+                        }
+                    }
+                }
+            } else {
+                for (int c = 0; c < renderer.size(); c++) {
+                    PivotDataModelHandson.HandsonTableColRenderer item = renderer.get(c);
+                    if (item != null) {
+                        if (item.getComponent() != null && !item.getComponent().isEmpty()) {
+                            compMap.put("c" + (c + 1), item.getComponent());
+                        }
+                        if (Boolean.TRUE.equals(item.getReadonly())) {
+                            readOnlyMap.put("c" + (c + 1), true);
+                        }
+                    }
+                }
+            }
+            this.componentMap = compMap;
+            this.readOnlyCells = readOnlyMap;
+        } else {
+            this.componentMap = new HashMap<>();
+            this.componentMap.put("c1", "input-money");
+            this.componentMap.put("c2", "input-money");
+            this.componentMap.put("c3", "input-number");
+            this.componentMap.put("r1_c4", "status-selector");
+            this.componentMap.put("r2_c4", "status-selector");
+            this.componentMap.put("r3_c4", "status-selector");
+            this.componentMap.put("r4_c4", "status-selector");
+            this.readOnlyCells = Map.of("r1_c0", true, "r3", true);
+        }
         this.cellStyles = Map.of(
                 "r1_c3", "background-color: rgba(34, 197, 94, 0.15); color: #15803d; font-weight: 700;",
                 "c1", "color: #0284c7; font-weight: 600;"

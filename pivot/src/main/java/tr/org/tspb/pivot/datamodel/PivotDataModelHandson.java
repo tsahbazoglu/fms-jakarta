@@ -31,6 +31,11 @@ public class PivotDataModelHandson implements PivotDataModel {
     private List<String> colHeaders = new ArrayList<>();
     private List<String> rowHeaders = new ArrayList<>();
     private List<List<String>> data = new ArrayList<>();
+    private List<HandsonTableColRenderer> renderer = new ArrayList<>();
+
+    public List<HandsonTableColRenderer> getRenderer() {
+        return renderer;
+    }
 
     public List<List<String>> getData() {
         return data;
@@ -68,7 +73,6 @@ public class PivotDataModelHandson implements PivotDataModel {
 
         for (MyField coordinateRow : iksDimension) {
             List<String> row = new ArrayList<>();
-            List renderer = new ArrayList();
             for (MyField coordinateColumn : igrekDimension) {
                 List<MyField> coordinates = new ArrayList<>();
                 coordinates.add(coordinateColumn);
@@ -219,7 +223,7 @@ public class PivotDataModelHandson implements PivotDataModel {
         this.jsonDataToModel = jsonDataToModel;
     }
 
-    private class HandsonTableColRenderer {
+    public class HandsonTableColRenderer {
 
         private String component;
         private String background;
