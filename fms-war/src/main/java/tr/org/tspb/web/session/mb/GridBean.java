@@ -1,5 +1,6 @@
-package com.dadhawk.faces.demo;
+package tr.org.tspb.web.session.mb;
 
+import com.google.gson.Gson;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.event.Observes;
@@ -314,6 +315,19 @@ public class GridBean implements Serializable {
     private String lastSaveStatus;
 
     public String saveGrid() {
+        String[][] contentWithoutFirstColumn = new String[this.content.length][];
+        for (int i = 0; i < this.content.length; i++) {
+            if (this.content[i] != null && this.content[i].length > 1) {
+                contentWithoutFirstColumn[i] = new String[this.content[i].length - 1];
+                System.arraycopy(this.content[i], 1, contentWithoutFirstColumn[i], 0, this.content[i].length - 1);
+            } else {
+                contentWithoutFirstColumn[i] = new String[0];
+            }
+        }
+        String jsonData = new Gson().toJson(contentWithoutFirstColumn);
+        pivotModifierCtrl.getPivotDataModelEdit().setJsonDataToModel(jsonData);
+        pivotModifierCtrl.provideCrossCheck();
+
         int r = (this.content != null) ? this.content.length : 0;
         int c = (r > 0 && this.content[0] != null) ? this.content[0].length : 0;
         this.lastSaveStatus = "💾 Grid data (" + r + " rows × " + c + " cols) saved to GridBean at " + java.time.LocalTime.now().toString().substring(0, 8);

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="jakarta.faces.html"
+>
+<p:outputPanel>
+
+    <p:remoteCommand
+            name="rcPivotSave"
+            value="Kaydet"
+            rendered="#{formService.myForm.myActions.save}"
+            action="#{gridBean.saveData}"
+            update="id-tab-view:currentMyGrid,#{updateAjaxMB.btnNdSave}"
+            oncomplete="setStatusToSaved();hideNotSavedDlg();"
+    />
+    <p:remoteCommand
+            name="rcPivotSendForms"
+            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}"
+            actionListener="#{pivotModifierCtrl.sendForm}"
+            rendered="#{formService.myForm.myActions.sendForms}"
+            update="#{updateAjaxMB.btnNdSendForms}"
+    />
+    <p:remoteCommand
+            name="rcPivotShowDesc"
+            value="Bu sayfa ile ilgili açıklamalar için tıklayınız"
+            action="#{pivotModifierCtrl.showAllNote}"
+            rendered="#{pivotModifierCtrl.selectedFormUserNote}"
+            update="#{updateAjaxMB.msgDlg}"
+    />
+    <p:remoteCommand
+            name="rcPivotDownlodExcel"
+            value="Excele Aktar"
+            rendered="#{formService.myForm.myActions.download}"
+            action="#{pivotModifierCtrl.downloadCsvFile}"
+    />
+    <p:remoteCommand
+            name="rcPivotEsign"
+            action="#{pivotModifierCtrl.showEimza22}"
+            rendered="#{formService.myForm.myActions.eimza2D}"
+            update="#{updateAjaxMB.msgDlg},:id_nd_esign_dialog"
+    />
+    <h:inputHidden
+            id="id-hidden-text-saved-status"
+            value="false"
+    />
+</p:outputPanel>
+</html>

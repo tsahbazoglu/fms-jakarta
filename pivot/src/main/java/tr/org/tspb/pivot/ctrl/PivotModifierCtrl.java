@@ -849,6 +849,7 @@ public class PivotModifierCtrl extends PivotImpl {
 
             successList = map.get("successList");
             failList = map.get("failList");
+
             dialogController.showPopupWarning("", "dialogControlAndSave");
 
             //JavaScriptRunner.runScript(FacesContext.getCurrentInstance(), "dialogControlAndSave" + DOT + "show();");

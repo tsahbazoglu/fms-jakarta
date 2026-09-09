@@ -75,7 +75,10 @@ public enum EnumPage {
             "İşlemler | Dönem",
             "/nd/ndSelectObject.xhtml",
             "/nd/pivot-form-history.xhtml",
-            "/nd/pivot-form-header.xhtml"
+            "/nd/pivot-form-header.xhtml",
+            null,
+            "/nd/grid-dialogs.xhtml",
+            null
     ),
     MODULES("/ypi/modules.xhtml",
             null,
