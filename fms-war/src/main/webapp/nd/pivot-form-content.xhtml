@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:f="jakarta.faces.core"
       xmlns:h="jakarta.faces.html"
@@ -7,89 +8,97 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:c="jakarta.tags.core"
       xmlns:dh="http://dadhawk.com/faces"
-      >
-     <h:head>
-        <title></title>
-        <script>
-            function setStatusToSaved() {
-                var hiddenTextStatusSaved = $(document.getElementById("id-tab-view:nd-form:id-hidden-text-saved-status"));
-                hiddenTextStatusSaved.prop("value", true);
-            }
-            function checkSavedStatus() {
-                var hiddenTextStatusSaved = $(document.getElementById("id-tab-view:nd-form:id-hidden-text-saved-status"));
-                if (hiddenTextStatusSaved.prop("value") == "false"
-                        || hiddenTextStatusSaved.prop("value") == false) {
-                    PF("wv_pivot_not_saved_data").show();
-                } else {
-                    rcPivotSendForms();
-                    PF("wv_pivot_not_saved_data").hide();
-                }
-            }
-            function hideNotSavedDlg() {
+>
+<h:head>
+    <title></title>
+    <script>
+        function setStatusToSaved() {
+            var hiddenTextStatusSaved = $(document.getElementById("id-tab-view:nd-form:id-hidden-text-saved-status"));
+            hiddenTextStatusSaved.prop("value", true);
+        }
+
+        function checkSavedStatus() {
+            var hiddenTextStatusSaved = $(document.getElementById("id-tab-view:nd-form:id-hidden-text-saved-status"));
+            if (hiddenTextStatusSaved.prop("value") == "false"
+                || hiddenTextStatusSaved.prop("value") == false) {
+                PF("wv_pivot_not_saved_data").show();
+            } else {
+                rcPivotSendForms();
                 PF("wv_pivot_not_saved_data").hide();
             }
+        }
 
-        </script>
-    </h:head>
+        function hideNotSavedDlg() {
+            PF("wv_pivot_not_saved_data").hide();
+        }
 
-    <ui:include src="pivot-dialogs.xhtml"/>
+    </script>
+</h:head>
 
-    <h:form id="nd-form">
-        <p:remoteCommand
+<ui:include src="pivot-dialogs.xhtml"/>
+
+<p:panel id="id-tool-pivot-actions">
+    <div style="height: 35px;">
+        <ui:include src="ui-pivot-tool-buttons.xhtml"/>
+    </div>
+</p:panel>
+
+<h:form id="nd-form">
+    <p:remoteCommand
             name="rcPivotSave"
             value="Kaydet"
             rendered="#{formService.myForm.myActions.save}"
             action="#{pivotModifierCtrl.provideCrossCheck}"
             update="id-tab-view:currentMyGrid,#{updateAjaxMB.btnNdSave}"
             oncomplete="setStatusToSaved();hideNotSavedDlg();"
-            />
-        <p:remoteCommand
+    />
+    <p:remoteCommand
             name="rcPivotSendForms"
             value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}"
             actionListener="#{pivotModifierCtrl.sendForm}"
             rendered="#{formService.myForm.myActions.sendForms}"
             update="#{updateAjaxMB.btnNdSendForms}"
-            />
-        <p:remoteCommand
+    />
+    <p:remoteCommand
             name="rcPivotShowDesc"
             value="Bu sayfa ile ilgili açıklamalar için tıklayınız"
             action="#{pivotModifierCtrl.showAllNote}"
             rendered="#{pivotModifierCtrl.selectedFormUserNote}"
             update="#{updateAjaxMB.msgDlg}"
-            />
-        <p:remoteCommand
+    />
+    <p:remoteCommand
             name="rcPivotDownlodExcel"
             value="Excele Aktar"
             rendered="#{formService.myForm.myActions.download}"
             action="#{pivotModifierCtrl.downloadCsvFile}"
-            />
-        <p:remoteCommand
+    />
+    <p:remoteCommand
             name="rcPivotEsign"
             action="#{pivotModifierCtrl.showEimza22}"
             rendered="#{formService.myForm.myActions.eimza2D}"
             update="#{updateAjaxMB.msgDlg},:id_nd_esign_dialog"
-            />
-        <h:inputHidden
+    />
+    <h:inputHidden
             id="id-hidden-text-json-data-to-model"
             value="#{pivotModifierCtrl.pivotDataModelEdit.jsonDataToModel}"
-            />
-        <h:inputHidden
+    />
+    <h:inputHidden
             id="id-hidden-text-saved-status"
             value="false"
-            />
-    </h:form>
+    />
+</h:form>
 
-    <p:panel>
-        <h:form id="ndFilterForm">
-            <p:panelGrid
+<p:panel>
+    <h:form id="ndFilterForm">
+        <p:panelGrid
                 columns="2"
                 layout="grid"
                 columnClasses="ui-g-2,ui-g-10"
-                >
-                <c:forEach items="#{pivotModifierCtrl.zetDimension}" var="filterFieldStructure">
-                    <p:outputLabel value="#{filterFieldStructure.shortName}"/>
-                    <p:outputPanel>
-                        <p:selectOneMenu
+        >
+            <c:forEach items="#{pivotModifierCtrl.zetDimension}" var="filterFieldStructure">
+                <p:outputLabel value="#{filterFieldStructure.shortName}"/>
+                <p:outputPanel>
+                    <p:selectOneMenu
                             value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
                             converter="#{filterFieldStructure.myconverter}"
                             rendered="#{'member' eq filterFieldStructure.key}"
@@ -97,130 +106,124 @@
                             filterMatchMode="contains"
                             caseSensitive="true"
                             style="width: 400px;"
-                            >
-                            <p:ajax
+                    >
+                        <p:ajax
                                 listener="#{pivotModifierCtrl.valueChangeListenerZet}"
                                 update="#{updateAjaxMB.filterNdDataAndTop}"
-                                />
-                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                        </p:selectOneMenu>
-                        <p:selectOneMenu
+                        />
+                        <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                        <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                    </p:selectOneMenu>
+                    <p:selectOneMenu
                             value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
                             converter="#{filterFieldStructure.myconverter}"
                             rendered="#{'period' eq filterFieldStructure.key}"
                             style="width: 400px;"
-                            >
-                            <p:ajax
+                    >
+                        <p:ajax
                                 listener="#{pivotModifierCtrl.valueChangeListenerZet}"
                                 update="#{updateAjaxMB.filterNdDataAndTop}"/>
-                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                        </p:selectOneMenu>
-                        <p:selectOneMenu
+                        <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                        <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                    </p:selectOneMenu>
+                    <p:selectOneMenu
                             value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
                             converter="#{filterFieldStructure.myconverter}"
                             rendered="#{'periodFilter' eq filterFieldStructure.key}"
                             style="width: 400px;"
-                            >
-                            <p:ajax
+                    >
+                        <p:ajax
                                 listener="#{pivotModifierCtrl.valueChangeListenerZet}"
                                 update="#{updateAjaxMB.filterNdDataAndTop}"/>
-                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                        </p:selectOneMenu>
-                        <p:selectOneMenu
+                        <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                        <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                    </p:selectOneMenu>
+                    <p:selectOneMenu
                             value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
                             converter="#{filterFieldStructure.myconverter}"
                             rendered="#{'template' eq filterFieldStructure.key}"
                             style="width: 400px;"
-                            >
-                            <p:ajax
+                    >
+                        <p:ajax
                                 listener="#{pivotModifierCtrl.valueChangeListenerZet}"
                                 update="#{updateAjaxMB.filterNdDataAndTop}"/>
-                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                        </p:selectOneMenu>
-                    </p:outputPanel>
-                </c:forEach>
-            </p:panelGrid>
-
-            <p:panelGrid
+                        <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                        <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                    </p:selectOneMenu>
+                </p:outputPanel>
+            </c:forEach>
+        </p:panelGrid>
+        <p:panelGrid
                 columns="1"
                 layout="grid"
-                >
-                <c:forEach items="#{formService.myForm.fieldsRowKeys}" var="fieldKey">
-                    <h:panelGrid columns="1">
-                        <h:outputText
+        >
+            <c:forEach items="#{formService.myForm.fieldsRowKeys}" var="fieldKey">
+                <h:panelGrid columns="1">
+                    <h:outputText
                             value="#{pivotModifierCtrl.componentMap[fieldKey]['label']}"
                             escape="false"
                             style="#{pivotModifierCtrl.componentMap[fieldKey]['style']}"
                             rendered="#{pivotModifierCtrl.componentMap[fieldKey]['rendered']}"
-                            >
-                        </h:outputText>
-                        <p:selectOneMenu
+                    >
+                    </h:outputText>
+                    <p:selectOneMenu
                             value="#{pivotModifierCtrl.rowObject[fieldKey]}"
                             label="#{pivotModifierCtrl.componentMap[fieldKey]['label']}"
                             rendered="#{'selectOneMenu' eq  pivotModifierCtrl.componentMap[fieldKey]['componentType'] 
                                         and pivotModifierCtrl.componentMap[fieldKey]['rendered']}"
                             converter="#{pivotModifierCtrl.componentMap[fieldKey].myconverter}"
-                            >
-                            <p:ajax
+                    >
+                        <p:ajax
                                 listener="#{pivotModifierCtrl.submitRowData}"
                                 update="#{updateAjaxMB.filterNdData}"
-                                />
-                            <f:selectItems value="#{pivotModifierCtrl.componentMap[fieldKey].items}"/>
-                        </p:selectOneMenu>
-                    </h:panelGrid>
-                </c:forEach>
+                        />
+                        <f:selectItems value="#{pivotModifierCtrl.componentMap[fieldKey].items}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+            </c:forEach>
 
-            </p:panelGrid>
+        </p:panelGrid>
+    </h:form>
+</p:panel>
 
-
-
-        </h:form>
-    </p:panel>
-
-
-
-    <p:scrollPanel mode="native" style="width:95%;">
-        <p:outputPanel
+<p:scrollPanel mode="native" style="width:95%;">
+    <p:outputPanel
             id="currentMyGrid"
-            >
-            <dh:dhGrid id="myGrid"
-                       rowCount="#{gridBean.rowCount}"
-                       colCount="#{gridBean.colCount}"
-                       content="#{gridBean.content}"
-                       captions="#{gridBean.captions}"
-                       componentMap="#{gridBean.componentMap}"
-                       readOnlyCells="#{gridBean.readOnlyCells}"
-                       cssCompatible="primethemes"
-                       cellStyles="#{gridBean.cellStyles}"
-                       readOnly="false"
+    >
+        <dh:dhGrid id="myGrid"
+                   rowCount="#{gridBean.rowCount}"
+                   colCount="#{gridBean.colCount}"
+                   content="#{gridBean.content}"
+                   captions="#{gridBean.captions}"
+                   componentMap="#{gridBean.componentMap}"
+                   readOnlyCells="#{gridBean.readOnlyCells}"
+                   cssCompatible="primethemes"
+                   cellStyles="#{gridBean.cellStyles}"
+                   readOnly="false"
 
-            />
-        </p:outputPanel>
-    </p:scrollPanel>
+        />
+    </p:outputPanel>
+</p:scrollPanel>
 
-    <script>
-        $(document.getElementById("id-tab-view:currentMyGrid")).bind("click", function (event) {
-            hideNotSavedDlg();
-        })
-    </script>
+<script>
+    $(document.getElementById("id-tab-view:currentMyGrid")).bind("click", function (event) {
+        hideNotSavedDlg();
+    })
+</script>
 
 
 </html>
-<!--
-                           A html select option element trims the white spaces by default.
-                           this is not the issue of jsf.
-                           so even if we have no jsf component we have to replace
-                           all white spaces in option element labels to &nbsp;
+        <!--
+                                   A html select option element trims the white spaces by default.
+                                   this is not the issue of jsf.
+                                   so even if we have no jsf component we have to replace
+                                   all white spaces in option element labels to &nbsp;
 
-                           At this phase we are success with h:selectOneMenu too,
-                           but it does not taken into account when we use ice:selectOneMenu.
+                                   At this phase we are success with h:selectOneMenu too,
+                                   but it does not taken into account when we use ice:selectOneMenu.
 
-                           So, this is the main reason why we use h:selectoneMenu
-                           instead of ice:selectOneMenu here.
+                                   So, this is the main reason why we use h:selectoneMenu
+                                   instead of ice:selectOneMenu here.
 
-                           That is all.
--->
+                                   That is all.
+        -->

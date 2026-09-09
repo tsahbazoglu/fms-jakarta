@@ -8,46 +8,9 @@
 
     <div class="ui-g">
         <div class="ui-g-12 ui-md-12 ui-lg-7">
-            <p:panel>
+            <p:panel id="id-pivot-form-name">
                 <div style="height: 35px;">
                     <p:outputLabel value="#{formService.myForm.name}" style="font-size: 28px;"/>        
-                </div>
-            </p:panel>
-            <br/>
-            <p:panel id="id-tool-pivot-actions">
-                <div style="height: 35px;">
-                    <h:panelGrid columns="6" rendered="#{not esignViewCtrl.preventedMultiTab}">
-                        <p:button
-                            icon="pi pi-save"
-                            title="Kaydet"
-                            rendered="#{formService.myForm.myActions.save}"
-                            onclick="rcPivotSave();return false;"
-                            />
-                        <p:button
-                            icon="pi pi-send"
-                            value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}" 
-                            rendered="#{formService.myForm.myActions.sendForms}"
-                            onclick="checkSavedStatus();return false;"
-                            />
-                        <p:button
-                            icon="pi pi-info-circle"
-                            title="Bu sayfa ile ilgili açıklamalar için tıklayınız"
-                            rendered="#{pivotModifierCtrl.selectedFormUserNote}"
-                            onclick="rcPivotShowDesc();return false;"
-                            />
-                        <p:button 
-                            icon="pi pi-file-excel"
-                            title="Excele Aktar" 
-                            rendered="#{formService.myForm.myActions.download}"
-                            onclick="rcPivotDownlodExcel();return false;"
-                            />
-                        <p:button 
-                            icon="pi pi-book"
-                            value="E-İmza Süreci" 
-                            rendered="#{formService.myForm.myActions.eimza2D}"
-                            onclick="rcPivotEsign();return false;"
-                            />  
-                    </h:panelGrid>
                 </div>
             </p:panel>
         </div>

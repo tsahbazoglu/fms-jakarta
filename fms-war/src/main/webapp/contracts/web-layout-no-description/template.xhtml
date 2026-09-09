@@ -21,19 +21,8 @@
     <h:outputStylesheet name="css/fms.css"/>
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
-    <h:outputScript name="handsontable/handsontable.full.js" library="telmangrid"/>
-    <h:outputStylesheet name="handsontable/handsontable.min.css" library="telmangrid" />
-    <h:outputStylesheet name="handsontable/ht-theme-main.min.css" library="telmangrid" />
-
-
-    <f:facet name="last">
-        <h:outputStylesheet name="handsontable/fms.handsontable.override.css" library="telmangrid"/>
-    </f:facet>
-
     <h:outputScript name="js/fms-core.js" library="web-layout-no-description"/>
-    <h:outputScript library="telmangrid" name="handsontable/init3dHandson.v1.js"/>
-
-</h:head>
+ </h:head>
 
 <h:body style="--fms-font-size-base: #{templateThemeHandler.fontSizePx}">
     <div class="main-wrapper p-2 md:p-4">
@@ -59,11 +48,11 @@
                         <ui:insert name="form-pop-ups">define form-pop-ups</ui:insert>
                     </p:outputPanel>
 
-                    <div class="mb-3">
+                    <h:panelGroup id="id-template-form-name" class="mb-3" >
                         <ui:include
                                 src="/2d/table-form-header-name.xhtml"
                         />
-                    </div>
+                    </h:panelGroup>
 
                     <p:tabView id="id-tab-view" styleClass="mt-2">
                         <p:tab id="id-tab-data-input" title="Veriler">

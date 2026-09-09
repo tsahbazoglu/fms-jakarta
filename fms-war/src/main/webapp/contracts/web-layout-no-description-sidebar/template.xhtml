@@ -4,6 +4,7 @@
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
       xmlns:ui="jakarta.faces.facelets"
+      xmlns:c="jakarta.tags.core"
       xmlns:p="http://primefaces.org/ui">
 
 <h:head>
@@ -21,16 +22,7 @@
     <h:outputStylesheet name="css/fms.css"/>
     <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
 
-    <h:outputScript name="handsontable/handsontable.full.js" library="telmangrid"/>
-    <h:outputStylesheet name="handsontable/handsontable.min.css" library="telmangrid" />
-    <h:outputStylesheet name="handsontable/ht-theme-main.min.css" library="telmangrid" />
-
-    <f:facet name="last">
-        <h:outputStylesheet name="handsontable/fms.handsontable.override.css" library="telmangrid"/>
-    </f:facet>
-
     <h:outputScript name="js/fms-core.js" library="web-layout-no-description-sidebar"/>
-    <h:outputScript library="telmangrid" name="handsontable/init3dHandson.v1.js"/>
 
 </h:head>
 
@@ -71,50 +63,41 @@
                             <ui:insert name="form-pop-ups">define form-pop-ups</ui:insert>
                         </p:outputPanel>
 
-                        <div class="mb-0">
+                        <p:panel id="id-template-web-layout-no-description-sidebar-form-name" class="mb-0">
                             <ui:include
-                                     src="/2d/table-form-header-name.xhtml"
+                                    src="/2d/table-form-header-name.xhtml"
                             />
-                        </div>
+                        </p:panel>
+
 
                         <p:tabView id="id-tab-view" styleClass="mt-0">
                             <p:tab id="id-tab-data-input" title="Veriler">
-
-
                                 <div class="grid flex-column md:flex-row mt-0">
 
+
                                     <div class="col-12">
-                                        <h:panelGroup rendered="#{mainFrame.historyRendered}">
-                                            <div class="p-0 py-1 border-bottom-1 surface-border mb-0">
-                                                <h:outputText value="Veri Girişi" styleClass="text-lg font-bold"/>
-                                                <p:tooltip for="@previous"
-                                                           value="güncellenebilir veriler bu sekmede yer almaktadır"
-                                                           position="top"/>
-                                            </div>
-                                        </h:panelGroup>
 
-                                        <ui:insert name="current-content">define current-content</ui:insert>
+                                        <c:if test="${mainFrame.historyRendered}">
+                                            <ui:insert name="current-content">define current-content</ui:insert>
 
-                                        <h:panelGroup rendered="#{mainFrame.historyRendered}">
                                             <div class="p-0 py-1 border-bottom-1 surface-border mb-0">
                                                 <h:outputText value="Karşılaştırma" styleClass="text-lg font-bold"/>
                                                 <p:tooltip for="@previous"
                                                            value="tüm veriler bu sekmede yer almaktadır"
                                                            position="top"/>
                                             </div>
-                                        </h:panelGroup>
 
-                                        <h:panelGroup rendered="#{mainFrame.historyRendered}">
                                             <ui:insert name="history-content">define history-content</ui:insert>
-                                        </h:panelGroup>
+                                         </c:if>
 
+                                        <c:if test="${not mainFrame.historyRendered}">
+                                            <ui:insert name="current-content">define current-content</ui:insert>
+                                        </c:if>
 
                                     </div>
 
 
                                 </div>
-
-
                             </p:tab>
 
                             <p:tab id="id-tab-attachments" title="Ekli Dosyalar"
@@ -152,7 +135,6 @@
         </div>
 
 
-
     </div>
 
     <ui:include src="../../dialogs/dlg-message-code.xhtml"/>
@@ -171,8 +153,8 @@
     </p:dialog>
     <script type="text/javascript">
         //<![CDATA[
-        $(document).ready(function() {
-            setTimeout(function() {
+        $(document).ready(function () {
+            setTimeout(function () {
                 $('#layout-main').removeClass('preload');
             }, 100);
         });
