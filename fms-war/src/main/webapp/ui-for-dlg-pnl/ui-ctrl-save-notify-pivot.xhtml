@@ -13,10 +13,15 @@
             <h:panelGroup rendered="#{not empty pivotModifierCtrl.failList}" layout="block"
                           styleClass="ui-messages-warn">
                 <ul>
-                    <li>Verileriniz kaydedilmiştir.</li>
-                    <li>Ancak aşağıdaki Uyarı ve Hataların giderilmesi gerekmektedir.</li>
-                    <li>
-                        Hatalar giderilmedikçe veya Uyarılara ilişkin açıklama girilmedikçe form Birliğimize <strong>gönderilemeyecektir.</strong>
+                    <li>Verileriniz başarıyla kaydedilmiştir.</li>
+                    <li>İşleme devam edebilmek için aşağıda listelenen
+                        <strong>uyarı ve hata kayıtlarının</strong> tamamlanması gerekmektedir.
+                    </li>
+                    <li>Gerekli düzeltmeler yapılmadığı veya uyarılara ilişkin açıklamalar girilmediği sürece form
+                        <strong>Birliğimize iletilemez</strong>.
+                    </li>
+                    <li>Kontrolleri tamamlamak ve açıklamaları girmek için sayfa sonundaki
+                        <strong>"Kontrol Et ve Gönder"</strong> sayfasını kullanabilirsiniz.
                     </li>
                 </ul>
             </h:panelGroup>
@@ -50,7 +55,8 @@
                 </p:column>
 
                 <p:column headerText="Sonuç Tipi">
-                    <h:outputText value="#{controlMap.resultType eq '000' ? 'Hata' : (controlMap.resultType eq '001' ? 'Uyarı' : controlMap.resultType)}" />
+                    <h:outputText
+                            value="#{controlMap.resultType eq '000' ? 'Hata' : (controlMap.resultType eq '001' ? 'Uyarı' : controlMap.resultType)}"/>
                 </p:column>
 
                 <p:column headerText="Sonuç"
