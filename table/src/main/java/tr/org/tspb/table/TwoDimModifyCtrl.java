@@ -299,7 +299,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
         if (list.isEmpty()) {
             //FIXME messagebundle
-            throw new NullNotExpectedException("İmzalanacak Kayıtlı Veriniz Tespit Edilemedi.");
+            throw new NullNotExpectedException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("i.mzalanacak.kayitli.veriniz.tespit"));
         }
 
         esignDoor.initAndShowEsignDlg(list, formService.getMyForm(), "widgetVarToBeSignedDialog", MULTIPLE);
@@ -753,7 +753,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         }
 
         if (!ok) {
-            throw new UserException("Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
+            throw new UserException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("sisteme.girs.yapan.kullanici.yalnizca"));
         }
 
         ObjectId returnID = saveObject(formService.getMyForm(), loginController, crudObject);
@@ -824,7 +824,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             }
 
             if (!ok) {
-                throw new Exception("Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
+                throw new Exception(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("sisteme.girs.yapan.kullanici.yalnizca"));
             }
 
             ObjectId returnID = saveObject(formService.getMyForm(), loginController, crud);

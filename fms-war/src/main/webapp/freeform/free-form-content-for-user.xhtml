@@ -9,7 +9,7 @@
       xmlns:mydynamic="http://java.sun.com/jsf/composite/mydinamic">
 
     <h:head>
-        <title>Dynamic Form</title>
+        <title>#{msg['dynamic.form']}</title>
     </h:head>
 
     <h:body>
@@ -32,7 +32,7 @@
                        showDelay="300"
                        widgetVar="vtLabelTooltip">
                 <f:attribute name="beforeShow" 
-                             value="this.cfg.content = $(this.target).attr('data-tooltip');" />
+                             value="#{msg['this.cfg.content.this.target']}" />
             </p:tooltip>
 
             <p:remoteCommand 
@@ -89,7 +89,7 @@
             </div>
 
             <div class="mt-4">
-                <h:outputText value="İzin Verilen Yatırım Hizmet ve Faaliyet" styleClass="font-bold mb-2 block"/>
+                <h:outputText value="#{msg['i.zin.verilen.yatirim.hizmet']}" styleClass="font-bold mb-2 block"/>
                 <p:dataTable 
                     value="#{freeDesigner.myRecord.listOfLicense}" 
                     var="license" 

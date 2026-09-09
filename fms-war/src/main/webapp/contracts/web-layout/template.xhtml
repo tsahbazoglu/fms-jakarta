@@ -56,15 +56,15 @@
                 <p:outputPanel id="idCenterCenter" styleClass="surface-card p-2 md:p-1 shadow-1 border-round">
 
                     <p:outputPanel id="id-dlgs">
-                        <ui:insert name="form-pop-ups">define form-pop-ups</ui:insert>
+                        <ui:insert name="form-pop-ups">#{msg['define.form.pop.ups']}</ui:insert>
                     </p:outputPanel>
 
                     <div class="mb-3">
-                        <ui:insert name="action-panel">define action-panel</ui:insert>
+                        <ui:insert name="action-panel">#{msg['define.action.panel']}</ui:insert>
                     </div>
 
                     <p:tabView id="id-tab-view" styleClass="mt-2">
-                        <p:tab id="id-tab-data-input" title="Veriler">
+                        <p:tab id="id-tab-data-input" title="#{msg['veriler']}">
 
 
                             <div class="grid flex-column md:flex-row mt-2">
@@ -72,26 +72,26 @@
                                 <div class="col-12">
                                     <h:panelGroup rendered="#{mainFrame.historyRendered}">
                                         <div class="p-2 border-bottom-1 surface-border mb-2">
-                                            <h:outputText value="Veri Girişi" styleClass="text-xl font-bold"/>
+                                            <h:outputText value="#{msg['veri.girisi']}" styleClass="text-xl font-bold"/>
                                             <p:tooltip for="@previous"
-                                                       value="güncellenebilir veriler bu sekmede yer almaktadır"
+                                                       value="#{msg['guncellenebilir.veriler.bu.sekmede.yer']}"
                                                        position="top"/>
                                         </div>
                                     </h:panelGroup>
 
-                                    <ui:insert name="current-content">define current-content</ui:insert>
+                                    <ui:insert name="current-content">#{msg['define.current.content']}</ui:insert>
 
                                     <h:panelGroup rendered="#{mainFrame.historyRendered}">
                                         <div class="p-2 border-bottom-1 surface-border mb-2">
-                                            <h:outputText value="Karşılaştırma" styleClass="text-xl font-bold"/>
+                                            <h:outputText value="#{msg['karsilastirma']}" styleClass="text-xl font-bold"/>
                                             <p:tooltip for="@previous"
-                                                       value="tüm veriler bu sekmede yer almaktadır"
+                                                       value="#{msg['tum.veriler.bu.sekmede.yer']}"
                                                        position="top"/>
                                         </div>
                                     </h:panelGroup>
 
                                     <h:panelGroup rendered="#{mainFrame.historyRendered}">
-                                        <ui:insert name="history-content">define history-content</ui:insert>
+                                        <ui:insert name="history-content">#{msg['define.history.content']}</ui:insert>
                                     </h:panelGroup>
 
 
@@ -103,17 +103,17 @@
 
                         </p:tab>
 
-                        <p:tab id="id-tab-attachments" title="Ekli Dosyalar"
+                        <p:tab id="id-tab-attachments" title="#{msg['ekli.dosyalar']}"
                                rendered="#{formService.myForm.hasAttachedFiles}">
                             <div class="p-3">
-                                <ui:insert name="upload-page">define upload-page</ui:insert>
+                                <ui:insert name="upload-page">#{msg['define.upload.page']}</ui:insert>
                             </div>
                         </p:tab>
 
-                        <p:tab id="id-tab-esign" title="E-İmzalı Bildirimler"
+                        <p:tab id="id-tab-esign" title="#{msg['e.i.mzali.bildirimler']}"
                                rendered="#{formService.myForm.esignable}">
                             <div class="p-3">
-                                <ui:insert name="esignHistory">EsignPanel</ui:insert>
+                                <ui:insert name="esignHistory">#{msg['esignpanel']}</ui:insert>
                             </div>
                         </p:tab>
                     </p:tabView>

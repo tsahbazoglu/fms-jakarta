@@ -5,37 +5,32 @@
       xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Sistem Hatası | TSPB - TCMA</title>
+        <title>#{msg['sistem.hatasi.tspb.tcma']}</title>
         <h:outputStylesheet name="css/fms.css"/>
     </h:head>
     <h:body>
         <div class="error-container">
             <h:graphicImage library="images" name="tcma_logo.png" alt="TSPB Logo" class="logo"/>
 
-            <h1>Beklenmedik Bir Hata Oluştu</h1>
-            <p>
-                İşleminiz gerçekleştirilirken teknik bir aksaklık yaşandı. <br/>
-                Lütfen ana sayfaya dönerek tekrar deneyiniz. Sorun devam ederse sistem yöneticisi ile iletişime geçebilirsiniz.
-            </p>
+            <h1>#{msg['beklenmedik.bir.hata.olustu']}</h1>
+            <p>#{msg['i.sleminiz.gerceklestirilirken.teknik.bir']}<br/>#{msg['lutfen.ana.sayfaya.donerek.tekrar']}</p>
 
             <div class="action-buttons">
-                <h:link outcome="/index.xhtml" value="Ana Sayfaya Dön" styleClass="btn-home"/>
+                <h:link outcome="/index.xhtml" value="#{msg['ana.sayfaya.don']}" styleClass="btn-home"/>
             </div>
 
             <div class="tech-details">
                 <p:accordionPanel activeIndex="-1" rendered="#{facesContext.application.projectStage eq 'Development'}">
-                    <p:tab title="Teknik Detaylar (Sadece Geliştirici Modu)">
+                    <p:tab title="#{msg['teknik.detaylar.sadece.gelistirici.modu']}">
                         <p style="white-space: pre-wrap; font-family: monospace;">
-                            <strong>Mesaj:</strong> #{pfExceptionHandler.message} <br/>
-                            <strong>Exception:</strong> #{pfExceptionHandler.type} <br/>
-                            <strong>Stack Trace:</strong> <br/>
+                            <strong>#{msg['mesaj']}</strong> #{pfExceptionHandler.message} <br/>
+                            <strong>#{msg['exception']}</strong> #{pfExceptionHandler.type} <br/>
+                            <strong>#{msg['stack.trace']}</strong> <br/>
                             <h:outputText value="#{pfExceptionHandler.formattedStackTrace}" escape="false" />
                         </p>
                     </p:tab>
                 </p:accordionPanel>
-                <p style="text-align: center; margin-top: 10px;">
-                    © 2026 Türkiye Sermaye Piyasaları Birliği
-                </p>
+                <p style="text-align: center; margin-top: 10px;">#{msg['2026.turkiye.sermaye.piyasalari.birligi']}</p>
             </div>
         </div>
     </h:body>

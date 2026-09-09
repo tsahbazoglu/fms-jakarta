@@ -9,7 +9,7 @@
 
     <p:remoteCommand
             name="rcPivotSave"
-            value="Kaydet"
+            value="#{msg['kaydet']}"
             rendered="#{formService.myForm.myActions.save}"
             action="#{gridBean.saveData}"
             update="id-tab-view:currentMyGrid,#{updateAjaxMB.btnNdSave}"
@@ -24,14 +24,14 @@
     />
     <p:remoteCommand
             name="rcPivotShowDesc"
-            value="Bu sayfa ile ilgili açıklamalar için tıklayınız"
+            value="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}"
             action="#{pivotModifierCtrl.showAllNote}"
             rendered="#{pivotModifierCtrl.selectedFormUserNote}"
             update="#{updateAjaxMB.msgDlg}"
     />
     <p:remoteCommand
             name="rcPivotDownlodExcel"
-            value="Excele Aktar"
+            value="#{msg['excele.aktar']}"
             rendered="#{formService.myForm.myActions.download}"
             action="#{pivotModifierCtrl.downloadCsvFile}"
     />

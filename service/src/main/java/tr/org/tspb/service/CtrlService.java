@@ -748,13 +748,13 @@ public class CtrlService extends CommonSrv {
         dataService.resetMapReduceCache();
 
         if (filter.get(formService.getMyForm().getLoginFkField()) == null) {
-            throw new NullNotExpectedException("Üye seçilmedi");
+            throw new NullNotExpectedException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("uye.secilmedi"));
         }
         if (filter.get(PERIOD) == null) {
-            throw new NullNotExpectedException("Dönem seçilmedi");
+            throw new NullNotExpectedException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("donem.secilmedi"));
         }
         if (formService.getMyForm().getField(TEMPLATE) != null && filter.get(TEMPLATE) == null) {
-            throw new NullNotExpectedException("Şablon seçilmedi");
+            throw new NullNotExpectedException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("sablon.secilmedi"));
         }
 
         List<Map<String, Object>> onFlyList = constraintCrossCheckVersionThree(filter);

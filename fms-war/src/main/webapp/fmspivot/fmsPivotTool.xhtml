@@ -21,7 +21,7 @@
             <p:toolbar>
                 <f:facet name="left">
                     <p:button 
-                        value="Kaydet"
+                        value="#{msg['kaydet']}"
                         onclick="rcSave();return false;"
                         />
                 </f:facet>                
@@ -39,9 +39,7 @@
             itemType="none"
             emptyMessage="#{fmsLabels.messages.getString('no_description')}"
             >
-            <f:facet name="header">
-                açıklamalar
-            </f:facet>
+            <f:facet name="header">#{msg['aciklamalar']}</f:facet>
             <h:outputText value="#{mymessage}" escape="false"/>
         </p:dataList>
 

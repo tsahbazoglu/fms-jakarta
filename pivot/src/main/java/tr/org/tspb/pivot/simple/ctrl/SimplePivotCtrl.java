@@ -105,12 +105,11 @@ public class SimplePivotCtrl extends SimplePivotCtrlAdmin {
                     pivotRecord.toDocument());
 
             if (pivotRecord.ok()) {
-                //FIXME messagebundle
-                dialogController.showPopupInfo2("Bilgilendirme",
-                        "Yanıtlarınız Kaydedildi. Anket Tamamlandı");
+                dialogController.showPopupInfo2(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("bilgilendirme"),
+                        tr.org.tspb.converter.props.MessageBundleLoader.getMessage("yanitlariniz.kaydedildi.anket.tamamlandi"));
             } else {
                 dialogController.showPopupError(
-                        "Yanıtlarınız Kaydedildi. Eksikler mevcut. Anket Tamamlanmadı");
+                        tr.org.tspb.converter.props.MessageBundleLoader.getMessage("yanitlariniz.kaydedildi.eksikler.mevcut.anket.tamamlanmadi"));
             }
 
         } else if (loginID.equals(pivotRecord.getMember())) {
@@ -118,11 +117,11 @@ public class SimplePivotCtrl extends SimplePivotCtrlAdmin {
                     Filters.eq("_id", pivotRecord.getObjectId()),
                     pivotRecord.toDocument());
             if (pivotRecord.ok()) {
-                dialogController.showPopupInfo2("Bilgilendirme",
-                        "Yanıtlarınız Kaydedildi. Anket Tamamlandı");
+                dialogController.showPopupInfo2(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("bilgilendirme"),
+                        tr.org.tspb.converter.props.MessageBundleLoader.getMessage("yanitlariniz.kaydedildi.anket.tamamlandi"));
             } else {
                 dialogController.showPopupError(
-                        "Yanıtlarınız Kaydedildi. Eksikler mevcut. Anket Tamamlanmadı");
+                        tr.org.tspb.converter.props.MessageBundleLoader.getMessage("yanitlariniz.kaydedildi.eksikler.mevcut.anket.tamamlanmadi"));
             }
         } else {
             dialogController.showPopupError("Hata Oluştu");

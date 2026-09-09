@@ -20,7 +20,7 @@
         </script>
     </h:head>
 
-    <h:outputText value="Basit Filtre" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+    <h:outputText value="#{msg['basit.filtre']}" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
 
     <h:form id="id-2d-form-history-quick-filter">
         <p:panelGrid columns="10">
@@ -109,19 +109,19 @@
             </c:forEach>
             <p:button
                 onclick="rcHistoryBaseFilter();return false;"
-                value="ara"
+                value="#{msg['ara']}"
                 >
             </p:button>
             <p:button
                 onclick="rcHistoryBaseFilterReset();return false;"
-                value="sıfırla"
+                value="#{msg['sifirla']}"
                 >
             </p:button>
         </p:panelGrid> 
 
         <p:remoteCommand 
             name="rcHistoryBaseFilter"
-            value="search" 
+            value="#{msg['search']}" 
             action="#{twoDimViewCtrl.actionSearchObject}"
             update="#{updateAjaxMB.action2DHistory}"
             >
@@ -132,7 +132,7 @@
     <h:form>
         <p:remoteCommand 
             name="rcHistoryBaseFilterReset"
-            value="reset" 
+            value="#{msg['reset.2']}" 
             action="#{twoDimViewCtrl.resetFilter}"
             update="#{updateAjaxMB.action2DHistory}"
             >

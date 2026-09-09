@@ -6,7 +6,7 @@
       xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>User Management Panel</title>
+        <title>#{msg['user.management.panel']}</title>
     </h:head>
 
     <h:body>
@@ -24,7 +24,7 @@
                 <h:panelGroup rendered="#{roleMB['uysdesigner']}">
                     <h:outputText value="SPK İlk Bildirim Tarihi: " style="font-weight: bold; color: #666;"/>
                     <h:panelGroup rendered="#{not empty loginController.loggedUserDetail}">
-                        <h:outputText value="Belirtilmemiş" 
+                        <h:outputText value="#{msg['belirtilmemis']}" 
                                       rendered="#{empty loginController.loggedUserDetail.mapProjectInfo}" 
                                       style="color: #999; font-style: italic;"/>
                         <h:outputText value="#{loginController.loggedUserDetail.mapProjectInfo['spk_notifacation_date']}"
@@ -42,22 +42,22 @@
                 <p:linkButton icon="pi pi-share-alt" 
                               target="_blank" 
                               href="https://git.tspb.org.tr/explore/projects" 
-                              title="Git Projeleri"
+                              title="#{msg['git.projeleri']}"
                               styleClass="ui-button-outlined ui-button-secondary"/>
 
-                <p:commandButton value="Profil"
+                <p:commandButton value="#{msg['profil']}"
                                  icon="pi pi-user-edit"
                                  action="#{loginController.showRoles}"
                                  update="#{updateAjaxMB.btnDetay},id-dlg-user-info"
                                  styleClass="ui-button-outlined ui-button-secondary"/>
 
-                <p:commandButton value="Çıkış"
+                <p:commandButton value="#{msg['cikis']}"
                                  icon="pi pi-sign-out"
                                  action="#{loginController.logout}"
                                  immediate="true"
                                  update="#{updateAjaxMB.msgDlg}"
                                  styleClass="ui-button-outlined ui-button-danger">
-                    <f:attribute name="toPage" value="PERSONNEL"/>
+                    <f:attribute name="toPage" value="#{msg['personnel']}"/>
                 </p:commandButton>
 
             </h:panelGrid>

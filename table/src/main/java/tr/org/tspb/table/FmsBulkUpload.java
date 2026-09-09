@@ -254,7 +254,7 @@ public class FmsBulkUpload extends FmsTable implements Serializable {
         }
 
         if (listOfToBeUpsert == null) {
-            throw new NullNotExpectedException("Dosya Yükleme İşlemi Yapılmamış");
+            throw new NullNotExpectedException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("dosya.yukleme.i.slemi.yapilmamis"));
         }
 
         if (formService.getMyForm().

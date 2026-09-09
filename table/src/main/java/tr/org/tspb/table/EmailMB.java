@@ -233,7 +233,7 @@ public class EmailMB implements Serializable {
                     getDb(), code, enrichedCrudObject);
             email = commandResult.getString(RETVAL);
         } else {
-            throw new Exception("\"to\" alanı tanımlı değil");
+            throw new Exception(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("to.alani.tanimli.degil"));
         }
 
         subject = Document.getString(SUBJECT);

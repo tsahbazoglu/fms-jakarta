@@ -31,32 +31,32 @@
                 <p:button
                     icon="pi pi-save" 
                     onclick="rcSave();return false;"
-                    title="Kaydet" 
+                    title="#{msg['kaydet']}" 
                     rendered="#{mainFrame.isTwoDim and formService.myForm.myActions.save}"
                     />
                 <p:button
                     icon="pi pi-clone" 
                     onclick="rcSaveAs();return false;"
-                    title="Farklı Kaydet" 
+                    title="#{msg['farkli.kaydet']}" 
                     rendered="#{mainFrame.isTwoDim and formService.myForm.myActions.saveAs}"
                     />  
                 <p:commandButton 
                     icon="pi pi-trash" 
                     onclick="PF('specialConfirmationDialog').show(); return false;"
-                    title="Sil" 
+                    title="#{msg['sil']}" 
                     transient="true"
                     rendered="#{mainFrame.isTwoDim and formService.myForm.myActions.delete}"
                     />  
                 <p:button 
                     icon="pi pi-reply" 
                     onclick="setToRelatedForm();return false;"
-                    title="Aktar" 
+                    title="#{msg['aktar']}" 
                     transient="true"
                     rendered="#{mainFrame.hasSetToRelatedForm}"
                     /> 
                 <p:commandButton 
                     id="id_2d_button_esign"
-                    value="2:1 - Eimza Süreci" 
+                    value="#{msg['2.1.eimza.sureci']}" 
                     action="#{twoDimModifyCtrl.showEimza}" 
                     rendered="#{mainFrame.isTwoDim and formService.myForm.myActions.eimza1D}"
                     update="#{updateAjaxMB.btn2dDlgEsign}"
@@ -64,12 +64,12 @@
                 <!--rendered="# {twoDimModifyCtrl.dependOnSelectedFormRenderedMap['save']and twoDimModifyCtrl.myObject['resultType']['code']=='001'}"-->
                 <p:commandButton 
                     id="buttonCopyObject"
-                    value="Kopyala" 
+                    value="#{msg['kopyala']}" 
                     action="#{twoDimModifyCtrl.copyObject}" 
                     rendered="false"/>
 
                 <p:commandButton 
-                    value="Ödeme İşlemi" 
+                    value="#{msg['odeme.i.slemi']}" 
                     action="#{twoDimModifyCtrl.payment}" 
                     style="white-space: nowrap;"
                     update=":id-dlg-payment,#{updateAjaxMB.msgDlg}"
@@ -77,7 +77,7 @@
                     />
 
                 <p:commandButton 
-                    value="indirmek için tıklayınız." 
+                    value="#{msg['indirmek.icin.tiklayiniz']}" 
                     ajax="false" 
                     icon="ui-icon-arrowthick-1-s"
                     rendered="#{formService.myForm.myActions.pdf}"
@@ -86,7 +86,7 @@
                 </p:commandButton>
 
                 <p:commandButton 
-                    value="LDAP" 
+                    value="#{msg['ldap']}" 
                     onclick="PF('wv_dlg_ldap').show(); return false;"
                     style="white-space: nowrap;"
                     update="id_dlg_ldap"
@@ -95,7 +95,7 @@
                 </p:commandButton>
 
                 <h:outputText 
-                    value="Tarihçe Etkin(siz)leştir" 
+                    value="#{msg['tarihce.etkin.siz.lestir']}" 
                     style="white-space: nowrap;"
                     rendered="#{roleMB[mainFrame.architectRole] and formService.myForm.myActions.save}"/>
 
@@ -133,7 +133,7 @@
                 <p:outputPanel>
                     <p:remoteCommand                
                         name="rc_2d_delete"
-                        value="Sormadan Sil"
+                        value="#{msg['sormadan.sil']}"
                         action="#{twoDimModifyCtrl.deleteObject}" 
                         rendered="#{mainFrame.isTwoDim and formService.myForm.myActions.delete}"
                         update="#{updateAjaxMB.buttonDeleteDirectly}"
@@ -142,14 +142,14 @@
                     <p:remoteCommand 
                         name="rcSave"
                         oncomplete="falsechange();"
-                        value="Kaydet" 
+                        value="#{msg['kaydet']}" 
                         action="#{twoDimModifyCtrl.saveObject}" 
                         rendered="#{mainFrame.isTwoDim and formService.myForm.myActions.save}"
                         update="#{updateAjaxMB.btn2dSave},:idTwoDlgTabView,id-tab-view:id-table-file-list"
                         />
                     <p:remoteCommand 
                         name="rcSaveAs"
-                        value="Farklı Kaydet" 
+                        value="#{msg['farkli.kaydet']}" 
                         oncomplete="falsechange();"
                         action="#{twoDimModifyCtrl.saveAsObject}" 
                         rendered="#{mainFrame.isTwoDim and formService.myForm.myActions.saveAs}"
@@ -157,7 +157,7 @@
                         />  
                     <p:remoteCommand 
                         name="setToRelatedForm"
-                        value="ilgili forma aktar" 
+                        value="#{msg['ilgili.forma.aktar']}" 
                         action="#{mainFrame.setToRelatedForm(twoDimModifyCtrl.myObject._id)}" 
                         update="#{updateAjaxMB.idCenterMiddle}"
                         rendered="#{mainFrame.hasSetToRelatedForm}"
@@ -183,7 +183,7 @@
                             </p:outputLabel>
                             <p:spacer width="10" height="10"/>               
                             <p:commandButton 
-                                value="Seç" 
+                                value="#{msg['sec']}" 
                                 style="font-size:8px;"
                                 action="#{mainFrame.goToForm}"
                                 update="#{updateAjaxMB.idCenterMiddle}"
@@ -250,9 +250,9 @@
                             <p:outputPanel
                                 rendered="#{twoDimModifyCtrl.pickList eq  myField.componentType and myField.rendered}"
                                 >
-                                <p:panelGrid columns="3" layout="grid" columnClasses="ui-g-5,ui-g-2,ui-g-5">                                        <p:outputLabel value="eklenebilir_formlar" style="font-weight: bold;"/>
+                                <p:panelGrid columns="3" layout="grid" columnClasses="ui-g-5,ui-g-2,ui-g-5">                                        <p:outputLabel value="#{msg['eklenebilir.formlar']}" style="font-weight: bold;"/>
                                     <p:outputLabel value=" "/>
-                                    <p:outputLabel value="eklenen_formlar" style="font-weight: bold;"/>
+                                    <p:outputLabel value="#{msg['eklenen.formlar']}" style="font-weight: bold;"/>
                                 </p:panelGrid>
                                 <p:pickList
                                     value="#{twoDimModifyCtrl.myObject[myField.key]}"
@@ -346,7 +346,7 @@
                                 rendered="#{twoDimModifyCtrl.inputFile eq  myField.componentType and myField.rendered}"
                                 >
                                 <p:button 
-                                    value="Dosya Yükleme"
+                                    value="#{msg['dosya.yukleme']}"
                                     onclick="PF('widget-var-page-file-upload').chooseButton.click();return;"                                
                                     >
                                 </p:button>
@@ -361,7 +361,7 @@
                                     </p:column>
                                     <p:column>
                                         <p:commandButton 
-                                            value="sil" 
+                                            value="#{msg['sil.2']}" 
                                             action="#{twoDimModifyCtrl.deleteFile}" 
                                             update="@(.class-data-table-inline-up-files),idTwoDlgTabView:id-table-crud-dlg-tab-attachments,id-tab-view:id-table-file-list"
                                             >
@@ -377,7 +377,7 @@
                                             color:#112978;
                                             font-weight:bold;"
                                             >
-                                            <h:outputText value="indir" />
+                                            <h:outputText value="#{msg['indir']}" />
                                         </h:outputLink>  
                                     </p:column>
                                 </p:dataTable>
@@ -393,7 +393,7 @@
                                 icon="fa fa-info-circle" 
                                 action="#{twoDimModifyCtrl.showMyFieldDesc}"
                                 immediate="true"
-                                value="Bilgi" 
+                                value="#{msg['bilgi']}" 
                                 update="id-desc-dlg-pnl"
                                 rendered="#{myField.renderPopupDesc}"
                                 style="font-size:10px"
@@ -422,7 +422,7 @@
             listener="#{twoDimModifyCtrl.upload}"
             cancelLabel="Vazgeç"
             uploadLabel="Yükle"
-            label="Seç"
+            label="#{msg['sec']}"
             auto="true"
             style="display:none;"
             update="@(.class-data-table-inline-up-files),idTwoDlgTabView:id-table-crud-dlg-tab-attachments,id-tab-view:id-table-file-list"

@@ -8,43 +8,43 @@
 <h:panelGrid columns="20">
     <p:button
             icon="pi pi-filter"
-            title="Geniş Filtre"
+            title="#{msg['genis.filtre']}"
             onclick="rcTableFilter();return false;"
             rendered="false"
     />
     <p:button
             icon="pi pi-info-circle"
-            value="Önemli Açıklamalar İçin Tıklayınız"
-            title="Bu sayfa ile ilgili açıklamalar için tıklayınız"
+            value="#{msg['onemli.aciklamalar.i.cin.tiklayiniz']}"
+            title="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}"
             rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
             onclick="rcTableDesc();return false;"
     />
     <p:button
             id="id-table-create-data-record"
             icon="pi pi-file"
-            title="Yeni Ekle"
+            title="#{msg['yeni.ekle']}"
             disabled="#{not formService.myForm.myActions.create}"
             onclick="rcTableNew();return false;"
     />
     <p:button
             icon="pi pi-check-circle"
-            value="Tüm Sayfaları Kontrol Et"
+            value="#{msg['tum.sayfalari.kontrol.et']}"
             rendered="#{formService.myForm.myActions.checkAll}"
             onclick="rcTableCheck();return false;"
     />
     <p:button
             icon="pi pi-check-circle"
-            value="Tüm Sayfaları Kontrol Et (Admin)"
+            value="#{msg['tum.sayfalari.kontrol.et.admin']}"
             rendered="#{formService.myForm.myActions.checkAll and roleMB[mainFrame.architectRole]}"
             onclick="rcTableCheckAsAdmin();return false;"
     />
     <p:button
             id="id-send-ok"
             icon="pi pi-send"
-            value="GÖNDER"
+            value="#{msg['gonder']}"
             rendered="#{not empty formService.myForm.myActions.sendFormAction}"
             disabled="#{not formService.myForm.myActions.sendForms}"
-            title="Gönder"
+            title="#{msg['gonder.2']}"
             onclick="rcTableSend();return false;"
     />
     <p:button
@@ -56,68 +56,68 @@
     <p:button
             id="id-btn-download"
             icon="pi pi-file-excel"
-            title="Excele Aktar"
+            title="#{msg['excele.aktar']}"
             rendered="#{formService.myForm.myActions.download}"
             onclick="rcDownload();return false;"
     >
     </p:button>
     <p:button
-            value="API"
+            value="#{msg['api']}"
             rendered="false"
             onclick="rcTableApi();return false;"
     />
     <p:button
             id="id-button-esign-2d-v2"
-            value="E-İmza Süreci"
+            value="#{msg['e.i.mza.sureci']}"
             rendered="#{formService.myForm.myActions.eimza2D}"
             onclick="rcTableApiEsign();return false;"
     />
     <p:button
-            value="Toplu E-Posta Gönder"
+            value="#{msg['toplu.e.posta.gonder']}"
             rendered="#{formService.myForm.myActions.emailToAll}"
             onclick="rcTableEmail();return false;"
     />
     <p:button
             icon="pi pi-upload"
-            title="Toplu Veri Yükleme Aracı"
+            title="#{msg['toplu.veri.yukleme.araci']}"
             rendered="#{formService.myForm.myActions.upload}"
             onclick="PF('wv-bulkdupload').show();return false;"
     />
     <p:button
             icon="pi pi-trash"
-            title="Toplu Silme"
+            title="#{msg['toplu.silme']}"
             rendered="#{formService.myForm.myActions.delete}"
             onclick="PF('wv-confirm-multiple-delete').show();return false;"
     />
     <p:button
             icon="pi pi-reply"
             onclick="rcSetMultiToRelatedForm();return false;"
-            title="Aktar"
+            title="#{msg['aktar']}"
             transient="true"
             rendered="#{mainFrame.hasSetToRelatedForm}"
     />
     <p:button
             icon="pi pi-check-circle"
-            value="Test Veri Oluştur"
+            value="#{msg['test.veri.olustur']}"
             onclick="rcCreateTestData();return false;"
             rendered="false"
     />
     <p:button
             id="id-table-bulk-copy"
             icon="pi pi-copy"
-            title="Toplu Kopyalama"
+            title="#{msg['toplu.kopyalama']}"
             disabled="#{not formService.myForm.myActions.create}"
             onclick="rcBulkCopyTool();return false;"
     />
     <p:commandButton
             icon="pi pi-filter"
-            title="filtrele"
+            title="#{msg['filtrele']}"
             action="#{twoDimModifyCtrl.actionSearchObject}"
             update="#{updateAjaxMB.btn2dSearch}"
     />
     <p:commandButton
             icon="pi pi-filter-slash"
-            title="filtreleri sıfırla"
+            title="#{msg['filtreleri.sifirla']}"
             action="#{twoDimModifyCtrl.resetFilter}"
             update="#{updateAjaxMB.btn2dSearch},id-tab-view:id-2d-form-search:id-filter-current-vertical-panel-grid"
     />

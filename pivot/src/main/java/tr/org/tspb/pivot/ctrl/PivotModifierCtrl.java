@@ -140,7 +140,7 @@ public class PivotModifierCtrl extends PivotImpl {
                 getLoginFkField());
 
         if (member == null) {
-            throw new UserException("Veri ile Kurum ilişkilendirililemedi.");
+            throw new UserException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("veri.ile.kurum.iliskilendirililemedi"));
         }
 
         /**
@@ -158,7 +158,7 @@ public class PivotModifierCtrl extends PivotImpl {
                 getObjectId().
                 equals(member))) {
             //FIXME messagebundle
-            throw new UserException("Seçilen Kurum Sizin Kurum Değil");
+            throw new UserException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("secilen.kurum.sizin.kurum.degil"));
         }
 
         // We need to save only Dimension-"Dimension" coordinates 

@@ -14,12 +14,12 @@
                     icon="pi pi-save"
                     id="mySaveButton"
                     onclick="rcOneDimSave();return false;"
-                    title="Kaydet"
+                    title="#{msg['kaydet']}"
                     rendered="#{formService.myForm.myActions.save}"
                     />  
                 <p:commandButton 
                     onclick="PF('widget_1d_delete_confirmation').show();return false;"
-                    value="Sil" 
+                    value="#{msg['sil']}" 
                     transient="true"
                     rendered="#{formService.myForm.myActions.delete}"
                     icon="ui-icon-trash"
@@ -27,7 +27,7 @@
                 <p:commandButton 
                     id ="buttonDelete1dObjectId"
                     style="display: none;"
-                    value="Direk Sil" 
+                    value="#{msg['direk.sil']}" 
                     action="#{crudOneDim.deleteObject}" 
                     rendered="#{formService.myForm.myActions.delete}"
                     icon="ui-icon-trash"
@@ -35,18 +35,18 @@
                     /> 
                 <p:commandButton 
                     id ="buttonCopyObject"
-                    value="Kopyala" 
+                    value="#{msg['kopyala']}" 
                     action="#{crudOneDim.copyObject}" 
                     rendered="false"/>
                 <p:commandButton 
-                    value="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
+                    value="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}" 
                     action="#{crudOneDim.showAllNote}" 
                     style="white-space: nowrap;font-family: inherit;"
                     rendered="#{crudOneDim.selectedFormUserNote}"
                     update="#{updateAjaxMB.msgDlg}"
                     />
                 <h:outputText 
-                    value="Tarihçe Etkin(siz)leştir" 
+                    value="#{msg['tarihce.etkin.siz.lestir']}" 
                     style="white-space: nowrap;font-family: inherit;" 
                     rendered="#{mainFrame.adminRole}"
                     />
@@ -59,7 +59,7 @@
                             </span>-->
                 <p:commandButton
                     id="buttonEimza"
-                    value="E-İmza Süreci" 
+                    value="#{msg['e.i.mza.sureci']}" 
                     action="#{crudOneDim.showEimza}" 
                     rendered="#{formService.myForm.myActions.esign}"
                     update="id-tab-view:idToBeSignedDialog,#{updateAjaxMB.msgDlg}"/>
@@ -72,13 +72,13 @@
                 </h:selectOneMenu> 
                 <p:commandButton 
                     id="buttonSendEmailId"
-                    value="Email Önizleme"
+                    value="#{msg['email.onizleme']}"
                     action="#{crudOneDim.actionEmail}"
                     rendered="#{formService.myForm.myActions.email}"/> 
                 <h:form>
                     <p:commandButton 
                         id="id_downlod_button"
-                        value="Islak imza formatında indirmek için tıklayınız."
+                        value="#{msg['islak.imza.formatinda.indirmek.icin']}"
                         ajax="false"
                         icon="ui-icon-arrowthick-1-s"
                         rendered="#{formService.myForm.myActions.customDownload}">

@@ -11,18 +11,18 @@
     </h:head>
 
     <p:tabView>
-        <p:tab title="POS Test"> 
+        <p:tab title="#{msg['pos.test']}"> 
             <h:form id="id-post-tst">
-                <p:panel header="POS Test" style="width: 100%;">
+                <p:panel header="#{msg['pos.test']}" style="width: 100%;">
                     <h:form>
-                        <p:commandButton value="credit card 1" action="#{garantiPayMB.creditCard1}" update="#{updateAjaxMB.btnPostCreditCard}"/>
-                        <p:commandButton value="credit card 2" action="#{garantiPayMB.creditCard2}" update="#{updateAjaxMB.btnPostCreditCard}"/>
-                        <p:commandButton value="new order" action="#{garantiPayMB.neworder}" update="#{updateAjaxMB.btnPostCreditCard}"/>
+                        <p:commandButton value="#{msg['credit.card.1']}" action="#{garantiPayMB.creditCard1}" update="#{updateAjaxMB.btnPostCreditCard}"/>
+                        <p:commandButton value="#{msg['credit.card.2']}" action="#{garantiPayMB.creditCard2}" update="#{updateAjaxMB.btnPostCreditCard}"/>
+                        <p:commandButton value="#{msg['new.order']}" action="#{garantiPayMB.neworder}" update="#{updateAjaxMB.btnPostCreditCard}"/>
                     </h:form>
                     <table>
                         <tr>
                             <td>
-                                <span>XML Pay</span>
+                                <span>#{msg['xml.pay']}</span>
                                 <form  action="https://sanalposprovtest.garanti.com.tr/VPServlet" method="POST">
                                     <textarea cols="80" rows="40" name="data">
 &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
@@ -68,53 +68,53 @@
 
                                     </textarea>
                                     <center>
-                                        <input value="Submit" type="submit"/> 
-                                        <input value="Reset" type="reset"/>
+                                        <input value="#{msg['submit']}" type="submit"/> 
+                                        <input value="#{msg['reset']}" type="reset"/>
                                     </center>
                                 </form>
                             </td>
 
                             <td>
-                                <span><h3>3D Pay Test Ödeme</h3></span>
+                                <span><h3>#{msg['3d.pay.test.odeme']}</h3></span>
                                 <span>#{garantiPayMB.formTest3D}</span>
                                 <form action="#{garantiPayMB.formTest3D}" method="post">
 
 
                                     <table>
                                         <tr>
-                                            <td>secure3dsecuritylevel</td>
+                                            <td>#{msg['secure3dsecuritylevel']}</td>
                                             <td>
                                                 <select name="secure3dsecuritylevel">
-                                                    <option value="3D_PAY">3D_PAY</option>
-                                                    <option value="3D_FULL">3D_FULL</option>
-                                                    <option value="3D_HALF">3D_HALF</option>
+                                                    <option value="#{msg['3d.pay']}">#{msg['3d.pay']}</option>
+                                                    <option value="#{msg['3d.full']}">#{msg['3d.full']}</option>
+                                                    <option value="#{msg['3d.half']}">#{msg['3d.half']}</option>
                                                 </select>
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td>Card Number</td>
+                                            <td>#{msg['card.number']}</td>
                                             <td><input name="cardnumber" type="text" value="#{garantiPayMB.cardnumber}"/></td>
                                         </tr>
 
                                         <tr>
-                                            <td>Expire Date (mm)</td>
+                                            <td>#{msg['expire.date.mm']}</td>
                                             <td> <input name="cardexpiredatemonth" type="text" value="#{garantiPayMB.cardexpiredatemonth}"/></td>
                                         </tr>
 
                                         <tr>
-                                            <td>Expire Date (yy)</td>
+                                            <td>#{msg['expire.date.yy']}</td>
                                             <td><input name="cardexpiredateyear" type="text" value="#{garantiPayMB.cardexpiredateyear}"/></td>
                                         </tr>
 
                                         <tr>
-                                            <td>CVV2</td> 
+                                            <td>#{msg['cvv2']}</td> 
                                             <td><input name="cardcvv2" type="text" value="#{garantiPayMB.cardcvv2}"/></td>
                                         </tr>
 
                                         <tr>
                                             <td>
-                                                <input id="submit" type="submit" value="İşlemi Gönder" />
+                                                <input id="submit" type="submit" value="#{msg['i.slemi.gonder']}" />
                                             </td>
 
 
@@ -123,70 +123,70 @@
                                     </table>
 
 
-                                    <h3>Hidden Fields</h3>
+                                    <h3>#{msg['hidden.fields']}</h3>
                                     <table>
                                         <tr>
-                                            <td>strMode</td>
+                                            <td>#{msg['strmode']}</td>
                                             <td><input type="text" name="mode" value="#{garantiPayMB.strMode}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strApiVersion</td>
+                                            <td>#{msg['strapiversion']}</td>
                                             <td><input type="text" name="apiversion" value="#{garantiPayMB.strApiVersion}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strTerminalProvUserID</td>
+                                            <td>#{msg['strterminalprovuserid']}</td>
                                             <td><input type="text" name="terminalprovuserid" value="#{garantiPayMB.strTerminalProvUserID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strTerminalUserID</td>
+                                            <td>#{msg['strterminaluserid']}</td>
                                             <td><input type="text" name="terminaluserid" value="#{garantiPayMB.strTerminalProvUserID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strTerminalMerchantID</td>
+                                            <td>#{msg['strterminalmerchantid']}</td>
                                             <td><input type="text" name="terminalmerchantid" value="#{garantiPayMB.strTerminalMerchantID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strType</td>
+                                            <td>#{msg['strtype']}</td>
                                             <td><input type="text" name="txntype" value="#{garantiPayMB.strType}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strAmount</td>
+                                            <td>#{msg['stramount']}</td>
                                             <td><input type="text" name="txnamount" value="#{garantiPayMB.strAmount}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strCurrencyCode</td>
+                                            <td>#{msg['strcurrencycode']}</td>
                                             <td><input type="text" name="txncurrencycode" value="#{garantiPayMB.strCurrencyCode}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strInstallmentCount</td>
+                                            <td>#{msg['strinstallmentcount']}</td>
                                             <td><input type="text" name="txninstallmentcount" value="#{garantiPayMB.strInstallmentCount}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strOrderID</td>
+                                            <td>#{msg['strorderid']}</td>
                                             <td><input type="text" name="orderid" value="#{garantiPayMB.strOrderID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strTerminalID</td>
+                                            <td>#{msg['strterminalid']}</td>
                                             <td><input type="text" name="terminalid" value="#{garantiPayMB.strTerminalID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strSuccessURL</td>
+                                            <td>#{msg['strsuccessurl']}</td>
                                             <td><input type="text" name="successurl" value="#{garantiPayMB.strSuccessURL}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strErrorURL</td>
+                                            <td>#{msg['strerrorurl']}</td>
                                             <td><input type="text" name="errorurl" value="#{garantiPayMB.strErrorURL}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strCustomeripaddress</td>
+                                            <td>#{msg['strcustomeripaddress']}</td>
                                             <td><input type="text" name="customeripaddress" value="#{garantiPayMB.strCustomeripaddress}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strcustomeremailaddress</td>
+                                            <td>#{msg['strcustomeremailaddress']}</td>
                                             <td><input type="text" name="customeremailaddress" value="#{garantiPayMB.strcustomeremailaddress}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>HashData</td>
+                                            <td>#{msg['hashdata']}</td>
                                             <td><input type="text" name="secure3dhash" value="#{garantiPayMB.hashData}"/></td>
                                         </tr>
                                     </table>
@@ -195,45 +195,45 @@
                             </td>
 
                             <td>
-                                <span><h3>Form Reader</h3></span>
+                                <span><h3>#{msg['form.reader']}</h3></span>
                                 <span>#{garantiPayMB.form3DReader}</span>
                                 <form action="#{garantiPayMB.form3DReader}" method="post">
                                     <table>
                                         <tr>
-                                            <td>secure3dsecuritylevel</td>
+                                            <td>#{msg['secure3dsecuritylevel']}</td>
                                             <td>
                                                 <select name="secure3dsecuritylevel">
-                                                    <option value="3D_PAY">3D_PAY</option>
-                                                    <option value="3D_FULL">3D_FULL</option>
-                                                    <option value="3D_HALF">3D_HALF</option>
+                                                    <option value="#{msg['3d.pay']}">#{msg['3d.pay']}</option>
+                                                    <option value="#{msg['3d.full']}">#{msg['3d.full']}</option>
+                                                    <option value="#{msg['3d.half']}">#{msg['3d.half']}</option>
                                                 </select>
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td>Card Number</td>
+                                            <td>#{msg['card.number']}</td>
                                             <td><input name="cardnumber" type="text" value="#{garantiPayMB.cardnumber}"/></td>
                                         </tr>
 
                                         <tr>
-                                            <td>Expire Date (mm)</td>
+                                            <td>#{msg['expire.date.mm']}</td>
                                             <td> <input name="cardexpiredatemonth" type="text" value="#{garantiPayMB.cardexpiredatemonth}"/></td>
                                         </tr>
 
                                         <tr>
-                                            <td>Expire Date (yy)</td>
+                                            <td>#{msg['expire.date.yy']}</td>
                                             <td><input name="cardexpiredateyear" type="text" value="#{garantiPayMB.cardexpiredateyear}"/></td>
                                         </tr>
 
                                         <tr>
-                                            <td>CVV2</td> 
+                                            <td>#{msg['cvv2']}</td> 
                                             <td><input name="cardcvv2" type="text" value="#{garantiPayMB.cardcvv2}"/></td>
                                         </tr>
 
 
                                         <tr>
                                             <td>
-                                                <input id="submit" type="submit" value="İşlemi Gönder" />
+                                                <input id="submit" type="submit" value="#{msg['i.slemi.gonder']}" />
                                             </td>
 
 
@@ -242,70 +242,70 @@
                                     </table>
 
 
-                                    <h3>Hidden Fields</h3>
+                                    <h3>#{msg['hidden.fields']}</h3>
                                     <table>
                                         <tr>
-                                            <td>strMode</td>
+                                            <td>#{msg['strmode']}</td>
                                             <td><input type="text" name="mode" value="#{garantiPayMB.strMode}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strApiVersion</td>
+                                            <td>#{msg['strapiversion']}</td>
                                             <td><input type="text" name="apiversion" value="#{garantiPayMB.strApiVersion}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strTerminalProvUserID</td>
+                                            <td>#{msg['strterminalprovuserid']}</td>
                                             <td><input type="text" name="terminalprovuserid" value="#{garantiPayMB.strTerminalProvUserID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strTerminalUserID</td>
+                                            <td>#{msg['strterminaluserid']}</td>
                                             <td><input type="text" name="terminaluserid" value="#{garantiPayMB.strTerminalProvUserID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strTerminalMerchantID</td>
+                                            <td>#{msg['strterminalmerchantid']}</td>
                                             <td><input type="text" name="terminalmerchantid" value="#{garantiPayMB.strTerminalMerchantID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strType</td>
+                                            <td>#{msg['strtype']}</td>
                                             <td><input type="text" name="txntype" value="#{garantiPayMB.strType}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strAmount</td>
+                                            <td>#{msg['stramount']}</td>
                                             <td><input type="text" name="txnamount" value="#{garantiPayMB.strAmount}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strCurrencyCode</td>
+                                            <td>#{msg['strcurrencycode']}</td>
                                             <td><input type="text" name="txncurrencycode" value="#{garantiPayMB.strCurrencyCode}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strInstallmentCount</td>
+                                            <td>#{msg['strinstallmentcount']}</td>
                                             <td><input type="text" name="txninstallmentcount" value="#{garantiPayMB.strInstallmentCount}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strOrderID</td>
+                                            <td>#{msg['strorderid']}</td>
                                             <td><input type="text" name="orderid" value="#{garantiPayMB.strOrderID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strTerminalID</td>
+                                            <td>#{msg['strterminalid']}</td>
                                             <td><input type="text" name="terminalid" value="#{garantiPayMB.strTerminalID}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strSuccessURL</td>
+                                            <td>#{msg['strsuccessurl']}</td>
                                             <td><input type="text" name="successurl" value="#{garantiPayMB.strSuccessURL}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strErrorURL</td>
+                                            <td>#{msg['strerrorurl']}</td>
                                             <td><input type="text" name="errorurl" value="#{garantiPayMB.strErrorURL}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strCustomeripaddress</td>
+                                            <td>#{msg['strcustomeripaddress']}</td>
                                             <td><input type="text" name="customeripaddress" value="#{garantiPayMB.strCustomeripaddress}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>strcustomeremailaddress</td>
+                                            <td>#{msg['strcustomeremailaddress']}</td>
                                             <td><input type="text" name="customeremailaddress" value="#{garantiPayMB.strcustomeremailaddress}"/></td>
                                         </tr>
                                         <tr>
-                                            <td>HashData</td>
+                                            <td>#{msg['hashdata']}</td>
                                             <td><input type="text" name="secure3dhash" value="#{garantiPayMB.hashData}"/></td>
                                         </tr>
                                     </table>
@@ -318,14 +318,14 @@
             </h:form>
         </p:tab>
 
-        <p:tab title="E-Posta Test">
+        <p:tab title="#{msg['e.posta.test']}">
             <h:form id="uys_email_test_form">
-                <p:panel header="E-Posta Test" style="width: 100%;">
+                <p:panel header="#{msg['e.posta.test']}" style="width: 100%;">
                     <p:panelGrid columns="1">
-                        <h:outputText value="Enter comma seperated RCPT List"/>
+                        <h:outputText value="#{msg['enter.comma.seperated.rcpt.list']}"/>
                         <p:inputTextarea value="#{mainFrame.emailTestRcpts}" autoResize="true"/>
                         <p:commandButton 
-                            value="Send Test Email" 
+                            value="#{msg['send.test.email']}" 
                             action="#{mainFrame.sendTestEmail}" 
                             style="white-space: nowrap;"
                             />
@@ -334,20 +334,20 @@
             </h:form>
         </p:tab>
 
-        <p:tab title="Parola Hatırlat Ayarları">
+        <p:tab title="#{msg['parola.hatirlat.ayarlari']}">
             <h:form>
-                <p:panel header="Parola Hatırlat Ayarları" style="width: 100%;">
+                <p:panel header="#{msg['parola.hatirlat.ayarlari']}" style="width: 100%;">
                     <p:panelGrid columns="2">
-                        <p:outputLabel value="Ortam anahtarlaması"/>
+                        <p:outputLabel value="#{msg['ortam.anahtarlamasi']}"/>
                         <p:selectOneRadio value="#{mainFrame.forgetPswdEnv}">
                             <f:selectItem itemLabel="TEST" itemValue="TEST"/>
                             <f:selectItem itemLabel="CANLI" itemValue="LIVE"/>
                         </p:selectOneRadio>
-                        <p:outputLabel value="Test amaçlı tüm parola hatırlatma postalarının gideceği e-posta adresi"/>
+                        <p:outputLabel value="#{msg['test.amacli.tum.parola.hatirlatma']}"/>
                         <p:inputTextarea value="#{mainFrame.testForgetPswdEmail}" style="width: 95%;" autoResize="true"/>
                     </p:panelGrid>
                     <p:commandButton 
-                        value="Kaydet" 
+                        value="#{msg['kaydet']}" 
                         action="#{mainFrame.saveTestForgetPswdEmail}" 
                         style="white-space: nowrap;"
                         />
@@ -356,10 +356,10 @@
         </p:tab>
 
 
-        <p:tab title="Cache Yönetimi">
-            <p:panel header="Formüller" style="width: 100%;">
+        <p:tab title="#{msg['cache.yonetimi']}">
+            <p:panel header="#{msg['formuller']}" style="width: 100%;">
                 <p:commandButton 
-                    value="KPB Projesi için oluşturulan üye cachelerini temizle" 
+                    value="#{msg['kpb.projesi.icin.olusturulan.uye']}" 
                     action="#{uysApplicationMB.clearKpbMemberCache}" 
                     style="white-space: nowrap;"
                     rendered="true"
@@ -374,8 +374,8 @@
         </p:tab>
 
 
-        <p:tab title="Formüller">
-            <p:panel header="Formüller" style="width: 100%;">
+        <p:tab title="#{msg['formuller']}">
+            <p:panel header="#{msg['formuller']}" style="width: 100%;">
                 <h:form>
                     <p:panel>
                         <p:panel>
@@ -389,12 +389,12 @@
                         </p:panel>
                         <p:panel>
                             <h:panelGrid columns="3">
-                                <p:outputLabel value="Sadece Belirtilen Kontrol Formülunü Test Et"/>
+                                <p:outputLabel value="#{msg['sadece.belirtilen.kontrol.formulunu.test']}"/>
                                 <p:inputText value="#{uysApplicationMB.testControlFormulaTransferOrders}"/>
                             </h:panelGrid>
                         </p:panel>
                         <p:commandButton 
-                            value="Uygula" 
+                            value="#{msg['uygula']}" 
                             action="#{uysApplicationMB.justSubmit}" 
                             />  
                     </p:panel>
@@ -402,12 +402,12 @@
             </p:panel>
         </p:tab>
 
-        <p:tab title="Re-Save">
-            <p:panel header="Re-Save" style="width: 100%;">
+        <p:tab title="#{msg['re.save']}">
+            <p:panel header="#{msg['re.save']}" style="width: 100%;">
                 <h:form acceptcharset="UTF-8">
                     <p:panelGrid columns="12" rendered="#{mainFrame.access}">
                         <h:panelGrid columns="2" border="0">
-                            <h:outputText value="Dönem Seçimi:" style="white-space: nowrap;"/>
+                            <h:outputText value="#{msg['donem.secimi']}" style="white-space: nowrap;"/>
                             <h:panelGroup>
                                 <p:selectOneMenu  value="#{pivotResave.resavePeriodStr}">
                                     <f:selectItems value="#{pivotResave.resaveAllPeriods}"/>
@@ -416,11 +416,11 @@
                                     <f:selectItems value="#{pivotResave.resaveAllPeriods}"/>
                                 </p:selectOneMenu>
                             </h:panelGroup>
-                            <h:outputText value="Şablon:" style="white-space: nowrap;"/>
+                            <h:outputText value="#{msg['sablon']}" style="white-space: nowrap;"/>
                             <p:selectOneMenu value="#{pivotResave.resaveTemplateStr}">
                                 <f:selectItems value="#{pivotResave.resaveAllTemplates}"/>
                             </p:selectOneMenu>
-                            <h:outputText value="Kurum:" style="white-space: nowrap;"/>
+                            <h:outputText value="#{msg['kurum']}" style="white-space: nowrap;"/>
                             <p:selectOneMenu value="#{pivotResave.resaveMemberStr}" style="width: 150px;" >
                                 <f:selectItems value="#{pivotResave.resaveMembers}"/>
                             </p:selectOneMenu>  
@@ -432,12 +432,12 @@
                         </h:panelGrid>
                         <h:panelGrid columns="1" border="0">
                             <p:commandButton 
-                                value="ASADMIN RESAVE ALL" 
+                                value="#{msg['asadmin.resave.all']}" 
                                 action="#{pivotModifierCtrl.saveAgainAll}" 
                                 style="white-space: nowrap;"
                                 rendered="true"
                                 />
-                            <p:commandButton value="CLEAR CACHE : Hesaplama Formülleri" action="#{twoDimModifyCtrl.clearCache}"/>
+                            <p:commandButton value="#{msg['clear.cache.hesaplama.formulleri']}" action="#{twoDimModifyCtrl.clearCache}"/>
                         </h:panelGrid>
                     </p:panelGrid>
 
@@ -445,16 +445,16 @@
             </p:panel>
         </p:tab>
 
-        <p:tab title="TBB Web Service">
+        <p:tab title="#{msg['tbb.web.service']}">
             <ui:include src="ui-include-tbb-webservice.xhtml"/>
         </p:tab>
 
-        <p:tab title="Yıllık Web Özet Raporu">
-            <p:panel header="Yıllık Web Özet Raporu" style="width: 100%;">
+        <p:tab title="#{msg['yillik.web.ozet.raporu']}">
+            <p:panel header="#{msg['yillik.web.ozet.raporu']}" style="width: 100%;">
                 <h:form acceptcharset="UTF-8">
                     <h:panelGrid columns="1" border="0">
                         <h:panelGroup>
-                            <h:outputText value="Web Özet İlk Sayfa No :" style="white-space: nowrap"/>
+                            <h:outputText value="#{msg['web.ozet.i.lk.sayfa']}" style="white-space: nowrap"/>
                             <h:inputText value="#{webOzet.jasperParameterPageNumber}" style="width: 50px;"></h:inputText>
                         </h:panelGroup>
                         <h:panelGrid columns="1" border="0">
@@ -471,12 +471,12 @@
                             </p:selectManyCheckbox>
                         </h:panelGrid>
                         <p:commandButton 
-                            value="WEB ÖZET : Tüm Kurumlar Tek PDF Dosyada" 
+                            value="#{msg['web.ozet.tum.kurumlar.tek']}" 
                             action="#{webOzet.webOzet}"
                             update="#{updateAjaxMB.btnReportWebOzet},#{updateAjaxMB.msgDlg}"
                             />
                         <p:commandButton 
-                            value="WEB ÖZET : Tümü Kurumlar Ayrı Ayrı PDF Dosyalarda" 
+                            value="#{msg['web.ozet.tumu.kurumlar.ayri']}" 
                             action="#{webOzet.webOzetSeparatedly}"
                             update="#{updateAjaxMB.btnReportWebOzet},#{updateAjaxMB.msgDlg}"
                             />
@@ -506,12 +506,12 @@
                             color:#112978;
                             font-weight:bold;"
                             >
-                            <h:outputText value="indir" />
+                            <h:outputText value="#{msg['indir']}" />
                         </h:outputLink>     
                     </p:column>
                     <p:column  style="width: 0px;white-space:nowrap;text-align: left;">
                         <h:commandLink 
-                            value="sil"
+                            value="#{msg['sil.2']}"
                             action="#{mainFrame.deleteExportFile}"
                             />
                     </p:column>           

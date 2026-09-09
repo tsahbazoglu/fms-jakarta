@@ -21,14 +21,14 @@
             <f:facet name="left">
                 <p:commandButton 
                     immediate="true"
-                    value="sil" 
+                    value="#{msg['sil.2']}" 
                     action="#{twoDimModifyCtrl.deleteChildRow}"
                     update="idTwoDlgTabView:id-form-childs:id-dt-childs"
                     rendered="#{formService.myForm.myActions.delete}"
                     />  
                 <p:spacer width="10" height="10"/>
                 <p:commandButton 
-                    value="kaydet" 
+                    value="#{msg['kaydet.2']}" 
                     action="#{twoDimModifyCtrl.saveChildRow}"
                     update="idTwoDlgTabView:id-form-childs:id-dt-childs,idMessageDialog"
                     rendered="#{formService.myForm.myActions.save}"
@@ -54,7 +54,7 @@
                         >
                     </h:outputLabel>
                     <p:commandButton 
-                        value="detay" 
+                        value="#{msg['detay']}" 
                         style="font-size:8px;"
                         action="#{mainFrame.myActionListener1}" 
                         update="#{updateAjaxMB.btnDetay}"
@@ -65,7 +65,7 @@
                         <f:setPropertyActionListener value="#{twoDimModifyCtrl.myObject[myField.key]}" target="#{mainFrame.showDetailObject}"/>
                     </p:commandButton>
                     <p:commandButton 
-                        value="güncelle" 
+                        value="#{msg['guncelle.2']}" 
                         style="font-size:8px;"
                         action="#{mainFrame.myActionListener2}"
                         update="#{updateAjaxMB.btnEditDetail}"

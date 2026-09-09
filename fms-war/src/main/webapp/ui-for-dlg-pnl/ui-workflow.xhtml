@@ -43,7 +43,7 @@
         var="history"
         >
         <f:facet name="header">
-            <h:outputText value="İş Akış Tarihçesi"/>
+            <h:outputText value="#{msg['i.s.akis.tarihcesi']}"/>
         </f:facet>
         <c:forEach items="#{workFlowCtrl.fieldsAsList}" var="myField">
             <p:column headerText="#{myField.label}">

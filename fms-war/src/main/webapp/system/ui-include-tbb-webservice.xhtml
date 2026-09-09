@@ -11,7 +11,7 @@
 
     <p:outputPanel id="id-tbb-web-service">
         <br/>
-        <p:outputLabel value="Türkiye Bankalar Birliği (TBB) Web Service" style="font-size: 16px;font-weight: bolder"/>
+        <p:outputLabel value="#{msg['turkiye.bankalar.birligi.tbb.web']}" style="font-size: 16px;font-weight: bolder"/>
         <br/>
         <br/>
         <h:panelGrid 
@@ -20,26 +20,26 @@
             class="webservice"
             >
 
-            <p:outputLabel value="Web Service URL"/>
+            <p:outputLabel value="#{msg['web.service.url']}"/>
             <p:outputLabel value="#{tbbService.tbbWebServiceUrl}"/>
 
-            <p:outputLabel value="Web Client : Get Bank Ids"/>
+            <p:outputLabel value="#{msg['web.client.get.bank.ids']}"/>
             <h:form>
                 <p:commandButton 
-                    value="Çalıştır" 
+                    value="#{msg['calistir']}" 
                     action="#{tbbService.tbbWebServiceGetIds}" 
                     />
             </h:form>   
 
-            <p:outputLabel value="Web Client : Get Bank Details"/>
+            <p:outputLabel value="#{msg['web.client.get.bank.details']}"/>
             <h:form id="uys_system_form">
                 <p:commandButton 
-                    value="Çalıştır" 
+                    value="#{msg['calistir']}" 
                     action="#{tbbService.runGetBankDetails}" 
                     />
             </h:form>
 
-            <p:outputLabel value="Dosya Seçimi /home/telman/Desktop/bankalar_YYYYMMDD_HHmm.txt"/>
+            <p:outputLabel value="#{msg['dosya.secimi.home.telman.desktop']}"/>
             <h:form enctype="multipart/form-data">
                 <p:fileUpload 
                     id="idBankalarPath" 
@@ -48,18 +48,18 @@
                     />
             </h:form>
 
-            <p:outputLabel value="TBB-TSPB Banka Eşleştirme Tablosunu Oluştur"/>
+            <p:outputLabel value="#{msg['tbb.tspb.banka.eslestirme.tablosunu']}"/>
             <h:form>
                 <p:commandButton 
-                    value="Çalıştır" 
+                    value="#{msg['calistir']}" 
                     action="#{tbbService.storeBanksToDb}" 
                     />
             </h:form>
 
-            <p:outputLabel value="Detaylı Eşleştirme (Yönetim Kurulu, Üst Yönetim, ...)"/>
+            <p:outputLabel value="#{msg['detayli.eslestirme.yonetim.kurulu.ust']}"/>
             <h:form>
                 <p:commandButton 
-                    value="Çalıştır" 
+                    value="#{msg['calistir']}" 
                     action="#{tbbService.mergeWithTBB}" 
                     />
             </h:form>
@@ -67,7 +67,7 @@
         <br/>
         <br/>
         <p:commandButton 
-            value="Temizle" 
+            value="#{msg['temizle']}" 
             action="#{tbbService.clearWarnings}" 
             style="white-space: nowrap;"
             rendered="true"

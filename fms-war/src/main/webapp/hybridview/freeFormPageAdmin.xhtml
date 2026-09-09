@@ -14,7 +14,7 @@
     <h:form id="id_freeform">
         <p:remoteCommand 
             name="rcHybridFormSave"
-            value="Kaydet"
+            value="#{msg['kaydet']}"
             action="#{freeDesigner.save}"
             update="#{updateAjaxMB.msgDlg}"
             >
@@ -67,9 +67,9 @@
                     escape="false"/>
                 <br/>
                 <br/>
-                <h:outputText value="Belge yükleme işlemi üç eylem ile yapılmaktadır"/>
+                <h:outputText value="#{msg['belge.yukleme.islemi.uc.eylem']}"/>
                 <br/>
-                <h:outputText value="Seç, Yükle, Kaydet"/>
+                <h:outputText value="#{msg['sec.yukle.kaydet']}"/>
             </h:panelGroup>
             <p:panel
                 rendered="false"
@@ -87,7 +87,7 @@
                     listener="#{freeDesigner.upload}"
                     cancelLabel="Vazgeç"
                     uploadLabel="Yükle"
-                    label="Seç"
+                    label="#{msg['sec']}"
                     style="width: 100%;"
                     >
                     <p:validateFile 
@@ -99,7 +99,7 @@
                 <h:panelGroup 
                     id="id2dUploadedFiles" 
                     >
-                    <h:outputText value="Ekli Dosyalar" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+                    <h:outputText value="#{msg['ekli.dosyalar']}" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
                     <br/>
                     <br/>
                     <p:dataTable 
@@ -112,7 +112,7 @@
                             width="#{columnMap.width}" 
                             style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                             <f:facet name="header" >
-                                <h:outputText value="Dosya Adı"/> 
+                                <h:outputText value="#{msg['dosya.adi']}"/> 
                             </f:facet>
                             <h:outputText value="#{x.fileName}"/> 
                         </p:column>
@@ -120,7 +120,7 @@
                             width="100" 
                             style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                             <f:facet name="header" >
-                                <h:outputText value="Dosya Boyutu"/> 
+                                <h:outputText value="#{msg['dosya.boyutu']}"/> 
                             </f:facet>
                             <h:outputText value="#{x.fileSize}"/> 
                         </p:column>
@@ -128,7 +128,7 @@
                             width="#{columnMap.width}" 
                             style="white-space: nowrap;color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                             <f:facet name="header" >
-                                <h:outputText value="Durum"/> 
+                                <h:outputText value="#{msg['durum']}"/> 
                             </f:facet>
                             <h:outputText value="#{x.fileState}" style="background: #{x.fileColor}"/> 
                         </p:column>
@@ -136,10 +136,10 @@
                             width="50" 
                             >
                             <f:facet name="header">
-                                <h:outputText value="Sil"/> 
+                                <h:outputText value="#{msg['sil']}"/> 
                             </f:facet>
                             <p:commandButton 
-                                value="sil" action="#{freeDesigner.deleteFile}" 
+                                value="#{msg['sil.2']}" action="#{freeDesigner.deleteFile}" 
                                 >
                                 <f:setPropertyActionListener  target="#{freeDesigner.toBeDeletedFileID}" value="#{x.fileID}"/>
                             </p:commandButton>
@@ -148,7 +148,7 @@
                             width="50" 
                             style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                             <f:facet name="header" >
-                                <h:outputText value="İndir"/> 
+                                <h:outputText value="#{msg['i.ndir']}"/> 
                             </f:facet>
                             <h:outputLink 
                                 value="#{application.contextPath}/myDownloadServlet/#{x.fileID}"
@@ -158,7 +158,7 @@
                                 color:#112978;
                                 font-weight:bold;"
                                 >
-                                <h:outputText value="indir" />
+                                <h:outputText value="#{msg['indir']}" />
                             </h:outputLink>           
                         </p:column>
                     </p:dataTable>
@@ -166,7 +166,7 @@
             </p:panel>
 
             <h:outputText 
-                value="İzin Verilen Yatırım Hizmet ve Faaliyet" 
+                value="#{msg['i.zin.verilen.yatirim.hizmet']}" 
                 style="font-weight: bold;white-space: nowrap;"/>
             <p:dataTable 
                 value="#{freeDesigner.myRecord.listOfLicense}"
@@ -180,7 +180,7 @@
                     rendered="#{not freeDesigner.myRecord.renderedInOut}"
                     style="text-align: center;#{license.style}"
                     >
-                    <f:facet name="header">Yurt İçinde</f:facet>
+                    <f:facet name="header">#{msg['yurt.i.cinde']}</f:facet>
                     <p:selectBooleanCheckbox 
                         value="#{license.in}" 
                         rendered="#{license.renderedIn}"
@@ -191,7 +191,7 @@
                     rendered="#{not freeDesigner.myRecord.renderedInOut}"
                     style="text-align: center;#{license.style}"
                     >
-                    <f:facet name="header">Yurt Dışında</f:facet>
+                    <f:facet name="header">#{msg['yurt.disinda']}</f:facet>
                     <p:selectBooleanCheckbox 
                         value="#{license.out}" 
                         rendered="#{license.renderedOut}"

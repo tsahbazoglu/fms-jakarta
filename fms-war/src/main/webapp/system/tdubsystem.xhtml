@@ -11,50 +11,50 @@
 
     <h:form id="uys_system_form">
         <h:panelGrid columns="1" border="0" style="width: 100%;">
-            <p:panel header="TAKBIS Web Service" style="width: 100%;">
+            <p:panel header="#{msg['takbis.web.service']}" style="width: 100%;">
                 <h:panelGrid columns="2" border="1" style="width: 100%;">
 
 
-                    <p:outputLabel value="Web Service URL"/>
+                    <p:outputLabel value="#{msg['web.service.url']}"/>
                     <p:outputLabel value="#{uysApplicationMB.tbbWebServiceUrl}"/>
 
 
-                    <p:outputLabel value="İl"/>
+                    <p:outputLabel value="#{msg['i.l']}"/>
                     <p:selectOneMenu>
                         <f:selectItem itemLabel="il" itemValue="il"></f:selectItem>
                     </p:selectOneMenu>
 
-                    <p:outputLabel value="İlçe"/>
+                    <p:outputLabel value="#{msg['i.lce']}"/>
                     <p:selectOneMenu>
                         <f:selectItem itemLabel="ilçe" itemValue="ilçe"></f:selectItem>
                     </p:selectOneMenu>
 
-                    <p:outputLabel value="Ada"/>
+                    <p:outputLabel value="#{msg['ada']}"/>
                     <p:selectOneMenu>
                         <f:selectItem itemLabel="ada" itemValue="ada"></f:selectItem>
                     </p:selectOneMenu>
 
-                    <p:outputLabel value="Parsel"/>
+                    <p:outputLabel value="#{msg['parsel']}"/>
                     <p:selectOneMenu>
                         <f:selectItem itemLabel="parsel" itemValue="parsel"></f:selectItem>
                     </p:selectOneMenu>
 
-                    <p:outputLabel value="Pafta"/>
+                    <p:outputLabel value="#{msg['pafta']}"/>
                     <p:selectOneMenu>
                         <f:selectItem itemLabel="pafta" itemValue="pafta"></f:selectItem>
                     </p:selectOneMenu>
 
-                    <p:outputLabel value="Web Client (store location is : /home/telman/Desktop/bankalar_YYYYMMDD_HHmm.txt)"/>
+                    <p:outputLabel value="#{msg['web.client.store.location.is']}"/>
                     <p:commandButton 
                         action="#{mainFrame.webClientCallTakbis}"
-                        value="Çalıştır" 
+                        value="#{msg['calistir']}" 
                         style="white-space:nowrap;"
                         rendered="true"
                         />  
 
                     <p:commandButton 
                         action="#{mainFrame.readJackrabbitData}"
-                        value="Refresh" 
+                        value="#{msg['refresh']}" 
                         style="white-space:nowrap;"
                         update="id_dt_jackrabbit"
                         />
@@ -92,7 +92,7 @@
             <p:column  headerText="sorgu talep eden" 
                        style="width: 0px;white-space: nowrap;text-align: left;"
                        sortBy="#{x.name}">
-                <h:outputText value="banka"  />
+                <h:outputText value="#{msg['banka']}"  />
             </p:column> 
             <p:column  headerText="sorgu talep tarihi" 
                        style="width: 0px;white-space: nowrap;text-align: left;"
@@ -112,7 +112,7 @@
             <p:column  headerText="sorgu filtresi" 
                        style="width: 0px;white-space: nowrap;text-align: left;"
                        sortBy="#{x.name}">
-                <h:outputText value="il ilçe ada parsel pafta"  />
+                <h:outputText value="#{msg['il.ilce.ada.parsel.pafta']}"  />
             </p:column> 
             <p:column  headerText="dosya adı" 
                        style="width: 0px;white-space: nowrap;text-align: left;"
@@ -128,12 +128,12 @@
                     color:#112978;
                     font-weight:bold;"
                     >
-                    <h:outputText value="indir" />
+                    <h:outputText value="#{msg['indir']}" />
                 </h:outputLink>     
             </p:column>
             <p:column  style="width: 0px;white-space: nowrap;text-align: left;">
                 <h:commandLink 
-                    value="sil"
+                    value="#{msg['sil.2']}"
                     action="#{mainFrame.deleteExportFile}"
                     />
             </p:column>           

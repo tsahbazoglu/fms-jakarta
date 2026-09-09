@@ -12,9 +12,7 @@
 
 
     <p:treeTable value="#{basicView.root}" var="document">
-        <f:facet name="header">
-            Document Viewer
-        </f:facet>
+        <f:facet name="header">#{msg['document.viewer']}</f:facet>
         <p:column headerText="Name">
             <h:outputText value="#{document.name}" />
         </p:column>

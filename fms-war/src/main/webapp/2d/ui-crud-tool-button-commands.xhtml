@@ -13,7 +13,7 @@
             <h:panelGrid columns="20">
                 <p:commandButton 
                     icon="pi pi-info-circle"
-                    value="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
+                    value="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}" 
                     action="#{twoDimModifyCtrl.showAllNote}" 
                     style="white-space: nowrap;"
                     rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
@@ -21,21 +21,21 @@
                     />
                 <p:commandButton  
                     icon="pi pi-file"
-                    value="Yeni Ekle" 
+                    value="#{msg['yeni.ekle']}" 
                     action="#{twoDimModifyCtrl.newObject}"
                     immediate="true"
                     rendered="#{formService.myForm.myActions.create}"
                     update="#{updateAjaxMB.btnNewRecord}"
                     /> 
                 <p:commandButton 
-                    value="Tüm Sayfaları Kontrol Et" 
+                    value="#{msg['tum.sayfalari.kontrol.et']}" 
                     action="#{twoDimModifyCtrl.provideOverAllCrossCheck}" 
                     rendered="#{formService.myForm.myActions.checkAll}"
                     style="white-space: nowrap;"
                     update="#{updateAjaxMB.btnCheckAll}"
                     />
                 <p:commandButton 
-                    value="Tüm Sayfaları Kontrol Et (Admin)" 
+                    value="#{msg['tum.sayfalari.kontrol.et.admin']}" 
                     action="#{twoDimModifyCtrl.provideOverAllCrossCheckForAll}" 
                     rendered="#{formService.myForm.myActions.checkAll and roleMB[mainFrame.architectRole]}"
                     style="white-space: nowrap;"
@@ -57,7 +57,7 @@
                     />
                 <p:commandButton 
                     icon="pi pi-file-excel"
-                    value="Excele Aktar" 
+                    value="#{msg['excele.aktar']}" 
                     ajax="false" 
                     rendered="#{formService.myForm.myActions.download}"
                     actionListener="#{downloadService.downloadExcell}"
@@ -65,7 +65,7 @@
                     >
                 </p:commandButton>
                 <p:commandButton 
-                    value="API" 
+                    value="#{msg['api']}" 
                     actionListener="#{twoDimModifyCtrl.showApi}"
                     update=":id-rest-curl-dlg"
                     style="white-space: nowrap;"
@@ -74,7 +74,7 @@
                 </p:commandButton>
                 <p:commandButton 
                     id ="id-button-esign-2d-v1"
-                    value="E-İmza Süreci" 
+                    value="#{msg['e.i.mza.sureci']}" 
                     action="#{twoDimModifyCtrl.showEimza22}" 
                     rendered="#{formService.myForm.myActions.eimza2D}"
                     update=":idToBeSignedDialog,#{updateAjaxMB.msgDlg},:id_2d_DialogControlAndSave,:id_dlg_error_warning"
@@ -89,21 +89,21 @@
                     <f:selectItem itemValue="HATIRLATMA_2" itemLabel="Veri Girişini Hatırlat 2"/>
                 </h:selectOneMenu> 
                 <p:commandButton 
-                    value="Toplu E-Posta Gönder" 
+                    value="#{msg['toplu.e.posta.gonder']}" 
                     action="#{twoDimModifyCtrl.sendEmailToAll}" 
                     rendered="#{formService.myForm.myActions.emailToAll}"
                     style="white-space: nowrap;"
                     />
                 <p:button 
                     icon="pi pi-upload"
-                    value="Toplu Veri Yükleme Aracı" 
+                    value="#{msg['toplu.veri.yukleme.araci']}" 
                     rendered="#{formService.myForm.myActions.upload}"
                     onclick="PF('wv-bulkdupload').show();return false;"
                     style="white-space: nowrap;"
                     />
                 <p:button 
                     icon="pi pi-trash"
-                    value="Toplu Silme" 
+                    value="#{msg['toplu.silme']}" 
                     rendered="#{formService.myForm.myActions.delete}"
                     onclick="PF('wv-confirm-multiple-delete').show();return false;"
                     style="white-space: nowrap;"

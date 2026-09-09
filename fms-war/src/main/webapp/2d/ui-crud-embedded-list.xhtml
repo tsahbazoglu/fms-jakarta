@@ -9,22 +9,18 @@
     </h:head>
 
     <h:panelGroup id="id-pnl-crud-list">
-        <p:panel header="Gömülü Liste">
+        <p:panel header="#{msg['gomulu.liste']}">
 
             <h:panelGroup>
-                <p:commandButton value="ekle"/>
-                <p:commandButton value="çıkar"/>
+                <p:commandButton value="#{msg['ekle.2']}"/>
+                <p:commandButton value="#{msg['cikar.2']}"/>
             </h:panelGroup>
             <p:dataTable>
                 <p:column headerText="Seç">
                     <p:selectBooleanCheckbox/>
                 </p:column>
-                <p:column headerText="Id">
-                    ilgili ID
-                </p:column>
-                <p:column headerText="Etiket">
-                    ilgili NAME
-                </p:column>
+                <p:column headerText="Id">#{msg['ilgili.id']}</p:column>
+                <p:column headerText="Etiket">#{msg['ilgili.name']}</p:column>
             </p:dataTable>
         </p:panel>      
     </h:panelGroup>

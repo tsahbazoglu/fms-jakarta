@@ -16,7 +16,7 @@
     <h:panelGroup
         rendered="#{roleMB[formService.myForm.myProject.adminAndViewerRole]}"
         >
-        <h:outputText value="Bidirim Zarfının MetaData Bilgisi" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+        <h:outputText value="#{msg['bidirim.zarfinin.metadata.bilgisi']}" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
         <br/>
         <br/>
         <p:dataTable 
@@ -82,7 +82,7 @@
                     </h:selectBooleanCheckbox>
 
                     <h:commandButton 
-                        value="Eylem"
+                        value="#{msg['eylem']}"
                         rendered="#{columnMap.componentType == 'inputButton'}"
                         >             
 

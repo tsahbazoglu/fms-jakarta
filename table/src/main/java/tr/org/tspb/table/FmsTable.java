@@ -787,7 +787,7 @@ public abstract class FmsTable extends FmsTableView {
 
         if (!(loginController.isUserInRole(formService.getMyForm().getMyProject().getAdminRole()) //
                 || crudObject.get(formService.getMyForm().getLoginFkField()) == null || loginMB.getLoggedUserDetail().getDbo().getObjectId().equals(operatedObject.get(formService.getMyForm().getLoginFkField())))) {
-            throw new Exception("Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
+            throw new Exception(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("sisteme.girs.yapan.kullanici.yalnizca"));
         }
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -822,7 +822,7 @@ public abstract class FmsTable extends FmsTableView {
         }
 
         if (!ok) {
-            throw new UserException("Sisteme girş yapan kullanıcı yalnızca kendisine ait veri ekleyip değiştirebilir.");
+            throw new UserException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("sisteme.girs.yapan.kullanici.yalnizca"));
         }
 
         Document operatedObject = new Document(crudObject);

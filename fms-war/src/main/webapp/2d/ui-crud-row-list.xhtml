@@ -19,13 +19,13 @@
             <h:form id="id2DCurrentObjectList" rendered="#{formService.myForm.currentRendered}"> 
                 <p:remoteCommand
                     name="rcMultipleDelete"
-                    value="Sil"
+                    value="#{msg['sil']}"
                     action="#{twoDimModifyCtrl.multipleDelete}"
                     update="#{updateAjaxMB.buttonDeleteDirectly}"
                     />
                 <p:remoteCommand 
                     name="rcSetMultiToRelatedForm"
-                    value="ilgili forma aktar" 
+                    value="#{msg['ilgili.forma.aktar']}" 
                     action="#{mainFrame.setMultiToRelatedForm}" 
                     update="#{updateAjaxMB.idCenterMiddle}"
                     />
@@ -232,7 +232,7 @@
                         <p:column   
                             rendered="#{columnMap.componentType == 'inputButton'}"
                             >
-                            <p:commandButton value="Eylem"/>
+                            <p:commandButton value="#{msg['eylem']}"/>
                         </p:column>
                     </p:columns> 
                 </p:dataTable>

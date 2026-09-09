@@ -49,7 +49,52 @@ public class DlgCtrl implements Serializable {
         this.visible = visible;
     }
 
-    private static final String BILGILENDIRME = "Bilgilendirme";
+    private String getLocalizedText(String key, String defaultText) {
+        if (key == null) {
+            return defaultText;
+        }
+        try {
+            jakarta.faces.context.FacesContext context = jakarta.faces.context.FacesContext.getCurrentInstance();
+            if (context != null) {
+                // 1. Try JSF application resource bundle "msg" registered in faces-config.xml
+                try {
+                    java.util.ResourceBundle jsfBundle = context.getApplication().getResourceBundle(context, "msg");
+                    if (jsfBundle != null && jsfBundle.containsKey(key)) {
+                        return jsfBundle.getString(key);
+                    }
+                } catch (Exception ex) {
+                    // ignore
+                }
+
+                // 2. Try loading bundle via Thread Context ClassLoader
+                if (context.getViewRoot() != null) {
+                    java.util.Locale locale = context.getViewRoot().getLocale();
+                    if (locale != null) {
+                        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("tr.org.tspb.web.messages", locale, cl);
+                        if (bundle != null && bundle.containsKey(key)) {
+                            return bundle.getString(key);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // fallback
+        }
+        return defaultText;
+    }
+
+    private String getBilgilendirme() {
+        return getLocalizedText("bilgilendirme", "Bilgilendirme");
+    }
+
+    private String getUyari() {
+        return getLocalizedText("uyari", "Uyarı");
+    }
+
+    private String getHata() {
+        return getLocalizedText("hata", "Hata");
+    }
 
     public void showPopup(String title, String msg, String clientSideDialogName) {
         bulkSet(null, null, title, msg, true, true);
@@ -62,12 +107,13 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showPopupInfo(String msg, String clientSideDialogName) {
-        bulkSet(null, null, BILGILENDIRME, msg, true, true);
+        String infoTitle = getBilgilendirme();
+        bulkSet(null, null, infoTitle, msg, true, true);
         setRenderedButon(false);
         setRenderedOkButon(false);
         setRendered(false);
         setStyle("font-size:13px;");
-        setTitle(BILGILENDIRME);
+        setTitle(infoTitle);
         showPopup(clientSideDialogName);
     }
 
@@ -86,23 +132,25 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showPopupWarning(String msg, String clientSideDialogName) {
-        bulkSet(null, null, "Uyarı", msg, true, true);
+        String warnTitle = getUyari();
+        bulkSet(null, null, warnTitle, msg, true, true);
         setRenderedButon(false);
         setRenderedOkButon(false);
         setRendered(false);
         setStyle("font-size:13px;");
-        setTitle("Uyarı");
+        setTitle(warnTitle);
         showPopup(clientSideDialogName);
     }
 
     public void showPopupError(String msg) {
-        bulkSet(null, null, "Hata", new StringBuilder("<br/><br/>").append(msg).
+        String errTitle = getHata();
+        bulkSet(null, null, errTitle, new StringBuilder("<br/><br/>").append(msg).
                 toString(), true, true);
         setRenderedButon(false);
         setRenderedOkButon(false);
         setRendered(false);
         setStyle("font-size:13px;");
-        setTitle("Hata");
+        setTitle(errTitle);
         showPopup(MESSAGE_DIALOG);
     }
 
@@ -121,12 +169,13 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showPopupInfoWithOk(String msg, String clientSideDialogName) {
-        bulkSet(null, null, BILGILENDIRME, msg, true, true);
+        String infoTitle = getBilgilendirme();
+        bulkSet(null, null, infoTitle, msg, true, true);
         setRenderedButon(false);
         setRenderedOkButon(true);
         setRendered(false);
         setStyle("font-size:13px;");
-        setTitle(BILGILENDIRME);
+        setTitle(infoTitle);
         showPopup(clientSideDialogName);
     }
 
@@ -177,7 +226,19 @@ public class DlgCtrl implements Serializable {
     }
 
     public String getTitle() {
-        return title;
+        if (title == null) {
+            return "";
+        }
+        if ("Bilgilendirme".equalsIgnoreCase(title)) {
+            return getBilgilendirme();
+        }
+        if ("Uyarı".equalsIgnoreCase(title) || "Uyari".equalsIgnoreCase(title)) {
+            return getUyari();
+        }
+        if ("Hata".equalsIgnoreCase(title)) {
+            return getHata();
+        }
+        return getLocalizedText(title, title);
     }
 
     public void setTitle(String title) {

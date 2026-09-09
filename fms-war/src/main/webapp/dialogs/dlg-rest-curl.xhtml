@@ -7,7 +7,7 @@
 
     <p:dialog 
         id="id-rest-curl-dlg"
-        header="Rest Curl"
+        header="#{msg['rest.curl']}"
         widgetVar="wvRestCurlDlg"
         width="800"
         height="600"
@@ -20,75 +20,75 @@
             id="id-rest-curl-dlg-pnl"
             >
             <br/>
-            <b>Create</b>
+            <b>#{msg['create']}</b>
             <p>
-                <b>curl --header "Content-Type: application/json" \</b>
+                <b>#{msg['curl.header.content.type.application']}</b>
                 <br/>
-                <b>--request POST \</b>
+                <b>#{msg['request.post']}</b>
                 <br/>
-                <b>--data</b> '{ "_id" : null, "olusturmaTarihi" : 201901011200, "isSahibiSoyad" : "coşgun", "isSahibiTCK" : "213123123", "durumId" : "0", "ilgiliTalepNo" : null, "ilceId" :"5bf3ff67838fc9164d9dd980", "tdubTalepNo" : null, "tapuId" : null, "talepNo" : "21312312", "isTipi" : "Yeni Talep", "atananKurulus" : null, "aciklama" : null, "atanmaTarihi" : null, "isSahibiEmail" : "sadasdad@sadad.com", "durum" : "Açık", "ilgiliTalepId" : null, "il" : "Ankara", "isTipiId" : "0", "isSahibiAd" : "cihan", "kaynakTipi" : "Tapu", "ilId" : "5bf3c10f838fc9164d9dd967", "isSahibiTelNo" : "213123 2131231", "ilce" : "Altındağ", "atananKurulusId" : null, "tdubTalepId" : null, "kaynakTipiId" : "0", "forms" : "f038", "talepId" : "5c497566cf21b834569abc8b", "project-key" : "tdub_iys", "form-key" : "f038" }' \
+                <b>#{msg['data']}</b> '{ "_id" : null, "olusturmaTarihi" : 201901011200, "isSahibiSoyad" : "coşgun", "isSahibiTCK" : "213123123", "durumId" : "0", "ilgiliTalepNo" : null, "ilceId" :"5bf3ff67838fc9164d9dd980", "tdubTalepNo" : null, "tapuId" : null, "talepNo" : "21312312", "isTipi" : "Yeni Talep", "atananKurulus" : null, "aciklama" : null, "atanmaTarihi" : null, "isSahibiEmail" : "sadasdad@sadad.com", "durum" : "Açık", "ilgiliTalepId" : null, "il" : "Ankara", "isTipiId" : "0", "isSahibiAd" : "cihan", "kaynakTipi" : "Tapu", "ilId" : "5bf3c10f838fc9164d9dd967", "isSahibiTelNo" : "213123 2131231", "ilce" : "Altındağ", "atananKurulusId" : null, "tdubTalepId" : null, "kaynakTipiId" : "0", "forms" : "f038", "talepId" : "5c497566cf21b834569abc8b", "project-key" : "tdub_iys", "form-key" : "f038" }' \
                 <br/>
-                <b>http://localhost:9898/api/crud/create</b>
+                <b>#{msg['http.localhost.9898.api.crud.2']}</b>
             </p>
 
             <br/>
-            <b>Update</b>
+            <b>#{msg['update']}</b>
             <p>
-                <b>curl --header "Content-Type: application/json" \</b>
+                <b>#{msg['curl.header.content.type.application']}</b>
                 <br/>
-                <b>--request POST \</b>
+                <b>#{msg['request.post']}</b>
                 <br/>
-                <b>--data</b> '{ "_id" : null, "olusturmaTarihi" : 201901011200, "isSahibiSoyad" : "coşgun", "isSahibiTCK" : "213123123", "durumId" : "0", "ilgiliTalepNo" : null, "ilceId" :"5bf3ff67838fc9164d9dd980", "tdubTalepNo" : null, "tapuId" : null, "talepNo" : "21312312", "isTipi" : "Yeni Talep", "atananKurulus" : null, "aciklama" : null, "atanmaTarihi" : null, "isSahibiEmail" : "sadasdad@sadad.com", "durum" : "Açık", "ilgiliTalepId" : null, "il" : "Ankara", "isTipiId" : "0", "isSahibiAd" : "cihan", "kaynakTipi" : "Tapu", "ilId" : "5bf3c10f838fc9164d9dd967", "isSahibiTelNo" : "213123 2131231", "ilce" : "Altındağ", "atananKurulusId" : null, "tdubTalepId" : null, "kaynakTipiId" : "0", "forms" : "f038", "talepId" : "5c497566cf21b834569abc8b", "project-key" : "tdub_iys", "form-key" : "f038" }' \
+                <b>#{msg['data']}</b> '{ "_id" : null, "olusturmaTarihi" : 201901011200, "isSahibiSoyad" : "coşgun", "isSahibiTCK" : "213123123", "durumId" : "0", "ilgiliTalepNo" : null, "ilceId" :"5bf3ff67838fc9164d9dd980", "tdubTalepNo" : null, "tapuId" : null, "talepNo" : "21312312", "isTipi" : "Yeni Talep", "atananKurulus" : null, "aciklama" : null, "atanmaTarihi" : null, "isSahibiEmail" : "sadasdad@sadad.com", "durum" : "Açık", "ilgiliTalepId" : null, "il" : "Ankara", "isTipiId" : "0", "isSahibiAd" : "cihan", "kaynakTipi" : "Tapu", "ilId" : "5bf3c10f838fc9164d9dd967", "isSahibiTelNo" : "213123 2131231", "ilce" : "Altındağ", "atananKurulusId" : null, "tdubTalepId" : null, "kaynakTipiId" : "0", "forms" : "f038", "talepId" : "5c497566cf21b834569abc8b", "project-key" : "tdub_iys", "form-key" : "f038" }' \
                 <br/>
-                <b>http://localhost:9898/api/crud/update</b>
+                <b>#{msg['http.localhost.9898.api.crud.6']}</b>
             </p>
 
             <br/>
-            <b>Delete</b>
+            <b>#{msg['delete']}</b>
             <p>
-                <b>curl --header "Content-Type: application/json" \</b>
+                <b>#{msg['curl.header.content.type.application']}</b>
                 <br/>
-                <b>--request POST \</b>
+                <b>#{msg['request.post']}</b>
                 <br/>
-                <b>--data</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
+                <b>#{msg['data']}</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
                 <br/>
-                <b>http://localhost:9898/api/crud/delete</b>
+                <b>#{msg['http.localhost.9898.api.crud.3']}</b>
             </p>
 
             <br/>
-            <b>Find One</b>
+            <b>#{msg['find.one']}</b>
             <p>
-                <b>curl --header "Content-Type: application/json" \</b>
+                <b>#{msg['curl.header.content.type.application']}</b>
                 <br/>
-                <b>--request POST \</b>
+                <b>#{msg['request.post']}</b>
                 <br/>
-                <b>--data</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
+                <b>#{msg['data']}</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
                 <br/>
-                <b>http://localhost:9898/api/crud/one</b>
+                <b>#{msg['http.localhost.9898.api.crud.5']}</b>
             </p>
 
             <br/>
-            <b>Count</b>
+            <b>#{msg['count']}</b>
             <p>
-                <b>curl --header "Content-Type: application/json" \</b>
+                <b>#{msg['curl.header.content.type.application']}</b>
                 <br/>
-                <b>--request POST \</b>
+                <b>#{msg['request.post']}</b>
                 <br/>
-                <b>--data</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
+                <b>#{msg['data']}</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
                 <br/>
-                <b>http://localhost:9898/api/crud/count</b>
+                <b>#{msg['http.localhost.9898.api.crud']}</b>
             </p>
 
             <br/>
-            <b>Find Multi (Max = 50)</b>
+            <b>#{msg['find.multi.max.50']}</b>
             <p>
-                <b>curl --header "Content-Type: application/json" \</b>
+                <b>#{msg['curl.header.content.type.application']}</b>
                 <br/>
-                <b>--request POST \</b>
+                <b>#{msg['request.post']}</b>
                 <br/>
-                <b>--data</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
+                <b>#{msg['data']}</b> '{"project-key":"tdub_ent","form-key":"f051", "isSahibiAd" : "cihan"}' \
                 <br/>
-                <b>http://localhost:9898/api/crud/fifty</b>
+                <b>#{msg['http.localhost.9898.api.crud.4']}</b>
             </p>
 
         </p:panel>

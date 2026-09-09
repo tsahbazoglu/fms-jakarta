@@ -6,7 +6,7 @@
     >
     <p:dialog 
         id="id-desc-dlg"
-        header="açıklama"
+        header="#{msg['aciklama.2']}"
         widgetVar="wvDescDlg"
         width="600"
         height="400"
@@ -18,11 +18,11 @@
         <p:panel
             id="id-desc-dlg-pnl"
             >
-            <b>form: </b> <p:outputLabel value="#{formService.myForm.name}"/> 
+            <b>#{msg['form']}</b> <p:outputLabel value="#{formService.myForm.name}"/> 
             <hr/>
-            <b>alan: </b> <p:outputLabel value="#{twoDimModifyCtrl.selectedField.name}"/> 
+            <b>#{msg['alan.2']}</b> <p:outputLabel value="#{twoDimModifyCtrl.selectedField.name}"/> 
             <hr/>
-            <b>açıklama: </b> <p:outputLabel value="#{twoDimModifyCtrl.selectedField.popupDescription}" escape="false"/>
+            <b>#{msg['aciklama.3']}</b> <p:outputLabel value="#{twoDimModifyCtrl.selectedField.popupDescription}" escape="false"/>
         </p:panel>
     </p:dialog>
 </html>

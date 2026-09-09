@@ -9,7 +9,7 @@
         <p:toolbar>
             <f:facet name="left">
                 <p:commandButton 
-                    value="E-imzalı belgeyi indirmek için tıklayınız." 
+                    value="#{msg['e.imzali.belgeyi.indirmek.icin']}" 
                     ajax="false" 
                     icon="ui-icon-arrowthick-1-s"
                     actionListener="#{esignController.createDownloadFile}"
@@ -17,7 +17,7 @@
                     <p:fileDownload value="#{esignController.file}"/>
                 </p:commandButton>
                 <p:commandButton 
-                    value="MetaData Hatasını Düzelt" 
+                    value="#{msg['metadata.hatasini.duzelt']}" 
                     action="#{esignController.correctMetada}"
                     rendered="#{roleMB['databankarchitect']}"
                     >
@@ -39,13 +39,13 @@
             value="#{esignController.signedDocInfo}" 
             var="mymap"
             >
-            <f:facet name="header">E-İmzalama Bilgileri</f:facet>
+            <f:facet name="header">#{msg['e.i.mzalama.bilgileri']}</f:facet>
             <p:column>
-                <f:facet name="header" >Alan</f:facet>
+                <f:facet name="header" >#{msg['alan']}</f:facet>
                 <h:outputText value="#{mymap.key}"/> 
             </p:column>
             <p:column>
-                <f:facet name="header" >Değer</f:facet>
+                <f:facet name="header" >#{msg['deger']}</f:facet>
                 <h:outputText value="#{mymap.value}"/> 
             </p:column>
         </p:dataTable>
@@ -54,30 +54,30 @@
             value="#{esignController.signedDocContentFields}" 
             var="mymap"
             >
-            <f:facet name="header">E-İmzalanan Belge</f:facet>
+            <f:facet name="header">#{msg['e.i.mzalanan.belge']}</f:facet>
             <p:column>
-                <f:facet name="header" >Alan</f:facet>
+                <f:facet name="header" >#{msg['alan']}</f:facet>
                 <h:outputText value="#{mymap.key}"/> 
             </p:column>
             <p:column>
-                <f:facet name="header" >Değer</f:facet>
+                <f:facet name="header" >#{msg['deger']}</f:facet>
                 <h:outputText value="#{mymap.value}"/> 
             </p:column>
         </p:dataTable>
 
         <p:dataTable value="#{esignController.signedEimzaAttachments}" var="x">
             <f:facet name="header">
-                <h:outputText value="E-İmzalanan Belge Ekleri"/> 
+                <h:outputText value="#{msg['e.i.mzalanan.belge.ekleri']}"/> 
             </f:facet>
             <p:column>
                 <f:facet name="header">
-                    <h:outputText value="Dosya Adı"/> 
+                    <h:outputText value="#{msg['dosya.adi']}"/> 
                 </f:facet>
                 <h:outputText value="#{x.fileName}" />
             </p:column>
             <p:column>
                 <f:facet name="header">
-                    <h:outputText value="İndir"/> 
+                    <h:outputText value="#{msg['i.ndir']}"/> 
                 </f:facet>
                 <h:outputLink 
                     value="#{application.contextPath}/esignFileDownlodServlet/#{esignController.eimzaFileID}#{x.id}"
@@ -87,7 +87,7 @@
                     color:#112978;
                     font-weight:bold;"
                     >
-                    <h:outputText value="indir" />
+                    <h:outputText value="#{msg['indir']}" />
                 </h:outputLink>                    
             </p:column>
         </p:dataTable>

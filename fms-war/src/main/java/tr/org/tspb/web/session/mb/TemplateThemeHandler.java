@@ -29,12 +29,14 @@ public class TemplateThemeHandler implements Serializable {
     private String theme = "saga";//replace varaible name to theme
     private String layout = "web-layout";
     private String fontSize = "normal";
+    private String language = "tr";
 
     private static final String DB_NAME = "uysdb";
     private static final String COLLECTION_NAME = "theme-template";
     private static final String FIELD_THEME = "theme";
     private static final String FIELD_LAYOUT = "layout";
     private static final String FIELD_FONT_SIZE = "fontSize";
+    private static final String FIELD_LANGUAGE = "language";
     private static final String FIELD_MEMBER_ID = "ldapUID";
 
     @Inject
@@ -55,6 +57,7 @@ public class TemplateThemeHandler implements Serializable {
             Optional.ofNullable(settings.get(FIELD_THEME)).ifPresent(t -> this.theme = t.toString());
             Optional.ofNullable(settings.get(FIELD_LAYOUT)).ifPresent(l -> this.layout = l.toString());
             Optional.ofNullable(settings.get(FIELD_FONT_SIZE)).ifPresent(fs -> this.fontSize = fs.toString());
+            Optional.ofNullable(settings.get(FIELD_LANGUAGE)).ifPresent(lang -> this.language = lang.toString());
         }
 /*
         db.getCollection("theme-template").updateOne({ldapUID:"DENEME_PYS_1"},{$set:{theme:"saga"}})
@@ -81,6 +84,7 @@ public class TemplateThemeHandler implements Serializable {
         record.put(FIELD_THEME, this.theme);
         record.put(FIELD_LAYOUT, this.layout);
         record.put(FIELD_FONT_SIZE, this.fontSize);
+        record.put(FIELD_LANGUAGE, this.language);
 
         repositoryService.updateMany(DB_NAME, COLLECTION_NAME, filter, record, true);
     }
@@ -98,6 +102,23 @@ public class TemplateThemeHandler implements Serializable {
     public void changeFontSize(String fontSize) {
         this.fontSize = fontSize;
         savePreferences();
+    }
+
+    public void changeLanguage(String language) {
+        this.language = language;
+        savePreferences();
+    }
+
+    public String getLanguage() {
+        return language != null ? language : "tr";
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public List<String> getLanguages() {
+        return Arrays.asList("tr", "en", "ru");
     }
 
     public String getTheme() {

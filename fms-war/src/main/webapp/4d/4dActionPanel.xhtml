@@ -16,33 +16,33 @@
         <p:toolbar>
             <f:facet name="left">
                 <p:commandButton 
-                    value="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
+                    value="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}" 
                     action="#{pivotModifierCtrl.showAllNote}" 
                     style="color: red;font-weight: bold;white-space: nowrap;"
                     rendered="#{pivotModifierCtrl.selectedFormUserNote}"
                     update="#{updateAjaxMB.msgDlg}"
                     />
                 <p:commandButton 
-                    value="Excele Aktar" 
+                    value="#{msg['excele.aktar']}" 
                     rendered="#{pivotModifierCtrl.dependOnSelectedFormRenderedMap['download']}"
                     action="#{pivotModifierCtrl.downloadCsvFile}" 
                     style="white-space: nowrap;"
                     />
                 <p:commandButton 
-                    value="Kaydet"
+                    value="#{msg['kaydet']}"
                     rendered="#{pivotModifierCtrl.dependOnSelectedFormRenderedMap['save']}"
                     style="width: 150px;"
                     action="#{pivotModifierCtrl.provideCrossCheck}"
                     update=":idCurrentMyGrid,:idCenterTop,:idDialogControlAndSave,#{updateAjaxMB.msgDlg}"
                     />
                 <p:commandButton 
-                    value="E-İmza Süreci" 
+                    value="#{msg['e.i.mza.sureci']}" 
                     action="#{pivotModifierCtrl.showEimza22}" 
                     rendered="#{pivotModifierCtrl.dependOnSelectedFormRenderedMap['eimza2D']}"
                     update="#{updateAjaxMB.msgDlg},:id_nd_esign_dialog"
                     />  
                 <p:commandButton 
-                    value="Import" 
+                    value="#{msg['import']}" 
                     action="#{pivotModifierCtrl.importData}" 
                     rendered="#{pivotModifierCtrl.dependOnSelectedFormRenderedMap['importData']}"
                     update="#{updateAjaxMB.msgDlg},:idImportDataDialog"

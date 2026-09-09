@@ -22,7 +22,7 @@
 
         <!-- Source Period -->
         <div class="p-field">
-            <p:outputLabel for="sourcePeriod" value="Kaynak Dönem"
+            <p:outputLabel for="sourcePeriod" value="#{msg['kaynak.donem']}"
                            style="font-weight: 600; margin-bottom: 0.5rem; display: block;"/>
             <p:selectOneMenu id="sourcePeriod"
                              value="#{bulkCopyBean.sourcePeriod}"
@@ -37,7 +37,7 @@
 
         <!-- Target Period -->
         <div class="p-field">
-            <p:outputLabel for="targetPeriod" value="Hedef Dönem"
+            <p:outputLabel for="targetPeriod" value="#{msg['hedef.donem']}"
                            style="font-weight: 600; margin-bottom: 0.5rem; display: block;"/>
             <p:selectOneMenu id="targetPeriod"
                              value="#{bulkCopyBean.targetPeriod}"
@@ -55,26 +55,22 @@
     <!-- Warning / Note -->
     <div style="font-size: 0.85rem; color: #6c757d; margin-bottom: 1.5rem;">
         <div style="margin-bottom: 0.25rem;">
-            <i class="pi pi-exclamation-triangle" style="margin-right: 4px;"></i>
-            Hedef dönemde mevcut veriler varsa üzerine yazılabilir veya mükerrer kayıt oluşmaması için kontrol edilecektir.
-        </div>
+            <i class="pi pi-exclamation-triangle" style="margin-right: 4px;"></i>#{msg['hedef.donemde.mevcut.veriler.varsa']}</div>
         <div>
-            <i class="pi pi-info-circle" style="margin-right: 4px;"></i>
-            Not: Yalnızca aktif durumda olan (durum kodu '000') üyelere ait veriler kopyalanacaktır.
-        </div>
+            <i class="pi pi-info-circle" style="margin-right: 4px;"></i>#{msg['not.yalnizca.aktif.durumda.olan']}</div>
     </div>
 
     <p:divider/>
 
     <!-- Action Buttons Footer -->
     <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
-        <p:commandButton value="İptal"
+        <p:commandButton value="#{msg['i.ptal']}"
                          type="button"
                          icon="pi pi-times"
                          styleClass="ui-button-outlined ui-button-secondary"
                          onclick="PF('wv-bulk-copy').hide()"/>
 
-        <p:commandButton value="Verileri Kopyala"
+        <p:commandButton value="#{msg['verileri.kopyala']}"
                          actionListener="#{bulkCopyBean.copyData}"
                          icon="pi pi-copy"
                          update="@form"

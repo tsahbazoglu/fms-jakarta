@@ -41,14 +41,14 @@
 
         <p:remoteCommand 
             name="rcOneDimSave"
-            value="Kaydet" 
+            value="#{msg['kaydet']}" 
             action="#{crudOneDim.saveObject}" 
             rendered="#{formService.myForm.myActions.save}"
             update="#{updateAjaxMB.btn1dSave}"
             />
 
         <h:outputText 
-            value="Döküman Bilgisi" 
+            value="#{msg['dokuman.bilgisi']}" 
             style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"
             rendered="false"
             />
@@ -175,7 +175,7 @@
                             />
 
                         <p:button 
-                            value="Dosya Yükleme"
+                            value="#{msg['dosya.yukleme']}"
                             onclick="PF('widget-var-page-file-upload').chooseButton.click();return;"   
                             rendered="#{crudOneDim.inputFile eq  myField.componentType and myField.rendered}"
                             >
@@ -193,7 +193,7 @@
                             icon="fa fa-info-circle" 
                             action="#{crudOneDim.showMyFieldDesc}"
                             immediate="true"
-                            value="Bilgi" 
+                            value="#{msg['bilgi']}" 
                             update="#{updateAjaxMB.btnPageShowDesc}"
                             rendered="#{myField.renderPopupDesc}"
                             styleClass="small-font-size"
@@ -220,7 +220,7 @@
                 </p:column>
                 <p:column>
                     <p:commandButton 
-                        value="sil" 
+                        value="#{msg['sil.2']}" 
                         action="#{crudOneDim.deleteFile}" 
                         update="@(.class-data-table-inline-up-files)"
                         >
@@ -237,7 +237,7 @@
                         color:#112978;
                         font-weight:bold;"
                         >
-                        <h:outputText value="indir" />
+                        <h:outputText value="#{msg['indir']}" />
                     </h:outputLink>  
                 </p:column>
             </p:dataTable>
@@ -256,7 +256,7 @@
             listener="#{crudOneDim.upload}"
             cancelLabel="Vazgeç"
             uploadLabel="Yükle"
-            label="Seç"
+            label="#{msg['sec']}"
             auto="true"
             widgetVar="widget-var-page-file-upload"
             style="display:none;"

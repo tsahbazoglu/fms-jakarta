@@ -17,7 +17,7 @@
         <p:growl id="msgs" showDetail="true"/>
 
         <p:commandButton 
-            value="ekle" 
+            value="#{msg['ekle.2']}" 
             styleClass="ui-priority-primary"
             action="#{twoDimModifyCtrl.onAddNew}" 
             update="idTwoDlgTabView:id-form-table-childs:id-dt-childs"
@@ -204,9 +204,9 @@
 
 
         <p:contextMenu for="idDataTableChilds" widgetVar="cMenu">
-            <p:menuitem value="Edit Cell" icon="pi pi-search"
+            <p:menuitem value="#{msg['edit.cell']}" icon="pi pi-search"
                         onclick="PF('cellProducts').showCellEditor();return false;"/>
-            <p:menuitem value="Hide Menu" icon="pi pi-times" onclick="PF('cMenu').hide()"/>
+            <p:menuitem value="#{msg['hide.menu']}" icon="pi pi-times" onclick="PF('cMenu').hide()"/>
         </p:contextMenu>
 
 

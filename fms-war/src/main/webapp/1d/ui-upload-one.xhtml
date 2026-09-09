@@ -20,7 +20,7 @@
         <p:panel
             rendered="#{formService.myForm.multiUpload.upload}"
             >
-            <h:outputText value="Dosya Yükleme Aracı" style="font-size: var(--fms-font-size-2xl, 22px);font-weight: bolder;color: #b3b3b3;font-family: inherit;"/>
+            <h:outputText value="#{msg['dosya.yukleme.araci']}" style="font-size: var(--fms-font-size-2xl, 22px);font-weight: bolder;color: #b3b3b3;font-family: inherit;"/>
             <br/>
             <br/> 
             <h:form 
@@ -35,7 +35,7 @@
                     update="#{updateAjaxMB.action1dUploadFile}"
                     cancelLabel="Vazgeç"
                     uploadLabel="Yükle"
-                    label="Seç"
+                    label="#{msg['sec']}"
                     >
                     <p:validateFile 
                         sizeLimit="15728640"
@@ -50,7 +50,7 @@
             id="id-uploaded-files"
             rendered="#{formService.myForm.multiUpload.list}"
             >
-            <h:outputText value="Ekli Dosyalar" style="font-size: var(--fms-font-size-2xl, 22px);font-weight: bolder;color: #b3b3b3;font-family: inherit;"/>
+            <h:outputText value="#{msg['ekli.dosyalar']}" style="font-size: var(--fms-font-size-2xl, 22px);font-weight: bolder;color: #b3b3b3;font-family: inherit;"/>
             <br/>
             <br/> 
             <p:dataTable 
@@ -59,20 +59,20 @@
                 >
                 <p:column>
                     <f:facet name="header">
-                        <h:outputText value="Dosya Adı"/> 
+                        <h:outputText value="#{msg['dosya.adi']}"/> 
                     </f:facet>
                     <h:outputText value="#{x.fileName}"/> 
                 </p:column>
                 <p:column>
                     <f:facet name="header">
-                        <h:outputText value="Dosya Boyutu"/>
+                        <h:outputText value="#{msg['dosya.boyutu']}"/>
                     </f:facet>
                     <h:outputText value="#{x.fileSize}"/> 
 
                 </p:column>
                 <p:column>
                     <f:facet name="header">
-                        <h:outputText value="Durum"/>
+                        <h:outputText value="#{msg['durum']}"/>
                     </f:facet>
                     <h:outputText value="#{x.fileState}" style="background: #{x.fileColor}"/> 
                 </p:column>
@@ -81,10 +81,10 @@
                     rendered="#{formService.myForm.multiUpload.delete}"
                     >
                     <f:facet name="header">
-                        <h:outputText value="Sil"/> 
+                        <h:outputText value="#{msg['sil']}"/> 
                     </f:facet>
                     <p:commandButton 
-                        value="sil" 
+                        value="#{msg['sil.2']}" 
                         action="#{crudOneDim.deleteFile}" 
                         rendered="#{formService.myForm.multiUpload.delete}"
                         update="#{updateAjaxMB.btn1dRemoveFile},:id-tab-view:crud1dForm"
@@ -96,7 +96,7 @@
                     rendered="#{formService.myForm.multiUpload.download}"
                     >
                     <f:facet name="header">
-                        <h:outputText value="İndir"/>  
+                        <h:outputText value="#{msg['i.ndir']}"/>  
                     </f:facet>
                     <h:outputLink 
                         value="#{application.contextPath}/myDownloadServlet/#{x.fileID}"
@@ -107,7 +107,7 @@
                         color:#112978;
                         font-weight:bold;"
                         >
-                        <h:outputText value="indir" />
+                        <h:outputText value="#{msg['indir']}" />
                     </h:outputLink>  
                 </p:column>
             </p:dataTable>

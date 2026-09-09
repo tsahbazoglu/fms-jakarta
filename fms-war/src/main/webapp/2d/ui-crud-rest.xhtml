@@ -34,25 +34,25 @@
                 </p:button>
                 <p:commandButton 
                     onclick="PF('specialConfirmationDialog').show(); return false;"
-                    value="Sil" 
+                    value="#{msg['sil']}" 
                     transient="true"
                     rendered="#{guiService.selectedForm.myActions.delete}"
                     />  
                 <p:button
                     onclick="rcSave();return false;"
-                    value="Kaydet" 
+                    value="#{msg['kaydet']}" 
                     rendered="#{guiService.selectedForm.myActions.save}"
                     />
                 <p:commandButton 
                     id="id_2d_buttonSaveAsObjectId"
-                    value="Farklı Kaydet" 
+                    value="#{msg['farkli.kaydet']}" 
                     action="#{twoDimModifyCtrl.saveAsObject}" 
                     rendered="#{guiService.selectedForm.myActions.saveAs}"
                     update="#{updateAjaxMB.btn2dSaveAs}"
                     />
                 <p:commandButton 
                     id="id_2d_button_esign"
-                    value="2:1 - Eimza Süreci" 
+                    value="#{msg['2.1.eimza.sureci']}" 
                     action="#{twoDimModifyCtrl.showEimza}" 
                     rendered="#{guiService.selectedForm.myActions.eimza1D}"
                     update="#{updateAjaxMB.btn2dDlgEsign}"
@@ -60,12 +60,12 @@
                 <!--rendered="# {twoDimModifyCtrl.dependOnSelectedFormRenderedMap['save']and twoDimModifyCtrl.myObject['resultType']['code']=='001'}"-->
                 <p:commandButton 
                     id="buttonCopyObject"
-                    value="Kopyala" 
+                    value="#{msg['kopyala']}" 
                     action="#{twoDimModifyCtrl.copyObject}" 
                     rendered="false"/>
 
                 <p:commandButton 
-                    value="Ödeme İşlemi" 
+                    value="#{msg['odeme.i.slemi']}" 
                     action="#{twoDimModifyCtrl.payment}" 
                     style="white-space: nowrap;"
                     update=":id-dlg-payment,#{updateAjaxMB.msgDlg}"
@@ -73,7 +73,7 @@
                     />
 
                 <p:commandButton 
-                    value="indirmek için tıklayınız." 
+                    value="#{msg['indirmek.icin.tiklayiniz']}" 
                     ajax="false" 
                     icon="ui-icon-arrowthick-1-s"
                     rendered="#{guiService.selectedForm.myActions.pdf}"
@@ -82,7 +82,7 @@
                 </p:commandButton>
 
                 <p:commandButton 
-                    value="LDAP" 
+                    value="#{msg['ldap']}" 
                     onclick="PF('wv_dlg_ldap').show(); return false;"
                     style="white-space: nowrap;"
                     update="id_dlg_ldap"
@@ -91,7 +91,7 @@
                 </p:commandButton>
 
                 <h:outputText 
-                    value="Tarihçe Etkin(siz)leştir" 
+                    value="#{msg['tarihce.etkin.siz.lestir']}" 
                     style="white-space: nowrap;"
                     rendered="#{roleMB[mainFrame.architectRole] and guiService.selectedForm.myActions.save}"/>
 
@@ -109,7 +109,7 @@
 
                 <p:commandButton 
                     id="buttonSendEmailId"
-                    value="Email Önizleme"
+                    value="#{msg['email.onizleme']}"
                     action="#{twoDimModifyCtrl.actionEmail}"
                     rendered="#{guiService.selectedForm.myActions.email}"
                     update=":idEmailPreview,#{updateAjaxMB.msgDlg}"
@@ -155,7 +155,7 @@
             <h:form id="crud2dForm">
                 <p:remoteCommand 
                     name="rc_2d_delete"
-                    value="Sormadan Sil"
+                    value="#{msg['sormadan.sil']}"
                     action="#{twoDimModifyCtrl.deleteObject}" 
                     rendered="#{guiService.selectedForm.myActions.delete}"
                     update="#{updateAjaxMB.buttonDeleteDirectly}"
@@ -163,7 +163,7 @@
                     /> 
                 <p:remoteCommand 
                     name="rcSave"
-                    value="Kaydet" 
+                    value="#{msg['kaydet']}" 
                     action="#{twoDimModifyCtrl.saveObject}" 
                     rendered="#{guiService.selectedForm.myActions.save}"
                     update="#{updateAjaxMB.btn2dSave}"
@@ -186,7 +186,7 @@
                                 >
                             </h:outputText>
                             <p:commandButton 
-                                value="detay" 
+                                value="#{msg['detay']}" 
                                 style="font-size:8px;"
                                 action="#{mainFrame.myActionListener1}" 
                                 update="#{updateAjaxMB.btnDetay}"
@@ -197,7 +197,7 @@
                                 <f:setPropertyActionListener value="#{twoDimModifyCtrl.myObject[myField.key]}" target="#{mainFrame.showDetailObject}"/>
                             </p:commandButton>
                             <p:commandButton 
-                                value="güncelle" 
+                                value="#{msg['guncelle.2']}" 
                                 style="font-size:8px;"
                                 action="#{mainFrame.myActionListener2}"
                                 update="#{updateAjaxMB.btnEditDetail}"
@@ -316,7 +316,7 @@
                                 icon="fa fa-info-circle" 
                                 action="#{twoDimModifyCtrl.showMyFieldDesc}"
                                 immediate="true"
-                                value="Bilgi" 
+                                value="#{msg['bilgi']}" 
                                 update="id-desc-dlg-pnl"
                                 rendered="#{myField.renderPopupDesc}"
                                 style="font-size:10px"
@@ -333,7 +333,7 @@
                 <br/>
                 <p:panel
                     id="id-pnl-wf"
-                    header="Süreç İşlemleri"
+                    header="#{msg['surec.i.slemleri']}"
                     rendered="#{guiService.selectedForm.workFlowActive}"
                     >
                     <h:panelGrid 
@@ -352,7 +352,7 @@
                                     >
                                 </h:outputText>
                                 <p:commandButton 
-                                    value="detay" 
+                                    value="#{msg['detay']}" 
                                     style="font-size:8px;"
                                     action="#{mainFrame.myActionListener1}" 
                                     update="#{updateAjaxMB.btnDetay}"
@@ -362,7 +362,7 @@
                                     <f:setPropertyActionListener value="#{twoDimModifyCtrl.myObject[myField.key]}" target="#{mainFrame.showDetailObject}"/>
                                 </p:commandButton>
                                 <p:commandButton 
-                                    value="güncelle" 
+                                    value="#{msg['guncelle.2']}" 
                                     style="font-size:8px;"
                                     action="#{mainFrame.myActionListener2}"
                                     update="#{updateAjaxMB.btnEditDetail}"
@@ -483,7 +483,7 @@
                         listener="#{twoDimModifyCtrl.upload}"
                         cancelLabel="Vazgeç"
                         uploadLabel="Yükle"
-                        label="Seç"
+                        label="#{msg['sec']}"
                         >
                         <p:validateFile 
                             sizeLimit="4194304"
@@ -496,7 +496,7 @@
                 <br/>
 
                 <h:panelGroup id="id2dUploadedFiles">
-                    <h:outputText value="Ekli Dosyalar" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+                    <h:outputText value="#{msg['ekli.dosyalar']}" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
                     <br/>
                     <br/>
                     <p:dataTable 
@@ -506,35 +506,35 @@
                         >
                         <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                             <f:facet name="header" >
-                                <h:outputText value="Dosya Adı"/> 
+                                <h:outputText value="#{msg['dosya.adi']}"/> 
                             </f:facet>
                             <h:outputText value="#{x.fileName}"/> 
                         </p:column>
                         <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                             <f:facet name="header" >
-                                <h:outputText value="Dosya Boyutu"/> 
+                                <h:outputText value="#{msg['dosya.boyutu']}"/> 
                             </f:facet>
                             <h:outputText value="#{x.fileSize}"/> 
                         </p:column>
                         <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                             <f:facet name="header" >
-                                <h:outputText value="Durum"/> 
+                                <h:outputText value="#{msg['durum']}"/> 
                             </f:facet>
                             <h:outputText value="#{x.fileState}" style="background: #{x.fileColor}"/> 
                         </p:column>
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="Sil"/> 
+                                <h:outputText value="#{msg['sil']}"/> 
                             </f:facet>
                             <p:commandButton 
-                                value="sil" action="#{twoDimModifyCtrl.deleteFile}"
+                                value="#{msg['sil.2']}" action="#{twoDimModifyCtrl.deleteFile}"
                                 >
                                 <f:setPropertyActionListener  target="#{twoDimModifyCtrl.toBeDeletedFileID}" value="#{x.fileID}"/>
                             </p:commandButton>
                         </p:column>
                         <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                             <f:facet name="header" >
-                                <h:outputText value="İndir"/> 
+                                <h:outputText value="#{msg['i.ndir']}"/> 
                             </f:facet>
                             <h:outputLink 
                                 value="#{application.contextPath}/myDownloadServlet/#{x.fileID}"
@@ -544,7 +544,7 @@
                                 color:#112978;
                                 font-weight:bold;"
                                 >
-                                <h:outputText value="indir" />
+                                <h:outputText value="#{msg['indir']}" />
                             </h:outputLink>           
                         </p:column>
                     </p:dataTable>

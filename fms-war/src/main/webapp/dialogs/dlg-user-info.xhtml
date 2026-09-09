@@ -9,7 +9,7 @@
 
     <p:dialog id="id-dlg-user-info"
               widgetVar="wv-dlg-user-info"
-              header="Kullanıcı Bilgileri &amp; Görünüm Ayarları"
+              header="#{msg['kullanici.bilgileri.amp.gorunum.ayarlari']}"
               modal="true"
               responsive="true"
               closeOnEscape="true"
@@ -24,22 +24,21 @@
             </h:panelGroup>
 
             <div class="text-xl font-bold text-900 border-bottom-1 surface-border pb-2">
-                <i class="pi pi-palette mr-2"></i>Görünüm Ayarları
-            </div>
+                <i class="pi pi-palette mr-2"></i>#{msg['gorunum.ayarlari']}</div>
 
-            <p:panel header="Yerleşim" styleClass="surface-card mb-2">
+            <p:panel header="#{msg['yerlesim']}" styleClass="surface-card mb-2">
                 <div class="flex flex-wrap gap-2">
-                    <p:commandButton value="Web Layout + Fixed Menu + Opened description per page"
+                    <p:commandButton value="#{msg['web.layout.fixed.menu.opened']}"
                                      actionListener="#{templateThemeHandler.changeLayout('web-layout')}"
                                      process="@this"
                                      oncomplete="window.location.reload();"
                                      styleClass="#{templateThemeHandler.layout eq 'web-layout' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
-                    <p:commandButton value="Web Layout + Fixed Menu + Hidden description per page"
+                    <p:commandButton value="#{msg['web.layout.fixed.menu.hidden']}"
                                      actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description')}"
                                      process="@this"
                                      oncomplete="window.location.reload();"
                                      styleClass="#{templateThemeHandler.layout eq 'web-layout-no-description' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
-                    <p:commandButton value="Web Layout + Sidebar Menu + Hidden description per page"
+                    <p:commandButton value="#{msg['web.layout.sidebar.menu.hidden']}"
                                      actionListener="#{templateThemeHandler.changeLayout('web-layout-no-description-sidebar')}"
                                      process="@this"
                                      oncomplete="window.location.reload();"
@@ -47,7 +46,7 @@
                 </div>
             </p:panel>
 
-            <p:panel header="Yazı Boyutu" styleClass="surface-card mb-2">
+            <p:panel header="#{msg['yazi.boyutu']}" styleClass="surface-card mb-2">
                 <div class="flex flex-wrap align-items-center gap-2">
                     <c:forEach items="#{templateThemeHandler.fontSizes}" var="fs">
                         <p:commandButton value="#{fs}"
@@ -60,7 +59,27 @@
                 </div>
             </p:panel>
 
-            <p:panel header="Tema Seçimi" styleClass="surface-card">
+            <p:panel header="#{msg['label.language.selection']}" styleClass="surface-card mb-2">
+                <div class="flex flex-wrap align-items-center gap-2">
+                    <p:commandButton value="Türkçe"
+                                     actionListener="#{templateThemeHandler.changeLanguage('tr')}"
+                                     process="@this"
+                                     oncomplete="window.location.reload();"
+                                     styleClass="#{templateThemeHandler.language eq 'tr' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
+                    <p:commandButton value="English"
+                                     actionListener="#{templateThemeHandler.changeLanguage('en')}"
+                                     process="@this"
+                                     oncomplete="window.location.reload();"
+                                     styleClass="#{templateThemeHandler.language eq 'en' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
+                    <p:commandButton value="Русский"
+                                     actionListener="#{templateThemeHandler.changeLanguage('ru')}"
+                                     process="@this"
+                                     oncomplete="window.location.reload();"
+                                     styleClass="#{templateThemeHandler.language eq 'ru' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
+                </div>
+            </p:panel>
+
+            <p:panel header="#{msg['label.theme.selection']}" styleClass="surface-card">
                 <div class="flex flex-wrap align-items-center gap-2">
                     <c:forEach items="#{templateThemeHandler.themes}" var="theme" varStatus="status">
                         <p:commandButton value="#{theme}"

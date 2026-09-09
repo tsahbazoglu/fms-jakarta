@@ -13,20 +13,15 @@
             <h:panelGroup rendered="#{not empty pivotModifierCtrl.failList}" layout="block"
                           styleClass="ui-messages-warn">
                 <ul>
-                    <li>Verileriniz başarıyla kaydedilmiştir.</li>
-                    <li>İşleme devam edebilmek için aşağıda listelenen
-                        <strong>uyarı ve hata kayıtlarının</strong> tamamlanması gerekmektedir.
+                    <li>#{msg['verileriniz.basariyla.kaydedilmistir']}</li>
+                    <li>#{msg['i.sleme.devam.edebilmek.icin']}<strong>#{msg['uyari.ve.hata.kayitlarinin']}</strong>#{msg['tamamlanmasi.gerekmektedir']}</li>
+                    <li>#{msg['gerekli.duzeltmeler.yapilmadigi.veya.uyarilara']}<strong>#{msg['birligimize.iletilemez']}</strong>.
                     </li>
-                    <li>Gerekli düzeltmeler yapılmadığı veya uyarılara ilişkin açıklamalar girilmediği sürece form
-                        <strong>Birliğimize iletilemez</strong>.
-                    </li>
-                    <li>Kontrolleri tamamlamak ve açıklamaları girmek için mönü sonundaki
-                        <strong>"Kontrol Et ve Gönder"</strong> sayfasını kullanabilirsiniz.
-                    </li>
+                    <li>#{msg['kontrolleri.tamamlamak.ve.aciklamalari.girmek']}<strong>#{msg['kontrol.et.ve.gonder']}</strong>#{msg['sayfasini.kullanabilirsiniz']}</li>
                 </ul>
             </h:panelGroup>
 
-            <h:outputText value="Verileriniz Kaydedildi."
+            <h:outputText value="#{msg['verileriniz.kaydedildi']}"
                           styleClass="ui-messages-info"
                           rendered="#{empty pivotModifierCtrl.failList}"/>
 

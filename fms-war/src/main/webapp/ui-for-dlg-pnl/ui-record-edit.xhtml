@@ -37,37 +37,37 @@
 
     <p:tabView id="idTwoDlgTabView">
         <p:tab 
-            title="Veri Girişi"
+            title="#{msg['veri.girisi']}"
             >
             <ui:include src="ui-crud.xhtml"/>
         </p:tab>
         <p:tab 
-            title="Veri Kalemleri"
+            title="#{msg['veri.kalemleri']}"
             rendered="#{formService.myForm.hasChildFields}"
             >
             <!--<ui:include src="ui-crud-childs-data-table-inline.xhtml"/>-->
             <ui:include src="ui-crud-childs-data-table-popup.xhtml"/>
         </p:tab>
         <p:tab 
-            title="Ekli Dosyalar"
+            title="#{msg['ekli.dosyalar']}"
             rendered="#{formService.myForm.hasAttachedFiles}"
             >
             <ui:include src="ui-upload.xhtml"/>
         </p:tab>
         <p:tab 
-            title="Veri Tarihçesi"
+            title="#{msg['veri.tarihcesi']}"
             rendered="#{formService.myForm.versionEnable}"
             >
             <ui:include src="ui-version-history.xhtml"/>
         </p:tab>
         <p:tab 
-            title="İş Süreci"
+            title="#{msg['i.s.sureci']}"
             rendered="#{formService.myForm.workFlowActive}"
             >
             <ui:include src="ui-workflow.xhtml"/>
         </p:tab>   
         <p:tab 
-            title="E-Posta Bildirimler" 
+            title="#{msg['e.posta.bildirimler']}" 
             rendered="#{formService.myForm.myActions.email}">
 
             <ui:include src="../ui-for-dlg-pnl/ui-email-preview.xhtml"/>     

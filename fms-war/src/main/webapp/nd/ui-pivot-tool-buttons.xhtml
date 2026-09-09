@@ -8,7 +8,7 @@
 <h:panelGrid columns="6" rendered="#{not esignViewCtrl.preventedMultiTab}">
     <p:button
             icon="pi pi-save"
-            title="Kaydet"
+            title="#{msg['kaydet']}"
             rendered="#{formService.myForm.myActions.save}"
             onclick="rcPivotSave();return false;"
     />
@@ -20,19 +20,19 @@
     />
     <p:button
             icon="pi pi-info-circle"
-            title="Bu sayfa ile ilgili açıklamalar için tıklayınız"
+            title="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}"
             rendered="#{pivotModifierCtrl.selectedFormUserNote}"
             onclick="rcPivotShowDesc();return false;"
     />
     <p:button
             icon="pi pi-file-excel"
-            title="Excele Aktar"
+            title="#{msg['excele.aktar']}"
             rendered="#{formService.myForm.myActions.download}"
             onclick="rcPivotDownlodExcel();return false;"
     />
     <p:button
             icon="pi pi-book"
-            value="E-İmza Süreci"
+            value="#{msg['e.i.mza.sureci']}"
             rendered="#{formService.myForm.myActions.eimza2D}"
             onclick="rcPivotEsign();return false;"
     />

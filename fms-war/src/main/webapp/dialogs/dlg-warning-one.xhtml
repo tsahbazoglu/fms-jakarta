@@ -4,26 +4,18 @@
       xmlns:p="http://primefaces.org/ui">
 
     <p:dialog
-        header="Uyarı"
+        header="#{msg['uyari']}"
         visible="#{esignViewCtrl.preventedMultiTab}"
         closeOnEscape="true"
         >
         <p:panel>
             <ul>
-                <li>
-                    Bir oturumda bir görünüm kısıtlaması aktivleştirildi.
-                    <ul>
-                        <li>
-                            mevcut sayfa refresh edilmiş olabilir.
-                        </li>
-                        <li>
-                            yeni sekme açılmış
-                        </li>
+                <li>#{msg['bir.oturumda.bir.gorunum.kisitlamasi']}<ul>
+                        <li>#{msg['mevcut.sayfa.refresh.edilmis.olabilir']}</li>
+                        <li>#{msg['yeni.sekme.acilmis']}</li>
                     </ul>
                 </li>
-                <li>
-                    İşlem yapmak için bu sekmeyi kapatınız.
-                </li>
+                <li>#{msg['i.slem.yapmak.icin.bu']}</li>
             </ul>
         </p:panel>
     </p:dialog>

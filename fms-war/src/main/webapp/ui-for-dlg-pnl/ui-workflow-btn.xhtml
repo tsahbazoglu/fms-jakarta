@@ -8,14 +8,14 @@
       xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid">
 
     <p:commandButton  
-        value="süreç akış diagramı"
+        value="#{msg['surec.akis.diagrami']}"
         action="#{workFlowCtrl.show}"
         rendered="#{formService.myForm.workFlowActive}"
         update="#{updateAjaxMB.btnShowWf}"
         immediate="true"
         />
     <p:commandButton 
-        value="başlat" 
+        value="#{msg['baslat']}" 
         rendered="#{workFlowCtrl.canStartProcess}"
         action="#{workFlowCtrl.startProcess}"
         update="#{updateAjaxMB.btnWfStart}" 

@@ -24,12 +24,12 @@
         <p:button
             icon="pi pi-filter"
             onclick="rcBaseFilter();return false;"
-            value="ara"
+            value="#{msg['ara']}"
             />
         <p:button
             icon="pi pi-filter-slash"
             onclick="rcBaseFilterReset();return false;"
-            value="sıfırla"
+            value="#{msg['sifirla']}"
             />
     </h:panelGrid>
 
@@ -119,7 +119,7 @@
 
         <p:remoteCommand 
             name="rcBaseFilter"
-            value="search" 
+            value="#{msg['search']}" 
             action="#{twoDimModifyCtrl.actionSearchObject}"
             update="#{updateAjaxMB.btn2dSearch}"
             >
@@ -129,7 +129,7 @@
     <h:form>
         <p:remoteCommand 
             name="rcBaseFilterReset"
-            value="reset" 
+            value="#{msg['reset.2']}" 
             action="#{twoDimModifyCtrl.resetFilter}"
             update="#{updateAjaxMB.btn2dSearch}"
             />

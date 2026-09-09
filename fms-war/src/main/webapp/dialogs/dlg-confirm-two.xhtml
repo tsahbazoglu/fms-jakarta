@@ -22,7 +22,7 @@
                          color: grey;"> 
                 <h:outputText
                     rendered="false"
-                    value="açıklama : &lt;/br>&lt;/br>" escape="false"/>
+                    value="#{msg['aciklama.lt.br.lt.br']}" escape="false"/>
                 <h:inputTextarea  
                     rendered="false"
                     style="width: 100%;"
@@ -42,12 +42,12 @@
                 columnClasses="VTopHLeftW50pNowrap,VTopHLeftW50pNowrap"         
                 >
                 <p:button 
-                    value="Evet"
+                    value="#{msg['evet']}"
                     style="width:100%"
                     onclick="yesDoDelete();return false;"  
                     />   
                 <p:button 
-                    value="Hayır"
+                    value="#{msg['hayir']}"
                     style="width:100%"
                     onclick="noDoNotDelete();return false;"
                     />

@@ -17,18 +17,18 @@
         />
 
     <h:panelGrid columns="6"   border="0"  >
-        <h:outputText value="RCPT TO"/>
+        <h:outputText value="#{msg['rcpt.to']}"/>
         <h:message for="idAppUserPassword" errorClass="applicationMessageError"/>
         <h:outputLabel value="#{msg.splitter}"/>
         <h:inputText value="#{functionalTest.rcptemail}"/>
-        <h:commandButton value="Send Internal Email" action="#{functionalTest.sendMail}"/>
-        <h:outputText value="note : regrading to the related mx this action will sent an email only to inside users"/>
+        <h:commandButton value="#{msg['send.internal.email']}" action="#{functionalTest.sendMail}"/>
+        <h:outputText value="#{msg['note.regrading.to.the.related.2']}"/>
         <f:verbatim/>
         <f:verbatim/>
         <f:verbatim/>
         <f:verbatim/>
-        <h:commandButton value="Send Outside Email" action="#{functionalTest.sendMail}"/>
-        <h:outputText value="note : regrading to the related mx this action can sent an email to outside users too"/>
+        <h:commandButton value="#{msg['send.outside.email']}" action="#{functionalTest.sendMail}"/>
+        <h:outputText value="#{msg['note.regrading.to.the.related']}"/>
 
     </h:panelGrid>
 
@@ -42,7 +42,7 @@
         <f:selectItem itemValue="No" itemLabel="No"/>
     </ace:selectOneMenu>
 
-    <h:inputText value="telman" disabled="#{functionalTest.testMap['test']=='No'}" 
+    <h:inputText value="#{msg['telman']}" disabled="#{functionalTest.testMap['test']=='No'}" 
                  converter="#{functionalTest.moneyConverter}">
         <f:attribute name="trequired" value="true"/>
     </h:inputText>

@@ -51,13 +51,13 @@ public class BulkCopyBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
 
         if (sourcePeriod != null && sourcePeriod.equals(targetPeriod)) {
-            addFacesMessage(context, FacesMessage.SEVERITY_ERROR, "Hata", "Kaynak ve hedef dönem aynı olamaz.");
+            addFacesMessage(context, FacesMessage.SEVERITY_ERROR, "Hata", tr.org.tspb.converter.props.MessageBundleLoader.getMessage("kaynak.ve.hedef.donem.ayni"));
             return;
         }
 
         FmsForm myForm = getFormDefinition();
         if (myForm == null) {
-            addFacesMessage(context, FacesMessage.SEVERITY_ERROR, "Hata", "Form tanımı (FormService) bulunamadı.");
+            addFacesMessage(context, FacesMessage.SEVERITY_ERROR, "Hata", tr.org.tspb.converter.props.MessageBundleLoader.getMessage("form.tanimi.formservice.bulunamadi"));
             logger.error("FormService or getMyForm() is null during bulk copy execution.");
             return;
         }
@@ -102,7 +102,7 @@ public class BulkCopyBean implements Serializable {
             }
 
             if (sourceDocuments == null || sourceDocuments.isEmpty()) {
-                addFacesMessage(context, FacesMessage.SEVERITY_WARN, "Uyarı", "Kaynak dönemde (" + sourcePeriod + ") kopyalanacak veri bulunamadı.");
+                addFacesMessage(context, FacesMessage.SEVERITY_WARN, tr.org.tspb.converter.props.MessageBundleLoader.getMessage("uyari"), tr.org.tspb.converter.props.MessageBundleLoader.getMessage("kaynak.donemde") + sourcePeriod + tr.org.tspb.converter.props.MessageBundleLoader.getMessage("kopyalanacak.veri.bulunamadi"));
                 return;
             }
 
@@ -153,13 +153,13 @@ public class BulkCopyBean implements Serializable {
                 msgDetail += " (" + skippedCount + " adet kayıt üye durumu aktif olmadığı veya ilişkili alan verisi hedef dönemde bulunamadığı için kopyalanmadı)";
             }
 
-            addFacesMessage(context, FacesMessage.SEVERITY_INFO, "Başarılı", msgDetail);
+            addFacesMessage(context, FacesMessage.SEVERITY_INFO, tr.org.tspb.converter.props.MessageBundleLoader.getMessage("basarili"), msgDetail);
             logger.info("Successfully bulk copied {} documents (skipped {}) in collection {} from {} to {}",
                     count, skippedCount, targetCollection, sourcePeriod, targetPeriod);
 
         } catch (Exception e) {
             logger.error("Error during bulk copy execution for collection {}: {}", targetCollection, e.getMessage(), e);
-            addFacesMessage(context, FacesMessage.SEVERITY_ERROR, "Sistem Hatası", "Kopyalama esnasında hata oluştu: " + e.getMessage());
+            addFacesMessage(context, FacesMessage.SEVERITY_ERROR, tr.org.tspb.converter.props.MessageBundleLoader.getMessage("sistem.hatasi"), "Kopyalama esnasında hata oluştu: " + e.getMessage());
         }
     }
 

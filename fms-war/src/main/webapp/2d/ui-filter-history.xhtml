@@ -22,17 +22,17 @@
 
     <h:form id="id-2d-form-history-search">
         <h:panelGroup>
-            <h:outputText value="Geçmiş Dönem" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+            <h:outputText value="#{msg['gecmis.donem']}" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
             <p:remoteCommand 
                 name="rcHistoryFilter"
-                value="search" 
+                value="#{msg['search']}" 
                 action="#{twoDimViewCtrl.actionSearchObject}"
                 update="#{updateAjaxMB.action2DHistory}"
                 >
             </p:remoteCommand>
             <p:remoteCommand 
                 name="rcHistoryFilterReset"
-                value="reset" 
+                value="#{msg['reset.2']}" 
                 action="#{twoDimViewCtrl.resetFilter}"
                 update="#{updateAjaxMB.action2DHistory}"
                 >
@@ -42,14 +42,14 @@
                 <f:facet name="left">
                     <p:button
                         onclick="rcHistoryFilter();return false;"
-                        value="ara"
+                        value="#{msg['ara']}"
                         >
                     </p:button>
                 </f:facet>
                 <f:facet name="right">
                     <p:button
                         onclick="rcHistoryFilterReset();return false;"
-                        value="sıfırla"
+                        value="#{msg['sifirla']}"
                         >
                     </p:button>
                 </f:facet>

@@ -6,7 +6,7 @@
     xmlns:p="http://primefaces.org/ui">
 
     <p:dialog widgetVar="updatePasswordDialog"
-              header="Şifre Güncelleme"                        
+              header="#{msg['sifre.guncelleme']}"                        
               closable="true"
               modal="true"
               draggable="fasle"
@@ -17,18 +17,18 @@
         <h:form>
             <h:panelGrid width="100%" columnClasses="VTopHLeftW100p">
                 <h:panelGrid columns="3" width="100%">
-                    <h:outputText value="Eski Şifre"/>
+                    <h:outputText value="#{msg['eski.sifre']}"/>
                     <h:outputText value=":"/>
                     <h:inputSecret value="#{loginController.oldPassword}"/>
-                    <h:outputText value="Yeni Şifre"/>
+                    <h:outputText value="#{msg['yeni.sifre']}"/>
                     <h:outputText value=":"/>
                     <h:inputSecret value="#{loginController.newPassword}"/>
-                    <h:outputText value="Yeni Şifre (Tekrar)"/>
+                    <h:outputText value="#{msg['yeni.sifre.tekrar']}"/>
                     <h:outputText value=":"/>
                     <h:inputSecret value="#{loginController.newPasswordAgain}"/>
                 </h:panelGrid>
                 <p:commandButton
-                    value="Kaydet" 
+                    value="#{msg['kaydet']}" 
                     action="#{loginController.changePassword}" 
                     style="width: 100%;"/>
             </h:panelGrid>

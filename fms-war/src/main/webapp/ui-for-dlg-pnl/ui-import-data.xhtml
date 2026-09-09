@@ -7,8 +7,8 @@
 
     <h:form id="id_import_form">  
         <h:panelGrid>
-            <h:outputText value="Dosya biçimi Excell formatında olmalı."/>
-            <h:outputText value="Excell dosyası aşağıdaki sırada verilen sütun isimlerini içermelidir."/>
+            <h:outputText value="#{msg['dosya.bicimi.excell.formatinda.olmali']}"/>
+            <h:outputText value="#{msg['excell.dosyasi.asagidaki.sirada.verilen']}"/>
             <h:outputText value=""/>
             <h:outputText value="#{importDataMB.importTextFormat}" id="id_import_text_format"/>
             <h:outputText value=""/>  
@@ -18,7 +18,7 @@
                 listener="#{importDataMB.uploadImportDataMB}"
                 cancelLabel="Vazgeç"
                 uploadLabel="Yükle"
-                label="Seç"
+                label="#{msg['sec']}"
                 update="id_import_form:id_import_text_format,:id_import_form:id_import_success_data"
                 >
                 <p:validateFile 
@@ -28,7 +28,7 @@
                     />
             </p:fileUpload>
             <h:panelGrid columns="2" id="id_my_uploaded_files">
-                <p:commandButton value="Veritabanına Yaz" action="#{importDataMB.writeToDb}"
+                <p:commandButton value="#{msg['veritabanina.yaz']}" action="#{importDataMB.writeToDb}"
                                  />
             </h:panelGrid>   
             <p:dataTable  

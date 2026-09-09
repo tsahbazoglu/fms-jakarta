@@ -12,7 +12,7 @@
     </h:head>
 
     <h:panelGroup id="id-table-file-list">
-        <h:outputText value="Ekli Dosyalar" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+        <h:outputText value="#{msg['ekli.dosyalar']}" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
         <br/>
         <br/>
         <p:dataTable 
@@ -26,25 +26,25 @@
                 rendered="#{mainFrame.adminRole}"
                 >
                 <f:facet name="header" >
-                    <h:outputText value="Kurum Adı"/> 
+                    <h:outputText value="#{msg['kurum.adi']}"/> 
                 </f:facet>
                 <h:outputText value="#{x.METADA_USERNAME}"/> 
             </p:column>
             <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                 <f:facet name="header" >
-                    <h:outputText value="Dosya Adı"/> 
+                    <h:outputText value="#{msg['dosya.adi']}"/> 
                 </f:facet>
                 <h:outputText value="#{x.fileName}"/> 
             </p:column>
             <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                 <f:facet name="header" >
-                    <h:outputText value="Dosya Boyutu"/> 
+                    <h:outputText value="#{msg['dosya.boyutu']}"/> 
                 </f:facet>
                 <h:outputText value="#{x.fileSize}"/> 
             </p:column>
             <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                 <f:facet name="header" >
-                    <h:outputText value="Durum"/> 
+                    <h:outputText value="#{msg['durum']}"/> 
                 </f:facet>
                 <h:outputText value="#{x.fileState}" style="background: #{x.fileColor}"/> 
             </p:column>
@@ -52,10 +52,10 @@
                 rendered="#{formService.myForm.myActions.delete and formService.myForm.multiUpload.delete}"
                 >
                 <f:facet name="header">
-                    <h:outputText value="Sil"/> 
+                    <h:outputText value="#{msg['sil']}"/> 
                 </f:facet>
                 <p:commandButton 
-                    value="sil" 
+                    value="#{msg['sil.2']}" 
                     action="#{twoDimModifyCtrl.deleteFile}" 
                     rendered="#{formService.myForm.myActions.delete and formService.myForm.multiUpload.delete}"
                     update="id-tab-view:id-table-file-list"
@@ -65,7 +65,7 @@
             </p:column>
             <p:column width="#{columnMap.width}" style="color:gray;font-size: 14px;font-family:Verdana,Arial,sans-serif;#{columnMap.style}">
                 <f:facet name="header" >
-                    <h:outputText value="İndir"/> 
+                    <h:outputText value="#{msg['i.ndir']}"/> 
                 </f:facet>
                 <h:outputLink 
                     value="#{application.contextPath}/myDownloadServlet/#{x.fileID}"
@@ -75,7 +75,7 @@
                     color:#112978;
                     font-weight:bold;"
                     >
-                    <h:outputText value="indir" />
+                    <h:outputText value="#{msg['indir']}" />
                 </h:outputLink>           
             </p:column>
         </p:dataTable>

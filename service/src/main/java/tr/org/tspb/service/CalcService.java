@@ -246,7 +246,7 @@ public class CalcService extends CommonSrv {
                     logger.error("error occured", ex);
                     String errorMessage = myCalcDef.getName() + " : " + ex.
                             getMessage() + "</br>";
-                    throw new UserException("Hesaplma Esnasında Hata oluştu",
+                    throw new UserException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("hesaplma.esnasinda.hata.olustu"),
                             errorMessage, ex);
                 }
             }
@@ -476,7 +476,7 @@ public class CalcService extends CommonSrv {
                 logger.error("error occured", ex);
                 String errorMessage = calculateDefinition.getName() + " : " + ex.
                         getMessage() + "</br>";
-                throw new UserException("Hesaplma Esnasında Hata oluştu",
+                throw new UserException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("hesaplma.esnasinda.hata.olustu"),
                         errorMessage, ex);
             }
         }

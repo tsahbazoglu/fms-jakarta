@@ -9,14 +9,14 @@
         >
         <p:remoteCommand 
             name="rcTableDesc"
-            value="Bu sayfa ile ilgili açıklamalar için tıklayınız" 
+            value="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}" 
             action="#{twoDimModifyCtrl.showAllNote}" 
             rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
             update="#{updateAjaxMB.msgDlg}"
             />
         <p:remoteCommand
                 name="rcBulkCopyTool"
-                value="Toplu Kopyalama"
+                value="#{msg['toplu.kopyalama']}"
                 action="#{twoDimModifyCtrl.bulkCopy}"
                 immediate="true"
                 rendered="#{formService.myForm.myActions.create}"
@@ -24,7 +24,7 @@
         />
         <p:remoteCommand  
             name="rcTableNew"
-            value="Yeni Ekle" 
+            value="#{msg['yeni.ekle']}" 
             action="#{twoDimModifyCtrl.newObject}"
             immediate="true"
             rendered="#{formService.myForm.myActions.create}"
@@ -32,14 +32,14 @@
             /> 
         <p:remoteCommand 
             name="rcTableCheck"
-            value="Tüm Sayfaları Kontrol Et" 
+            value="#{msg['tum.sayfalari.kontrol.et']}" 
             action="#{twoDimModifyCtrl.provideOverAllCrossCheck}" 
             rendered="#{formService.myForm.myActions.checkAll}"
             update="#{updateAjaxMB.btnCheckAll}"
             />
         <p:remoteCommand 
             name="rcTableCheckAsAdmin"
-            value="Tüm Sayfaları Kontrol Et (Admin)" 
+            value="#{msg['tum.sayfalari.kontrol.et.admin']}" 
             action="#{twoDimModifyCtrl.provideOverAllCrossCheckForAll}" 
             rendered="#{formService.myForm.myActions.checkAll and roleMB[mainFrame.architectRole]}"
             update="#{updateAjaxMB.btnCheckAllAsAdmin}"
@@ -60,7 +60,7 @@
             />
         <p:remoteCommand 
             name="rcDownload"
-            value="Excele Aktar" 
+            value="#{msg['excele.aktar']}" 
             rendered="#{formService.myForm.myActions.download}"
             actionListener="#{downloadService.createExcellFile}"  
             onstart="$('#id-btn-download').addClass('ui-state-disabled')"
@@ -101,27 +101,27 @@
 
         <p:remoteCommand 
             name="rcTableApi"
-            value="API" 
+            value="#{msg['api']}" 
             actionListener="#{twoDimModifyCtrl.showApi}"
             update=":id-rest-curl-dlg"
             rendered="false"
             />
         <p:remoteCommand 
             name="rcTableApiEsign"
-            value="E-İmza Süreci" 
+            value="#{msg['e.i.mza.sureci']}" 
             action="#{twoDimModifyCtrl.showEimza22}" 
             rendered="#{formService.myForm.myActions.eimza2D}"
             />
         <p:remoteCommand 
             name="rcTableEmail"
-            value="Toplu E-Posta Gönder" 
+            value="#{msg['toplu.e.posta.gonder']}" 
             action="#{twoDimModifyCtrl.sendEmailToAll}" 
             rendered="#{formService.myForm.myActions.emailToAll}"
             />
 
         <p:remoteCommand 
             name="rcCreateTestData"
-            value="Test Veri Oluştur" 
+            value="#{msg['test.veri.olustur']}" 
             action="#{twoDimModifyCtrl.createTestData}" 
             update="#{updateAjaxMB.msgDlg}"
             rendered="false"

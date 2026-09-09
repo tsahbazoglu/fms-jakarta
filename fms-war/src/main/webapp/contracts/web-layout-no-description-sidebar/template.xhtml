@@ -60,7 +60,7 @@
                     <p:outputPanel id="idCenterCenter" styleClass="surface-card p-0 shadow-1 border-round">
 
                         <p:outputPanel id="id-dlgs">
-                            <ui:insert name="form-pop-ups">define form-pop-ups</ui:insert>
+                            <ui:insert name="form-pop-ups">#{msg['define.form.pop.ups']}</ui:insert>
                         </p:outputPanel>
 
                         <p:tabView id="id-tab-view" styleClass="mt-0">
@@ -71,20 +71,20 @@
                                     <div class="col-12">
 
                                         <c:if test="${mainFrame.historyRendered}">
-                                            <ui:insert name="current-content">define current-content</ui:insert>
+                                            <ui:insert name="current-content">#{msg['define.current.content']}</ui:insert>
 
                                             <div class="p-0 py-1 border-bottom-1 surface-border mb-0">
-                                                <h:outputText value="Karşılaştırma" styleClass="text-lg font-bold"/>
+                                                <h:outputText value="#{msg['karsilastirma']}" styleClass="text-lg font-bold"/>
                                                 <p:tooltip for="@previous"
-                                                           value="tüm veriler bu sekmede yer almaktadır"
+                                                           value="#{msg['tum.veriler.bu.sekmede.yer']}"
                                                            position="top"/>
                                             </div>
 
-                                            <ui:insert name="history-content">define history-content</ui:insert>
+                                            <ui:insert name="history-content">#{msg['define.history.content']}</ui:insert>
                                          </c:if>
 
                                         <c:if test="${not mainFrame.historyRendered}">
-                                            <ui:insert name="current-content">define current-content</ui:insert>
+                                            <ui:insert name="current-content">#{msg['define.current.content']}</ui:insert>
                                         </c:if>
 
                                     </div>
@@ -93,17 +93,17 @@
                                 </div>
                             </p:tab>
 
-                            <p:tab id="id-tab-attachments" title="Ekli Dosyalar"
+                            <p:tab id="id-tab-attachments" title="#{msg['ekli.dosyalar']}"
                                    rendered="#{formService.myForm.hasAttachedFiles}">
                                 <div class="p-0">
-                                    <ui:insert name="upload-page">define upload-page</ui:insert>
+                                    <ui:insert name="upload-page">#{msg['define.upload.page']}</ui:insert>
                                 </div>
                             </p:tab>
 
-                            <p:tab id="id-tab-esign" title="E-İmzalı Bildirimler"
+                            <p:tab id="id-tab-esign" title="#{msg['e.i.mzali.bildirimler']}"
                                    rendered="#{formService.myForm.esignable}">
                                 <div class="p-0">
-                                    <ui:insert name="esignHistory">EsignPanel</ui:insert>
+                                    <ui:insert name="esignHistory">#{msg['esignpanel']}</ui:insert>
                                 </div>
                             </p:tab>
                         </p:tabView>

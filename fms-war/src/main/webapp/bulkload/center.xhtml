@@ -10,28 +10,28 @@
 
     <h:body>
         <br/>
-        <p:outputLabel value="Açıklama" style="font: bold normal 15px/20px arial,sans-serif;"/>
+        <p:outputLabel value="#{msg['aciklama']}" style="font: bold normal 15px/20px arial,sans-serif;"/>
         <br/>
         <br/>
         <p:panel>
             <p:outputLabel
-                value="yüklenen dosyalar sistem tarafında muhafıza edilmemektedir."
+                value="#{msg['yuklenen.dosyalar.sistem.tarafinda.muhafiza']}"
                 />
             <br/>
             <p:outputLabel
-                value="dosya aracılığı ile aktarım sonrasında esas alınan veriler veritabanında tutulacak olan verilerdir."
+                value="#{msg['dosya.araciligi.ile.aktarim.sonrasinda']}"
                 />
         </p:panel>
         <br/>
         <br/>
         <br/>
-        <p:outputLabel value="Örnek Excell Dosya" style="font: bold normal 15px/20px arial,sans-serif;"/>
+        <p:outputLabel value="#{msg['ornek.excell.dosya']}" style="font: bold normal 15px/20px arial,sans-serif;"/>
         <br/>
         <br/>
         <p:panel>
             <p:linkButton 
                 icon="pi pi-download"
-                value="İndir"
+                value="#{msg['i.ndir']}"
                 href="#{application.contextPath}/fmsdownload/gayrimenkul-yatirim-ortakliklari-net-aktif-deger-ve-varlik-degeri-v1.xlsx"
                 >
             </p:linkButton>  
@@ -39,7 +39,7 @@
         <br/>
         <br/>
         <br/>
-        <p:outputLabel value="Dosya Seçimi" style="font: bold normal 15px/20px arial,sans-serif;"/>
+        <p:outputLabel value="#{msg['dosya.secimi']}" style="font: bold normal 15px/20px arial,sans-serif;"/>
         <br/>
         <br/>
         <h:form id="idInputFileForm" enctype="multipart/form-data">
@@ -51,7 +51,7 @@
                 fileLimit="#{fmsMultiFormBulkUpload.fileLimit}"
                 cancelLabel="Vazgeç"
                 uploadLabel="Yükle"
-                label="Seç"
+                label="#{msg['sec']}"
                 allowTypes="/(\.|\/)(xlsx)$/"
                 mode="advanced" 
                 update="@this,#{updateAjaxMB.msgDlg}"
@@ -59,11 +59,11 @@
             <br/>
             <br/>
             <br/>
-            <p:outputLabel value="Veri Tabanına Aktarım" style="font: bold normal 15px/20px arial,sans-serif;"/>
+            <p:outputLabel value="#{msg['veri.tabanina.aktarim']}" style="font: bold normal 15px/20px arial,sans-serif;"/>
             <br/>
             <br/>
             <p:commandButton
-                value="Aktarımı Başlat"
+                value="#{msg['aktarimi.baslat']}"
                 action="#{fmsMultiFormBulkUpload.localBulkLoadExcell}"
                 update="#{updateAjaxMB.msgDlg}"
                 />

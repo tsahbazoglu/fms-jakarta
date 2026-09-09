@@ -18,9 +18,9 @@
         </div>
 
         <h:panelGroup rendered="#{roleMB['uysdesigner']}" styleClass="text-xs text-600">
-            <span class="font-bold">SPK İlk Bildirim Tarihi: </span>
+            <span class="font-bold">#{msg['spk.i.lk.bildirim.tarihi']}</span>
             <h:panelGroup rendered="#{not empty loginController.loggedUserDetail}">
-                <h:outputText value="Belirtilmemiş" 
+                <h:outputText value="#{msg['belirtilmemis']}" 
                               rendered="#{empty loginController.loggedUserDetail.mapProjectInfo}" 
                               styleClass="text-500 italic"/>
                 <h:outputText value="#{loginController.loggedUserDetail.mapProjectInfo['spk_notifacation_date']}"
@@ -34,22 +34,22 @@
             <p:linkButton icon="pi pi-share-alt" 
                           target="_blank" 
                           href="https://git.tspb.org.tr/explore/projects" 
-                          title="Git Projeleri"
+                          title="#{msg['git.projeleri']}"
                           styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
 
-            <p:commandButton value="Profil"
+            <p:commandButton value="#{msg['profil']}"
                              icon="pi pi-user-edit"
                              action="#{loginController.showRoles}"
                              update="#{updateAjaxMB.btnDetay},id-dlg-user-info"
                              styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
 
-            <p:commandButton value="Çıkış"
+            <p:commandButton value="#{msg['cikis']}"
                              icon="pi pi-sign-out"
                              action="#{loginController.logout}"
                              immediate="true"
                              update="#{updateAjaxMB.msgDlg}"
                              styleClass="ui-button-outlined ui-button-danger p-button-sm">
-                <f:attribute name="toPage" value="PERSONNEL"/>
+                <f:attribute name="toPage" value="#{msg['personnel']}"/>
             </p:commandButton>
         </div>
     </div>

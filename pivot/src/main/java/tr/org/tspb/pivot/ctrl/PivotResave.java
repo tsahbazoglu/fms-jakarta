@@ -525,7 +525,7 @@ public class PivotResave extends PivotImpl {
                 getLoginFkField());
 
         if (member == null) {
-            throw new UserException("Veri ile Kurum ilişkilendirililemedi.");
+            throw new UserException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("veri.ile.kurum.iliskilendirililemedi"));
         }
 
         /**
@@ -547,7 +547,7 @@ public class PivotResave extends PivotImpl {
                 && (loginUserDBObject == null || !loginUserDBObject.
                         get(MONGO_ID).
                         equals(member))) {
-            throw new UserException("Seçilen Kurum Sizin Kurum Değil");
+            throw new UserException(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("secilen.kurum.sizin.kurum.degil"));
         }
 
         Map<CellMultiDimensionKey, List<Document>> mapReduce = new HashMap();

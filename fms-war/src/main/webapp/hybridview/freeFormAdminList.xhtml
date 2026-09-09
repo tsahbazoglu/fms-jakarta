@@ -10,7 +10,7 @@
     </h:head>
 
     <h:form>
-        <h:outputText value="Arama" styleClass="fms-heading-2 fms-text-muted"/>
+        <h:outputText value="#{msg['arama']}" styleClass="fms-heading-2 fms-text-muted"/>
         <br/>
         <br/>
         <p:autoComplete
@@ -24,11 +24,11 @@
             forceSelection="true"
             minQueryLength="2"    
             inputStyle="width:335px;"
-            placeholder="arama için en az 2 büyük harf (boşluk dahil)"
+            placeholder="#{msg['arama.icin.en.az.2']}"
             >
         </p:autoComplete>
         <p:commandButton
-            value="getir"
+            value="#{msg['getir']}"
             action="#{freeDesigner.search}"
             update=":id-tab-view:id_form:id_table"
             />
@@ -40,7 +40,7 @@
         >
         <br/>
         <br/>
-        <h:outputText value="Liste" styleClass="fms-heading-2 fms-text-muted"/>
+        <h:outputText value="#{msg['liste']}" styleClass="fms-heading-2 fms-text-muted"/>
         <br/>
         <br/>
         <p:dataTable
@@ -63,7 +63,7 @@
                 width="100" 
                 style="color:gray;#{columnMap.style}">
                 <f:facet name="header">
-                    <h:outputText value="Kullanıcı Adı"/> 
+                    <h:outputText value="#{msg['kullanici.adi']}"/> 
                 </f:facet>
                 <h:outputText value="#{x.memberName}"/> 
             </p:column>
@@ -71,7 +71,7 @@
                 width="100" 
                 style="color:gray;#{columnMap.style}">
                 <f:facet name="header">
-                    <h:outputText value="Bildirim Adı"/> 
+                    <h:outputText value="#{msg['bildirim.adi']}"/> 
                 </f:facet>
                 <h:outputText value="#{x.crudMap.formName}"/> 
             </p:column>

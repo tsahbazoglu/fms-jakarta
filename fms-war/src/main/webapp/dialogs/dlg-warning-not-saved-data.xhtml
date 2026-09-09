@@ -11,12 +11,12 @@
         closeOnEscape="true"
         closable="false"
         modal="true"
-        header="Uyarı"
+        header="#{msg['uyari']}"
         widgetVar="wv_are_you_escape"
         >        
         <p:panel>
             <br/>
-            <p:outputLabel value="Kayıt edilmeyen veri değişiklikleri tespit edildi"/>
+            <p:outputLabel value="#{msg['kayit.edilmeyen.veri.degisiklikleri.tespit']}"/>
             <br/>
             <br/>
             <br/>
@@ -29,11 +29,11 @@
                 columnClasses="VTopHLeftW50pNowrap,VTopHLeftW50pNowrap"         
                 > 
                 <p:button 
-                    value="Kaydet" 
+                    value="#{msg['kaydet']}" 
                     style="width:100%"
                     onclick="falseAndCloseAll();return false;"/>
                 <p:button 
-                    value="Kaydetmeden Kapat" 
+                    value="#{msg['kaydetmeden.kapat']}" 
                     style="width:100%"
                     onclick="justClose();return false;"/>
             </h:panelGrid>

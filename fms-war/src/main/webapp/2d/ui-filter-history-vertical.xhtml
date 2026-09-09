@@ -9,17 +9,17 @@
       xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid">
 
     <h:form id="id-2d-form-history-quick-filter">
-        <p:panel header="Filtreler">
+        <p:panel header="#{msg['filtreler']}">
             <p:panelGrid layout="grid" columns="2" columnClasses="ui-g-6,ui-g-6">
                 <p:commandButton 
                     icon="pi pi-filter"
-                    title="ara"
+                    title="#{msg['ara']}"
                     action="#{twoDimViewCtrl.actionSearchObject}"
                     update="#{updateAjaxMB.action2DHistory},id-tab-view:id-2d-form-history-quick-filter:id-filter-history-vertical-panel-grid"
                     />
                 <p:commandButton 
                     icon="pi pi-times"
-                    title="sıfırla"
+                    title="#{msg['sifirla']}"
                     action="#{twoDimViewCtrl.resetFilter}"
                     update="#{updateAjaxMB.action2DHistory},id-tab-view:id-2d-form-history-quick-filter:id-filter-history-vertical-panel-grid"
                     />

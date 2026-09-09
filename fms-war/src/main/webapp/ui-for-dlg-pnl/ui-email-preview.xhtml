@@ -12,7 +12,7 @@
             <p:commandButton 
                 id="buttonSendEmailId"
                 icon="pi pi-at" 
-                title="Email Önizleme"
+                title="#{msg['email.onizleme']}"
                 action="#{emailMB.actionEmail}"
                 rendered="#{formService.myForm.myActions.email}"
                 update="#{updateAjaxMB.msgDlg}"
@@ -28,23 +28,23 @@
             </p:selectOneMenu> 
             <br/>
             <p:panelGrid columns="3" layout="grid" columnClasses="ui-g-3,ui-g-6,ui-g-3">
-                <p:outputLabel value="Kime" style="font-weight: bold;"/>
+                <p:outputLabel value="#{msg['kime']}" style="font-weight: bold;"/>
                 <p:inputTextarea value="#{emailMB.emailData['email']}"/>
-                <p:outputLabel value="Birden fazla email gönderimi için yalnız (,) VİRGÜL ayracı kullanılmalı."/>
+                <p:outputLabel value="#{msg['birden.fazla.email.gonderimi.icin']}"/>
 
-                <p:outputLabel value="Konu" style="font-weight: bold;"/>
+                <p:outputLabel value="#{msg['konu']}" style="font-weight: bold;"/>
                 <p:outputLabel style="width: 100%;" value="#{emailMB.emailData['subject']}"/>
                 <p:outputLabel value=""/>
 
-                <p:outputLabel value="Ek Not" style="font-weight: bold;"/>
+                <p:outputLabel value="#{msg['ek.not']}" style="font-weight: bold;"/>
                 <h:inputTextarea value="#{emailMB.emailData['adminComment']}"/>
                 <p:outputLabel value=""/>
 
-                <p:outputLabel value="İçerik" style="font-weight: bold;"/>
+                <p:outputLabel value="#{msg['i.cerik']}" style="font-weight: bold;"/>
                 <p:outputLabel value="#{emailMB.emailData['content']}" escape="false"/>
                 <p:outputLabel value=""/>
             </p:panelGrid>
-            <p:commandButton value="Gönder" action="#{emailMB.gonder}"/>
+            <p:commandButton value="#{msg['gonder.2']}" action="#{emailMB.gonder}"/>
         </h:form>
     </p:outputPanel>
 </html>

@@ -15,20 +15,20 @@
         rendered="#{formService.myForm.myActions.upload}"
         >
         <br/>
-        <p:outputLabel value="Açıklama" style="font: bold normal 15px/20px arial,sans-serif;"/>
+        <p:outputLabel value="#{msg['aciklama']}" style="font: bold normal 15px/20px arial,sans-serif;"/>
         <br/>  
         <p:panel>
-            <p:outputLabel value="yüklenen dosyalar sistem tarafında muhafıza edilmemektedir."/>
+            <p:outputLabel value="#{msg['yuklenen.dosyalar.sistem.tarafinda.muhafiza']}"/>
             <br/>
-            <p:outputLabel value="dosya aracılığı ile aktarım sonrasında esas alınan veriler veritabanında tutulacak olan verilerdir."/>
+            <p:outputLabel value="#{msg['dosya.araciligi.ile.aktarim.sonrasinda']}"/>
         </p:panel>
         <br/>
-        <p:outputLabel value="Örnek Excell Dosya" style="font: bold normal 15px/20px arial,sans-serif;"/>
+        <p:outputLabel value="#{msg['ornek.excell.dosya']}" style="font: bold normal 15px/20px arial,sans-serif;"/>
         <br/>
         <p:panel>
             <p:linkButton 
                 icon="pi pi-download"
-                value="İndir"
+                value="#{msg['i.ndir']}"
                 href="#{application.contextPath}/fmsdownload/#{formService.myForm.uploadMerge.exampleFile}"
                 >
             </p:linkButton>  
@@ -36,7 +36,7 @@
         <br/>  
         <br/>  
         <br/>
-        <p:outputLabel value="Dosya Seçimi" style="font: bold normal 15px/20px arial,sans-serif;"/>
+        <p:outputLabel value="#{msg['dosya.secimi']}" style="font: bold normal 15px/20px arial,sans-serif;"/>
         <br/>
         <br/>
         <h:form enctype="multipart/form-data">
@@ -45,7 +45,7 @@
                 listener="#{fmsBulkUpload.uploadExcell}"
                 cancelLabel="Vazgeç"
                 uploadLabel="Yükle"
-                label="Seç"
+                label="#{msg['sec']}"
                 mode="advanced" 
                 update="messages,#{updateAjaxMB.msgDlg},@this"
                 >
@@ -60,7 +60,7 @@
         <br/>
         <br/>
         <p:outputLabel 
-            value="Ek Alanlar"
+            value="#{msg['ek.alanlar']}"
             style="font: bold normal 15px/20px arial,sans-serif;"/>
         <br/>
         <h:form>
@@ -119,7 +119,7 @@
             <br/>
             <br/>
             <p:commandButton 
-                value="Önizleme" 
+                value="#{msg['onizleme']}" 
                 style="width:100%"
                 action="#{fmsBulkUpload.previewUpload}" 
                 update=":id-dlg-upload-preview,#{updateAjaxMB.msgDlg}"

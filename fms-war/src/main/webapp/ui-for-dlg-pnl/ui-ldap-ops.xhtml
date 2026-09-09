@@ -10,21 +10,21 @@
         <h:panelGrid columns="1" width="100%">
             <h:outputText value="Kullancı Adı : #{twoDimModifyCtrl.myObject['kullanici']}"/>
             <p:commandButton
-                value="Kullanıcı Oluştur | Güncelle" 
+                value="#{msg['kullanici.olustur.guncelle']}" 
                 action="#{twoDimModifyCtrl.newLdapUser}" 
                 style="width: 100%;"
                 oncomplete="PF('wv_dlg_ldap').hide();"
                 update=":id_dlg_ldap,#{updateAjaxMB.msgDlg}"
                 />
             <p:commandButton
-                value="Şifre Güncelle" 
+                value="#{msg['sifre.guncelle']}" 
                 action="#{twoDimModifyCtrl.updateLdapPswd}" 
                 style="width: 100%;"
                 oncomplete="PF('wv_dlg_ldap').hide();"
                 update=":id_dlg_ldap,#{updateAjaxMB.msgDlg}"
                 />
             <br/>
-            <h:outputText value="Rol Ataması"/>
+            <h:outputText value="#{msg['rol.atamasi']}"/>
             <p:selectManyMenu value="#{twoDimModifyCtrl.newroles}" style="width:100%">
                 <f:selectItem itemValue="tdubtdub" itemLabel="TDUB Admin (tdubtdub)"/>                                    
                 <f:selectItem itemValue="TDUB_BT_ADM" itemLabel="TDUB BT Yetkilisi (TDUB_BT_ADM)"/>
@@ -39,14 +39,14 @@
                 <f:selectItem itemValue="T_TEM_BRT" itemLabel="Tapu Raporu Hazırlayan (T_TEM_BRT)"/>
             </p:selectManyMenu>
             <p:commandButton
-                value="EKLE" 
+                value="#{msg['ekle']}" 
                 action="#{twoDimModifyCtrl.addUserToRole}" 
                 style="width: 100%;"
                 oncomplete="PF('wv_dlg_ldap').hide();"
                 update="#{updateAjaxMB.btnLdapAddUserToRole}"
                 />
             <p:commandButton
-                value="ÇIKAR" 
+                value="#{msg['cikar']}" 
                 action="#{twoDimModifyCtrl.removeUserToRole}" 
                 style="width: 100%;"
                 oncomplete="PF('wv_dlg_ldap').hide();"

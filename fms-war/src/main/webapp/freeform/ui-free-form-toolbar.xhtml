@@ -16,12 +16,12 @@
             <p:button 
                 id="mySaveButton"
                 onclick="rcHybridFormSave();return false;"
-                value="Kaydet"
+                value="#{msg['kaydet']}"
                 rendered="#{formService.myForm.myActions.save}"
                 /> 
             <p:commandButton
                 id ="id-free-from-toolbar-btn-esign"
-                value="E-İmza Süreci" 
+                value="#{msg['e.i.mza.sureci']}" 
                 action="#{freeDesigner.showEimza}"
                 rendered="#{freeDesigner.actionsMap['esign']}" 
                 update=":idToBeSignedDialog,#{updateAjaxMB.msgDlg}"

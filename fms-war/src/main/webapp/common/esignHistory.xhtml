@@ -28,19 +28,19 @@
             <h:inputText value="#{esignController.fullTextSearch}"/>
 
             <p:commandButton 
-                value="Kurum Adına Göre Ara" 
+                value="#{msg['kurum.adina.gore.ara']}" 
                 action="#{esignController.searchByMemberName}" 
                 update="#{updateAjaxMB.pnlEsignHistory}"
                 />
 
             <p:commandButton 
-                value="Tüm Alanlara Göre Ara" 
+                value="#{msg['tum.alanlara.gore.ara']}" 
                 action="#{esignController.makeFullTExtSearch}" 
                 update="#{updateAjaxMB.pnlEsignHistory}"
                 />
 
             <p:commandButton 
-                value="Tüm Kayıtlar" 
+                value="#{msg['tum.kayitlar']}" 
                 action="#{esignController.cleanFullTextSearch}" 
                 update="#{updateAjaxMB.pnlEsignHistory}"
                 />
@@ -56,7 +56,7 @@
                 id="id_eimza_tarihce"
                 >
                 <h:outputText 
-                    value="Elektronik İmzalı Bildirim Zarfı" 
+                    value="#{msg['elektronik.i.mzali.bildirim.zarfi']}" 
                     style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
                 <!--               
                 scrollable="true"
@@ -107,7 +107,7 @@
                         <p:commandButton
                             rendered="#{x.notifyType eq 'e-sign'}"
                             id ="id-btn-show-esigned-document"
-                            value="E-İmzalı Belgeyi Göster" 
+                            value="#{msg['e.i.mzali.belgeyi.goster']}" 
                             action="#{esignController.showSignedEimza}" 
                             update="id-tab-view:id-dlg-esigned-document" 
                             >
@@ -119,7 +119,7 @@
                         headerText="">
                         <p:commandButton
                             id ="id-btn-show-metadata"
-                            value="MetaData Göster" 
+                            value="#{msg['metadata.goster']}" 
                             action="#{esignController.showEsignMetada}" 
                             update="#{updateAjaxMB.btnShowMetada}"
                             >

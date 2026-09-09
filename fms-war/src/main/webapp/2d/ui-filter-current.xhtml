@@ -24,7 +24,7 @@
 <h:form>
     <p:remoteCommand
             name="rcFilterReset"
-            value="reset"
+            value="#{msg['reset.2']}"
             action="#{twoDimModifyCtrl.resetFilter}"
             update="#{updateAjaxMB.btn2dSearch}"
     />
@@ -32,20 +32,20 @@
 
 <h:form id="id-2d-form-search">
     <h:panelGroup>
-        <h:outputText value="Güncel Dönem" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
+        <h:outputText value="#{msg['guncel.donem']}" style="font-size: 22px;font-weight: bolder;color: #b3b3b3;"/>
         <p:toolbar
         >
             <f:facet name="left">
                 <p:button
                         onclick="rcFilter();return false;"
-                        value="ara"
+                        value="#{msg['ara']}"
                 >
                 </p:button>
             </f:facet>
             <f:facet name="right">
                 <p:button
                         onclick="rcFilterReset();return false;"
-                        value="sıfırla"
+                        value="#{msg['sifirla']}"
                 >
                 </p:button>
             </f:facet>
@@ -123,7 +123,7 @@
     </h:panelGroup>
     <p:remoteCommand
             name="rcFilter"
-            value="search"
+            value="#{msg['search']}"
             action="#{twoDimModifyCtrl.actionSearchObject}"
             update="#{updateAjaxMB.btn2dSearch}"
     >
