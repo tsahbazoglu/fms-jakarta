@@ -26,6 +26,7 @@ import org.bson.types.Code;
 import org.bson.types.ObjectId;
 import tr.org.tspb.datamodel.expected.FmsRunMongoCmd;
 import tr.org.tspb.datamodel.expected.FmsScriptRunner;
+import tr.org.tspb.datamodel.gui.DynamicTranslator;
 import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.datamodel.pojo.ComponentType;
 import tr.org.tspb.datamodel.pojo.UserDetail;
@@ -378,7 +379,13 @@ public class MyForm extends FmsFormAbstract {
         return userNote;
     }
 
+    @Override
     public String getName() {
+        return DynamicTranslator.translate(name);
+    }
+
+    @Override
+    public String getRawName() {
         return name;
     }
 

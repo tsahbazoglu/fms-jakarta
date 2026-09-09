@@ -45,6 +45,10 @@ public interface FmsForm {
 
     public String getName();
 
+    public default String getRawName() {
+        return getName();
+    }
+
     public Number getHistoryPosition();
 
     public Number getDimension();

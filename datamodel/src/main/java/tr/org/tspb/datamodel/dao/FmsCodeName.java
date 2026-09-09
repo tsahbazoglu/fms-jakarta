@@ -2,6 +2,8 @@ package tr.org.tspb.datamodel.dao;
 
 import java.util.Map;
 
+import tr.org.tspb.datamodel.gui.DynamicTranslator;
+
 /**
  *
  * @author Telman Şahbazoğlu
@@ -28,6 +30,10 @@ public class FmsCodeName {
     }
 
     public String getName() {
+        return DynamicTranslator.translate(name);
+    }
+
+    public String getRawName() {
         return name;
     }
 

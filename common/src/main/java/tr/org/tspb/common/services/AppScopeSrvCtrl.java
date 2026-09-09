@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.util.*;
+import jakarta.annotation.PostConstruct;
+import java.util.concurrent.ConcurrentHashMap;
+import tr.org.tspb.datamodel.gui.DynamicTranslator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -88,6 +91,117 @@ public class AppScopeSrvCtrl {
     private final Map<String, List<MyField>> cacheDimensionItems = new HashMap<>();
     private final Map<String, FmsForm> cacheForm = new HashMap<>();
     private final Map<String, MyActions> cacheActions = new HashMap<>();
+    private Map<String, Map<String, String>> translationCache;
+
+    @PostConstruct
+    public void initAppScopeSrvCtrl() {
+        DynamicTranslator.setDelegate(this::getTranslatedText);
+        initTranslationCache();
+    }
+
+    public synchronized void initTranslationCache() {
+        if (translationCache != null) {
+            return;
+        }
+        translationCache = new ConcurrentHashMap<>();
+        try {
+            List<Document> docs = mongoDbUtil.find("gsy_pys_db", "fms-tranlate");
+            if (docs == null || docs.isEmpty()) {
+                docs = mongoDbUtil.find("gsy_pys_db", "fms-translate");
+            }
+            if (docs != null) {
+                for (Document doc : docs) {
+                    Object recordsObj = doc.get("records");
+                    if (recordsObj instanceof List) {
+                        List<?> records = (List<?>) recordsObj;
+                        for (Object item : records) {
+                            if (item instanceof Document) {
+                                addTranslationRecord((Document) item);
+                            } else if (item instanceof Map) {
+                                addTranslationRecordFromMap((Map<?, ?>) item);
+                            }
+                        }
+                    } else if (doc.containsKey("name-tr")) {
+                        addTranslationRecord(doc);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            if (logger != null) {
+                logger.error("Failed to load fms-tranlate collection from gsy_pys_db: " + e.getMessage());
+            }
+        }
+    }
+
+    private void addTranslationRecord(Document item) {
+        String trName = item.getString("name-tr");
+        if (trName != null && !trName.trim().isEmpty()) {
+            Map<String, String> langMap = new HashMap<>();
+            langMap.put("tr", trName);
+            if (item.containsKey("name-en") && item.get("name-en") != null) {
+                langMap.put("en", item.getString("name-en"));
+            }
+            if (item.containsKey("name-ru") && item.get("name-ru") != null) {
+                langMap.put("ru", item.getString("name-ru"));
+            }
+            translationCache.put(trName, langMap);
+        }
+    }
+
+    private void addTranslationRecordFromMap(Map<?, ?> item) {
+        Object trObj = item.get("name-tr");
+        if (trObj != null) {
+            String trName = trObj.toString();
+            if (!trName.trim().isEmpty()) {
+                Map<String, String> langMap = new HashMap<>();
+                langMap.put("tr", trName);
+                if (item.containsKey("name-en") && item.get("name-en") != null) {
+                    langMap.put("en", item.get("name-en").toString());
+                }
+                if (item.containsKey("name-ru") && item.get("name-ru") != null) {
+                    langMap.put("ru", item.get("name-ru").toString());
+                }
+                translationCache.put(trName, langMap);
+            }
+        }
+    }
+
+    public String getTranslatedText(String originalText) {
+        if (originalText == null || originalText.trim().isEmpty()) {
+            return originalText;
+        }
+        if (translationCache == null) {
+            initTranslationCache();
+        }
+
+        String lang = "tr";
+        try {
+            jakarta.faces.context.FacesContext context = jakarta.faces.context.FacesContext.getCurrentInstance();
+            if (context != null && context.getViewRoot() != null && context.getViewRoot().getLocale() != null) {
+                lang = context.getViewRoot().getLocale().getLanguage().toLowerCase();
+            }
+        } catch (Exception e) {
+            // fallback to tr
+        }
+
+        if ("tr".equals(lang) || translationCache == null || !translationCache.containsKey(originalText)) {
+            return originalText;
+        }
+
+        Map<String, String> langMap = translationCache.get(originalText);
+        if (langMap != null && langMap.containsKey(lang)) {
+            String translated = langMap.get(lang);
+            if (translated != null && !translated.trim().isEmpty()) {
+                return translated;
+            }
+        }
+        return originalText;
+    }
+
+    public void reloadTranslationCache() {
+        translationCache = null;
+        initTranslationCache();
+    }
 
     public MyActions getCacheActions(String key) {
         return cacheActions.get(key);

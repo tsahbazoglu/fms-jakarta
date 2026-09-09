@@ -1074,7 +1074,7 @@ public class CtrlService extends CommonSrv {
                 throw new NullNotExpectedException(formService.getMyForm().printToConfigAnalyze(LOGIN_FK));
             }
 
-            Document controlSearch = new Document().append(formService.getMyForm().getLoginFkField(), filter.get(formService.getMyForm().getLoginFkField())).append(PERIOD, filter.get(PERIOD)).append(RESULT, HATA_VAR).append(RELATIONS, new Document(DOLAR_REGEX, formService.getMyForm().getName()));
+            Document controlSearch = new Document().append(formService.getMyForm().getLoginFkField(), filter.get(formService.getMyForm().getLoginFkField())).append(PERIOD, filter.get(PERIOD)).append(RESULT, HATA_VAR).append(RELATIONS, new Document(DOLAR_REGEX, formService.getMyForm().getRawName()));
 
             cursor = mongoDbUtil.find(formService.getMyForm().getDb(), formService.getMyForm().getControlCollection(), controlSearch);
 

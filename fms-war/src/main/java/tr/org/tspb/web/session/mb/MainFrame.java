@@ -715,6 +715,9 @@ public class MainFrame implements Serializable {
     }
 
     public MenuModel getModel() {
+        if (accordionItems != null && !accordionItems.isEmpty()) {
+            return new MenuModelCreator(accordionItems).getModel();
+        }
         return menuModel;
     }
 

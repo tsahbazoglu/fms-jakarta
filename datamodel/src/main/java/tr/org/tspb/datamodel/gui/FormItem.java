@@ -31,6 +31,10 @@ public class FormItem {
     }
 
     public String getName() {
+        return DynamicTranslator.translate(name);
+    }
+
+    public String getRawName() {
         return name;
     }
 

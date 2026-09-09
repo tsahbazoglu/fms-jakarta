@@ -21,6 +21,7 @@ import org.bson.types.Code;
 import org.bson.types.ObjectId;
 import tr.org.tspb.datamodel.dao.refs.PlainRecord;
 import tr.org.tspb.datamodel.expected.FmsScriptRunner;
+import tr.org.tspb.datamodel.gui.DynamicTranslator;
 import tr.org.tspb.constants.exceptions.FormConfigException;
 
 /**
@@ -357,14 +358,25 @@ public class MyField {
     }
 
     public String getName() {
+        return DynamicTranslator.translate(name);
+    }
+
+    public String getRawName() {
         return name;
     }
 
     public String getLabel() {
-        return name;
+        return DynamicTranslator.translate(name);
     }
 
     public String getShortName() {
+        if (shortName != null && !shortName.trim().isEmpty()) {
+            return DynamicTranslator.translate(shortName);
+        }
+        return DynamicTranslator.translate(name);
+    }
+
+    public String getRawShortName() {
         return shortName;
     }
 
@@ -408,11 +420,11 @@ public class MyField {
     }
 
     public String getPopupDescription() {
-        return popupDesc;
+        return DynamicTranslator.translate(popupDesc);
     }
 
     public String getDescription() {
-        return description;
+        return DynamicTranslator.translate(description);
     }
 
     public String getDateRangeBeginKey() {

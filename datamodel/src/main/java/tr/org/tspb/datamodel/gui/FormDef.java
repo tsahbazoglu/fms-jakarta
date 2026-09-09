@@ -30,6 +30,10 @@ public class FormDef {
      * @return the label
      */
     public String getLabel() {
+        return DynamicTranslator.translate(label);
+    }
+
+    public String getRawLabel() {
         return label;
     }
 
