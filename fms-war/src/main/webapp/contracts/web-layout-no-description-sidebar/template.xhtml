@@ -63,15 +63,8 @@
                             <ui:insert name="form-pop-ups">define form-pop-ups</ui:insert>
                         </p:outputPanel>
 
-                        <p:panel id="id-template-web-layout-no-description-sidebar-form-name" class="mb-0">
-                            <ui:include
-                                    src="/2d/table-form-header-name.xhtml"
-                            />
-                        </p:panel>
-
-
                         <p:tabView id="id-tab-view" styleClass="mt-0">
-                            <p:tab id="id-tab-data-input" title="Veriler">
+                            <p:tab id="id-tab-data-input" title="#{formService.myForm.name}">
                                 <div class="grid flex-column md:flex-row mt-0">
 
 
