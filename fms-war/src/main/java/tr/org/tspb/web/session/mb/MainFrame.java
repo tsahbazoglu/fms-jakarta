@@ -509,6 +509,7 @@ public class MainFrame implements Serializable {
         });
 
         List<FormDef> listOfFormInfo = new ArrayList<>();
+        boolean isArchitect = loginController.isUserInRole(ProjectConstants.ARCHITECT_ROLE);
 
         for (FormItem formItem : formItems) {
             String info = formItem.getKey().
@@ -516,14 +517,8 @@ public class MainFrame implements Serializable {
                     concat(moduleItem.
                             getProjectKey());
 
-            StringBuilder formName = new StringBuilder((String) formItem.
-                    getName());
-            if (loginController.isUserInRole(ProjectConstants.ARCHITECT_ROLE)) {
-                formName.append(" - ");
-                formName.append((String) formItem.getForm());
-            }
-
-            FormDef formDef = new FormDef(info, formName.toString());
+            String formCode = isArchitect ? formItem.getForm() : null;
+            FormDef formDef = new FormDef(info, formItem.getRawName(), formCode);
 
             listOfFormInfo.add(formDef);
         }
