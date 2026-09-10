@@ -458,7 +458,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
             if (rowCount > limit) {
                 ((FmsTableDataModel) getData()).initRowCount(0);
-                dialogController.showPopupInfo("sorgu sonucuna göre kayıt sayısı 5000 nin üzerinde. Filtre seçiminizi daraltınız", MESSAGE_DIALOG);
+                dialogController.showPopupInfo(tr.org.tspb.converter.props.MessageBundleLoader.getMessage("sorgu.sonucuna.gore.kayit.sayisi.5000.nin.uzerinde.filtre.seciminizi.daraltiniz"), MESSAGE_DIALOG);
             } else {
                 ((FmsTableDataModel) getData()).initRowCount(rowCount);
             }
