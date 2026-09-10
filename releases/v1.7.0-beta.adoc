@@ -142,7 +142,7 @@ git tag -a v{version} -m "Release version {version}"
 git push origin v{version}
 ----
 
-Retag
+Refresh the same tag
 [source,bash,js,subs="attributes,verbatim,quotes"]
 ----
 git tag -f v{version}
