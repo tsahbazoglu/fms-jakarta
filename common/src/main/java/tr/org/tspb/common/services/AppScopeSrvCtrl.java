@@ -105,10 +105,7 @@ public class AppScopeSrvCtrl {
         }
         translationCache = new ConcurrentHashMap<>();
         try {
-            List<Document> docs = mongoDbUtil.find("gsy_pys_db", "fms-tranlate");
-            if (docs == null || docs.isEmpty()) {
-                docs = mongoDbUtil.find("gsy_pys_db", "fms-translate");
-            }
+            List<Document> docs = mongoDbUtil.find(CONFIG_DB, "fms-translate");
             if (docs != null) {
                 for (Document doc : docs) {
                     Object recordsObj = doc.get("records");
@@ -128,7 +125,7 @@ public class AppScopeSrvCtrl {
             }
         } catch (Exception e) {
             if (logger != null) {
-                logger.error("Failed to load fms-tranlate collection from gsy_pys_db: " + e.getMessage());
+                logger.error("Failed to load fms-translate collection from configdb: " + e.getMessage());
             }
         }
     }
