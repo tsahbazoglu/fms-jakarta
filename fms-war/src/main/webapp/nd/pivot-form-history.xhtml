@@ -14,69 +14,67 @@
 
     <p:panel>
         <h:form rendered="#{formService.myForm.historyRendered}">
-            <p:panelGrid
-                columns="2"
-                layout="grid"
-                columnClasses="ui-g-2,ui-g-10"
-                >
+            <h:panelGroup id="id-filter-history-zet-panel-grid" layout="block" styleClass="ui-g ui-fluid">
                 <c:forEach items="#{pivotViewerCtrl.zetDimension}" var="filterFieldStructure">
-                    <p:outputLabel value="#{filterFieldStructure['shortName']}"/>
-                    <p:outputPanel>
-                        <p:selectOneMenu  
-                            value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
-                            converter="#{filterFieldStructure.myconverter}"
-                            rendered="#{'member' eq filterFieldStructure.key}" 
-                            filter="true" 
-                            filterMatchMode="contains"   
-                            caseSensitive="true"
-                            style="width: 400px;"
+
+                    <div class="ui-g-12 ui-md-3" style="padding: 6px; box-sizing: border-box; vertical-align: top;">
+
+                        <p:outputLabel value="#{filterFieldStructure['shortName']}"
+                                       style="font-weight: bold; display: block; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"/>
+
+                        <h:panelGroup layout="block">
+                            <p:selectOneMenu  
+                                value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
+                                converter="#{filterFieldStructure.myconverter}"
+                                rendered="#{'member' eq filterFieldStructure.key}" 
+                                filter="true" 
+                                filterMatchMode="contains"   
+                                caseSensitive="true"
                             >
-                            <p:ajax 
-                                listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
-                                update="#{updateAjaxMB.filterNdDataHistory}"
+                                <p:ajax 
+                                    listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
+                                    update="#{updateAjaxMB.filterNdDataHistory}"
                                 />
-                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                        </p:selectOneMenu>
-                        <p:selectOneMenu  
-                            value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
-                            converter="#{filterFieldStructure.myconverter}"
-                            rendered="#{'period' eq filterFieldStructure.key}" 
-                            style="width: 400px;"
+                                <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                                <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                            </p:selectOneMenu>
+                            <p:selectOneMenu  
+                                value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
+                                converter="#{filterFieldStructure.myconverter}"
+                                rendered="#{'period' eq filterFieldStructure.key}" 
                             >
-                            <p:ajax 
-                                listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
-                                update="#{updateAjaxMB.filterNdDataHistory}" />
-                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                        </p:selectOneMenu>
-                        <p:selectOneMenu  
-                            value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
-                            converter="#{filterFieldStructure.myconverter}"
-                            rendered="#{'periodFilter' eq filterFieldStructure.key}" 
-                            style="width: 400px;"
+                                <p:ajax 
+                                    listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
+                                    update="#{updateAjaxMB.filterNdDataHistory}" />
+                                <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                                <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                            </p:selectOneMenu>
+                            <p:selectOneMenu  
+                                value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
+                                converter="#{filterFieldStructure.myconverter}"
+                                rendered="#{'periodFilter' eq filterFieldStructure.key}" 
                             >
-                            <p:ajax 
-                                listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
-                                update="#{updateAjaxMB.filterNdDataHistory}"/>
-                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                        </p:selectOneMenu>
-                        <p:selectOneMenu  
-                            value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
-                            converter="#{filterFieldStructure.myconverter}"
-                            rendered="#{'template' eq filterFieldStructure.key}" 
-                            style="width: 400px;"
+                                <p:ajax 
+                                    listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
+                                    update="#{updateAjaxMB.filterNdDataHistory}"/>
+                                <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                                <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                            </p:selectOneMenu>
+                            <p:selectOneMenu  
+                                value="#{filterService.guiFilterHistory[filterFieldStructure.field]}"
+                                converter="#{filterFieldStructure.myconverter}"
+                                rendered="#{'template' eq filterFieldStructure.key}" 
                             >
-                            <p:ajax 
-                                listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
-                                update="#{updateAjaxMB.filterNdDataHistory}"/>
-                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                        </p:selectOneMenu>
-                    </p:outputPanel>
+                                <p:ajax 
+                                    listener="#{pivotViewerCtrl.valueChangeListenerZet}" 
+                                    update="#{updateAjaxMB.filterNdDataHistory}"/>
+                                <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                                <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                    </div>
                 </c:forEach>
-            </p:panelGrid>
+            </h:panelGroup>
 
             <p:panelGrid
                 columns="1"

@@ -46,69 +46,67 @@
 
 <p:panel>
     <h:form id="ndFilterForm">
-        <p:panelGrid
-                columns="2"
-                layout="grid"
-                columnClasses="ui-g-2,ui-g-10"
-        >
+        <h:panelGroup id="id-filter-current-zet-panel-grid" layout="block" styleClass="ui-g ui-fluid">
             <c:forEach items="#{pivotModifierCtrl.zetDimension}" var="filterFieldStructure">
-                <p:outputLabel value="#{filterFieldStructure.shortName}"/>
-                <p:outputPanel>
-                    <p:selectOneMenu
-                            value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
-                            converter="#{filterFieldStructure.myconverter}"
-                            rendered="#{'member' eq filterFieldStructure.key}"
-                            filter="true"
-                            filterMatchMode="contains"
-                            caseSensitive="true"
-                            style="width: 400px;"
-                    >
-                        <p:ajax
-                                listener="#{pivotModifierCtrl.valueChangeListenerZet}"
-                                update="#{updateAjaxMB.filterNdDataAndTop}"
-                        />
-                        <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                        <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                    </p:selectOneMenu>
-                    <p:selectOneMenu
-                            value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
-                            converter="#{filterFieldStructure.myconverter}"
-                            rendered="#{'period' eq filterFieldStructure.key}"
-                            style="width: 400px;"
-                    >
-                        <p:ajax
-                                listener="#{pivotModifierCtrl.valueChangeListenerZet}"
-                                update="#{updateAjaxMB.filterNdDataAndTop}"/>
-                        <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                        <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                    </p:selectOneMenu>
-                    <p:selectOneMenu
-                            value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
-                            converter="#{filterFieldStructure.myconverter}"
-                            rendered="#{'periodFilter' eq filterFieldStructure.key}"
-                            style="width: 400px;"
-                    >
-                        <p:ajax
-                                listener="#{pivotModifierCtrl.valueChangeListenerZet}"
-                                update="#{updateAjaxMB.filterNdDataAndTop}"/>
-                        <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                        <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                    </p:selectOneMenu>
-                    <p:selectOneMenu
-                            value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
-                            converter="#{filterFieldStructure.myconverter}"
-                            rendered="#{'template' eq filterFieldStructure.key}"
-                            style="width: 400px;"
-                    >
-                        <p:ajax
-                                listener="#{pivotModifierCtrl.valueChangeListenerZet}"
-                                update="#{updateAjaxMB.filterNdDataAndTop}"/>
-                        <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
-                        <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
-                    </p:selectOneMenu>
-                </p:outputPanel>
+
+                <div class="ui-g-12 ui-md-3" style="padding: 6px; box-sizing: border-box; vertical-align: top;">
+
+                    <p:outputLabel value="#{filterFieldStructure.shortName}"
+                                   style="font-weight: bold; display: block; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"/>
+
+                    <h:panelGroup layout="block">
+                        <p:selectOneMenu
+                                value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
+                                converter="#{filterFieldStructure.myconverter}"
+                                rendered="#{'member' eq filterFieldStructure.key}"
+                                filter="true"
+                                filterMatchMode="contains"
+                                caseSensitive="true"
+                        >
+                            <p:ajax
+                                    listener="#{pivotModifierCtrl.valueChangeListenerZet}"
+                                    update="#{updateAjaxMB.filterNdDataAndTop}"
+                            />
+                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu
+                                value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
+                                converter="#{filterFieldStructure.myconverter}"
+                                rendered="#{'period' eq filterFieldStructure.key}"
+                        >
+                            <p:ajax
+                                    listener="#{pivotModifierCtrl.valueChangeListenerZet}"
+                                    update="#{updateAjaxMB.filterNdDataAndTop}"/>
+                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu
+                                value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
+                                converter="#{filterFieldStructure.myconverter}"
+                                rendered="#{'periodFilter' eq filterFieldStructure.key}"
+                        >
+                            <p:ajax
+                                    listener="#{pivotModifierCtrl.valueChangeListenerZet}"
+                                    update="#{updateAjaxMB.filterNdDataAndTop}"/>
+                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu
+                                value="#{filterService.guiFilterCurrent[filterFieldStructure.field]}"
+                                converter="#{filterFieldStructure.myconverter}"
+                                rendered="#{'template' eq filterFieldStructure.key}"
+                        >
+                            <p:ajax
+                                    listener="#{pivotModifierCtrl.valueChangeListenerZet}"
+                                    update="#{updateAjaxMB.filterNdDataAndTop}"/>
+                            <f:selectItems value="#{filterFieldStructure.listOfValues}"/>
+                            <f:attribute name="myKey" value="#{filterFieldStructure.key}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                </div>
             </c:forEach>
-        </p:panelGrid>
+        </h:panelGroup>
         <p:panelGrid
                 columns="1"
                 layout="grid"
@@ -164,25 +162,24 @@
     </p:outputPanel>
 </p:scrollPanel>
 
-<script>
-    $(document.getElementById("id-tab-view:currentMyGrid")).bind("click", function (event) {
-        hideNotSavedDlg();
-    })
-</script>
+    <script>
+        $(document.getElementById("id-tab-view:currentMyGrid")).bind("click", function (event) {
+            hideNotSavedDlg();
+        });
+    </script>
 
+    <!--
+                               A html select option element trims the white spaces by default.
+                               this is not the issue of jsf.
+                               so even if we have no jsf component we have to replace
+                               all white spaces in option element labels to &amp;nbsp;
 
+                               At this phase we are success with h:selectOneMenu too,
+                               but it does not taken into account when we use ice:selectOneMenu.
+
+                               So, this is the main reason why we use h:selectoneMenu
+                               instead of ice:selectOneMenu here.
+
+                               That is all.
+    -->
 </html>
-        <!--
-                                   A html select option element trims the white spaces by default.
-                                   this is not the issue of jsf.
-                                   so even if we have no jsf component we have to replace
-                                   all white spaces in option element labels to &nbsp;
-
-                                   At this phase we are success with h:selectOneMenu too,
-                                   but it does not taken into account when we use ice:selectOneMenu.
-
-                                   So, this is the main reason why we use h:selectoneMenu
-                                   instead of ice:selectOneMenu here.
-
-                                   That is all.
-        -->
