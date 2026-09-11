@@ -17,8 +17,8 @@
     </composite:interface>
 
     <composite:implementation>
-        <p:menu 
-            toggleable="true" 
+        <p:panelMenu 
+            stateful="false" 
             styleClass="w-full fms-accordion-menu"
             >    
             <c:forEach items="#{cc.attrs.rows}" var="item">
@@ -55,6 +55,6 @@
                     </c:forEach>                   
                 </p:submenu>
             </c:forEach>
-        </p:menu> 
+        </p:panelMenu> 
     </composite:implementation>
 </html>
