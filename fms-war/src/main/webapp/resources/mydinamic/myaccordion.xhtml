@@ -31,7 +31,6 @@
                         action="#{cc.attrs.myAction}" 
                         update="#{cc.attrs.fmsupdate}"
                         icon="pi pi-home"
-                        onclick="$('.fms-highlight').removeClass('fms-highlight');$(this).addClass('fms-highlight')"
                         rendered="false"
                         >
                         <f:setPropertyActionListener 
@@ -45,8 +44,7 @@
                             update="#{item.jsfupdate}"
                             action="#{cc.attrs.myAction}"
                             icon="pi pi-file"
-                            onclick="$('.fms-highlight').removeClass('fms-highlight');$(this).addClass('fms-highlight')"
-                            styleClass="#{item.value eq cc.attrs.selectedFormInfo ? 'fms-highlight' : ''}" 
+                            styleClass="#{item.value eq cc.attrs.selectedFormInfo ? 'fms-highlight' : ''}"
                             >
                             <f:setPropertyActionListener 
                                 target="#{cc.attrs.selectedFormInfo}" 
