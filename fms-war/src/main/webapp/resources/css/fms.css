@@ -341,3 +341,22 @@ ul.ui-menu-child {
     overflow-y: auto !important;
     box-sizing: border-box !important;
 }
+
+/* start fms highligth menu */
+/* fms-highlight sınıfı alan link, aktif temanın vurgu renklerini miras alır */
+.ui-menu-list .ui-menuitem-link.fms-highlight {
+    /* PrimeFaces temalarındaki aktif/hover arka plan rengini çeker */
+    background-image: none !important;
+
+    /* Eski nesil temalar (Örn: Omega, Saga, Vela, Arya, Premium Temalar) için */
+    background-color: var(--primary-color, #007ad9) !important;
+    color: var(--primary-color-text, #ffffff) !important;
+    font-weight: bold !important;
+}
+
+/* Klasik ve eski PrimeFaces UI-State kural uyumluluğu (Gerekirse) */
+.ui-menu-list .ui-menuitem-link.fms-highlight .ui-menuitem-text,
+.ui-menu-list .ui-menuitem-link.fms-highlight .ui-menuitem-icon {
+    color: var(--primary-color-text, #ffffff) !important;
+}
+/* end fms highligth menu */

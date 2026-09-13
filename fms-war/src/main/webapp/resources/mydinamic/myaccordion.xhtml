@@ -53,6 +53,17 @@
                     </c:forEach>                   
                 </p:submenu>
             </c:forEach>
-        </p:panelMenu> 
+        </p:panelMenu>
+        <h:outputScript>
+            $(document).ready(function() {
+            // Fms-accordion-menu içindeki herhangi bir menü linkine tıklandığında
+            $(document).on("click", ".fms-accordion-menu .ui-menuitem-link", function() {
+            // Önce mevcut tüm fms-highlight sınıflarını temizle
+            $(".fms-accordion-menu .ui-menuitem-link").removeClass("fms-highlight");
+            // Sadece tıklanan bu linke (a etiketine) sınıfı ekle
+            $(this).addClass("fms-highlight");
+            });
+            });
+        </h:outputScript>
     </composite:implementation>
 </html>
