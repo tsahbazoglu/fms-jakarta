@@ -4,6 +4,7 @@ import tr.org.tspb.common.qualifier.MyAjaxQualifier;
 import tr.org.tspb.util.stereotype.MyController;
 import java.io.Serializable;
 import jakarta.annotation.PostConstruct;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
 
 /**
@@ -153,9 +154,9 @@ public class UpdateAjaxMB implements Serializable {
         pnlEsignHistory = ID_PNL_ESIGN_HISTORY;
         filterNdDataAndTop = ID_CURRENT_MYGRID_EDITABLE
                 .concat(COMMA).concat(ID_CENTER_TOP)
-                .concat(COMMA).concat("id-tab-view:nd-form")
-                .concat(COMMA).concat("id-tab-view:currentMyGrid")
-                .concat(COMMA).concat("id-tool-pivot-actions");
+                .concat(COMMA).concat(ID_TAB_VIEW).concat(":nd-form")
+                .concat(COMMA).concat(ID_TAB_VIEW).concat(":currentMyGrid")
+                .concat(COMMA).concat(ID_TAB_VIEW).concat(":id-tool-pivot-actions");
 
         filterNdDataCurrent = ID_CURRENT_MYGRID_EDITABLE;
         filterNdDataHistory = ID_HISTORY_MYGRID_READONLY;
@@ -213,6 +214,7 @@ public class UpdateAjaxMB implements Serializable {
 
         btnPageShowDesc = "id-tab-view:id-desc-dlg-pnl";
     }
+
     private static final String ID_2D_DLG_TABVIEW_WF_TOOLBAR = "id-2d-wf-toolbar";
 
     public String getPnlEsignHistory() {
