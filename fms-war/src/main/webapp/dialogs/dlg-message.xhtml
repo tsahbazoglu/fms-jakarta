@@ -3,6 +3,7 @@
 <ui:composition 
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
     xmlns:ui="jakarta.faces.facelets"
     xmlns:p="http://primefaces.org/ui">
 
@@ -19,22 +20,25 @@
         position="center"
         visible="false"
         width="600"
-        style="max-width: 95vw;"
+        style="max-width: 95vw; max-height: 85vh;"
         styleClass="border-round shadow-2"
         >
-        <div class="flex flex-column gap-3 py-2">
+        <div class="py-2 overflow-y-auto" style="max-height: 65vh;">
             <h:outputText 
                 id="outMsg"
                 value="#{dlgCtrl.message}"
                 styleClass="text-base line-height-3 block"
                 style="#{dlgCtrl.style}"
                 escape="false"/>
+        </div>
 
-            <div class="flex justify-content-end gap-2 mt-2 pt-2 border-top-1 surface-border">
+        <f:facet name="footer">
+            <div class="flex justify-content-end gap-2">
                 <p:commandButton
                     value="#{msg['kaydetmeden.cik']}"
                     icon="pi pi-times"
                     action="#{twoDimModifyCtrl.doNotSave}"
+                    oncomplete="PF('messageDialog').hide()"
                     rendered="#{dlgCtrl.renderedButon}"
                     styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
 
@@ -46,6 +50,6 @@
                     styleClass="ui-button-primary p-button-sm"
                     />
             </div>
-        </div>
+        </f:facet>
     </p:dialog>
 </ui:composition>
