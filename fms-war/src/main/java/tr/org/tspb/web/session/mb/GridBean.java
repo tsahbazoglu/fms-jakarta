@@ -164,10 +164,10 @@ public class GridBean implements Serializable {
         } else {
             this.content = new String[][]{
                     {"Quarter", "Revenue ($)", "Expenses ($)", "Margin (%)", "Performance"},
-                    {"Q1 2026", "120000", "85000", "29.1", "Completed"},
-                    {"Q2 2026", "145000", "92000", "36.5", "Active"},
-                    {"Q3 2026", "160000", "98000", "38.7", "Pending"},
-                    {"Q4 2026", "210000", "110000", "47.6", "In Review"}
+                    {"DH Q1 2026", "120000", "85000", "29.1", "Completed"},
+                    {"DH Q2 2026", "145000", "92000", "36.5", "Active"},
+                    {"DH Q3 2026", "160000", "98000", "38.7", "Pending"},
+                    {"DH Q4 2026", "210000", "110000", "47.6", "In Review"}
             };
         }
 

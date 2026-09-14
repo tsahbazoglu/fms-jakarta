@@ -121,7 +121,7 @@
             <dependency>
                 <groupId>com.dadhawk.faces</groupId>
                 <artifactId>dhgrid-component</artifactId>
-                <version>1.0.0-RC1</version>
+                <version>1.0.0-RC2</version>
             </dependency>
             <!-- provided -->
             <dependency>
