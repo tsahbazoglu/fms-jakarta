@@ -280,6 +280,24 @@ ul.ui-menu-child {
     width: auto !important;
 }
 
+.fms-accordion-menu .ui-menuitem-link {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.fms-accordion-menu .ui-menuitem-icon {
+    float: none !important;
+    flex-shrink: 0 !important;
+    margin-right: 0.5rem !important;
+}
+
+.fms-accordion-menu .ui-menuitem-text {
+    flex: 1 1 auto !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+
 .error-container {
     background: white;
     padding: 40px;
