@@ -105,27 +105,30 @@ public class AppScopeSrvCtrl {
         }
         translationCache = new ConcurrentHashMap<>();
         try {
-            List<Document> docs = mongoDbUtil.find(CONFIG_DB, "fms-translate");
-            if (docs != null) {
-                for (Document doc : docs) {
-                    Object recordsObj = doc.get("records");
-                    if (recordsObj instanceof List) {
-                        List<?> records = (List<?>) recordsObj;
-                        for (Object item : records) {
-                            if (item instanceof Document) {
-                                addTranslationRecord((Document) item);
-                            } else if (item instanceof Map) {
-                                addTranslationRecordFromMap((Map<?, ?>) item);
+            String[] translateCollections = new String[] { "fms-translate", "fms-translate-items" };
+            for (String coll : translateCollections) {
+                List<Document> docs = mongoDbUtil.find(CONFIG_DB, coll);
+                if (docs != null) {
+                    for (Document doc : docs) {
+                        Object recordsObj = doc.get("records");
+                        if (recordsObj instanceof List) {
+                            List<?> records = (List<?>) recordsObj;
+                            for (Object item : records) {
+                                if (item instanceof Document) {
+                                    addTranslationRecord((Document) item);
+                                } else if (item instanceof Map) {
+                                    addTranslationRecordFromMap((Map<?, ?>) item);
+                                }
                             }
+                        } else if (doc.containsKey("name-tr")) {
+                            addTranslationRecord(doc);
                         }
-                    } else if (doc.containsKey("name-tr")) {
-                        addTranslationRecord(doc);
                     }
                 }
             }
         } catch (Exception e) {
             if (logger != null) {
-                logger.error("Failed to load fms-translate collection from configdb: " + e.getMessage());
+                logger.error("Failed to load fms-translate collections from configdb: " + e.getMessage());
             }
         }
     }

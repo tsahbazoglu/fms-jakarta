@@ -72,6 +72,7 @@ public class MyForm extends FmsFormAbstract {
     private String table;
     private String snapshotCollection;
     private String userNote;//popup note
+    private List<String> userNoteRawList;
     private String userConstantNote;//constantly stay on the page
     private String readOnlyNote;//constantly stay on the page
     private String db;
@@ -376,7 +377,19 @@ public class MyForm extends FmsFormAbstract {
     }
 
     public String getUserNote() {
-        return userNote;
+        if (userNoteRawList != null && !userNoteRawList.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<ul>");
+            for (String string : userNoteRawList) {
+                sb.append("<li>").
+                        append(DynamicTranslator.translate(string)).
+                        append("</li>").
+                        append("<br/>");
+            }
+            sb.append("</ul>");
+            return sb.toString();
+        }
+        return DynamicTranslator.translate(userNote);
     }
 
     @Override
@@ -414,7 +427,7 @@ public class MyForm extends FmsFormAbstract {
     }
 
     public String getConstantNote() {
-        return userConstantNote;
+        return DynamicTranslator.translate(userConstantNote);
     }
 
     @Deprecated
@@ -426,7 +439,14 @@ public class MyForm extends FmsFormAbstract {
     }
 
     public List<String> getUserConstantNoteList() {
-        return Collections.unmodifiableList(userConstantNoteList);
+        if (userConstantNoteList == null || userConstantNoteList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<String> translatedList = new ArrayList<>(userConstantNoteList.size());
+        for (String note : userConstantNoteList) {
+            translatedList.add(DynamicTranslator.translate(note));
+        }
+        return Collections.unmodifiableList(translatedList);
     }
 
     public String getAnotherEimzaColletionKey() {
@@ -1416,6 +1436,7 @@ public class MyForm extends FmsFormAbstract {
             } else if (strVal != null) {
                 this.myForm.userNote = strVal;
             } else if (arrVal != null) {
+                this.myForm.userNoteRawList = arrVal;
                 StringBuilder sb = new StringBuilder();
                 sb.append("<ul>");
                 for (String string : arrVal) {
@@ -1585,6 +1606,11 @@ public class MyForm extends FmsFormAbstract {
             Document dimension = dbObjectForm.get(DIMENSION_LOWER_CASE,
                     Document.class);
 
+            if (dimension == null) {
+                this.myForm.dimension = 1;
+                return;
+            }
+
             String value = dimension.get("value", String.class);
 
             if (value != null) {
@@ -1612,6 +1638,10 @@ public class MyForm extends FmsFormAbstract {
             }
 
             List<Document> list = dimension.get("list", List.class);
+            if (list == null) {
+                this.myForm.dimension = 1;
+                return;
+            }
 
             for (Document doc : list) {
                 List<String> listOfRoles = (List<String>) doc.get("roles");
