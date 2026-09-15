@@ -1,7 +1,9 @@
 package tr.org.tspb.common.services;
 
 import com.mongodb.client.model.Filters;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
 import java.io.File;
@@ -100,32 +102,34 @@ public class AppScopeSrvCtrl {
     }
 
     public synchronized void initTranslationCache() {
-        if (translationCache != null) {
+        if (translationCache != null && !translationCache.isEmpty()) {
             return;
         }
-        translationCache = new ConcurrentHashMap<>();
+        if (translationCache == null) {
+            translationCache = new ConcurrentHashMap<>();
+        }
         try {
-            String[] translateCollections = new String[] { "fms-translate", "fms-translate-items" };
+            String[] translateCollections = new String[]{"fms-translate", "fms-translate-items"};
+
             for (String coll : translateCollections) {
                 List<Document> docs = mongoDbUtil.find(CONFIG_DB, coll);
-                if (docs != null) {
+                if (docs != null && !docs.isEmpty()) {
                     for (Document doc : docs) {
                         Object recordsObj = doc.get("records");
                         if (recordsObj instanceof List) {
                             List<?> records = (List<?>) recordsObj;
                             for (Object item : records) {
-                                if (item instanceof Document) {
-                                    addTranslationRecord((Document) item);
-                                } else if (item instanceof Map) {
+                                if (item instanceof Map) {
                                     addTranslationRecordFromMap((Map<?, ?>) item);
                                 }
                             }
-                        } else if (doc.containsKey("name-tr")) {
-                            addTranslationRecord(doc);
+                        } else {
+                            addTranslationRecordFromMap(doc);
                         }
                     }
                 }
             }
+
         } catch (Exception e) {
             if (logger != null) {
                 logger.error("Failed to load fms-translate collections from configdb: " + e.getMessage());
@@ -134,35 +138,63 @@ public class AppScopeSrvCtrl {
     }
 
     private void addTranslationRecord(Document item) {
-        String trName = item.getString("name-tr");
-        if (trName != null && !trName.trim().isEmpty()) {
-            Map<String, String> langMap = new HashMap<>();
-            langMap.put("tr", trName);
-            if (item.containsKey("name-en") && item.get("name-en") != null) {
-                langMap.put("en", item.getString("name-en"));
-            }
-            if (item.containsKey("name-ru") && item.get("name-ru") != null) {
-                langMap.put("ru", item.getString("name-ru"));
-            }
-            translationCache.put(trName, langMap);
-        }
+        addTranslationRecordFromMap(item);
     }
 
     private void addTranslationRecordFromMap(Map<?, ?> item) {
-        Object trObj = item.get("name-tr");
+        if (item == null) {
+            return;
+        }
+
+        String trName = null;
+        Object trObj = item.get("name");
+        if (trObj == null) trObj = item.get("name-tr");
+
         if (trObj != null) {
-            String trName = trObj.toString();
-            if (!trName.trim().isEmpty()) {
-                Map<String, String> langMap = new HashMap<>();
-                langMap.put("tr", trName);
-                if (item.containsKey("name-en") && item.get("name-en") != null) {
-                    langMap.put("en", item.get("name-en").toString());
-                }
-                if (item.containsKey("name-ru") && item.get("name-ru") != null) {
-                    langMap.put("ru", item.get("name-ru").toString());
-                }
-                translationCache.put(trName, langMap);
+            trName = trObj.toString();
+        }
+
+        if (trName == null || trName.trim().isEmpty()) {
+            return;
+        }
+
+        Map<String, String> langMap = new HashMap<>();
+        String trimmedTr = trName.trim();
+        langMap.put("tr", trimmedTr);
+
+        for (Map.Entry<?, ?> entry : item.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                continue;
             }
+            String keyStr = entry.getKey().toString().trim().toLowerCase();
+
+            if ("_id".equals(keyStr)) {
+                continue;
+            }
+
+            String valStr = entry.getValue().toString();
+            if (valStr.trim().isEmpty()) {
+                continue;
+            }
+
+            String langCode = null;
+            if (keyStr.startsWith("name-")) {
+                langCode = keyStr.substring(5);
+            } else if (keyStr.equals("en") || keyStr.equals("ru") || keyStr.equals("az") || keyStr.equals("tr")) {
+                langCode = keyStr;
+            }
+
+            if (langCode != null) {
+                if (langCode.contains("_") || langCode.contains("-")) {
+                    langCode = langCode.split("[_-]")[0];
+                }
+                langMap.put(langCode, valStr);
+            }
+        }
+
+        translationCache.put(trName, langMap);
+        if (!trName.equals(trimmedTr)) {
+            translationCache.put(trimmedTr, langMap);
         }
     }
 
@@ -170,25 +202,43 @@ public class AppScopeSrvCtrl {
         if (originalText == null || originalText.trim().isEmpty()) {
             return originalText;
         }
-        if (translationCache == null) {
+        if (translationCache == null || translationCache.isEmpty()) {
             initTranslationCache();
         }
 
         String lang = "tr";
         try {
             jakarta.faces.context.FacesContext context = jakarta.faces.context.FacesContext.getCurrentInstance();
-            if (context != null && context.getViewRoot() != null && context.getViewRoot().getLocale() != null) {
-                lang = context.getViewRoot().getLocale().getLanguage().toLowerCase();
+            if (context != null) {
+                try {
+                    String sessionLang = context.getApplication()
+                            .evaluateExpressionGet(context, "#{templateThemeHandler.language}", String.class);
+                    if (sessionLang != null && !sessionLang.trim().isEmpty()) {
+                        lang = sessionLang.toLowerCase().trim();
+                    }
+                } catch (Exception ex) {
+                    // Ignore if EL evaluation is not applicable in current context
+                }
+                if ("tr".equals(lang) && context.getViewRoot() != null && context.getViewRoot().getLocale() != null) {
+                    String viewLang = context.getViewRoot().getLocale().getLanguage();
+                    if (viewLang != null && !viewLang.trim().isEmpty()) {
+                        lang = viewLang.toLowerCase().trim();
+                    }
+                }
             }
         } catch (Exception e) {
             // fallback to tr
         }
 
-        if ("tr".equals(lang) || translationCache == null || !translationCache.containsKey(originalText)) {
+        if ("tr".equals(lang) || translationCache == null || translationCache.isEmpty()) {
             return originalText;
         }
 
         Map<String, String> langMap = translationCache.get(originalText);
+        if (langMap == null) {
+            langMap = translationCache.get(originalText.trim());
+        }
+
         if (langMap != null && langMap.containsKey(lang)) {
             String translated = langMap.get(lang);
             if (translated != null && !translated.trim().isEmpty()) {
@@ -224,7 +274,7 @@ public class AppScopeSrvCtrl {
     }
 
     public void putCacheZetDimensionItems(String key,
-            List<SelectItem> zetDimensionItems) {
+                                          List<SelectItem> zetDimensionItems) {
         cacheZetDimensionItems.put(key, zetDimensionItems);
     }
 
@@ -288,7 +338,7 @@ public class AppScopeSrvCtrl {
                 memberCacheNameById.put(next.get(MONGO_ID).
                         toString(), next.get(
                                 NAME).
-                                toString());
+                        toString());
             }
         }
         return memberCacheNameById;
@@ -316,7 +366,7 @@ public class AppScopeSrvCtrl {
     }
 
     public void createPdfFile(String pdfFileName, String cnfFileName,
-            String xslFileName, String xmlFileName, String fileName)
+                              String xslFileName, String xmlFileName, String fileName)
             throws TransformerException, IOException, SAXException {
 
         try (OutputStream outputStream = new FileOutputStream(new File(
@@ -368,8 +418,8 @@ public class AppScopeSrvCtrl {
             }
 
         } catch (InstanceNotFoundException | MalformedObjectNameException
-                | InstanceAlreadyExistsException | MBeanRegistrationException
-                | NotCompliantMBeanException ex) {
+                 | InstanceAlreadyExistsException | MBeanRegistrationException
+                 | NotCompliantMBeanException ex) {
             logger.error("error occured", ex);
         }
 
@@ -412,7 +462,7 @@ public class AppScopeSrvCtrl {
             for (Document nextElement : cursor) {
                 cacheIonSettingNotifyType.put(nextElement.get(MONGO_ID).
                         toString(), nextElement.get(CODE).
-                                toString());
+                        toString());
             }
         }
         return Collections.unmodifiableMap(cacheIonSettingNotifyType);
@@ -458,11 +508,11 @@ public class AppScopeSrvCtrl {
 
             for (Document nextElement : cursor) {
                 cacheIdByLdapUid.put(nextElement.get(MONGO_LDAP_UID).
-                        toString(),
+                                toString(),
                         (ObjectId) nextElement.get(MONGO_ID));
                 cacheIdByKpbMemberName.put(createKeyFoCacheIdByKpbMemberName(
-                        nextElement.get(NAME).
-                                toString()),
+                                nextElement.get(NAME).
+                                        toString()),
                         (ObjectId) nextElement.get(MONGO_ID));
             }
         }
@@ -690,7 +740,7 @@ public class AppScopeSrvCtrl {
     }
 
     public ObjectId getPrevTemplate(String db, String sortKey, int prevCount,
-            ObjectId currentTemplateId, ObjectId currentPeriodID)
+                                    ObjectId currentTemplateId, ObjectId currentPeriodID)
             throws NullNotExpectedException {
 
         Map searchMap = new HashMap();
@@ -729,7 +779,7 @@ public class AppScopeSrvCtrl {
     }
 
     public Document getPrevPeriod(String db, String sortKey, int prevCount,
-            ObjectId currentId) {
+                                  ObjectId currentId) {
 
         if (currentId == null) {
             return null;
@@ -767,7 +817,7 @@ public class AppScopeSrvCtrl {
     }
 
     public Document getLastQuaterOfPrevYear(String db, String sortKey,
-            int prevCount, ObjectId currentId) {
+                                            int prevCount, ObjectId currentId) {
         Map<Object, Document> mapSortKey = new HashMap<>();
         Map<Object, Document> mapId = new HashMap<>();
 
@@ -835,7 +885,7 @@ public class AppScopeSrvCtrl {
     }
 
     public FmsForm getFormDefinitionByForm(String configCollection, String form,
-            Map searchObject)
+                                           Map searchObject)
             throws NullNotExpectedException, MongoOrmFailedException,
             FormConfigException {
         String cacheKey = configCollection.concat(":").
@@ -843,21 +893,21 @@ public class AppScopeSrvCtrl {
         if (mapForms.get(cacheKey) == null) {
             MyProject myProject = ogmCreator
                     .getMyProject(mongoDbUtil
-                            .findOne("configdb", CFG_TABLE_PROJECT, Filters.eq(
-                                    CONFIG_COLLECTIONS, configCollection)),
+                                    .findOne("configdb", CFG_TABLE_PROJECT, Filters.eq(
+                                            CONFIG_COLLECTIONS, configCollection)),
                             baseService.getTagLogin());
 
             mapForms.put(cacheKey, ogmCreator
                     .getMyFormLarge(myProject, configCollection, new Document(
-                            FORM, form), searchObject,
+                                    FORM, form), searchObject,
                             loginController.getRoleMap(), loginController.
-                            getLoggedUserDetail()));
+                                    getLoggedUserDetail()));
         }
         return mapForms.get(cacheKey);
     }
 
     public FmsForm getFormDefinitionByKey(String configCollection,
-            String collectionKey, Map searchObject)
+                                          String collectionKey, Map searchObject)
             throws NullNotExpectedException, MongoOrmFailedException,
             FormConfigException {
         /**
@@ -871,15 +921,15 @@ public class AppScopeSrvCtrl {
 
             MyProject myProject = ogmCreator
                     .getMyProject(mongoDbUtil
-                            .findOne("configdb", CFG_TABLE_PROJECT, Filters.eq(
-                                    CONFIG_COLLECTIONS, configCollection)),
+                                    .findOne("configdb", CFG_TABLE_PROJECT, Filters.eq(
+                                            CONFIG_COLLECTIONS, configCollection)),
                             baseService.getTagLogin());
 
             mapForms.put(cacheKey, ogmCreator
                     .getMyFormLarge(myProject, configCollection, new Document(
-                            FORM_KEY, collectionKey), searchObject,
+                                    FORM_KEY, collectionKey), searchObject,
                             loginController.getRoleMap(), loginController.
-                            getLoggedUserDetail()));
+                                    getLoggedUserDetail()));
 
         }
         return mapForms.get(cacheKey);
