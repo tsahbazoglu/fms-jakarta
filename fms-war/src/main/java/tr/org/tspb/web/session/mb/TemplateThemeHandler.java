@@ -118,7 +118,7 @@ public class TemplateThemeHandler implements Serializable {
     }
 
     public List<String> getLanguages() {
-        return Arrays.asList("tr", "en", "ru");
+        return Arrays.asList("tr", "en", "ru", "az");
     }
 
     public String getTheme() {

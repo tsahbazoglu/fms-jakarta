@@ -9,6 +9,7 @@
             <supported-locale>tr</supported-locale>
             <supported-locale>en</supported-locale>
             <supported-locale>ru</supported-locale>
+            <supported-locale>az</supported-locale>
         </locale-config>
         <resource-bundle>
             <base-name>tr.org.tspb.web.messages</base-name>

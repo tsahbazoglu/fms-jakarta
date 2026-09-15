@@ -10,93 +10,95 @@
       xmlns:mygrid="http://java.sun.com/jsf/composite/telmangrid"
 >
 
-<h:form id="id-2d-form-search">
+<h:form id="id-2d-form-search-vertical">
 
-    <h:panelGroup id="id-filter-current-vertical-panel-grid" layout="block" styleClass="ui-g ui-fluid">
-        <c:forEach items="#{filterService.quickFilters}" var="columnMap">
+    <p:panel header="#{msg['filtreler']}" toggleable="true" toggleSpeed="150" collapsed="false">
+        <h:panelGroup id="id-filter-current-vertical-panel-grid" layout="block" styleClass="ui-g ui-fluid">
+            <c:forEach items="#{filterService.quickFilters}" var="columnMap">
 
-            <div class="ui-g-12 ui-md-3" style="padding: 6px; box-sizing: border-box; vertical-align: top;">
+                <div class="ui-g-12 ui-md-3" style="padding: 6px; box-sizing: border-box; vertical-align: top;">
 
-                <p:outputLabel value="#{columnMap.shortName}"
-                               style="font-weight: bold; display: block; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"/>
+                    <p:outputLabel value="#{columnMap.shortName}"
+                                   style="font-weight: bold; display: block; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"/>
 
-                <h:panelGroup layout="block">
-                    <mydynamic:uysDateTimeEntry
-                            myvalue="#{filterService.guiFilterCurrent[columnMap.field]}"
-                            label="#{columnMap.label}"
-                            rendered="#{columnMap.componentType eq twoDimModifyCtrl.inputDate}"
-                            myconverter="#{columnMap.myconverter}"
-                            mypattern="#{columnMap.datePattern}"
-                            dateChange="#{twoDimModifyCtrl.dateChange}"
-                    />
-                    <p:selectOneMenu
-                            id="id-filter-current-vertical-select-one-menu"
-                            value="#{filterService.guiFilterCurrent[columnMap.field]}"
-                            rendered="#{columnMap!=null and columnMap.componentType eq twoDimModifyCtrl.selectOneMenu}"
-                            converter="#{columnMap.myconverter}"
-                            filter="true"
-                            filterMatchMode="contains"
-                            caseSensitive="true"
-                    >
-                        <f:selectItem
-                                itemValue="#{columnMap.myconverter.nullValue}"
-                                itemLabel="Seçiniz ..."
+                    <h:panelGroup layout="block">
+                        <mydynamic:uysDateTimeEntry
+                                myvalue="#{filterService.guiFilterCurrent[columnMap.field]}"
+                                label="#{columnMap.label}"
+                                rendered="#{columnMap.componentType eq twoDimModifyCtrl.inputDate}"
+                                myconverter="#{columnMap.myconverter}"
+                                mypattern="#{columnMap.datePattern}"
+                                dateChange="#{twoDimModifyCtrl.dateChange}"
                         />
-                        <f:selectItem
-                                itemValue="#{columnMap.myconverter.selectAllItem}"
-                                itemLabel="Tümü"
-                        />
-                        <f:selectItems value="#{columnMap.selectItemsFilter}"/>
+                        <p:selectOneMenu
+                                id="id-filter-current-vertical-select-one-menu"
+                                value="#{filterService.guiFilterCurrent[columnMap.field]}"
+                                rendered="#{columnMap!=null and columnMap.componentType eq twoDimModifyCtrl.selectOneMenu}"
+                                converter="#{columnMap.myconverter}"
+                                filter="true"
+                                filterMatchMode="contains"
+                                caseSensitive="true"
+                        >
+                            <f:selectItem
+                                    itemValue="#{columnMap.myconverter.nullValue}"
+                                    itemLabel="Seçiniz ..."
+                            />
+                            <f:selectItem
+                                    itemValue="#{columnMap.myconverter.selectAllItem}"
+                                    itemLabel="Tümü"
+                            />
+                            <f:selectItems value="#{columnMap.selectItemsFilter}"/>
 
-                        <f:attribute name="myField" value="#{columnMap}"/>
-                        <f:attribute name="myKey" value="#{columnMap.field}"/>
-                        <f:attribute name="fieldKey" value="#{columnMap.key}"/>
+                            <f:attribute name="myField" value="#{columnMap}"/>
+                            <f:attribute name="myKey" value="#{columnMap.field}"/>
+                            <f:attribute name="fieldKey" value="#{columnMap.key}"/>
 
-                        <p:ajax
-                                listener="#{twoDimModifyCtrl.valueChangeListenerTableSearch}"
-                                process="@form"
-                                update="#{updateAjaxMB.action2DSearch},#{columnMap.filterSelectOneMenuAjaxUpdate},id-tab-view:id-table-action-form-buttons,id-tab-view:id-send-ok"
+                            <p:ajax
+                                    listener="#{twoDimModifyCtrl.valueChangeListenerTableSearch}"
+                                    process="@form"
+                                    update="#{updateAjaxMB.action2DSearch},#{columnMap.filterSelectOneMenuAjaxUpdate},id-tab-view:id-table-action-form-buttons,id-tab-view:id-send-ok"
+                            />
+                        </p:selectOneMenu>
+                        <p:selectOneMenu
+                                value="#{filterService.guiFilterCurrent[columnMap.field]}"
+                                rendered="#{columnMap!=null and columnMap.componentType eq twoDimModifyCtrl.selectOneRadio}"
+                                converter="#{columnMap.myconverter}"
+                        >
+                            <p:ajax
+                                    listener="#{twoDimModifyCtrl.valueChangeListenerTableSearch}"
+                                    process="@form"
+                                    update="#{updateAjaxMB.action2DSearch}"
+                            />
+                            <f:selectItems value="#{columnMap.selectItemsFilter}"/>
+                            <f:attribute name="myKey" value="#{columnMap.field}"/>
+                        </p:selectOneMenu>
+                        <p:autoComplete
+                                dropdown="true"
+                                value="#{filterService.guiFilterCurrent[columnMap.field]}"
+                                completeMethod="#{columnMap.completeMethod}"
+                                rendered="#{twoDimModifyCtrl.autoComplete eq columnMap.componentType and columnMap.rendered}"
+                                converter="documentConverter"
+                                var="item"
+                                itemLabel="#{item.name}"
+                                itemValue="#{item}"
+                                forceSelection="true"
+                                minQueryLength="3"
                         />
-                    </p:selectOneMenu>
-                    <p:selectOneMenu
-                            value="#{filterService.guiFilterCurrent[columnMap.field]}"
-                            rendered="#{columnMap!=null and columnMap.componentType eq twoDimModifyCtrl.selectOneRadio}"
-                            converter="#{columnMap.myconverter}"
-                    >
-                        <p:ajax
-                                listener="#{twoDimModifyCtrl.valueChangeListenerTableSearch}"
-                                process="@form"
-                                update="#{updateAjaxMB.action2DSearch}"
-                        />
-                        <f:selectItems value="#{columnMap.selectItemsFilter}"/>
-                        <f:attribute name="myKey" value="#{columnMap.field}"/>
-                    </p:selectOneMenu>
-                    <p:autoComplete
-                            dropdown="true"
-                            value="#{filterService.guiFilterCurrent[columnMap.field]}"
-                            completeMethod="#{columnMap.completeMethod}"
-                            rendered="#{twoDimModifyCtrl.autoComplete eq columnMap.componentType and columnMap.rendered}"
-                            converter="documentConverter"
-                            var="item"
-                            itemLabel="#{item.name}"
-                            itemValue="#{item}"
-                            forceSelection="true"
-                            minQueryLength="3"
-                    />
-                    <p:inputText
-                            rendered="#{columnMap!=null
-                                        and (columnMap.componentType eq twoDimModifyCtrl.inputText
-                                        or columnMap.componentType eq twoDimModifyCtrl.inputMask
-                                        or columnMap.componentType eq twoDimModifyCtrl.inputTextarea)}"
-                            value="#{filterService.guiFilterCurrent[columnMap.field]}"
-                            style="white-space: pre; font-family: monospace;"
-                            onkeypress="myClick(event);"
-                    >
-                    </p:inputText>
-                </h:panelGroup>
-            </div>
-        </c:forEach>
-    </h:panelGroup>
+                        <p:inputText
+                                rendered="#{columnMap!=null
+                                            and (columnMap.componentType eq twoDimModifyCtrl.inputText
+                                            or columnMap.componentType eq twoDimModifyCtrl.inputMask
+                                            or columnMap.componentType eq twoDimModifyCtrl.inputTextarea)}"
+                                value="#{filterService.guiFilterCurrent[columnMap.field]}"
+                                style="white-space: pre; font-family: monospace;"
+                                onkeypress="myClick(event);"
+                        >
+                        </p:inputText>
+                    </h:panelGroup>
+                </div>
+            </c:forEach>
+        </h:panelGroup>
+    </p:panel>
 
 </h:form>
 </html>

@@ -76,6 +76,11 @@
                                      process="@this"
                                      oncomplete="window.location.reload();"
                                      styleClass="#{templateThemeHandler.language eq 'ru' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
+                    <p:commandButton value="Azərbaycan"
+                                     actionListener="#{templateThemeHandler.changeLanguage('az')}"
+                                     process="@this"
+                                     oncomplete="window.location.reload();"
+                                     styleClass="#{templateThemeHandler.language eq 'az' ? 'ui-button-primary' : 'ui-button-outlined'} p-button-sm"/>
                 </div>
             </p:panel>
 
