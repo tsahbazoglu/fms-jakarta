@@ -350,6 +350,8 @@ sudo nano /etc/hosts
 ----
 mongosh configdb
 
+db.properties.drop()
+
 db.properties.insert({
  "key" : "product",
  "PDFTOOL" : "/home/fms/pdftool/",
@@ -361,8 +363,8 @@ db.properties.insert({
  "TITLE_ACRONYM" : "TSPB",
  "TITLE" : "Türkiye Sermaye Piyasaları Birliği",
  "COPYRIGHT" : "Copyright © 2012 Türkiye Sermaye Piyasaları Birliği",
- "LOGO_LARGE" : "/images_tspb/logo-large.png",
- "LOGO_SMALL" : "/images_tspb/logo-small.png",
+ "LOGO_LARGE" : "/images/logo-large.png",
+ "LOGO_SMALL" : "/images/logo-small.png",
  "EIMZA_LICENCE_PATH" : "file:/{esign-config-files-path}/lisans.xml",
  "EIMZA_CONFIG_PATH"  : "file:/{esign-config-files-path}/esya-signature-config.xml",
  "EIMZA_POLICY_PATH"  : "file:/{esign-config-files-path}/certval-policy.xml",

@@ -235,10 +235,10 @@ public class BaseService extends AbstractSrv {
 
             logoLarge = document.getProperty(
                     ProjectConstants.PROJECT_PROPERTIES_LOGO_LARGE,
-                    "/images_tspb/logo-large.png");
+                    "/images/logo-large.png");
             logoSmall = document.getProperty(
                     ProjectConstants.PROJECT_PROPERTIES_LOGO_SMALL,
-                    "/images_tspb/logo-large.png");
+                    "/images/logo-large.png");
             copyrightInfo = document.getProperty(
                     ProjectConstants.PROJECT_PROPERTIES_COPYRIGHT, "to be set");
         }

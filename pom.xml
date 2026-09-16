@@ -468,6 +468,28 @@
                     <version>3.5.1</version>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
+                        <excludes>
+                            <exclude>exclude/**</exclude>
+                        </excludes>
+                        <webResources>
+                            <resource>
+                                <directory>src/main/webapp/exclude/${customer.folder}</directory>
+                                <includes>
+                                    <include>login.html</include>
+                                </includes>
+                                <targetPath>/</targetPath>
+                            </resource>
+                            <!-- 2. Resource rule for images -> copied to target /images folder -->
+                            <resource>
+                                <directory>src/main/webapp/exclude/${customer.folder}</directory>
+                                <includes>
+                                    <include>logo-large.png</include>
+                                    <include>logo-small.png</include>
+                                    <!-- You can add more image includes here if needed -->
+                                </includes>
+                                <targetPath>/images</targetPath>
+                            </resource>
+                        </webResources>
                     </configuration>
                 </plugin>
 
@@ -573,6 +595,21 @@
     </reporting>
 
     <profiles>
+
+        <profile>
+            <id>azmbs</id>
+            <properties>
+                <customer.folder>azmbs</customer.folder>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>tspb</id>
+            <properties>
+                <customer.folder>tspb</customer.folder>
+            </properties>
+        </profile>
+
         <profile>
             <id>esignOyas</id>
             <properties>

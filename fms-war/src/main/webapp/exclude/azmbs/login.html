@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AzMBS - Giriş | Management Business System</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Main Split Wrapper */
+        .login-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Left Side: Modern Logo & Brand Showcase Section */
+        .login-brand-side {
+            flex: 1.2;
+            background: linear-gradient(135deg, #0b132b 0%, #1c2541 50%, #004d80 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 40px;
+            color: #ffffff;
+        }
+
+        /* Abstract Glow Effects */
+        .login-brand-side::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 146, 188, 0.25) 0%, rgba(0,0,0,0) 70%);
+            bottom: -100px;
+            left: -100px;
+            border-radius: 50%;
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 480px;
+        }
+
+        .brand-logo-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 24px;
+            margin-bottom: 25px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-symbol {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .logo-symbol span {
+            color: #38bdf8;
+        }
+
+        .brand-badge {
+            background: rgba(0, 146, 188, 0.2);
+            color: #38bdf8;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-description {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Right Side: Form Section */
+        .login-form-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 60px;
+            background: #ffffff;
+            max-width: 600px;
+            z-index: 2;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.03);
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .mobile-logo {
+            display: none;
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .mobile-logo span {
+            color: #0066cc;
+        }
+
+        .mobile-header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .language-switcher a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            padding: 5px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .language-switcher a.active, .language-switcher a:hover {
+            background: #f1f5f9;
+            color: #0066cc;
+        }
+
+        .form-content-wrapper {
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-control:focus {
+            border-color: #0066cc;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #475569;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember-me input {
+            accent-color: #0066cc;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .forgot-password {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: #0066cc;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+        }
+
+        .btn-login:hover {
+            background: #0052a3;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .form-footer {
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        /* Responsive Breakpoints */
+        @media(max-width: 900px) {
+            .login-brand-side {
+                display: none;
+            }
+            .login-form-side {
+                max-width: 100%;
+                padding: 30px;
+            }
+            .mobile-logo {
+                display: block;
+            }
+        }
+    </style>
+    <script src="https://www.google.com/recaptcha/api.js?hl=tr"></script>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <!-- LEFT SIDE: Modern Logo & Showcase Section -->
+    <div class="login-brand-side">
+        <div class="brand-content">
+            <div class="brand-logo-box">
+                <div class="logo-symbol">Az<span>MBS</span></div>
+                <div class="brand-badge">Enterprise System</div>
+            </div>
+            <h2 class="brand-title">Management Business System</h2>
+            <p class="brand-description">
+                Müəssisənizin idarəetmə proseslərini optimallaşdırın, iş axınlarını tənzimləyin və biznesinizi rəqəmsal müstəvidə inkişaf etdirin.
+            </p>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE: Form Inputs -->
+    <div class="login-form-side">
+        <div class="top-nav">
+            <div class="mobile-header-wrapper">
+                <div class="mobile-logo">Az<span>MBS</span></div>
+                <div class="language-switcher">
+                    <a href="#" class="active">AZ</a>
+                    <a href="#">EN</a>
+                    <a href="#">RU</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-content-wrapper">
+            <div class="welcome-container">
+                <h1 class="welcome-title">Xoş gəlmisiniz!</h1>
+                <p class="welcome-subtitle">Davam etmək üçün sistem hesabınıza daxil olun.</p>
+            </div>
+
+            <!-- BACKEND JAAS COMPLIANT FORM -->
+            <form method="POST" action="/loginJaas">
+                <div class="form-group">
+                    <label for="username">İstifadəçi adı və ya E-poçt</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-user"></i>
+                        <!-- Corrected name attribute to j_username for JAAS backend -->
+                        <input type="text" id="username" name="j_username" class="form-control" placeholder="İstifadəçi adınızı daxil edin" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Şifrə</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-lock"></i>
+                        <!-- Corrected name attribute to j_password for JAAS backend -->
+                        <input type="password" id="password" name="j_password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember"> Yadda saxla
+                    </label>
+                    <a href="#" class="forgot-password">Şifrəni unutmusunuz?</a>
+                </div>
+
+                <div class="form-group">
+                    <div class="g-recaptcha" data-sitekey="6LcQzG4UAAAAACk87rF4aMb07mwTiZnldOiqWh8s"></div>
+                </div>
+
+                <button type="submit" class="btn-login">Daxil ol</button>
+            </form>
+        </div>
+
+        <div class="form-footer">
+            &copy; 2026 AzMBS — Management Business System. Bütün hüquqlar qorunur.
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
