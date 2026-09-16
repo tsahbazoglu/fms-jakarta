@@ -146,21 +146,19 @@ public class AppScopeSrvCtrl {
             return;
         }
 
-        String trName = null;
         Object trObj = item.get("name");
-        if (trObj == null) trObj = item.get("name-tr");
-
-        if (trObj != null) {
-            trName = trObj.toString();
+        if (trObj == null) {
+            return;
         }
 
-        if (trName == null || trName.trim().isEmpty()) {
+        String name = trObj.toString();
+
+        if (name == null || name.trim().isEmpty()) {
             return;
         }
 
         Map<String, String> langMap = new HashMap<>();
-        String trimmedTr = trName.trim();
-        langMap.put("tr", trimmedTr);
+        String trimmedName = name.trim();
 
         for (Map.Entry<?, ?> entry : item.entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null) {
@@ -178,23 +176,18 @@ public class AppScopeSrvCtrl {
             }
 
             String langCode = null;
-            if (keyStr.startsWith("name-")) {
-                langCode = keyStr.substring(5);
-            } else if (keyStr.equals("en") || keyStr.equals("ru") || keyStr.equals("az") || keyStr.equals("tr")) {
+            if (keyStr.equals("en") || keyStr.equals("ru") || keyStr.equals("az") || keyStr.equals("tr")) {
                 langCode = keyStr;
             }
 
             if (langCode != null) {
-                if (langCode.contains("_") || langCode.contains("-")) {
-                    langCode = langCode.split("[_-]")[0];
-                }
                 langMap.put(langCode, valStr);
             }
         }
 
-        translationCache.put(trName, langMap);
-        if (!trName.equals(trimmedTr)) {
-            translationCache.put(trimmedTr, langMap);
+        translationCache.put(name, langMap);
+        if (!name.equals(trimmedName)) {
+            translationCache.put(trimmedName, langMap);
         }
     }
 
@@ -230,7 +223,7 @@ public class AppScopeSrvCtrl {
             // fallback to tr
         }
 
-        if ("tr".equals(lang) || translationCache == null || translationCache.isEmpty()) {
+        if (translationCache == null || translationCache.isEmpty()) {
             return originalText;
         }
 
