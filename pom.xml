@@ -541,7 +541,7 @@
                         <webModule>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>fms-web</artifactId>
-                            <contextRoot>/</contextRoot>
+                            <contextRoot>/fms</contextRoot>
                         </webModule>
                     </modules>
                     <unpackTypes>war,ejb</unpackTypes>
@@ -639,7 +639,7 @@
                                     <webModule>
                                         <groupId>${project.groupId}</groupId>
                                         <artifactId>fms-web</artifactId>
-                                        <contextRoot>/</contextRoot>
+                                        <contextRoot>/fms</contextRoot>
                                     </webModule>
                                     <jarModule>
                                         <groupId>tr.org.tspb</groupId>
@@ -684,7 +684,7 @@
                                     <webModule>
                                         <groupId>${project.groupId}</groupId>
                                         <artifactId>fms-web</artifactId>
-                                        <contextRoot>/</contextRoot>
+                                        <contextRoot>/fms</contextRoot>
                                     </webModule>
                                     <jarModule>
                                         <groupId>tr.org.tspb</groupId>
