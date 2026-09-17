@@ -597,9 +597,9 @@
     <profiles>
 
         <profile>
-            <id>azmbs</id>
+            <id>azclerk</id>
             <properties>
-                <customer.folder>azmbs</customer.folder>
+                <customer.folder>azclerk</customer.folder>
             </properties>
         </profile>
 
