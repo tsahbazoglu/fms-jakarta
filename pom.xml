@@ -476,6 +476,7 @@
                                 <directory>src/main/webapp/exclude/${customer.folder}</directory>
                                 <includes>
                                     <include>login.html</include>
+                                    <include>error.html</include>
                                 </includes>
                                 <targetPath>/</targetPath>
                             </resource>
