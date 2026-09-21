@@ -142,8 +142,8 @@ public class SelectOneObjectIdConverter implements Converter, ConverterAttrs {
             List<String> viewKeys = (List<String>) component.getAttributes().
                     get("viewKey");
             if (viewKeys == null) {
-                asStringValue.append(((Document) value).get("name").
-                        toString());
+                Object nameObj = ((Document) value).get("name");
+                asStringValue.append(nameObj != null ? nameObj.toString() : "");
             } else {
                 for (Iterator<String> iterator = viewKeys.iterator(); iterator.
                         hasNext();) {

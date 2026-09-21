@@ -75,8 +75,8 @@ public class BsonConverter implements Converter {
             
              */
             if (value instanceof Document) {
-                return ((Document) value).get(viewKey.get(0)).
-                        toString();
+                Object val = ((Document) value).get(viewKey.get(0));
+                return val != null ? val.toString() : "";
             } else if (value instanceof String) {
 
                 String valueKey = value.toString();

@@ -120,6 +120,7 @@ public abstract class FmsTable extends FmsTableView {
     protected List<Map<String, String>> fileListAll = new ArrayList<>();
     private List versionHistory = new ArrayList<>();
     private List historyColumnModel = new ArrayList();
+    protected String currentProcessingField;
 
     public static final String WV_BULK_COPY = "wv-bulk-copy";
     public static final String CRUD_OPERATION_DIALOG2 = "crudOperationDialog2";
@@ -191,11 +192,18 @@ public abstract class FmsTable extends FmsTableView {
                                 new Document(crud));
 
                         if (!preSaveResult.isResult()) {
+                            String msg = preSaveResult.getMsg();
+                            if (msg == null || msg.isBlank()) {
+                                msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                            }
                             result = new Document()
-                                    .append("popupMessage", preSaveResult.getMsg());
+                                    .append("popupMessage", msg);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("Error executing preSave externalApi", e);
+                        result = new Document()
+                                .append("popupMessage", MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi"))
+                                .append("error", e.getMessage() != null ? e.getMessage() : e.toString());
                     }
                 }
             }
@@ -209,26 +217,79 @@ public abstract class FmsTable extends FmsTableView {
 
         if (result instanceof Document resultJSON) {
             if ("facesMessage".equals(resultJSON.get("gui"))) {
-                String mssssage = resultJSON.get("facesMessage").toString();
-                FacesMessage.Severity severity;
-                switch (resultJSON.get("facesMessageSeverity").toString()) {
-                    case "error":
-                        severity = FacesMessage.SEVERITY_ERROR;
-                        break;
-                    case "info":
-                        severity = FacesMessage.SEVERITY_INFO;
-                        break;
-                    case "warn":
-                        severity = FacesMessage.SEVERITY_WARN;
-                        break;
-                    default:
-                        severity = FacesMessage.SEVERITY_INFO;
-                        break;
+                Object facesMsgObj = resultJSON.get("facesMessage");
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("msg");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("message");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("error");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("errorMessage");
+                }
+                String mssssage = (facesMsgObj != null && !facesMsgObj.toString().isBlank())
+                        ? facesMsgObj.toString()
+                        : MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                FacesMessage.Severity severity = FacesMessage.SEVERITY_ERROR;
+                if (resultJSON.get("facesMessageSeverity") != null) {
+                    switch (resultJSON.get("facesMessageSeverity").toString().toLowerCase()) {
+                        case "error":
+                            severity = FacesMessage.SEVERITY_ERROR;
+                            break;
+                        case "info":
+                            severity = FacesMessage.SEVERITY_INFO;
+                            break;
+                        case "warn":
+                        case "warning":
+                            severity = FacesMessage.SEVERITY_WARN;
+                            break;
+                        default:
+                            severity = FacesMessage.SEVERITY_ERROR;
+                            break;
+                    }
                 }
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, mssssage, "*"));
             } else {
-                String mssssage = resultJSON.get("popupMessage").toString();
-                dialogController.showPopupInfoWithOk(mssssage, MESSAGE_DIALOG);
+                Object popupMsgObj = resultJSON.get("popupMessage");
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("msg");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("message");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("error");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("errorMessage");
+                }
+
+                String userMessage;
+                String technicalDetail = null;
+                if (popupMsgObj != null && !popupMsgObj.toString().isBlank()) {
+                    userMessage = popupMsgObj.toString();
+                    if (resultJSON.size() > 1 || !resultJSON.containsKey("popupMessage")) {
+                        technicalDetail = resultJSON.toJson();
+                    }
+                } else {
+                    userMessage = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                    technicalDetail = resultJSON.toJson();
+                }
+
+                String severityStr = resultJSON.getString("severity");
+                if (severityStr == null) {
+                    severityStr = resultJSON.getString("popupMessageSeverity");
+                }
+                if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
+                    dialogController.showPopupWarning(userMessage, technicalDetail, MESSAGE_DIALOG);
+                } else if ("info".equalsIgnoreCase(severityStr)) {
+                    dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
+                } else {
+                    dialogController.showPopupError(userMessage, technicalDetail);
+                }
             }
             return true;
         }
@@ -270,11 +331,18 @@ public abstract class FmsTable extends FmsTableView {
                                 new Document(crud));
 
                         if (!preSaveResult.isResult()) {
+                            String msg = preSaveResult.getMsg();
+                            if (msg == null || msg.isBlank()) {
+                                msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                            }
                             result = new Document()
-                                    .append("popupMessage", preSaveResult.getMsg());
+                                    .append("popupMessage", msg);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("Error executing preSaveOnChild externalApi", e);
+                        result = new Document()
+                                .append("popupMessage", MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi"))
+                                .append("error", e.getMessage() != null ? e.getMessage() : e.toString());
                     }
                 }
             }
@@ -284,29 +352,81 @@ public abstract class FmsTable extends FmsTableView {
             dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>\"Birlik Temsilcisi\" yalnız bir defa seçilebilmektedir. <br/>Daha önce seçim yaptınız.</li>" + "</ul>", MESSAGE_DIALOG);
             return true;
         }
-        if (result instanceof Document) {
-            Document resultJSON = (Document) result;
+        if (result instanceof Document resultJSON) {
             if ("facesMessage".equals(resultJSON.get("gui"))) {
-                String mssssage = resultJSON.get("facesMessage").toString();
-                FacesMessage.Severity severity;
-                switch (resultJSON.get("facesMessageSeverity").toString()) {
-                    case "error":
-                        severity = FacesMessage.SEVERITY_ERROR;
-                        break;
-                    case "info":
-                        severity = FacesMessage.SEVERITY_INFO;
-                        break;
-                    case "warn":
-                        severity = FacesMessage.SEVERITY_WARN;
-                        break;
-                    default:
-                        severity = FacesMessage.SEVERITY_INFO;
-                        break;
+                Object facesMsgObj = resultJSON.get("facesMessage");
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("msg");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("message");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("error");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("errorMessage");
+                }
+                String mssssage = (facesMsgObj != null && !facesMsgObj.toString().isBlank())
+                        ? facesMsgObj.toString()
+                        : MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                FacesMessage.Severity severity = FacesMessage.SEVERITY_ERROR;
+                if (resultJSON.get("facesMessageSeverity") != null) {
+                    switch (resultJSON.get("facesMessageSeverity").toString().toLowerCase()) {
+                        case "error":
+                            severity = FacesMessage.SEVERITY_ERROR;
+                            break;
+                        case "info":
+                            severity = FacesMessage.SEVERITY_INFO;
+                            break;
+                        case "warn":
+                        case "warning":
+                            severity = FacesMessage.SEVERITY_WARN;
+                            break;
+                        default:
+                            severity = FacesMessage.SEVERITY_ERROR;
+                            break;
+                    }
                 }
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, mssssage, "*"));
             } else {
-                String mssssage = resultJSON.get("popupMessage").toString();
-                dialogController.showPopupInfoWithOk(mssssage, MESSAGE_DIALOG);
+                Object popupMsgObj = resultJSON.get("popupMessage");
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("msg");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("message");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("error");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("errorMessage");
+                }
+
+                String userMessage;
+                String technicalDetail = null;
+                if (popupMsgObj != null && !popupMsgObj.toString().isBlank()) {
+                    userMessage = popupMsgObj.toString();
+                    if (resultJSON.size() > 1 || !resultJSON.containsKey("popupMessage")) {
+                        technicalDetail = resultJSON.toJson();
+                    }
+                } else {
+                    userMessage = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                    technicalDetail = resultJSON.toJson();
+                }
+
+                String severityStr = resultJSON.getString("severity");
+                if (severityStr == null) {
+                    severityStr = resultJSON.getString("popupMessageSeverity");
+                }
+                if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
+                    dialogController.showPopupWarning(userMessage, technicalDetail, MESSAGE_DIALOG);
+                } else if ("info".equalsIgnoreCase(severityStr)) {
+                    dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
+                } else {
+                    dialogController.showPopupError(userMessage, technicalDetail);
+                }
             }
             return true;
         }
@@ -546,6 +666,7 @@ public abstract class FmsTable extends FmsTableView {
         }
 
         for (MyField myField : inode.getAutosetFields()) {
+            currentProcessingField = myField.getKey();
             Object value = operatedObject.get(myField.getKey());
             if (value == null) {
                 operatedObject.put(myField.getKey(), filterService.getTableFilterCurrent().get(myField.getKey()));
@@ -553,6 +674,7 @@ public abstract class FmsTable extends FmsTableView {
         }
 
         for (String fieldKey : operatedObject.keySet()) {
+            currentProcessingField = fieldKey;
             MyField fieldStriucture = myForm.getField(fieldKey);
             if (fieldStriucture == null) {
                 continue;
@@ -565,11 +687,13 @@ public abstract class FmsTable extends FmsTableView {
         }
 
         for (String fieldKey : myForm.getFieldsKeySet()) {
+            currentProcessingField = fieldKey;
             MyField myField = myForm.getField(fieldKey);
             if (myField.getCalculateOnSave()) {
                 operatedObject.put(fieldKey, calcService.calculateValue(operatedObject, myField, FacesContext.getCurrentInstance()));
             }
         }
+        currentProcessingField = null;
 
         String operatorLdapUID = username;
 
@@ -620,11 +744,13 @@ public abstract class FmsTable extends FmsTableView {
         }
 
         for (String fieldKey : myForm.getFieldsKeySet()) {
+            currentProcessingField = fieldKey;
             MyField myField = myForm.getField(fieldKey);
             if (myField.getCalculateAfterSave()) {
                 result.put(fieldKey, calcService.calculateValue(operatedObject, myField, FacesContext.getCurrentInstance()));
             }
         }
+        currentProcessingField = null;
 
         if (enableHistoryOnSave) {
             try {
@@ -872,7 +998,7 @@ public abstract class FmsTable extends FmsTableView {
         crudObject.putAll(rowData);
 
         for (String key : (Set<String>) rowData.keySet()) {
-
+            currentProcessingField = key;
             MyField myField = formService.getMyForm().getField(key);
 
             if (myField != null && myField.isAutoComplete()) {
@@ -884,6 +1010,7 @@ public abstract class FmsTable extends FmsTableView {
                 crudObject.put(key, PlainRecordData.getPlainRecord(doc, myItems));
             }
         }
+        currentProcessingField = null;
 
         if (formService.getMyForm().getVersionCollection() != null) {
 
@@ -914,6 +1041,14 @@ public abstract class FmsTable extends FmsTableView {
 
     public Map<String, MyField> getComponentMapChilds() {
         return componentMapChilds;
+    }
+
+    public String getCurrentProcessingField() {
+        return currentProcessingField;
+    }
+
+    public void setCurrentProcessingField(String currentProcessingField) {
+        this.currentProcessingField = currentProcessingField;
     }
 
 }

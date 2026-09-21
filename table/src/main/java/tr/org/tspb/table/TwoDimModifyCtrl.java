@@ -534,7 +534,9 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
             for (Document dbo : cursor) {
                 i++;
-                String message = String.valueOf(i).concat(", {").concat(formService.getMyForm().getLoginFkField()).concat(" : ").concat(dbo.get(formService.getMyForm().getLoginFkField()).toString()).concat("}");
+                Object loginFkVal = dbo.get(formService.getMyForm().getLoginFkField());
+                String loginFkStr = loginFkVal != null ? loginFkVal.toString() : "";
+                String message = String.valueOf(i).concat(", {").concat(formService.getMyForm().getLoginFkField()).concat(" : ").concat(loginFkStr).concat("}");
                 logger.info(message);
                 filterService.getTableFilterCurrent().put(formService.getMyForm().getLoginFkField(), dbo.getObjectId(formService.getMyForm().getLoginFkField()));
                 filterService.getTableFilterCurrent().put(TEMPLATE, dbo.getObjectId(TEMPLATE));
@@ -704,6 +706,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
     public String saveObject() {
         try {
+            currentProcessingField = null;
             saveObject(null);
             if (formService.getMyForm().isHasChildFields()) {
                 setChildRecords(crudObject.getMyObjectChilds());
@@ -716,11 +719,13 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         } catch (FormConfigException | LdapException | MongoOrmFailedException | MoreThenOneInListException |
                  NullNotExpectedException | RecursiveLimitExceedException | NoSuchMethodException | ParseException |
                  MessagingException | ScriptException | net.sourceforge.jeval.EvaluationException ex) {
-            logger.error(ex.getMessage());
-            dialogController.showPopupError(ex.toString());
+            logger.error("error occurred during save: " + ex.getMessage(), ex);
+            dialogController.showPopupException(buildFieldErrorMessage(ex), ex);
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            dialogController.showPopupError(ex.toString());
+            logger.error("error occurred during save: " + ex.getMessage(), ex);
+            dialogController.showPopupException(buildFieldErrorMessage(ex), ex);
+        } finally {
+            currentProcessingField = null;
         }
         return null;
     }
@@ -845,13 +850,55 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             formService.getMyForm().runAjaxBulk(getComponentMap(), crudObject, loginController.getRoleMap(), loginController.getLoggedUserDetail());
             dialogController.showPopup(CRUD_OPERATION_DIALOG2);
         } catch (UserException ex) {
-            logger.error(ex.getMessage());
+            logger.error("error occured", ex);
             dialogController.showPopup(ex.getTitle(), ex.getMessage(), MESSAGE_DIALOG);
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            dialogController.showPopupError(ex.toString());
+            logger.error("error occurred during saveAs: " + ex.getMessage(), ex);
+            dialogController.showPopupException(buildFieldErrorMessage(ex), ex);
+        } finally {
+            currentProcessingField = null;
         }
         return null;
+    }
+
+    private String buildFieldErrorMessage(Exception ex) {
+        String formName = (formService != null && formService.getMyForm() != null && formService.getMyForm().getName() != null && !formService.getMyForm().getName().isBlank())
+                ? formService.getMyForm().getName() : null;
+
+        String rawMsg = ex.getMessage() != null ? ex.getMessage() : ex.toString();
+        String explanation;
+
+        if (ex instanceof NullPointerException) {
+            String npeDesc = MessageBundleLoader.getMessage("beklenmeyen.bos.deger.hatasi",
+                    "Beklenmeyen boş/null veri hatası. Gerekli bir alan veya ayar verisi eksik.");
+            explanation = "<b>" + npeDesc + "</b>";
+            if (rawMsg != null && !rawMsg.isBlank()) {
+                explanation += "<br/><span class='text-xs text-600 font-italic'>(" + rawMsg + ")</span>";
+            }
+        } else {
+            explanation = rawMsg;
+        }
+
+        if (currentProcessingField != null && (rawMsg == null || !rawMsg.contains(currentProcessingField))) {
+            MyField field = (formService != null && formService.getMyForm() != null)
+                    ? formService.getMyForm().getField(currentProcessingField) : null;
+            String fieldName = (field != null && field.getName() != null && !field.getName().isBlank())
+                    ? field.getName()
+                    : (field != null && field.getShortName() != null ? field.getShortName() : currentProcessingField);
+            String fieldPrefix = MessageBundleLoader.getMessage("form.alani.hatasi",
+                    "Form alanı ['{0}' (key: '{1}')] işlenirken hata oluştu:", fieldName, currentProcessingField);
+            return fieldPrefix + "<br/>" + explanation;
+        }
+
+        if (formName != null) {
+            String formPrefix = MessageBundleLoader.getMessage("form.kayit.hatasi",
+                    "''{0}'' formu kaydedilirken hata oluştu:", formName);
+            return formPrefix + "<br/>" + explanation;
+        }
+
+        String saveError = MessageBundleLoader.getMessage("kayit.sirasinda.hata.olustu",
+                "Kaydetme işlemi sırasında bir hata oluştu.");
+        return saveError + "<br/>" + explanation;
     }
 
     public Map requiredMap() {
@@ -1455,102 +1502,122 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
         }
 
         for (String key : inodeMyForm.getFieldsKeySet()) {
-
+            currentProcessingField = key;
             MyField fieldStructure = inodeMyForm.getField(key);
+            try {
+                // recalculate rendered property
+                fieldStructure.calcWfRendered(crudObject, loginController.getRoleMap(), filterService.getTableFilterCurrent());
 
-            // recalculate rendered property
-            fieldStructure.calcWfRendered(crudObject, loginController.getRoleMap(), filterService.getTableFilterCurrent());
+                // recalculate defaultValue property
+                Object defaultValueObject = formService.getMyForm().getField(key).getDefaultValue();
 
-            // recalculate defaultValue property
-            Object defaultValueObject = formService.getMyForm().getField(key).getDefaultValue();
+                if (defaultValueObject != null && crudObject.get(key) == null) {
 
-            if (defaultValueObject != null && crudObject.get(key) == null) {
-
-                if (defaultValueObject instanceof String) {
-                    crudObject.put(key, defaultValueObject);
-                } else if (defaultValueObject instanceof List) {
-                    crudObject.put(key, defaultValueObject);
-                } else if (defaultValueObject instanceof Number) {
-                    crudObject.put(key, defaultValueObject);
-                } else if (defaultValueObject instanceof ObjectId) {
-                    crudObject.put(key, defaultValueObject);
-                } else if (defaultValueObject instanceof Code) {
-                    String code = ((Code) defaultValueObject).getCode();
-                    Document commandResult = mongoDbUtil.runCommand(formService.getMyForm().getDb(), code, filterService.getTableFilterCurrent(), loginController.getRolesAsList());
-                    crudObject.put(key, commandResult.get(RETVAL));
-                }
-            }
-
-            if (getInputFile().equals(fieldStructure.getComponentType())) {
-                setFileLimit(fieldStructure.getFileLimit());
-                if (fieldStructure.getFileType() != null) {
-                    switch (fieldStructure.getFileType()) {
-                        case "pdf":
-                            setMongoUploadFileType("/(\\.|\\/)(pdf)$/");
-                            setInvalidFileMessage("Geçersiz Dosya Tipi (Sadece PDF dosyalar eklenebilir) : ");
-                            break;
-                        case "image":
-                            setMongoUploadFileType("/(\\.|\\/)(jpg|png|JPEG|JPG|PNG)$/");
-                            setInvalidFileMessage("Geçersiz Dosya Tipi (Sadece resim [jpg, png, JPEG, JPG, PNG] formatında dosyalar eklenebilir) : ");
-                            break;
-                        default:
-                            setMongoUploadFileType("/(\\.|\\/)(pdf)$/");
-                            setInvalidFileMessage("Geçersiz Dosya Tipi (Sadece PDF dosyalar eklenebilir) : ");
-                            break;
-                    }
-                }
-            }
-
-            if (getPickList().equals(fieldStructure.getComponentType())) {
-                List<String> targetList = new ArrayList<>();
-                if (crudObject.get(fieldStructure.getKey()) instanceof List) {
-                    targetList = (List<String>) crudObject.get(fieldStructure.getKey());
-                }
-
-                List<String> sourceList = new ArrayList<>(fieldStructure.getItemsAsMyItems().getListOfString());
-                sourceList.removeAll(targetList);
-
-                crudObject.put(fieldStructure.getKey(), new DualListModel<String>(sourceList, targetList));
-            }
-
-            if (getChips().equals(fieldStructure.getComponentType())) {
-
-                List<SelectItem> targetList = new ArrayList<>();
-
-                List<ObjectId> sourceList;
-
-                if ((sourceList = (List<ObjectId>) crudObject.get(fieldStructure.getKey())) != null) {
-                    List<Document> docs = mongoDbUtil.find("elipsreisdb", "tedarikci", Filters.in("_id", sourceList));
-                    for (Document doc : docs) {
-                        targetList.add(new SelectItem(doc.get("_id"), (String) doc.get("ad")));
+                    if (defaultValueObject instanceof String) {
+                        crudObject.put(key, defaultValueObject);
+                    } else if (defaultValueObject instanceof List) {
+                        crudObject.put(key, defaultValueObject);
+                    } else if (defaultValueObject instanceof Number) {
+                        crudObject.put(key, defaultValueObject);
+                    } else if (defaultValueObject instanceof ObjectId) {
+                        crudObject.put(key, defaultValueObject);
+                    } else if (defaultValueObject instanceof Code) {
+                        String code = ((Code) defaultValueObject).getCode();
+                        Document commandResult = mongoDbUtil.runCommand(formService.getMyForm().getDb(), code, filterService.getTableFilterCurrent(), loginController.getRolesAsList());
+                        crudObject.put(key, commandResult.get(RETVAL));
                     }
                 }
 
-                crudObject.put(fieldStructure.getKey(), targetList);
+                if (getInputFile().equals(fieldStructure.getComponentType())) {
+                    setFileLimit(fieldStructure.getFileLimit());
+                    if (fieldStructure.getFileType() != null) {
+                        switch (fieldStructure.getFileType()) {
+                            case "pdf":
+                                setMongoUploadFileType("/(\\.|\\/)(pdf)$/");
+                                setInvalidFileMessage("Geçersiz Dosya Tipi (Sadece PDF dosyalar eklenebilir) : ");
+                                break;
+                            case "image":
+                                setMongoUploadFileType("/(\\.|\\/)(jpg|png|JPEG|JPG|PNG)$/");
+                                setInvalidFileMessage("Geçersiz Dosya Tipi (Sadece resim [jpg, png, JPEG, JPG, PNG] formatında dosyalar eklenebilir) : ");
+                                break;
+                            default:
+                                setMongoUploadFileType("/(\\.|\\/)(pdf)$/");
+                                setInvalidFileMessage("Geçersiz Dosya Tipi (Sadece PDF dosyalar eklenebilir) : ");
+                                break;
+                        }
+                    }
+                }
+
+                if (getPickList().equals(fieldStructure.getComponentType())) {
+                    List<String> targetList = new ArrayList<>();
+                    if (crudObject.get(fieldStructure.getKey()) instanceof List) {
+                        targetList = (List<String>) crudObject.get(fieldStructure.getKey());
+                    }
+
+                    List<String> sourceList = new ArrayList<>(fieldStructure.getItemsAsMyItems().getListOfString());
+                    sourceList.removeAll(targetList);
+
+                    crudObject.put(fieldStructure.getKey(), new DualListModel<String>(sourceList, targetList));
+                }
+
+                if (getChips().equals(fieldStructure.getComponentType())) {
+
+                    List<SelectItem> targetList = new ArrayList<>();
+
+                    List<ObjectId> sourceList;
+
+                    if ((sourceList = (List<ObjectId>) crudObject.get(fieldStructure.getKey())) != null) {
+                        List<Document> docs = mongoDbUtil.find("elipsreisdb", "tedarikci", Filters.in("_id", sourceList));
+                        for (Document doc : docs) {
+                            targetList.add(new SelectItem(doc.get("_id"), (String) doc.get("ad")));
+                        }
+                    }
+
+                    crudObject.put(fieldStructure.getKey(), targetList);
+                }
+
+                if (!getAutoComplete().equals(fieldStructure.getComponentType())) {
+                    fieldStructure
+                            .createSelectItems(
+                                    filterService.getTableFilterCurrent(),
+                                    crudObject,
+                                    loginController.getRoleMap(),
+                                    loginController.getLoggedUserDetail(),
+                                    false);
+                }
+
+                fieldStructure.setCrudRecord(crudObject);
+
+                addComponent(key, fieldStructure);
+            } catch (Exception ex) {
+                String fieldName = (fieldStructure != null && fieldStructure.getName() != null && !fieldStructure.getName().isBlank())
+                        ? fieldStructure.getName()
+                        : (fieldStructure != null && fieldStructure.getShortName() != null ? fieldStructure.getShortName() : key);
+                logger.error("Form alanı hazırlanırken hata oluştu: " + fieldName + " (" + key + ")", ex);
+                throw new FormConfigException(String.format("Form alanı ['%s' (key: '%s')] hazırlanırken hata oluştu: %s",
+                        fieldName, key, ex.getMessage() != null ? ex.getMessage() : ex.toString()), ex);
             }
-
-            if (!getAutoComplete().equals(fieldStructure.getComponentType())) {
-                fieldStructure
-                        .createSelectItems(
-                                filterService.getTableFilterCurrent(),
-                                crudObject,
-                                loginController.getRoleMap(),
-                                loginController.getLoggedUserDetail(),
-                                false);
-            }
-
-            fieldStructure.setCrudRecord(crudObject);
-
-            addComponent(key, fieldStructure);
         }
+        currentProcessingField = null;
 
         if (formService.getMyForm().isHasChildFields()) {
             for (MyField myChildField : inodeMyForm.getChildFields()) {
-                if (!getAutoComplete().equals(myChildField.getComponentType())) {
-                    myChildField.createSelectItems(filterService.getTableFilterCurrent(), crudObject, loginController.getRoleMap(), loginController.getLoggedUserDetail(), false);
+                currentProcessingField = myChildField != null ? myChildField.getKey() : null;
+                try {
+                    if (!getAutoComplete().equals(myChildField.getComponentType())) {
+                        myChildField.createSelectItems(filterService.getTableFilterCurrent(), crudObject, loginController.getRoleMap(), loginController.getLoggedUserDetail(), false);
+                    }
+                    addComponentChild(myChildField.getKey(), myChildField);
+                } catch (Exception ex) {
+                    String fieldName = (myChildField != null && myChildField.getName() != null && !myChildField.getName().isBlank())
+                            ? myChildField.getName()
+                            : (myChildField != null && myChildField.getShortName() != null ? myChildField.getShortName() : currentProcessingField);
+                    logger.error("Alt form alanı hazırlanırken hata oluştu: " + fieldName + " (" + currentProcessingField + ")", ex);
+                    throw new FormConfigException(String.format("Alt form alanı ['%s' (key: '%s')] hazırlanırken hata oluştu: %s",
+                            fieldName, currentProcessingField, ex.getMessage() != null ? ex.getMessage() : ex.toString()), ex);
                 }
-                addComponentChild(myChildField.getKey(), myChildField);
             }
+            currentProcessingField = null;
         }
 
     }

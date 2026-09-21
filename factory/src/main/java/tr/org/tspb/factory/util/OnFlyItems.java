@@ -134,7 +134,7 @@ public class OnFlyItems implements FmsAutoComplete {
 
         myField.setSessionKey(MySessionStore.createSessionKey(
                 docForm.getString(ProjectConstants.PROJECT_KEY),
-                docForm.get(UPPER_NODES).toString(),
+                docForm.get(UPPER_NODES) != null ? docForm.get(UPPER_NODES).toString() : "",
                 docForm.getString(FORM_KEY),
                 myField.getKey()));
 
@@ -230,7 +230,7 @@ public class OnFlyItems implements FmsAutoComplete {
 
         myField.setSessionKey(MySessionStore.createSessionKey(
                 docForm.getString(ProjectConstants.PROJECT_KEY),
-                docForm.get(UPPER_NODES).toString(),
+                docForm.get(UPPER_NODES) != null ? docForm.get(UPPER_NODES).toString() : "",
                 docForm.getString(FORM_KEY),
                 myField.getKey()));
 
@@ -301,7 +301,7 @@ public class OnFlyItems implements FmsAutoComplete {
 
         myField.setSessionKey(MySessionStore.createSessionKey(
                 docForm.getString(ProjectConstants.PROJECT_KEY),
-                docForm.get(UPPER_NODES).toString(),
+                docForm.get(UPPER_NODES) != null ? docForm.get(UPPER_NODES).toString() : "",
                 docForm.getString(FORM_KEY),
                 myField.getKey()));
 
@@ -405,9 +405,14 @@ public class OnFlyItems implements FmsAutoComplete {
         items.add(new SelectItem(SelectOneStringConverter.NULL_VALUE,
                 SELECT_PLEASE));
 
-        Document commandResult = mongoDbUtil.runCommand(myField.getDbo().
-                        get(FORM_DB).
-                        toString(),
+        String formDb = (myField.getDbo() != null && myField.getDbo().get(FORM_DB) != null)
+                ? myField.getDbo().get(FORM_DB).toString()
+                : (myField.getItemsAsMyItems() != null ? myField.getItemsAsMyItems().getDb() : null);
+        if (formDb == null) {
+            throw new RuntimeException(String.format("Form DB bulunamadı. Alan: '%s' (key: '%s')", myField.getName(), myField.getKey()));
+        }
+
+        Document commandResult = mongoDbUtil.runCommand(formDb,
                 itemsObject.getCode().
                         replace(DIEZ, DOLAR),
                 searchObject, loginController.keySet());

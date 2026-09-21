@@ -47,14 +47,14 @@
             <!-- Technical details panel (rendered if detail is not empty) -->
             <p:panel 
                 id="pnlTechnicalDetail"
-                header="Teknik Detaylar" 
+                header="#{msg['teknik.detaylar']}" 
                 toggleable="true" 
                 collapsed="true"
                 rendered="#{not empty dlgCtrl.detail}"
                 styleClass="surface-card border-1 surface-border border-round mt-3">
                 
                 <div class="flex justify-content-between align-items-center mb-2">
-                    <span class="text-xs text-500 font-italic">Hata ayrıntıları ve çağrı yığını:</span>
+                    <span class="text-xs text-500 font-italic">#{msg['hata.ayrintilari.ve.cagri.yigini']}</span>
                     <p:commandButton
                         value="#{msg['kopyala']}"
                         icon="pi pi-copy"

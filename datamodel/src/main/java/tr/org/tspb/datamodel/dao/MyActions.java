@@ -635,13 +635,13 @@ public class MyActions {
                     if (actionFunc != null) {
                         controlResult.setMyaction(actionFunc);
                     } else if (actionRef != null) {
-                        controlResult.setMyActionType(actionRef.get(TYPE).
-                                toString());
+                        Object typeObj = actionRef.get(TYPE);
+                        controlResult.setMyActionType(typeObj != null ? typeObj.toString() : null);
 
                         if ("START_DIALOG".equals(controlResult.
                                 getMyActionType())) {
-                            controlResult.setDialog(actionRef.get("dialog").
-                                    toString());
+                            Object dialogObj = actionRef.get("dialog");
+                            controlResult.setDialog(dialogObj != null ? dialogObj.toString() : null);
                         }
 
                         if (actionRef.get("func") != null) {

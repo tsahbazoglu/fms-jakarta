@@ -179,6 +179,19 @@ public class DlgCtrl implements Serializable {
         showPopup(clientSideDialogName);
     }
 
+    public void showPopupWarning(String msg, String detail, String clientSideDialogName) {
+        this.severity = "warn";
+        this.detail = detail;
+        String warnTitle = getUyari();
+        bulkSet(null, null, warnTitle, msg, true, true);
+        setRenderedButon(false);
+        setRenderedOkButon(true);
+        setRendered(false);
+        setStyle("font-size:13px;");
+        setTitle(warnTitle);
+        showPopup(clientSideDialogName);
+    }
+
     public void showPopupError(String msg) {
         showPopupError(msg, (String) null);
     }
@@ -296,6 +309,13 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showPopup(String clientSideDialogName) {
+        if (MESSAGE_DIALOG.equals(clientSideDialogName)) {
+            try {
+                PrimeFaces.current().ajax().update("idMessageDialog");
+            } catch (Exception e) {
+                // ignore
+            }
+        }
         PrimeFaces.current().
                 executeScript("PF('" + clientSideDialogName + "').show()");
     }

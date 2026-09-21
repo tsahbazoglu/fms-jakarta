@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.List;
 import jakarta.annotation.Resource;
 import jakarta.inject.Inject;
 import jakarta.jms.Queue;
@@ -137,11 +138,17 @@ public class MailService implements Serializable {
         }
 
         Document dbObject = (Document) doc.get("attachmentQuery");
+        if (dbObject == null || dbObject.get("filename") == null) {
+            return null;
+        }
 
-        GridFSFile gridFSFile = mongoDbUtil.findFiles(gridfsdb, dbObject.
+        List<GridFSFile> files = mongoDbUtil.findFiles(gridfsdb, dbObject.
                 get("filename").
-                toString()).
-                get(0);
+                toString());
+        if (files == null || files.isEmpty()) {
+            return null;
+        }
+        GridFSFile gridFSFile = files.get(0);
 
         GridFSBucket gridFSBucket = mongoDbUtil.createGridFSConnection(gridfsdb);
 

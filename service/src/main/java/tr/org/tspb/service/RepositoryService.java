@@ -55,6 +55,7 @@ import tr.org.tspb.common.services.AppScopeSrvCtrl;
 import tr.org.tspb.common.services.BaseService;
 import tr.org.tspb.common.services.LoginController;
 import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
+import tr.org.tspb.converter.props.MessageBundleLoader;
 import tr.org.tspb.datamodel.dao.MyActions;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.MyFile;
@@ -311,18 +312,43 @@ public class RepositoryService implements Serializable {
             // 4. Validate output response signals cleanly
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                 Map jsonResponse = response.readEntity(Map.class);
+                Object exprObj = jsonResponse.get("expression");
+                if (exprObj == null) {
+                    exprObj = jsonResponse.get("message");
+                }
+                if (exprObj == null) {
+                    exprObj = jsonResponse.get("msg");
+                }
+                if (exprObj == null) {
+                    exprObj = jsonResponse.get("error");
+                }
+                if (exprObj == null) {
+                    exprObj = jsonResponse.get("errorMessage");
+                }
+                if (exprObj == null) {
+                    exprObj = jsonResponse.get("popupMessage");
+                }
+                String expr = exprObj != null ? exprObj.toString() : "";
+                boolean result = Boolean.TRUE.equals(jsonResponse.get("result"));
+                if (!result && expr.isBlank()) {
+                    expr = MessageBundleLoader.getMessage("kayit.oncesi.kontrol.basarisiz");
+                }
                 preSaveResult = new PreSaveResult(
-                        Boolean.TRUE.equals(jsonResponse.get("result")),
-                        jsonResponse.get("expression").toString(),
+                        result,
+                        expr,
                         PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
             } else {
-                preSaveResult = new PreSaveResult(false, "Constraint API is not reachable",
+                String errMsg = MessageBundleLoader.getMessage("constraint.api.erisilmez", response.getStatus());
+                preSaveResult = new PreSaveResult(false, errMsg,
                         PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
             }
             response.close();
         } catch (Exception e) {
             e.printStackTrace();
-            preSaveResult = PreSaveResult.getNullSingleton();
+            String detailMsg = e.getMessage() != null ? e.getMessage() : e.toString();
+            String errMsg = MessageBundleLoader.getMessage("constraint.api.baglanti.hatasi", detailMsg);
+            preSaveResult = new PreSaveResult(false, errMsg,
+                    PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
         }
 
         return preSaveResult;
@@ -433,29 +459,51 @@ public class RepositoryService implements Serializable {
         } else if (result instanceof Document) {
             Document resultJSON = (Document) result;
             if ("facesMessage".equals(resultJSON.get("gui"))) {
-                String msg = resultJSON.get("facesMessage").
-                        toString();
-                PreSaveResult.ErrType severity;
-                switch (resultJSON.get("facesMessageSeverity").
-                        toString()) {
-                    case "error":
-                        severity = PreSaveResult.ErrType.error;
-                        break;
-                    case "info":
-                        severity = PreSaveResult.ErrType.info;
-                        break;
-                    case "warn":
-                        severity = PreSaveResult.ErrType.warn;
-                        break;
-                    default:
-                        severity = PreSaveResult.ErrType.info;
-                        break;
+                Object facesMsgObj = resultJSON.get("facesMessage");
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("msg");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("message");
+                }
+                String msg = facesMsgObj != null ? facesMsgObj.toString() : "";
+                PreSaveResult.ErrType severity = PreSaveResult.ErrType.info;
+                if (resultJSON.get("facesMessageSeverity") != null) {
+                    switch (resultJSON.get("facesMessageSeverity").toString().toLowerCase()) {
+                        case "error":
+                            severity = PreSaveResult.ErrType.error;
+                            break;
+                        case "info":
+                            severity = PreSaveResult.ErrType.info;
+                            break;
+                        case "warn":
+                        case "warning":
+                            severity = PreSaveResult.ErrType.warn;
+                            break;
+                        default:
+                            severity = PreSaveResult.ErrType.info;
+                            break;
+                    }
                 }
                 return new PreSaveResult(true, msg,
                         PreSaveResult.MessageGuiType.facesMessage, severity);
             } else {
-                String msg = resultJSON.get("popupMessage").
-                        toString();
+                Object popupMsgObj = resultJSON.get("popupMessage");
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("msg");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("message");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("error");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("errorMessage");
+                }
+                String msg = (popupMsgObj != null && !popupMsgObj.toString().isBlank())
+                        ? popupMsgObj.toString()
+                        : MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
                 return new PreSaveResult(true, msg,
                         PreSaveResult.MessageGuiType.facesMessage, null);
             }

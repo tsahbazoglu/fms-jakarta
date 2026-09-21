@@ -39,7 +39,7 @@ public class PreSaveResult {
                     + "</ul>";
         }
 
-        return instance;
+        return errInstance;
     }
 
     public enum MessageGuiType {
