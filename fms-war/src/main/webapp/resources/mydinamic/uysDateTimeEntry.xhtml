@@ -69,7 +69,7 @@
                     required="#{cc.attrs.myrequired}"
                     pattern="#{cc.attrs.mypattern}"
                     mask="true"
-                    requiredMessage="#{cc.attrs.label} zorunlu alandır."
+                    requiredMessage="#{cc.attrs.label} #{msg['requiredMessage']}"
                     >
                     <f:attribute name="label" value="#{cc.attrs.label}"/>
                     <f:validator validatorId="primeDateRangeValidator"/>

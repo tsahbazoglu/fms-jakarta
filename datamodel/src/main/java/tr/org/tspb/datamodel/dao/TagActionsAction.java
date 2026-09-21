@@ -76,8 +76,8 @@ public abstract class TagActionsAction {
             if (whattodo.getString("func") != null) {
                 this.actionFunc = whattodo.getString("func");
             } else if (whattodo.getString("registred-func-name") != null) {
-                String func = registredFunctions.getString(whattodo.getString(
-                        "registred-func-name"));
+                String func = registredFunctions != null ? registredFunctions.getString(whattodo.getString(
+                        "registred-func-name")) : null;
                 if (func != null) {
                     this.actionFunc = func.replace(DIEZ, DOLAR);
                 }

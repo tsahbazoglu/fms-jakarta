@@ -23,7 +23,7 @@ public class MyProject {
     private final String loginDetailTable;
     private final String loginDetailLdapUID;
     private final String key;
-    private Document registredFunctions;
+    private Document registredFunctions = new Document();
     private Document jsonSchemaDef;
     private boolean checkJsonSchema;
     private String apiToken;
@@ -67,7 +67,7 @@ public class MyProject {
     }
 
     public Document getRegistredFunctions() {
-        return registredFunctions;
+        return registredFunctions != null ? registredFunctions : new Document();
     }
 
     public String getAdminRole() {
@@ -127,8 +127,8 @@ public class MyProject {
         List<Document> listDoc = docProject.getList("registred-functions",
                 Document.class);
 
+        this.registredFunctions = new Document();
         if (listDoc != null) {
-            this.registredFunctions = new Document();
             for (Document document : listDoc) {
                 this.registredFunctions.append(document.getString("key"),
                         document.getString("value"));

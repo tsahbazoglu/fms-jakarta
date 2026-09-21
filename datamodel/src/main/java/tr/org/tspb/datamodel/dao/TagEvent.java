@@ -91,7 +91,9 @@ public class TagEvent {
         String op = docEvent.get("op", String.class);
         if (op == null) {
             String registredOpName = docEvent.getString("registred-func-name");
-            op = registredFunctions.getString(registredOpName);
+            if (registredOpName != null && registredFunctions != null) {
+                op = registredFunctions.getString(registredOpName);
+            }
         }
         tagEvent.op = op;
 

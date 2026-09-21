@@ -1,6 +1,5 @@
 package tr.org.tspb.factory.cp;
 
-import htmlflow.HtmlFlow;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +38,7 @@ import static tr.org.tspb.constants.ProjectConstants.CONVERTER_TELMAN_STRING_CON
 import static tr.org.tspb.constants.ProjectConstants.DEFAULT_VALUE;
 import static tr.org.tspb.constants.ProjectConstants.DIEZ;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR;
+import static tr.org.tspb.constants.ProjectConstants.FIELD;
 import static tr.org.tspb.constants.ProjectConstants.FIELDS_ROW;
 import static tr.org.tspb.constants.ProjectConstants.DOLAR_FMS_REF;
 import static tr.org.tspb.constants.ProjectConstants.FORMFIELDS;
@@ -1335,13 +1335,14 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
 
     private Converter createConverter(Document docForm, Document docField) {
         return createConverter2(docForm,
+                docField,
                 docField.getString(CONVERTER),
                 docField.getString(COMPONENTTYPE),
                 docField.get(ProjectConstants.UYSFORMAT) != null,
                 docField.get(MY_CONVERTER));
     }
 
-    private Converter createConverter2(Document docForm, String converter,
+    private Converter createConverter2(Document docForm, Document docField, String converter,
                                        String componentType, boolean hasUysFormat, Object myConverter) {
 
         Converter converterValue = null;
@@ -1352,50 +1353,91 @@ public class OgmCreatorImpl implements OgmCreatorIntr {
                 equals(componentType))
                 && (converter == null)) {
 
-            String html = HtmlFlow.doc(System.out).
-                    html().
-                    head().
-                    __().
-                    body().
-                    div().
-                    attrClass("container") //.span().text(this.myField.getMyForm().printToConfigAnalyze(this.myField.getKey())).__()
-                            .
-                    span().
-                    text(docForm.get(NAME)).
-                    __().
-                    br().
-                    __().
-                    u().
-                    text("error:").
-                    __().
-                    br().
-                    __().
-                    br().
-                    __().
-                    span().
-                    text("items based componetns require a converter").
-                    __().
-                    br().
-                    __().
-                    br().
-                    __().
-                    span().
-                    text("acceptable converters are : [none, SelectOneStringConverter, SelectOneObjectIdConverter]").
-                    __().
-                    br().
-                    __().
-                    br().
-                    __() //.span().text(String.format("cfgdb.%s.update({key:'%s'},{$set:{'fields.%s.converter':'SelectOneStringConverter'}});", this.myField.getMyForm().getMyProject().getConfigTable(), this.myField.getMyForm().getKey(), this.myField.getKey())).__()
-                            .
-                    span().
-                    text(docForm.get(NAME)).
-                    __().
-                    br().
-                    __().
-                    __().
-                    __().
-                    __().
-                    toString();
+            Object formName = docForm != null ? docForm.get(NAME) : null;
+            Object formKey = docForm != null ? docForm.get(FORM_KEY) : null;
+            Object fieldName = docField != null ? docField.get(NAME) : null;
+            Object fieldKey = docField != null ? docField.get(FORM_KEY) : null;
+            Object fieldProp = docField != null ? docField.get(FIELD) : null;
+
+            String html = """
+                    <html>
+                    <head>
+                        <style>
+                            .container {
+                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                                padding: 20px;
+                                border: 1px solid #e0e0e0;
+                                border-radius: 8px;
+                                max-width: 650px;
+                                background-color: #fafafa;
+                                margin: 20px auto;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            }
+                            .error-header {
+                                color: #d32f2f;
+                                font-size: 18px;
+                                font-weight: bold;
+                                margin-bottom: 12px;
+                                border-bottom: 2px solid #ef5350;
+                                padding-bottom: 6px;
+                            }
+                            .error-desc {
+                                font-size: 14px;
+                                color: #333;
+                                margin-bottom: 14px;
+                            }
+                            .detail-table {
+                                width: 100%%;
+                                border-collapse: collapse;
+                                margin-bottom: 14px;
+                            }
+                            .detail-table td {
+                                padding: 6px 10px;
+                                font-size: 13px;
+                                border-bottom: 1px solid #eeeeee;
+                            }
+                            .detail-table .label {
+                                font-weight: 600;
+                                color: #555;
+                                width: 30%%;
+                            }
+                            .detail-table .value {
+                                font-family: monospace;
+                                color: #1565c0;
+                            }
+                            .acceptable-box {
+                                background-color: #fff;
+                                border-left: 4px solid #1976d2;
+                                padding: 10px 14px;
+                                font-size: 13px;
+                                border-radius: 0 4px 4px 0;
+                            }
+                            .acceptable-box code {
+                                color: #c2185b;
+                                font-weight: bold;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                    <div class="container">
+                        <div class="error-header">Configuration Error: Converter Required</div>
+                        <div class="error-desc">Items-based components require a converter to be defined.</div>
+                        <table class="detail-table">
+                            <tr><td class="label">Form Name:</td><td class="value">%s</td></tr>
+                            <tr><td class="label">Form Key:</td><td class="value">%s</td></tr>
+                            <tr><td class="label">Field Name:</td><td class="value">%s</td></tr>
+                            <tr><td class="label">Field Key:</td><td class="value">%s</td></tr>
+                            <tr><td class="label">Field Property:</td><td class="value">%s</td></tr>
+                            <tr><td class="label">Component Type:</td><td class="value">%s</td></tr>
+                        </table>
+                        <div class="acceptable-box">
+                            <strong>Acceptable converters:</strong><br/>
+                            <code>[none, SelectOneStringConverter, SelectOneObjectIdConverter]</code>
+                        </div>
+                    </div>
+                    </body>
+                    </html>
+                    """.formatted(formName, formKey, fieldName, fieldKey, fieldProp, componentType);
 
             throw new RuntimeException(html);
         }

@@ -11,7 +11,7 @@
         id="idMessageDialog"
         widgetVar="messageDialog"
         resizable="false"
-        header="#{dlgCtrl.title}"                        
+        header="#{dlgCtrl.title}"
         closable="true"
         closeOnEscape="true" 
         modal="true"
@@ -19,37 +19,129 @@
         draggable="true"
         position="center"
         visible="false"
-        width="600"
+        width="650"
         style="max-width: 95vw; max-height: 85vh;"
-        styleClass="border-round shadow-2"
+        styleClass="border-round shadow-3"
         >
+        <f:facet name="header">
+            <div class="flex align-items-center gap-2">
+                <i class="pi #{dlgCtrl.severityIcon} text-xl #{dlgCtrl.severityColorClass}"/>
+                <span class="font-bold text-lg text-900">#{dlgCtrl.title}</span>
+            </div>
+        </f:facet>
+
         <div class="py-2 overflow-y-auto" style="max-height: 65vh;">
-            <h:outputText 
-                id="outMsg"
-                value="#{dlgCtrl.message}"
-                styleClass="text-base line-height-3 block"
-                style="#{dlgCtrl.style}"
-                escape="false"/>
+            <!-- Message banner with severity styling -->
+            <div class="p-3 border-round border-left-3 flex align-items-start gap-3 mb-2 #{dlgCtrl.severityContainerClass}">
+                <i class="pi #{dlgCtrl.severityIcon} text-2xl #{dlgCtrl.severityColorClass} mt-1 flex-shrink-0"/>
+                <div class="flex-grow-1">
+                    <h:outputText 
+                        id="outMsg"
+                        value="#{dlgCtrl.message}"
+                        styleClass="text-base line-height-3 block message-dialog-text"
+                        style="#{dlgCtrl.style}"
+                        escape="false"/>
+                </div>
+            </div>
+
+            <!-- Technical details panel (rendered if detail is not empty) -->
+            <p:panel 
+                id="pnlTechnicalDetail"
+                header="Teknik Detaylar" 
+                toggleable="true" 
+                collapsed="true"
+                rendered="#{not empty dlgCtrl.detail}"
+                styleClass="surface-card border-1 surface-border border-round mt-3">
+                
+                <div class="flex justify-content-between align-items-center mb-2">
+                    <span class="text-xs text-500 font-italic">Hata ayrıntıları ve çağrı yığını:</span>
+                    <p:commandButton
+                        value="#{msg['kopyala']}"
+                        icon="pi pi-copy"
+                        type="button"
+                        onclick="copyTechnicalDetails();"
+                        styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
+                </div>
+
+                <pre class="p-3 surface-ground border-round font-mono text-xs overflow-x-auto text-800 m-0 technical-details-content" 
+                     style="max-height: 250px; white-space: pre-wrap; word-break: break-all; user-select: text;">#{dlgCtrl.detail}</pre>
+            </p:panel>
         </div>
 
         <f:facet name="footer">
-            <div class="flex justify-content-end gap-2">
-                <p:commandButton
-                    value="#{msg['kaydetmeden.cik']}"
-                    icon="pi pi-times"
-                    action="#{twoDimModifyCtrl.doNotSave}"
-                    oncomplete="PF('messageDialog').hide()"
-                    rendered="#{dlgCtrl.renderedButon}"
-                    styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
+            <div class="flex justify-content-between align-items-center w-full">
+                <div>
+                    <p:commandButton
+                        value="#{msg['kopyala']}"
+                        icon="pi pi-copy"
+                        type="button"
+                        onclick="copyMessageDialogContent();"
+                        rendered="#{not empty dlgCtrl.detail}"
+                        styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
+                </div>
 
-                <p:button
-                    value="#{msg['tamam']}"
-                    icon="pi pi-check"
-                    onclick="PF('messageDialog').hide();return false;"
-                    rendered="#{dlgCtrl.renderedOkButon}"
-                    styleClass="ui-button-primary p-button-sm"
-                    />
+                <div class="flex justify-content-end gap-2">
+                    <p:commandButton
+                        value="#{msg['kaydetmeden.cik']}"
+                        icon="pi pi-times"
+                        action="#{twoDimModifyCtrl.doNotSave}"
+                        oncomplete="PF('messageDialog').hide()"
+                        rendered="#{dlgCtrl.renderedButon}"
+                        styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
+
+                    <p:button
+                        value="#{msg['tamam']}"
+                        icon="pi pi-check"
+                        onclick="PF('messageDialog').hide();return false;"
+                        rendered="#{dlgCtrl.renderedOkButon}"
+                        styleClass="ui-button-primary p-button-sm"
+                        />
+                </div>
             </div>
         </f:facet>
+
+        <script type="text/javascript">
+            function copyTechnicalDetails() {
+                var el = document.querySelector('.technical-details-content');
+                if (el) {
+                    copyTextToClipboard(el.innerText || el.textContent);
+                }
+            }
+
+            function copyMessageDialogContent() {
+                var text = '';
+                var msgEl = document.querySelector('.message-dialog-text');
+                if (msgEl) {
+                    text += (msgEl.innerText || msgEl.textContent).trim();
+                }
+                var detailEl = document.querySelector('.technical-details-content');
+                if (detailEl) {
+                    text += '\n\n--- Teknik Detaylar ---\n' + (detailEl.innerText || detailEl.textContent).trim();
+                }
+                copyTextToClipboard(text);
+            }
+
+            function copyTextToClipboard(text) {
+                if (!text) return;
+                if (navigator.clipboard &amp;&amp; window.isSecureContext) {
+                    navigator.clipboard.writeText(text);
+                } else {
+                    var textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    textArea.style.top = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                    } catch (err) {
+                        console.error('Copy failed', err);
+                    }
+                    document.body.removeChild(textArea);
+                }
+            }
+        </script>
     </p:dialog>
 </ui:composition>

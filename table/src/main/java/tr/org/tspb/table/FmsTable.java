@@ -60,7 +60,7 @@ import tr.org.tspb.service.RepositoryService;
 import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.constants.exceptions.LdapException;
 import tr.org.tspb.constants.exceptions.UserException;
-import tr.org.tspb.converter.props.MessageBundleLoaderv1;
+import tr.org.tspb.converter.props.MessageBundleLoader;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.datamodel.dao.FmsFieldItems;
@@ -516,7 +516,7 @@ public abstract class FmsTable extends FmsTableView {
                 if (field.isRequired() && getInputFile().equals(field.getComponentType())) {
                     FacesMessage facesMessageRequired = new FacesMessage(//
                             FacesMessage.SEVERITY_ERROR, //
-                            MessageFormat.format("[{0}] {1}", field.getShortName(), MessageBundleLoaderv1.getMessage("requiredMessage")),//
+                            MessageFormat.format("[{0}] {1}", field.getShortName(), MessageBundleLoader.getMessage("requiredMessage")),//
                             "*");
                     FacesContext.getCurrentInstance().addMessage(null, facesMessageRequired);
                     throw new UserException("<br/><br/> Dosya Eksik");
@@ -665,18 +665,23 @@ public abstract class FmsTable extends FmsTableView {
 
         try {
             PostSaveResult postSaveResult = repositoryService.runEventPostSave(operatedObject, myForm, null);
-            //FIXME messagebundle
             if (postSaveResult.getMsg() != null) {
-                dialogController.showPopupInfoWithOk(postSaveResult.getMsg(), MESSAGE_DIALOG);
+                String msg;
+                if (PostSaveResult.MSG.equals(postSaveResult.getMsg()) || "verileriniz.kaydedildi".equals(postSaveResult.getMsg())) {
+                    FmsForm form = myForm != null ? myForm : inode;
+                    msg = (form != null && form.getName() != null && !form.getName().isBlank())
+                            ? MessageBundleLoader.getMessage("form.kaydedildi", form.getName())
+                            : MessageBundleLoader.getMessage("verileriniz.kaydedildi");
+                } else {
+                    msg = postSaveResult.getMsg();
+                }
+                dialogController.showPopupInfoWithOk(msg, MESSAGE_DIALOG);
             }
         } catch (Exception ex) {
             logger.error("error occured", ex);
-            StringBuilder dlgSb = new StringBuilder();
-            dlgSb.append("Kayıt Sonrası tetikleyici çalıştırılıyor iken bir hata oluştu. ");
-            dlgSb.append("<br/><br/>");
-            dlgSb.append("Lütfen bu durumu sistem yöneticisine bildiriniz.");
-//            dialogController.showPopupError(dlgSb.toString());
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Hata", dlgSb.toString().replace("<br/>", "")));
+            String errorMsg = MessageBundleLoader.getMessage("kayit.sonrasi.tetikleyici.calistiriliyor.iken.bir.hata.olustu");
+//            dialogController.showPopupError(errorMsg);
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, MessageBundleLoader.getMessage("hata"), errorMsg));
         }
 
         if (formService.getMyForm().getMyNotifies() != null) {

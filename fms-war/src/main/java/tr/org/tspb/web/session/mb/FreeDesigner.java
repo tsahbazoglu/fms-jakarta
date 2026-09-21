@@ -375,7 +375,7 @@ public class FreeDesigner implements Serializable {
     public String save() {
         saveAsLoggedUser(myRecord);
         refreshUploadedFileList();
-        dialogController.showPopupInfoWithOk(PostSaveResult.MSG, MESSAGE_DIALOG);
+        dialogController.showPopupInfoWithOk(selectedForm, MESSAGE_DIALOG);
         return null;
     }
 

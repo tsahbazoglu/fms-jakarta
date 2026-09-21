@@ -61,6 +61,7 @@ import static tr.org.tspb.constants.ProjectConstants.UPDATE_USER;
 import static tr.org.tspb.constants.ProjectConstants.UYS_EASY_FIND_KEY;
 import static tr.org.tspb.constants.ProjectConstants.VALUE;
 
+import tr.org.tspb.converter.props.MessageBundleLoader;
 import tr.org.tspb.datamodel.dao.*;
 import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.constants.exceptions.LdapException;
@@ -1116,25 +1117,27 @@ public class FmsMultiFormBulkUpload implements Serializable {
         try {
             PostSaveResult postSaveResult = repositoryService.runEventPostSave(
                     operatedObject, myForm, null);
-            //FIXME messagebundle
             if (postSaveResult.getMsg() != null) {
-                dialogController.showPopupInfoWithOk(postSaveResult.getMsg(),
+                String msg;
+                if (PostSaveResult.MSG.equals(postSaveResult.getMsg()) || "verileriniz.kaydedildi".equals(postSaveResult.getMsg())) {
+                    msg = (myForm != null && myForm.getName() != null && !myForm.getName().isBlank())
+                            ? MessageBundleLoader.getMessage("form.kaydedildi", myForm.getName())
+                            : MessageBundleLoader.getMessage("verileriniz.kaydedildi");
+                } else {
+                    msg = postSaveResult.getMsg();
+                }
+                dialogController.showPopupInfoWithOk(msg,
                         MESSAGE_DIALOG);
             }
         } catch (Exception ex) {
             logger.error("error occured", ex);
-            StringBuilder dlgSb = new StringBuilder();
-            dlgSb.append(
-                    "Kayıt Sonrası tetikleyici çalıştırılıyor iken bir hata oluştu. ");
-            dlgSb.append("<br/><br/>");
-            dlgSb.append("Lütfen bu durumu sistem yöneticisine bildiriniz.");
-//            dialogController.showPopupError(dlgSb.toString());
+            String errorMsg = MessageBundleLoader.getMessage("kayit.sonrasi.tetikleyici.calistiriliyor.iken.bir.hata.olustu");
+//            dialogController.showPopupError(errorMsg);
             FacesContext.getCurrentInstance().
                     addMessage(null,
                             new FacesMessage(FacesMessage.SEVERITY_FATAL,
-                                    "Hata",
-                                    dlgSb.toString().
-                                            replace("<br/>", "")));
+                                    MessageBundleLoader.getMessage("hata"),
+                                    errorMsg));
         }
 
 //        if (myForm.getMyNotifies() != null) {

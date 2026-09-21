@@ -18,6 +18,25 @@ public class MessageBundleLoader extends HashMap {
     private static final HashMap<String, ResourceBundle> mapResourceBundles = new HashMap<>();
 
     /**
+     * Gets a formatted string for the given key and arguments.
+     *
+     * @param key the key for the desired string
+     * @param args arguments used to format the string
+     * @return the formatted string
+     */
+    public static String getMessage(String key, Object... args) {
+        String msg = getMessage(key);
+        if (msg != null && args != null && args.length > 0) {
+            try {
+                return java.text.MessageFormat.format(msg, args);
+            } catch (Exception e) {
+                return msg;
+            }
+        }
+        return msg;
+    }
+
+    /**
      * Gets a string for the given key from this resource bundle or one of its
      * parents.
      *

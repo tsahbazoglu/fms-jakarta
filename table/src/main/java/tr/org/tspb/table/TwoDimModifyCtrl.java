@@ -53,6 +53,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.TreeNode;
+import tr.org.tspb.converter.props.MessageBundleLoader;
 import tr.org.tspb.datamodel.dao.*;
 import tr.org.tspb.datamodel.gui.FmsTableDataModel;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
@@ -1912,7 +1913,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
             for (String fieldKey : formService.getMyForm().getFieldsKeySet()) {
                 if (crudObject.get(fieldKey) == null) {
-                    addMessage(null, null, formService.getMyForm().getField(fieldKey).getName().concat(" zorunlu alandır."), FacesMessage.SEVERITY_ERROR);
+                    addMessage(null, null, MessageFormat.format("[{0}] {1}", formService.getMyForm().getField(fieldKey).getName(), MessageBundleLoader.getMessage("requiredMessage")), FacesMessage.SEVERITY_ERROR);
                     return;
                 }
             }

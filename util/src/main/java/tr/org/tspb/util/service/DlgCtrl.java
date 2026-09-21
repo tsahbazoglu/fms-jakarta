@@ -5,6 +5,8 @@ import static tr.org.tspb.constants.ProjectConstants.WARNING;
 
 import java.io.Serializable;
 import org.primefaces.PrimeFaces;
+import tr.org.tspb.datamodel.dao.FmsForm;
+import tr.org.tspb.datamodel.pojo.PostSaveResult;
 import tr.org.tspb.util.stereotype.MyController;
 
 /**
@@ -19,9 +21,11 @@ public class DlgCtrl implements Serializable {
     private String imageAlt;
     private String title;
     private String message;
+    private String detail;
+    private String severity = "info";
     private String style = "font-size:13px;";
     private boolean renderedButon;
-    private boolean renderedOkButon;
+    private boolean renderedOkButon = true;
     private boolean rendered;
     private boolean visible;
     private boolean esignInstallNote = true;
@@ -49,7 +53,7 @@ public class DlgCtrl implements Serializable {
         this.visible = visible;
     }
 
-    private String getLocalizedText(String key, String defaultText) {
+    private String getLocalizedText(String key, String defaultText, Object... args) {
         if (key == null) {
             return defaultText;
         }
@@ -60,26 +64,45 @@ public class DlgCtrl implements Serializable {
                 try {
                     java.util.ResourceBundle jsfBundle = context.getApplication().getResourceBundle(context, "msg");
                     if (jsfBundle != null && jsfBundle.containsKey(key)) {
-                        return jsfBundle.getString(key);
+                        String text = jsfBundle.getString(key);
+                        if (args != null && args.length > 0) {
+                            return java.text.MessageFormat.format(text, args);
+                        }
+                        return text;
                     }
                 } catch (Exception ex) {
                     // ignore
                 }
 
                 // 2. Try loading bundle via Thread Context ClassLoader
-                if (context.getViewRoot() != null) {
-                    java.util.Locale locale = context.getViewRoot().getLocale();
-                    if (locale != null) {
-                        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("tr.org.tspb.web.messages", locale, cl);
-                        if (bundle != null && bundle.containsKey(key)) {
-                            return bundle.getString(key);
+                java.util.Locale locale = null;
+                if (context.getExternalContext() != null && context.getExternalContext().getSessionMap() != null) {
+                    locale = (java.util.Locale) context.getExternalContext().getSessionMap().get("SELECTED_LANG");
+                }
+                if (locale == null && context.getViewRoot() != null) {
+                    locale = context.getViewRoot().getLocale();
+                }
+                if (locale != null) {
+                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("tr.org.tspb.web.messages", locale, cl);
+                    if (bundle != null && bundle.containsKey(key)) {
+                        String text = bundle.getString(key);
+                        if (args != null && args.length > 0) {
+                            return java.text.MessageFormat.format(text, args);
                         }
+                        return text;
                     }
                 }
             }
         } catch (Exception e) {
             // fallback
+        }
+        if (args != null && args.length > 0 && defaultText != null) {
+            try {
+                return java.text.MessageFormat.format(defaultText, args);
+            } catch (Exception e) {
+                return defaultText;
+            }
         }
         return defaultText;
     }
@@ -97,9 +120,11 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showPopup(String title, String msg, String clientSideDialogName) {
+        this.severity = "info";
+        this.detail = null;
         bulkSet(null, null, title, msg, true, true);
         setRenderedButon(false);
-        setRenderedOkButon(false);
+        setRenderedOkButon(true);
         setRendered(false);
         setStyle("font-size:13px;");
         setTitle(title);
@@ -107,10 +132,20 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showPopupInfo(String msg, String clientSideDialogName) {
+        this.severity = "info";
+        this.detail = null;
         String infoTitle = getBilgilendirme();
-        bulkSet(null, null, infoTitle, msg, true, true);
+        String displayMsg;
+        if (PostSaveResult.MSG.equals(msg) || "verileriniz.kaydedildi".equals(msg)) {
+            displayMsg = getLocalizedText("verileriniz.kaydedildi", msg);
+        } else if ("form.kaydedildi".equals(msg)) {
+            displayMsg = getLocalizedText("verileriniz.kaydedildi", "Verileriniz Kaydedildi.");
+        } else {
+            displayMsg = msg;
+        }
+        bulkSet(null, null, infoTitle, displayMsg, true, true);
         setRenderedButon(false);
-        setRenderedOkButon(false);
+        setRenderedOkButon(true);
         setRendered(false);
         setStyle("font-size:13px;");
         setTitle(infoTitle);
@@ -132,10 +167,12 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showPopupWarning(String msg, String clientSideDialogName) {
+        this.severity = "warn";
+        this.detail = null;
         String warnTitle = getUyari();
         bulkSet(null, null, warnTitle, msg, true, true);
         setRenderedButon(false);
-        setRenderedOkButon(false);
+        setRenderedOkButon(true);
         setRendered(false);
         setStyle("font-size:13px;");
         setTitle(warnTitle);
@@ -143,11 +180,51 @@ public class DlgCtrl implements Serializable {
     }
 
     public void showPopupError(String msg) {
+        showPopupError(msg, (String) null);
+    }
+
+    public void showPopupError(String msg, String detail) {
+        this.severity = "error";
+        this.detail = detail;
         String errTitle = getHata();
-        bulkSet(null, null, errTitle, new StringBuilder("<br/><br/>").append(msg).
-                toString(), true, true);
+        bulkSet(null, null, errTitle, msg, true, true);
         setRenderedButon(false);
-        setRenderedOkButon(false);
+        setRenderedOkButon(true);
+        setRendered(false);
+        setStyle("font-size:13px;");
+        setTitle(errTitle);
+        showPopup(MESSAGE_DIALOG);
+    }
+
+    public void showPopupException(String userFriendlyMsg, Throwable ex) {
+        this.severity = "error";
+        String errTitle = getHata();
+        String mainMsg = userFriendlyMsg;
+        if (ex != null) {
+            String exMsg = ex.getLocalizedMessage() != null ? ex.getLocalizedMessage() : ex.getMessage();
+            if (exMsg == null && ex.getCause() != null) {
+                exMsg = ex.getCause().getLocalizedMessage();
+                if (exMsg == null) {
+                    exMsg = ex.getCause().toString();
+                }
+            }
+            if (mainMsg == null || mainMsg.isBlank()) {
+                mainMsg = exMsg != null ? exMsg : ex.toString();
+            } else if (exMsg != null && !exMsg.isBlank() && !mainMsg.contains(exMsg)) {
+                mainMsg = mainMsg + "<br/><br/><span class='text-sm text-700 font-semibold'>Ayrıntı:</span> <span class='text-sm text-700'>" + exMsg + "</span>";
+            }
+
+            java.io.StringWriter sw = new java.io.StringWriter();
+            java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+            ex.printStackTrace(pw);
+            this.detail = sw.toString();
+        } else {
+            this.detail = null;
+        }
+
+        bulkSet(null, null, errTitle, mainMsg, true, true);
+        setRenderedButon(false);
+        setRenderedOkButon(true);
         setRendered(false);
         setStyle("font-size:13px;");
         setTitle(errTitle);
@@ -160,23 +237,42 @@ public class DlgCtrl implements Serializable {
      * @param msg
      */
     public void showPopupInfo2(String title, String msg) {
+        this.severity = "info";
+        this.detail = null;
         bulkSet(null, null, title, msg, true, true);
         setRenderedButon(false);
-        setRenderedOkButon(false);
+        setRenderedOkButon(true);
         setRendered(false);
         setStyle("font-size:13px;");
         showPopup(MESSAGE_DIALOG);
     }
 
     public void showPopupInfoWithOk(String msg, String clientSideDialogName) {
+        this.severity = "info";
+        this.detail = null;
         String infoTitle = getBilgilendirme();
-        bulkSet(null, null, infoTitle, msg, true, true);
+        String displayMsg;
+        if (PostSaveResult.MSG.equals(msg) || "verileriniz.kaydedildi".equals(msg)) {
+            displayMsg = getLocalizedText("verileriniz.kaydedildi", msg);
+        } else if ("form.kaydedildi".equals(msg)) {
+            displayMsg = getLocalizedText("verileriniz.kaydedildi", "Verileriniz Kaydedildi.");
+        } else {
+            displayMsg = msg;
+        }
+        bulkSet(null, null, infoTitle, displayMsg, true, true);
         setRenderedButon(false);
         setRenderedOkButon(true);
         setRendered(false);
         setStyle("font-size:13px;");
         setTitle(infoTitle);
         showPopup(clientSideDialogName);
+    }
+
+    public void showPopupInfoWithOk(FmsForm form, String clientSideDialogName) {
+        String msg = (form != null && form.getName() != null && !form.getName().isBlank())
+                ? getLocalizedText("form.kaydedildi", "{0} kaydedildi.", form.getName())
+                : getLocalizedText("verileriniz.kaydedildi", "Verileriniz Kaydedildi.");
+        showPopupInfoWithOk(msg, clientSideDialogName);
     }
 
     /**
@@ -312,6 +408,76 @@ public class DlgCtrl implements Serializable {
     public void showDlgUserInfo(String message) {
         this.message = message;
         showPopup("wv-dlg-user-info");
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
+
+    public String getSeverityIcon() {
+        if (severity == null) {
+            return "pi-info-circle";
+        }
+        switch (severity.toLowerCase()) {
+            case "error":
+                return "pi-times-circle";
+            case "warn":
+            case "warning":
+                return "pi-exclamation-triangle";
+            case "success":
+                return "pi-check-circle";
+            case "info":
+            default:
+                return "pi-info-circle";
+        }
+    }
+
+    public String getSeverityColorClass() {
+        if (severity == null) {
+            return "text-blue-500";
+        }
+        switch (severity.toLowerCase()) {
+            case "error":
+                return "text-red-500";
+            case "warn":
+            case "warning":
+                return "text-orange-500";
+            case "success":
+                return "text-green-500";
+            case "info":
+            default:
+                return "text-blue-500";
+        }
+    }
+
+    public String getSeverityContainerClass() {
+        if (severity == null) {
+            return "border-left-3 border-blue-500 bg-blue-50 text-blue-900";
+        }
+        switch (severity.toLowerCase()) {
+            case "error":
+                return "border-left-3 border-red-500 bg-red-50 text-red-900";
+            case "warn":
+            case "warning":
+                return "border-left-3 border-orange-500 bg-orange-50 text-orange-900";
+            case "success":
+                return "border-left-3 border-green-500 bg-green-50 text-green-900";
+            case "info":
+            default:
+                return "border-left-3 border-blue-500 bg-blue-50 text-blue-900";
+        }
     }
 
 }

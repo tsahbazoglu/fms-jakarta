@@ -625,13 +625,10 @@ public class MainFrame implements Serializable {
             figureOutProject(projectKey, upperNodeKey);
         } catch (RuntimeException ex) {
             logger.error("error occured", ex);
-            String warningsAndErrorAsText = ex.toString();
-            dialogController.showPopupInfo(warningsAndErrorAsText,
-                    MESSAGE_DIALOG);
+            dialogController.showPopupException("Menü paneli yüklenirken bir hata oluştu.", ex);
         } catch (Exception e) {
-            dialogController.showPopupInfo(e.getLocalizedMessage(),
-                    MESSAGE_DIALOG);
-
+            logger.error("error occured", e);
+            dialogController.showPopupException("Menü paneli yüklenirken bir hata oluştu.", e);
         }
     }
 
@@ -801,7 +798,7 @@ public class MainFrame implements Serializable {
                     getMyFieldJson(), ex.getMessage(), "wv-dlg-code");
         } catch (Exception ex) {
             logger.error("error occured", ex);
-            dialogController.showPopupInfo(ex.getMessage(), MESSAGE_DIALOG);
+            dialogController.showPopupException("Form yüklenirken bir hata oluştu.", ex);
         }
         return null;
     }
@@ -811,7 +808,7 @@ public class MainFrame implements Serializable {
             localMyActionListener();
         } catch (Exception ex) {
             logger.error("error occured", ex);
-            dialogController.showPopupInfo(ex.getMessage(), MESSAGE_DIALOG);
+            dialogController.showPopupException("İşlem gerçekleştirilirken bir hata oluştu.", ex);
         }
         return null;
     }

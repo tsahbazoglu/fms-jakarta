@@ -10,6 +10,7 @@ import jakarta.faces.validator.Validator;
 import jakarta.faces.validator.ValidatorException;
 import tr.org.tspb.converter.base.EnumConverterParam;
 import tr.org.tspb.converter.base.ConverterAttrs;
+import tr.org.tspb.converter.props.MessageBundleLoader;
 
 /**
  *
@@ -63,7 +64,7 @@ public class SelectOneStringValidator implements Validator, ConverterAttrs {
         if (NULL_VALUE.equals(value)) {
             FacesMessage facesMessage = new FacesMessage(//
                     FacesMessage.SEVERITY_ERROR, //
-                    MessageFormat.format("[{0}] alanı zorunludur.", label),//
+                    MessageFormat.format("[{0}] {1}", label, MessageBundleLoader.getMessage("requiredMessage")),//
                     "*");
             if (submitAllow) {
                 context.addMessage(component.getClientId(context), facesMessage);

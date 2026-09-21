@@ -63,7 +63,7 @@ import tr.org.tspb.common.services.MailService;
 import tr.org.tspb.service.RepositoryService;
 import tr.org.tspb.converter.base.SelectOneObjectIdConverter;
 import tr.org.tspb.converter.base.SelectOneStringConverter;
-import tr.org.tspb.converter.props.MessageBundleLoaderv1;
+import tr.org.tspb.converter.props.MessageBundleLoader;
 import tr.org.tspb.datamodel.dao.MyField;
 import tr.org.tspb.datamodel.dao.FmsForm;
 import tr.org.tspb.datamodel.dao.MyMap;
@@ -1015,9 +1015,17 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
             PostSaveResult postSaveResult = repositoryService
                     .runEventPostSave(operatedObject, formService.getMyForm(),
                             crudObject);
-            //FIXME messagebundle
             if (postSaveResult.getMsg() != null) {
-                dialogController.showPopupInfoWithOk(postSaveResult.getMsg(),
+                String msg;
+                if (PostSaveResult.MSG.equals(postSaveResult.getMsg()) || "verileriniz.kaydedildi".equals(postSaveResult.getMsg())) {
+                    FmsForm form = formService != null ? formService.getMyForm() : null;
+                    msg = (form != null && form.getName() != null && !form.getName().isBlank())
+                            ? MessageBundleLoader.getMessage("form.kaydedildi", form.getName())
+                            : MessageBundleLoader.getMessage("verileriniz.kaydedildi");
+                } else {
+                    msg = postSaveResult.getMsg();
+                }
+                dialogController.showPopupInfoWithOk(msg,
                         MESSAGE_DIALOG);
             }
         } catch (Exception ex) {
@@ -1055,7 +1063,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                     FacesMessage facesMessageRequired = new FacesMessage(//
                             FacesMessage.SEVERITY_ERROR, //
                             MessageFormat.format("[{0}] {1}", field.
-                                    getShortName(), MessageBundleLoaderv1.
+                                    getShortName(), MessageBundleLoader.
                                     getMessage("requiredMessage")),//
                             "*");
                     FacesContext.getCurrentInstance().
