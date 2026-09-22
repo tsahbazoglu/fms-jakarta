@@ -1,0 +1,80 @@
+== CLI
+----
+agy --help
+agy --mode=accept-edits
+agy --auto-execute
+
+# To exit safely from the TUI (Terminal User Interface):
+/quit
+
+# To temporarily suspend/drop back to your host shell:
+Ctrl+Z
+
+# Resuming a Session
+agy -c
+agy --continue
+agy --conversation <session_id>
+----
+
+== Setting Attribute
+----
+"autoExecute": true - Yes, Run Command
+"agentMode": "accept-edits" - Yes, Edit
+----
+
+== Per Project
+----
+rm -rf ~/github/fms-jakarta/.antigravity/settings.json
+mkdir -p ~/github/fms-jakarta/.antigravity
+touch ~/github/fms-jakarta/.antigravity/settings.json
+nano  ~/github/fms-jakarta/.antigravity/settings.json
+{
+  "agentMode": "accept-edits",
+  "autoExecute": true,
+  "colorScheme": "tokyo night",
+  "permissions": {
+    "allow": [
+      "command(git grep)",
+      "command(git log)",
+      "command(git status)",
+      "command(git diff)",
+      "command(ls)",
+      "command(cat)",
+      "command(head)",
+      "command(grep)",
+      "command(tail)",
+      "command(javap)"
+    ]
+  }
+}
+----
+
+== Global
+----
+cat ~/.gemini/antigravity-cli/settings.json
+{
+  "colorScheme": "tokyo night",
+  "permissions": {
+    "allow": [
+      "command(git grep)",
+      "command(git log)",
+      "command(git status)",
+      "command(git diff)",
+      "command(ls)",
+      "command(cat)",
+      "command(head)",
+      "command(grep)",
+      "command(tail)",
+      "command(javap)"
+    ]
+  },
+  "trustedWorkspaces": [
+    "/home/telman/apps/antigravity_cli",
+    "/home/telman/github/json-schema-erp-accounting",
+    "/home/telman/github/fms-jakarta/fms-war/src/main/webapp/exclude/azclerk",
+    "/home/telman/github/fms-jakarta",
+    "/home/telman/github/fms-erp-calculus",
+    "/home/telman/github/fms-erp-constraints"
+  ]
+}
+----

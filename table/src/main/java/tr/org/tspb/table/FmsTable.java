@@ -191,13 +191,23 @@ public abstract class FmsTable extends FmsTableView {
                             tagEventPreSave,
                             new Document(crud));
 
-                    if (!preSaveResult.isResult()) {
+                    if (!preSaveResult.isProceed()) {
                         String msg = preSaveResult.getMsg();
                         if (msg == null || msg.isBlank()) {
                             msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
                         }
                         result = new Document()
-                                .append("popupMessage", msg);
+                                .append("popupMessage", msg)
+                                .append("proceed", false)
+                                .append("severity", "error");
+                    } else if (!preSaveResult.isResult() || (preSaveResult.getMsg() != null && !preSaveResult.getMsg().isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(preSaveResult.getMsg()))) {
+                        String msg = preSaveResult.getMsg();
+                        if (msg != null && !msg.isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(msg)) {
+                            result = new Document()
+                                    .append("popupMessage", msg)
+                                    .append("proceed", true)
+                                    .append("severity", "warn");
+                        }
                     }
                 }
             }
@@ -278,6 +288,14 @@ public abstract class FmsTable extends FmsTableView {
                     dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
                 } else {
                     dialogController.showPopupError(userMessage);
+                }
+            }
+
+            Object proceedObj = resultJSON.get("proceed");
+            if (proceedObj != null) {
+                boolean canProceed = (proceedObj instanceof Boolean b) ? b : Boolean.parseBoolean(proceedObj.toString());
+                if (canProceed) {
+                    return false;
                 }
             }
             return true;
@@ -318,13 +336,23 @@ public abstract class FmsTable extends FmsTableView {
                             tagEventPreSaveOnChild,
                             new Document(crud));
 
-                    if (!preSaveResult.isResult()) {
+                    if (!preSaveResult.isProceed()) {
                         String msg = preSaveResult.getMsg();
                         if (msg == null || msg.isBlank()) {
                             msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
                         }
                         result = new Document()
-                                .append("popupMessage", msg);
+                                .append("popupMessage", msg)
+                                .append("proceed", false)
+                                .append("severity", "error");
+                    } else if (!preSaveResult.isResult() || (preSaveResult.getMsg() != null && !preSaveResult.getMsg().isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(preSaveResult.getMsg()))) {
+                        String msg = preSaveResult.getMsg();
+                        if (msg != null && !msg.isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(msg)) {
+                            result = new Document()
+                                    .append("popupMessage", msg)
+                                    .append("proceed", true)
+                                    .append("severity", "warn");
+                        }
                     }
                 }
             }
@@ -403,6 +431,14 @@ public abstract class FmsTable extends FmsTableView {
                     dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
                 } else {
                     dialogController.showPopupError(userMessage);
+                }
+            }
+
+            Object proceedObj = resultJSON.get("proceed");
+            if (proceedObj != null) {
+                boolean canProceed = (proceedObj instanceof Boolean b) ? b : Boolean.parseBoolean(proceedObj.toString());
+                if (canProceed) {
+                    return false;
                 }
             }
             return true;

@@ -35,6 +35,31 @@
 
     </script>
 
+    <script type="text/javascript">
+        //<![CDATA[
+        $(document).on("input change keyup", "[id*='id-component-completionPercentage'] input, [id*='id-component-CompletionPercentage'] input, [id*='id-component-completion_percentage'] input, [id*='id-component-complete'] input, [id*='id-component-Complete'] input, input[id*='completionPercentage'], input[id*='completion_percentage']", function () {
+            var raw = $(this).val();
+            if (raw !== undefined && raw !== null) {
+                var cleaned = raw.toString().replace("%", "").trim();
+                var val = parseFloat(cleaned);
+                if (!isNaN(val)) {
+                    if (val > 0 && val < 1.0 || (val <= 1.0 && cleaned.indexOf(".") !== -1)) {
+                        val = val * 100;
+                    }
+                    val = Math.max(0, Math.min(100, Math.round(val)));
+                    if (typeof PF === 'function' && PF('wvRecordProgressBar')) {
+                        PF('wvRecordProgressBar').setValue(val);
+                    }
+                    var $pb = $("[id$='id-progress-bar-complete']");
+                    $pb.find(".ui-progressbar-value").css("width", val + "%");
+                    $pb.find(".ui-progressbar-label").text(val + "%");
+                    $pb.attr("title", val + "%");
+                }
+            }
+        });
+        //]]>
+    </script>
+
     <p:tabView id="idTwoDlgTabView">
         <p:tab 
             title="#{msg['veri.girisi']}"

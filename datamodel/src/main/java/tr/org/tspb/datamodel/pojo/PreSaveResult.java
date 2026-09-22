@@ -10,6 +10,7 @@ public class PreSaveResult {
     private String msg;
     private MessageGuiType messageGuiType;
     private ErrType errType;
+    private Boolean proceed;
 
     private static PreSaveResult instance = new PreSaveResult();
     private static PreSaveResult errInstance;
@@ -19,10 +20,16 @@ public class PreSaveResult {
 
     public PreSaveResult(boolean result, String msg,
             MessageGuiType messageGuiType, ErrType errType) {
+        this(result, msg, messageGuiType, errType, result);
+    }
+
+    public PreSaveResult(boolean result, String msg,
+            MessageGuiType messageGuiType, ErrType errType, Boolean proceed) {
         this.result = result;
         this.msg = msg;
         this.messageGuiType = messageGuiType;
         this.errType = errType;
+        this.proceed = proceed != null ? proceed : result;
     }
 
     public static PreSaveResult getNullSingleton() {
@@ -33,6 +40,7 @@ public class PreSaveResult {
         if (errInstance == null) {
             errInstance = new PreSaveResult();
             errInstance.result = true;
+            errInstance.proceed = false;
             errInstance.msg = "<ul>"
                     + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>"
                     + "<li>\"Birlik Temsilcisi\" yalnız bir defa seçilebilmektedir. <br/>Daha önce seçim yaptınız.</li>"
@@ -67,6 +75,18 @@ public class PreSaveResult {
 
     public ErrType getErrType() {
         return errType;
+    }
+
+    public Boolean getProceed() {
+        return proceed;
+    }
+
+    public void setProceed(Boolean proceed) {
+        this.proceed = proceed;
+    }
+
+    public boolean isProceed() {
+        return proceed != null ? proceed : result;
     }
 
 }

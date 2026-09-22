@@ -394,7 +394,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             fmsFlowCtrl.init(formService.getMyForm(), crudObject, filterService.getTableFilterCurrent());
         }
 
-        dialogController.showPopup("idTwoDlgTabView:crud2dForm", CRUD_OPERATION_DIALOG2);
+        dialogController.showPopup("idTwoDlgTabView:id-panel-crud", CRUD_OPERATION_DIALOG2);
 
         if (formService.getMyForm().isHasChildFields()) {
             setChildRecords(crudObject.getMyObjectChilds());
@@ -1108,7 +1108,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
             resetHistory();
 
-            dialogController.showPopup("idTwoDlgTabView:crud2dForm", CRUD_OPERATION_DIALOG2);
+            dialogController.showPopup("idTwoDlgTabView:id-panel-crud", CRUD_OPERATION_DIALOG2);
 
             if (formService.getMyForm().isHasChildFields()) {
                 crudObject.setMyObjectChilds(new ArrayList<>());
@@ -2205,6 +2205,112 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             saveObject();
         }
         return null;
+    }
+
+    private static final String[] COMPLETION_KEYS = {
+        "completionPercentage",
+        "completion_percentage",
+        "CompletionPercentage",
+        "completionpercentage",
+        "complete",
+        "Complete"
+    };
+
+    public String resolveCompletionKey() {
+        if (crudObject != null) {
+            for (String key : COMPLETION_KEYS) {
+                if (crudObject.containsKey(key)) {
+                    return key;
+                }
+            }
+            for (Object k : crudObject.keySet()) {
+                if (k != null) {
+                    String key = k.toString();
+                    if (key.equalsIgnoreCase("completionPercentage")
+                            || key.equalsIgnoreCase("completion_percentage")
+                            || key.equalsIgnoreCase("completionPercent")
+                            || key.equalsIgnoreCase("completion_percent")
+                            || key.equalsIgnoreCase("complete")) {
+                        return key;
+                    }
+                }
+            }
+        }
+        if (formService != null && formService.getMyForm() != null && formService.getMyForm().getFields() != null) {
+            Map<String, ?> fields = formService.getMyForm().getFields();
+            for (String key : COMPLETION_KEYS) {
+                if (fields.containsKey(key)) {
+                    return key;
+                }
+            }
+            for (String key : fields.keySet()) {
+                if (key != null) {
+                    if (key.equalsIgnoreCase("completionPercentage")
+                            || key.equalsIgnoreCase("completion_percentage")
+                            || key.equalsIgnoreCase("completionPercent")
+                            || key.equalsIgnoreCase("completion_percent")
+                            || key.equalsIgnoreCase("complete")) {
+                        return key;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public int getRecordCompletionPercentage() {
+        if (crudObject == null) {
+            return 0;
+        }
+        String key = resolveCompletionKey();
+        if (key == null) {
+            return 0;
+        }
+        Object completeVal = crudObject.get(key);
+        if (completeVal == null) {
+            return 0;
+        }
+        if (completeVal instanceof Number) {
+            double d = ((Number) completeVal).doubleValue();
+            if (d > 0 && d < 1.0) {
+                d = d * 100;
+            }
+            return (int) Math.min(100, Math.max(0, Math.round(d)));
+        }
+        String strVal = completeVal.toString().trim().replace("%", "");
+        try {
+            double d = Double.parseDouble(strVal);
+            if (d > 0 && d < 1.0 || (d <= 1.0 && strVal.contains("."))) {
+                d = d * 100;
+            }
+            return (int) Math.min(100, Math.max(0, Math.round(d)));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public void setRecordCompletionPercentage(int val) {
+        if (crudObject != null) {
+            String key = resolveCompletionKey();
+            if (key == null) {
+                key = "completionPercentage";
+            }
+            int clamped = Math.min(100, Math.max(0, val));
+            Object existing = crudObject.get(key);
+            if (existing instanceof String) {
+                crudObject.put(key, String.valueOf(clamped));
+            } else if (existing instanceof Double) {
+                crudObject.put(key, (double) clamped);
+            } else if (existing instanceof Long) {
+                crudObject.put(key, (long) clamped);
+            } else {
+                crudObject.put(key, clamped);
+            }
+        }
+    }
+
+    public boolean isRecordCompletionRendered() {
+        return resolveCompletionKey() != null;
     }
 
 }

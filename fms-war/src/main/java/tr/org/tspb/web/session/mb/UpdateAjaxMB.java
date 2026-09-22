@@ -90,6 +90,7 @@ public class UpdateAjaxMB implements Serializable {
         btn2dSearch = ID_2D_CURRENT_LIST
                 .concat(COMMA_SEMICOLON).concat(ID_MSG_DLG);
         btn2dSave = ID_2D_DLG_TABVIEW_CRUD_TOOLBAR
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_PROGRESS_BAR)
                 .concat(COMMA).concat(ID_2D_CURRENT_LIST)
                 .concat(COMMA).concat(ID_CENTER_TOP)
                 .concat(COMMA).concat(ID_TWO_DIM_DLG_PNL)
@@ -193,6 +194,7 @@ public class UpdateAjaxMB implements Serializable {
 
         btnWfOnCrud = ID_MSG_DLG
                 .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_TOOLBAR)
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_PROGRESS_BAR)
                 .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_SCROLL_PNL)
                 .concat(COMMA).concat(ID_2D_DLG_TABVIEW_WF_TOOLBAR);
 
@@ -204,6 +206,7 @@ public class UpdateAjaxMB implements Serializable {
 
         btnWfStart = ID_MSG_DLG
                 .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_TOOLBAR)
+                .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_PROGRESS_BAR)
                 .concat(COMMA).concat(ID_2D_DLG_TABVIEW_WF_TOOLBAR)
                 .concat(COMMA).concat(ID_DATATABLE_WF_HISTORY)
                 .concat(COMMA).concat(ID_2D_DLG_TABVIEW_CRUD_SCROLL_PNL)

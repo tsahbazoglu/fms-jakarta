@@ -330,14 +330,45 @@ public class RepositoryService implements Serializable {
                     exprObj = jsonResponse.get("popupMessage");
                 }
                 String expr = exprObj != null ? exprObj.toString() : "";
-                boolean result = Boolean.TRUE.equals(jsonResponse.get("result"));
+                boolean result = Boolean.TRUE.equals(jsonResponse.get("result"))
+                        || "true".equalsIgnoreCase(String.valueOf(jsonResponse.get("result")));
+
+                Boolean valid = null;
+                if (jsonResponse.get("valid") != null) {
+                    valid = Boolean.TRUE.equals(jsonResponse.get("valid"))
+                            || "true".equalsIgnoreCase(String.valueOf(jsonResponse.get("valid")));
+                }
+
+                Boolean proceed = null;
+                if (jsonResponse.containsKey("proceed")) {
+                    Object pObj = jsonResponse.get("proceed");
+                    if (pObj instanceof Boolean b) {
+                        proceed = b;
+                    } else if (pObj != null) {
+                        proceed = Boolean.parseBoolean(pObj.toString());
+                    }
+                }
+                if (proceed == null) {
+                    proceed = (valid != null) ? valid : result;
+                }
+
                 if (!result && expr.isBlank()) {
                     expr = MessageBundleLoader.getMessage("kayit.oncesi.kontrol.basarisiz");
                 }
+
+                PreSaveResult.ErrType errType = PreSaveResult.ErrType.info;
+                if (!proceed) {
+                    errType = PreSaveResult.ErrType.error;
+                } else if (!result || Boolean.FALSE.equals(valid)) {
+                    errType = PreSaveResult.ErrType.warn;
+                }
+
                 preSaveResult = new PreSaveResult(
                         result,
                         expr,
-                        PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
+                        PreSaveResult.MessageGuiType.popup,
+                        errType,
+                        proceed);
             } else {
                 String errMsg = MessageBundleLoader.getMessage("constraint.api.erisilmez", response.getStatus());
                 throw new UserException(errMsg);

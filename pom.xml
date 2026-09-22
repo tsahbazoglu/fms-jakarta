@@ -107,6 +107,7 @@
 
         <esign.backend.artifact>fms-esign-core-oyas-backend</esign.backend.artifact>
         <esign.ui.artifact>fms-esign-core-oyas-ui</esign.ui.artifact>
+        <customer.folder>tspb</customer.folder>
 
     </properties>
 

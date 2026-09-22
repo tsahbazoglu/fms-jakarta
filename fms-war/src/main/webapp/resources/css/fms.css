@@ -378,3 +378,41 @@ ul.ui-menu-child {
     color: var(--primary-color-text, #ffffff) !important;
 }
 /* end fms highligth menu */
+
+/* --------------------------------------------------------------------------
+   Record Completion Progress Bar (Very thin green)
+   -------------------------------------------------------------------------- */
+.fms-thin-progressbar.ui-progressbar {
+    height: 10px !important;
+    background-color: var(--surface-200, #e2e8f0) !important;
+    border-radius: 6px !important;
+    border: none !important;
+    margin: 2px 0 3px 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.fms-thin-progressbar .ui-progressbar-value {
+    background: var(--green-500, #22c55e) !important;
+    border-radius: 6px !important;
+    border: none !important;
+    margin: 0 !important;
+    transition: width 0.3s ease-in-out !important;
+}
+
+.fms-thin-progressbar .ui-progressbar-label {
+    font-size: 9px !important;
+    line-height: 10px !important;
+    font-weight: 700 !important;
+    color: var(--text-color, #1e293b) !important;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8) !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    display: block !important;
+}
+
+body.dark .fms-thin-progressbar .ui-progressbar-label,
+[data-theme*="dark"] .fms-thin-progressbar .ui-progressbar-label {
+    color: #f8fafc !important;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.8) !important;
+}

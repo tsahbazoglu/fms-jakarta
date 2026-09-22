@@ -187,6 +187,32 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>print-api-paths</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>tr.org.tspb.util.tools.ApiPathPrinter</mainClass>
+                            <classpathScope>compile</classpathScope>
+                            <arguments>
+                                <argument>asadmin undeploy fms-ear-${project.version};asadmin deploy ${settings.localRepository}/tr/org/tspb/fms-ear/${project.version}/fms-ear-${project.version}.ear;</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>esignOyas</id>

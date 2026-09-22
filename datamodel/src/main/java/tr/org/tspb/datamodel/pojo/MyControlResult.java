@@ -15,12 +15,25 @@ public class MyControlResult {
     private final String expression;
     private final String controlResult;
     private final boolean result;
+    private final Boolean proceed;
 
     public MyControlResult(Map map) {
 
         this.result = Boolean.TRUE.equals(map.get(RESULT));
-        this.expression = map.get(EXPRESSION).
-                toString();
+        Object exprObj = map.get(EXPRESSION);
+        if (exprObj == null) {
+            exprObj = map.get("message");
+        }
+        this.expression = exprObj != null ? exprObj.toString() : "";
+
+        Object pObj = map.get("proceed");
+        if (pObj instanceof Boolean b) {
+            this.proceed = b;
+        } else if (pObj != null) {
+            this.proceed = Boolean.parseBoolean(pObj.toString());
+        } else {
+            this.proceed = this.result;
+        }
 
         if (result) {
             this.controlResult = TAMAM;
@@ -40,6 +53,14 @@ public class MyControlResult {
 
     public boolean isResult() {
         return result;
+    }
+
+    public Boolean getProceed() {
+        return proceed;
+    }
+
+    public boolean isProceed() {
+        return proceed != null ? proceed : result;
     }
 
 }

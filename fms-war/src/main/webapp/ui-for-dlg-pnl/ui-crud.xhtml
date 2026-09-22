@@ -125,6 +125,18 @@
             </p:panelGrid>
         </p:panel>
 
+        <p:progressBar 
+            id="id-progress-bar-complete"
+            widgetVar="wvRecordProgressBar"
+            value="#{twoDimModifyCtrl.recordCompletionPercentage}" 
+            labelTemplate="{value}%" 
+            displayOnly="true"
+            severity="success"
+            styleClass="fms-thin-progressbar"
+            rendered="#{twoDimModifyCtrl.recordCompletionRendered}"
+            title="#{twoDimModifyCtrl.recordCompletionPercentage}%"
+            />
+
         <p:scrollPanel 
             id="id-table-dlg-crud-scr-pnl"
             mode="native">

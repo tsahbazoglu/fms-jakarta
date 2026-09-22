@@ -549,6 +549,7 @@ public class ProjectConstants {
     public static final String ID_DLG_CRUD_JSON = "id-dlg-crud-json";
     public static final String ID_2D_ACTION_TOOLBAR = ",id-2d-action-form:id-2d-action-toolbar";
     public static final String ID_2D_DLG_TABVIEW_CRUD_TOOLBAR = "idTwoDlgTabView:id-2d-toolbar";
+    public static final String ID_2D_DLG_TABVIEW_CRUD_PROGRESS_BAR = "idTwoDlgTabView:id-progress-bar-complete";
     public static final String ID_2D_DLG_TABVIEW_CRUD_SCROLL_PNL = "idTwoDlgTabView:id-table-dlg-crud-scr-pnl";
     public static final String ID_TAB_VIEW = "id-tab-view";
     public static final String ID_2D_CURRENT_LIST = ID_TAB_VIEW.concat(":").
