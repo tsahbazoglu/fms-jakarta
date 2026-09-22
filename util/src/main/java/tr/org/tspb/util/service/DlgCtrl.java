@@ -181,7 +181,7 @@ public class DlgCtrl implements Serializable {
 
     public void showPopupWarning(String msg, String detail, String clientSideDialogName) {
         this.severity = "warn";
-        this.detail = detail;
+        this.detail = null;
         String warnTitle = getUyari();
         bulkSet(null, null, warnTitle, msg, true, true);
         setRenderedButon(false);
@@ -198,7 +198,7 @@ public class DlgCtrl implements Serializable {
 
     public void showPopupError(String msg, String detail) {
         this.severity = "error";
-        this.detail = detail;
+        this.detail = null;
         String errTitle = getHata();
         bulkSet(null, null, errTitle, msg, true, true);
         setRenderedButon(false);
@@ -211,28 +211,11 @@ public class DlgCtrl implements Serializable {
 
     public void showPopupException(String userFriendlyMsg, Throwable ex) {
         this.severity = "error";
+        this.detail = null;
         String errTitle = getHata();
         String mainMsg = userFriendlyMsg;
-        if (ex != null) {
-            String exMsg = ex.getLocalizedMessage() != null ? ex.getLocalizedMessage() : ex.getMessage();
-            if (exMsg == null && ex.getCause() != null) {
-                exMsg = ex.getCause().getLocalizedMessage();
-                if (exMsg == null) {
-                    exMsg = ex.getCause().toString();
-                }
-            }
-            if (mainMsg == null || mainMsg.isBlank()) {
-                mainMsg = exMsg != null ? exMsg : ex.toString();
-            } else if (exMsg != null && !exMsg.isBlank() && !mainMsg.contains(exMsg)) {
-                mainMsg = mainMsg + "<br/><br/><span class='text-sm text-700 font-semibold'>Ayrıntı:</span> <span class='text-sm text-700'>" + exMsg + "</span>";
-            }
-
-            java.io.StringWriter sw = new java.io.StringWriter();
-            java.io.PrintWriter pw = new java.io.PrintWriter(sw);
-            ex.printStackTrace(pw);
-            this.detail = sw.toString();
-        } else {
-            this.detail = null;
+        if (mainMsg == null || mainMsg.isBlank()) {
+            mainMsg = getLocalizedText("kayit.sirasinda.hata.olustu", "Kaydetme işlemi sırasında bir hata oluştu.");
         }
 
         bulkSet(null, null, errTitle, mainMsg, true, true);

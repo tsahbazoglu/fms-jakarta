@@ -59,6 +59,7 @@ import tr.org.tspb.common.services.MailService;
 import tr.org.tspb.service.RepositoryService;
 import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.constants.exceptions.LdapException;
+import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
 import tr.org.tspb.constants.exceptions.UserException;
 import tr.org.tspb.converter.props.MessageBundleLoader;
 import tr.org.tspb.datamodel.dao.MyField;
@@ -151,7 +152,7 @@ public abstract class FmsTable extends FmsTableView {
         this.componentMap = componentMap;
     }
 
-    public boolean runEventPreSave(Map query, MyMap crud) {
+    public boolean runEventPreSave(Map query, MyMap crud) throws UserException, MongoOrmFailedException {
 
         FmsForm fmsForm = formService.getMyForm();
 
@@ -184,26 +185,19 @@ public abstract class FmsTable extends FmsTableView {
         } else {
             switch (type) {
                 case externalApi -> {
-                    try {
-                        PreSaveResult preSaveResult = repositoryService.runEventPreSaveByGivenTagEvent(
-                                fmsForm.getMyProject().getKey(),
-                                fmsForm.getMyProject().getApiToken(),
-                                tagEventPreSave,
-                                new Document(crud));
+                    PreSaveResult preSaveResult = repositoryService.runEventPreSaveByGivenTagEvent(
+                            fmsForm.getMyProject().getKey(),
+                            fmsForm.getMyProject().getApiToken(),
+                            tagEventPreSave,
+                            new Document(crud));
 
-                        if (!preSaveResult.isResult()) {
-                            String msg = preSaveResult.getMsg();
-                            if (msg == null || msg.isBlank()) {
-                                msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
-                            }
-                            result = new Document()
-                                    .append("popupMessage", msg);
+                    if (!preSaveResult.isResult()) {
+                        String msg = preSaveResult.getMsg();
+                        if (msg == null || msg.isBlank()) {
+                            msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
                         }
-                    } catch (Exception e) {
-                        logger.error("Error executing preSave externalApi", e);
                         result = new Document()
-                                .append("popupMessage", MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi"))
-                                .append("error", e.getMessage() != null ? e.getMessage() : e.toString());
+                                .append("popupMessage", msg);
                     }
                 }
             }
@@ -268,15 +262,10 @@ public abstract class FmsTable extends FmsTableView {
                 }
 
                 String userMessage;
-                String technicalDetail = null;
                 if (popupMsgObj != null && !popupMsgObj.toString().isBlank()) {
                     userMessage = popupMsgObj.toString();
-                    if (resultJSON.size() > 1 || !resultJSON.containsKey("popupMessage")) {
-                        technicalDetail = resultJSON.toJson();
-                    }
                 } else {
                     userMessage = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
-                    technicalDetail = resultJSON.toJson();
                 }
 
                 String severityStr = resultJSON.getString("severity");
@@ -284,11 +273,11 @@ public abstract class FmsTable extends FmsTableView {
                     severityStr = resultJSON.getString("popupMessageSeverity");
                 }
                 if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
-                    dialogController.showPopupWarning(userMessage, technicalDetail, MESSAGE_DIALOG);
+                    dialogController.showPopupWarning(userMessage, MESSAGE_DIALOG);
                 } else if ("info".equalsIgnoreCase(severityStr)) {
                     dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
                 } else {
-                    dialogController.showPopupError(userMessage, technicalDetail);
+                    dialogController.showPopupError(userMessage);
                 }
             }
             return true;
@@ -297,7 +286,7 @@ public abstract class FmsTable extends FmsTableView {
         return false;
     }
 
-    public boolean runEventPreSaveOnChild(Map query, MyMap crud) {
+    public boolean runEventPreSaveOnChild(Map query, MyMap crud) throws UserException, MongoOrmFailedException {
         FmsForm fmsForm = formService.getMyForm();
 
         TagEvent tagEventPreSaveOnChild = fmsForm.getEventPreSaveOnChild();
@@ -323,26 +312,19 @@ public abstract class FmsTable extends FmsTableView {
         } else {
             switch (type) {
                 case externalApi -> {
-                    try {
-                        PreSaveResult preSaveResult = repositoryService.runEventPreSaveByGivenTagEvent(
-                                fmsForm.getMyProject().getKey(),
-                                fmsForm.getMyProject().getApiToken(),
-                                tagEventPreSaveOnChild,
-                                new Document(crud));
+                    PreSaveResult preSaveResult = repositoryService.runEventPreSaveByGivenTagEvent(
+                            fmsForm.getMyProject().getKey(),
+                            fmsForm.getMyProject().getApiToken(),
+                            tagEventPreSaveOnChild,
+                            new Document(crud));
 
-                        if (!preSaveResult.isResult()) {
-                            String msg = preSaveResult.getMsg();
-                            if (msg == null || msg.isBlank()) {
-                                msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
-                            }
-                            result = new Document()
-                                    .append("popupMessage", msg);
+                    if (!preSaveResult.isResult()) {
+                        String msg = preSaveResult.getMsg();
+                        if (msg == null || msg.isBlank()) {
+                            msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
                         }
-                    } catch (Exception e) {
-                        logger.error("Error executing preSaveOnChild externalApi", e);
                         result = new Document()
-                                .append("popupMessage", MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi"))
-                                .append("error", e.getMessage() != null ? e.getMessage() : e.toString());
+                                .append("popupMessage", msg);
                     }
                 }
             }
@@ -405,15 +387,10 @@ public abstract class FmsTable extends FmsTableView {
                 }
 
                 String userMessage;
-                String technicalDetail = null;
                 if (popupMsgObj != null && !popupMsgObj.toString().isBlank()) {
                     userMessage = popupMsgObj.toString();
-                    if (resultJSON.size() > 1 || !resultJSON.containsKey("popupMessage")) {
-                        technicalDetail = resultJSON.toJson();
-                    }
                 } else {
                     userMessage = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
-                    technicalDetail = resultJSON.toJson();
                 }
 
                 String severityStr = resultJSON.getString("severity");
@@ -421,11 +398,11 @@ public abstract class FmsTable extends FmsTableView {
                     severityStr = resultJSON.getString("popupMessageSeverity");
                 }
                 if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
-                    dialogController.showPopupWarning(userMessage, technicalDetail, MESSAGE_DIALOG);
+                    dialogController.showPopupWarning(userMessage, MESSAGE_DIALOG);
                 } else if ("info".equalsIgnoreCase(severityStr)) {
                     dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
                 } else {
-                    dialogController.showPopupError(userMessage, technicalDetail);
+                    dialogController.showPopupError(userMessage);
                 }
             }
             return true;

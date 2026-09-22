@@ -70,6 +70,7 @@ import tr.org.tspb.datamodel.gui.ModuleItem;
 import tr.org.tspb.constants.exceptions.FormConfigException;
 import tr.org.tspb.constants.exceptions.MongoOrmFailedException;
 import tr.org.tspb.constants.exceptions.NullNotExpectedException;
+import tr.org.tspb.constants.exceptions.UserException;
 import tr.org.tspb.factory.cp.OgmCreatorIntr;
 import tr.org.tspb.factory.qualifier.OgmCreatorQualifier;
 import tr.org.tspb.datamodel.pojo.ComponentType;
@@ -235,7 +236,7 @@ public class RepositoryService implements Serializable {
 
 
     public PreSaveResult runEventPreSaveByGivenTagEvent(String projectKey, String apiToken, TagEvent tagEvent, Document operatedObject)
-            throws MongoOrmFailedException {
+            throws MongoOrmFailedException, UserException {
 
         List<String> memberIdsAsStr = new ArrayList<>();
 
@@ -339,16 +340,16 @@ public class RepositoryService implements Serializable {
                         PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
             } else {
                 String errMsg = MessageBundleLoader.getMessage("constraint.api.erisilmez", response.getStatus());
-                preSaveResult = new PreSaveResult(false, errMsg,
-                        PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
+                throw new UserException(errMsg);
             }
             response.close();
+        } catch (UserException ue) {
+            throw ue;
         } catch (Exception e) {
             e.printStackTrace();
             String detailMsg = e.getMessage() != null ? e.getMessage() : e.toString();
             String errMsg = MessageBundleLoader.getMessage("constraint.api.baglanti.hatasi", detailMsg);
-            preSaveResult = new PreSaveResult(false, errMsg,
-                    PreSaveResult.MessageGuiType.popup, PreSaveResult.ErrType.error);
+            throw new UserException(errMsg, e);
         }
 
         return preSaveResult;

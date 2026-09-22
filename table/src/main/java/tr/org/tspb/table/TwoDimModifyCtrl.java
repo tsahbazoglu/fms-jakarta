@@ -715,7 +715,11 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             formService.getMyForm().arrangeActions(loginController.getRoleMap(), filterService.getTableFilterCurrent(), crudObject);
         } catch (UserException ex) {
             logger.error("error occured", ex);
-            dialogController.showPopupError(ex.getMessage());
+            if (ex.getCause() != null) {
+                dialogController.showPopupException(ex.getMessage(), ex);
+            } else {
+                dialogController.showPopupError(ex.getMessage());
+            }
         } catch (FormConfigException | LdapException | MongoOrmFailedException | MoreThenOneInListException |
                  NullNotExpectedException | RecursiveLimitExceedException | NoSuchMethodException | ParseException |
                  MessagingException | ScriptException | net.sourceforge.jeval.EvaluationException ex) {
@@ -851,7 +855,11 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             dialogController.showPopup(CRUD_OPERATION_DIALOG2);
         } catch (UserException ex) {
             logger.error("error occured", ex);
-            dialogController.showPopup(ex.getTitle(), ex.getMessage(), MESSAGE_DIALOG);
+            if (ex.getCause() != null) {
+                dialogController.showPopupException(ex.getMessage(), ex);
+            } else {
+                dialogController.showPopup(ex.getTitle(), ex.getMessage(), MESSAGE_DIALOG);
+            }
         } catch (Exception ex) {
             logger.error("error occurred during saveAs: " + ex.getMessage(), ex);
             dialogController.showPopupException(buildFieldErrorMessage(ex), ex);
@@ -1994,21 +2002,30 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     }
 
     public String saveChildRow() {
-        if (selectedChildRow != null) {
-            for (MyField myField : formService.getMyForm().getChildFields()) {
-                if (myField.getCalculateOnSave()) {
-                    String fieldKey = myField.getKey();
-                    selectedChildRow.put(fieldKey, calcService.calculateValue(selectedChildRow, myField, FacesContext.getCurrentInstance()));
+        try {
+            if (selectedChildRow != null) {
+                for (MyField myField : formService.getMyForm().getChildFields()) {
+                    if (myField.getCalculateOnSave()) {
+                        String fieldKey = myField.getKey();
+                        selectedChildRow.put(fieldKey, calcService.calculateValue(selectedChildRow, myField, FacesContext.getCurrentInstance()));
+                    }
                 }
             }
-        }
 
-        if (runEventPreSaveOnChild(filterService.getTableFilterCurrent(), selectedChildRow)) {
-            return null;
-        }
+            if (runEventPreSaveOnChild(filterService.getTableFilterCurrent(), selectedChildRow)) {
+                return null;
+            }
 
-        saveObject();
-        dialogController.hidePopup("wv-dlg-child-row-edit");
+            saveObject();
+            dialogController.hidePopup("wv-dlg-child-row-edit");
+        } catch (UserException | MongoOrmFailedException ex) {
+            logger.error("error occurred in saveChildRow", ex);
+            if (ex.getCause() != null) {
+                dialogController.showPopupException(ex.getMessage(), ex);
+            } else {
+                dialogController.showPopupError(ex.getMessage());
+            }
+        }
         return null;
     }
 
