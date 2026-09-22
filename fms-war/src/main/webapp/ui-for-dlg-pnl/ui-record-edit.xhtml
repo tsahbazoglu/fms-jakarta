@@ -8,31 +8,82 @@
     <h:inputHidden id="id-status-data-change" value="false"/>
 
     <script type="text/javascript">
-
+        //<![CDATA[
         var dlg_close_span = $("#idCrudOperation .ui-icon-closethick");
 
         if (#{formService.myForm.myActions.save}) {
-            // catch primefaces close and change its click event
-            // var dlg_close_span = $(".ui-icon-closethick");
-            dlg_close_span.on("click", openAnotherPopup);
+            dlg_close_span.off("click.crudClose").on("click.crudClose", openAnotherPopup);
 
             var form = $(document.getElementById("idTwoDlgTabView:crud2dForm"));
-            form.change(function () {
+            form.off("change.crudChange").on("change.crudChange", function () {
                 truechange();
             });
-            form.keyup(function (e) {
+            form.off("keyup.crudKeyup").on("keyup.crudKeyup", function (e) {
                 if (e.which != 27) {
                     truechange();
                 }
             });
         }
 
-        $(document).keyup(function (e) {
-            if (e.which == 27) {
-                dlg_close_span.click();
+        $(document).off("keydown.crudEscape").on("keydown.crudEscape", function (e) {
+            if (e.which === 27 || e.key === "Escape") {
+                if (e.isDefaultPrevented()) {
+                    return;
+                }
+                var $crud = $("#idCrudOperation");
+                if (!$crud.length || !$crud.is(":visible")) {
+                    return;
+                }
+                var crudWidget = typeof PF === "function" ? PF("crudOperationDialog2") : null;
+                if (crudWidget && !crudWidget.isVisible()) {
+                    return;
+                }
+                // If messageDialog is visible, it is on top of idCrudOperation - do not close idCrudOperation
+                var msgWidget = typeof PF === "function" ? PF("messageDialog") : null;
+                if (msgWidget && msgWidget.isVisible()) {
+                    return;
+                }
+                if ($("#idMessageDialog").is(":visible")) {
+                    return;
+                }
+                // Check if any other visible dialog or overlay has a higher z-index (i.e. is on top of idCrudOperation)
+                var crudZ = parseInt($crud.css("z-index")) || 0;
+                var hasTopDialog = false;
+                $(".ui-dialog:visible").each(function () {
+                    if (this.id !== "idCrudOperation") {
+                        var z = parseInt($(this).css("z-index")) || 0;
+                        if (z >= crudZ) {
+                            hasTopDialog = true;
+                            return false;
+                        }
+                    }
+                });
+                if (hasTopDialog) {
+                    return;
+                }
+                $(".ui-widget-overlay:visible").each(function () {
+                    var z = parseInt($(this).css("z-index")) || 0;
+                    if (z >= crudZ) {
+                        hasTopDialog = true;
+                        return false;
+                    }
+                });
+                if (hasTopDialog) {
+                    return;
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof openAnotherPopup === "function" && #{formService.myForm.myActions.save}) {
+                    openAnotherPopup();
+                } else if (dlg_close_span.length) {
+                    dlg_close_span.click();
+                } else if (crudWidget) {
+                    crudWidget.hide();
+                }
             }
         });
-
+        //]]>
     </script>
 
     <script type="text/javascript">
