@@ -235,6 +235,168 @@ public class RepositoryService implements Serializable {
     }
 
 
+    public PostSaveResult runEventPostSave(Document operatedObject,
+                                           FmsForm myForm, MyMap crudObject) throws MongoOrmFailedException {
+
+        TagEvent tagEvent = myForm.getEventPostSave();
+
+        if (tagEvent != null) {
+
+            switch (tagEvent.getType()) {
+                case application:
+                    Map calculateAreaSearchMap = new HashMap();
+                    Document cacheQueryMap = tagEvent.getCacheQuery();
+                    for (String key : cacheQueryMap.keySet()) {
+                        calculateAreaSearchMap.put(key, crudObject.get(key));
+                    }
+                    calculateAreaSearchMap.put(FORM_DB, tagEvent.getDb());
+                    calculateAreaSearchMap.put(COLLECTION, tagEvent.getTable());
+                    appScopeSrvCtrl.removeApplicationSearchResults(
+                            calculateAreaSearchMap);
+                    break;
+                case showWarnErrPopup:
+                    return new PostSaveResult(true, tagEvent.getMsg(),
+                            PostSaveResult.MessageGuiType.facesMessage, null);
+                case externalApi:
+                    Map<String, Object> requestPayload = new HashMap<>();
+
+                    if (operatedObject.getObjectId("member") != null) {
+                        String memberIdAsStr = operatedObject.getObjectId("member").toHexString();
+                        requestPayload.put("member", memberIdAsStr);
+                    }
+
+                    if (operatedObject.getObjectId("period") != null) {
+                        String periodIdAsStr = operatedObject.getObjectId("period").toHexString();
+                        requestPayload.put("period", periodIdAsStr);
+                    }
+
+                    requestPayload.put("table", myForm.getTable());
+
+                    tagEvent.getUriParameters().forEach(uriParameter -> {
+                        String value = uriParameter.value();
+                        Matcher matcher = FMS_CRUD_PATTERN.matcher(value);
+                        if (matcher.find()) {
+                            Object operatedObjectValue = operatedObject.get(matcher.group(1));
+                            if (operatedObjectValue != null) {
+                                value = operatedObjectValue.toString();
+                            }
+                        }
+                        requestPayload.put(uriParameter.key(), value);
+                    });
+
+                    String TARGET_URL = "http://localhost:8080" + tagEvent.getUri();
+
+                    // 2. Instantiate the native Jakarta REST client worker engine
+                    try (Client client = ClientBuilder.newClient()) {
+                        // 3. Dispatch the HTTP POST execution payload over the wire
+                        Response response = client.target(TARGET_URL)
+                                .request(MediaType.APPLICATION_JSON)
+                                .header("X-API-KEY", myForm.getMyProject().getApiToken()).header("X-API-PROJECT", myForm.getMyProject().getKey())
+                                .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
+                        // 4. Validate output response signals cleanly
+                        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                            String jsonResponse = response.readEntity(String.class);
+                            System.out.println("Success response signature received from service: " + jsonResponse);
+                        } else {
+                            System.err.println("Failed to execute. HTTP Status Code: " + response.getStatus());
+                            System.err.println("Error output detail: " + response.readEntity(String.class));
+                        }
+                        response.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    Document result = mongoDbUtil.trigger(operatedObject,
+                            tagEvent, loginController.getRolesAsList());
+                    return new PostSaveResult(true, result.get("facesMessage",
+                            String.class),
+                            PostSaveResult.MessageGuiType.facesMessage, null);
+            }
+        }
+        return PostSaveResult.getNullSingleton();
+    }
+
+    public PreSaveResult runEventPreSave(Map query, FmsForm myForm,
+                                         MyMap crudObject) throws MongoOrmFailedException {
+
+        if (myForm.getEventPreSave() == null) {
+            return PreSaveResult.getNullSingleton();
+        }
+
+        String eventPreSaveDB = myForm.getEventPreSave().
+                getDb();
+
+        if (eventPreSaveDB == null) {
+            return PreSaveResult.getErrSingleton();
+        }
+
+        Document myCrudObject = new Document(crudObject);
+        myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
+
+        String code = myForm.getEventPreSave().
+                getJsFunction();
+        Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code,
+                query, myCrudObject);
+        Object result = commandResult.get(RETVAL);
+
+        if (Boolean.TRUE.equals(result)) {
+            return PreSaveResult.getErrSingleton();
+        } else if (result instanceof Document) {
+            Document resultJSON = (Document) result;
+            if ("facesMessage".equals(resultJSON.get("gui"))) {
+                Object facesMsgObj = resultJSON.get("facesMessage");
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("msg");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("message");
+                }
+                String msg = facesMsgObj != null ? facesMsgObj.toString() : "";
+                PreSaveResult.ErrType severity = PreSaveResult.ErrType.info;
+                if (resultJSON.get("facesMessageSeverity") != null) {
+                    switch (resultJSON.get("facesMessageSeverity").toString().toLowerCase()) {
+                        case "error":
+                            severity = PreSaveResult.ErrType.error;
+                            break;
+                        case "info":
+                            severity = PreSaveResult.ErrType.info;
+                            break;
+                        case "warn":
+                        case "warning":
+                            severity = PreSaveResult.ErrType.warn;
+                            break;
+                        default:
+                            severity = PreSaveResult.ErrType.info;
+                            break;
+                    }
+                }
+                return new PreSaveResult(true, msg,
+                        PreSaveResult.MessageGuiType.facesMessage, severity);
+            } else {
+                Object popupMsgObj = resultJSON.get("popupMessage");
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("msg");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("message");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("error");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("errorMessage");
+                }
+                String msg = (popupMsgObj != null && !popupMsgObj.toString().isBlank())
+                        ? popupMsgObj.toString()
+                        : MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                return new PreSaveResult(true, msg,
+                        PreSaveResult.MessageGuiType.facesMessage, null);
+            }
+        }
+        return PreSaveResult.getNullSingleton();
+    }
+
     public PreSaveResult runEventPreSaveByGivenTagEvent(String projectKey, String apiToken, TagEvent tagEvent, Document operatedObject)
             throws MongoOrmFailedException, UserException {
 
@@ -389,168 +551,6 @@ public class RepositoryService implements Serializable {
         }
 
         return preSaveResult;
-    }
-
-    public PostSaveResult runEventPostSave(Document operatedObject,
-                                           FmsForm myForm, MyMap crudObject) throws MongoOrmFailedException {
-
-        TagEvent tagEvent = myForm.getEventPostSave();
-
-        if (tagEvent != null) {
-
-            switch (tagEvent.getType()) {
-                case application:
-                    Map calculateAreaSearchMap = new HashMap();
-                    Document cacheQueryMap = tagEvent.getCacheQuery();
-                    for (String key : cacheQueryMap.keySet()) {
-                        calculateAreaSearchMap.put(key, crudObject.get(key));
-                    }
-                    calculateAreaSearchMap.put(FORM_DB, tagEvent.getDb());
-                    calculateAreaSearchMap.put(COLLECTION, tagEvent.getTable());
-                    appScopeSrvCtrl.removeApplicationSearchResults(
-                            calculateAreaSearchMap);
-                    break;
-                case showWarnErrPopup:
-                    return new PostSaveResult(true, tagEvent.getMsg(),
-                            PostSaveResult.MessageGuiType.facesMessage, null);
-                case externalApi:
-                    Map<String, Object> requestPayload = new HashMap<>();
-
-                    if(operatedObject.getObjectId("member") != null){
-                        String memberIdAsStr = operatedObject.getObjectId("member").toHexString();
-                        requestPayload.put("member", memberIdAsStr);
-                    }
-
-                    if(operatedObject.getObjectId("period") != null){
-                        String periodIdAsStr = operatedObject.getObjectId("period").toHexString();
-                        requestPayload.put("period", periodIdAsStr);
-                    }
-
-                    requestPayload.put("table", myForm.getTable());
-
-                    tagEvent.getUriParameters().forEach(uriParameter -> {
-                        String value = uriParameter.value();
-                        Matcher matcher = FMS_CRUD_PATTERN.matcher(value);
-                        if (matcher.find()) {
-                            Object operatedObjectValue = operatedObject.get(matcher.group(1));
-                            if (operatedObjectValue != null) {
-                                value = operatedObjectValue.toString();
-                            }
-                        }
-                        requestPayload.put(uriParameter.key(), value);
-                    });
-
-                    String TARGET_URL = "http://localhost:8080" + tagEvent.getUri();
-
-                    // 2. Instantiate the native Jakarta REST client worker engine
-                    try (Client client = ClientBuilder.newClient()) {
-                        // 3. Dispatch the HTTP POST execution payload over the wire
-                        Response response = client.target(TARGET_URL)
-                                .request(MediaType.APPLICATION_JSON)
-                                .header("X-API-KEY", myForm.getMyProject().getApiToken()).header("X-API-PROJECT", myForm.getMyProject().getKey())
-                                .post(Entity.entity(requestPayload, MediaType.APPLICATION_JSON));
-                        // 4. Validate output response signals cleanly
-                        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-                            String jsonResponse = response.readEntity(String.class);
-                            System.out.println("Success response signature received from service: " + jsonResponse);
-                        } else {
-                            System.err.println("Failed to execute. HTTP Status Code: " + response.getStatus());
-                            System.err.println("Error output detail: " + response.readEntity(String.class));
-                        }
-                        response.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                default:
-                    Document result = mongoDbUtil.trigger(operatedObject,
-                            tagEvent, loginController.getRolesAsList());
-                    return new PostSaveResult(true, result.get("facesMessage",
-                            String.class),
-                            PostSaveResult.MessageGuiType.facesMessage, null);
-            }
-        }
-        return PostSaveResult.getNullSingleton();
-    }
-
-    public PreSaveResult runEventPreSave(Map query, FmsForm myForm,
-                                         MyMap crudObject) throws MongoOrmFailedException {
-
-        if (myForm.getEventPreSave() == null) {
-            return PreSaveResult.getNullSingleton();
-        }
-
-        String eventPreSaveDB = myForm.getEventPreSave().
-                getDb();
-
-        if (eventPreSaveDB == null) {
-            return PreSaveResult.getErrSingleton();
-        }
-
-        Document myCrudObject = new Document(crudObject);
-        myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
-
-        String code = myForm.getEventPreSave().
-                getJsFunction();
-        Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code,
-                query, myCrudObject);
-        Object result = commandResult.get(RETVAL);
-
-        if (Boolean.TRUE.equals(result)) {
-            return PreSaveResult.getErrSingleton();
-        } else if (result instanceof Document) {
-            Document resultJSON = (Document) result;
-            if ("facesMessage".equals(resultJSON.get("gui"))) {
-                Object facesMsgObj = resultJSON.get("facesMessage");
-                if (facesMsgObj == null) {
-                    facesMsgObj = resultJSON.get("msg");
-                }
-                if (facesMsgObj == null) {
-                    facesMsgObj = resultJSON.get("message");
-                }
-                String msg = facesMsgObj != null ? facesMsgObj.toString() : "";
-                PreSaveResult.ErrType severity = PreSaveResult.ErrType.info;
-                if (resultJSON.get("facesMessageSeverity") != null) {
-                    switch (resultJSON.get("facesMessageSeverity").toString().toLowerCase()) {
-                        case "error":
-                            severity = PreSaveResult.ErrType.error;
-                            break;
-                        case "info":
-                            severity = PreSaveResult.ErrType.info;
-                            break;
-                        case "warn":
-                        case "warning":
-                            severity = PreSaveResult.ErrType.warn;
-                            break;
-                        default:
-                            severity = PreSaveResult.ErrType.info;
-                            break;
-                    }
-                }
-                return new PreSaveResult(true, msg,
-                        PreSaveResult.MessageGuiType.facesMessage, severity);
-            } else {
-                Object popupMsgObj = resultJSON.get("popupMessage");
-                if (popupMsgObj == null) {
-                    popupMsgObj = resultJSON.get("msg");
-                }
-                if (popupMsgObj == null) {
-                    popupMsgObj = resultJSON.get("message");
-                }
-                if (popupMsgObj == null) {
-                    popupMsgObj = resultJSON.get("error");
-                }
-                if (popupMsgObj == null) {
-                    popupMsgObj = resultJSON.get("errorMessage");
-                }
-                String msg = (popupMsgObj != null && !popupMsgObj.toString().isBlank())
-                        ? popupMsgObj.toString()
-                        : MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
-                return new PreSaveResult(true, msg,
-                        PreSaveResult.MessageGuiType.facesMessage, null);
-            }
-        }
-        return PreSaveResult.getNullSingleton();
     }
 
     public List<DocumentRecursive> findList(FmsForm myForm,

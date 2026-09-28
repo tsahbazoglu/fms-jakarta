@@ -501,7 +501,9 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                 }
             }
 
-            PreSaveResult preSaveResult = repositoryService.runEventPreSave(filterService.getTableFilterCurrent(), formService.getMyForm(), crudObject);
+            PreSaveResult preSaveResult = repositoryService
+                    .runEventPreSave(filterService.getTableFilterCurrent(),
+                    formService.getMyForm(), crudObject);
 
             if (preSaveResult.isResult()) {
                 throw new UserException(preSaveResult.getMsg());
