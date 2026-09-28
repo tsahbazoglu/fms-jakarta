@@ -29,4 +29,15 @@ public class CountryRegistry {
     public List<Country> getCountries() {
         return countries;
     }
+    public String getMask(String code) {
+        if (code == null) {
+            return "(99) 999-99-99"; // Fallback default
+        }
+        for (Country c : countries) {
+            if (c.getCode().equals(code)) {
+                return c.getMask();
+            }
+        }
+        return "(99) 999-99-99";
+    }
 }

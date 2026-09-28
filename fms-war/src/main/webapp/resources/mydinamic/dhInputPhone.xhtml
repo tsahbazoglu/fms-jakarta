@@ -14,24 +14,27 @@
     <div id="#{cc.clientId}" class="dh-phone-composite #{cc.attrs.styleClass}">
         <p:outputPanel id="panel" styleClass="ui-inputgroup" style="display: flex; width: 100%;">
 
-            <!-- Closed box shows short format (🇦🇿 +994), dropdown panel is wide -->
+            <!-- Country Dropdown (Design styles 100% preserved) -->
             <p:selectOneMenu id="countryCode"
                              value="#{cc.attrs.value}"
                              filter="true"
                              filterMatchMode="contains"
-                             panelStyle="width: 280px;"
-                             style="width: 115px; min-width: 115px;"
+                             panelStyle="width: 320px;"
+                             style="width: 210px; min-width: 210px;"
                              scrollHeight="250">
 
                 <f:selectItems value="#{countryRegistry.countries}" var="c"
-                               itemLabel="#{c.flag} #{c.code}"
+                               itemLabel="#{c.flag} #{c.name} (#{c.code})"
                                itemValue="#{c.code}" />
+
+                <!-- Dynamically update the subscriber mask when country changes -->
+                <p:ajax update="subscriber" />
             </p:selectOneMenu>
 
-            <!-- Subscriber Number Mask Input -->
+            <!-- Subscriber Number Mask Input (Dynamic mask based on registry) -->
             <p:inputMask id="subscriber"
-                         mask="(99) 999-99-99"
-                         placeholder="50 123-45-67"
+                         mask="#{countryRegistry.getMask(cc.attrs.value)}"
+                         placeholder="Enter number"
                          validateMask="true"
                          style="width: 100%;" />
 
