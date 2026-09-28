@@ -983,6 +983,9 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
     public String getInputText() {
         return ComponentType.inputText.name();
     }
+    public String getInputNumber() {
+        return ComponentType.inputNumber.name();
+    }
 
     public String getInputFile() {
         return ComponentType.inputFile.name();
