@@ -26,6 +26,7 @@ public enum ComponentType {
     inputTextarea(String.class, HtmlInputTextarea.class,
             HtmlInputTextarea.COMPONENT_TYPE),
     inputNumber(Number.class, InputNumber.class, InputNumber.COMPONENT_TYPE),
+    inputPhone(Number.class, InputNumber.class, InputNumber.COMPONENT_TYPE),
     selectBooleanCheckbox(Boolean.class, HtmlSelectBooleanCheckbox.class,
             HtmlSelectBooleanCheckbox.COMPONENT_TYPE),
     selectOneRadio(String.class, HtmlSelectOneRadio.class,

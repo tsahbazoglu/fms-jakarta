@@ -353,6 +353,11 @@
                                 myconverter="#{myField.myconverter}"
                                 />
 
+                            <mydynamic:dhInputPhone
+                                    rendered="#{crudOneDim.inputPhone eq  myField.componentType and myField.rendered}"
+                                    value="#{crudOneDim.myObject[myField.key]}"
+                            />
+
                             <p:panelGrid 
                                 columns="2"
                                 rendered="#{twoDimModifyCtrl.inputFile eq  myField.componentType and myField.rendered}"

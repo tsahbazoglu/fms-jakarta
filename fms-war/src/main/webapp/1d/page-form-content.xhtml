@@ -136,7 +136,10 @@
                             minValue="0.00"
                             maxValue="9999999999999999.99"
                     />
-
+                    <mydynamic:dhInputPhone
+                            rendered="#{crudOneDim.inputPhone eq  myField.componentType and myField.rendered}"
+                            value="#{crudOneDim.myObject[myField.key]}"
+                    />
                     <mydynamic:uysInputMask
                             myvalue="#{crudOneDim.myObject[myField.key]}"
                             myFieldKey="#{myField.key}"

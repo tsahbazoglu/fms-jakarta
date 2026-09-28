@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="jakarta.faces.composite">
+
+<composite:interface>
+    <composite:attribute name="value" required="true" type="java.lang.String" />
+    <composite:attribute name="styleClass" required="false" />
+</composite:interface>
+
+<composite:implementation>
+    <div id="#{cc.clientId}" class="dh-phone-composite #{cc.attrs.styleClass}">
+        <p:outputPanel id="panel" styleClass="ui-inputgroup" style="display: flex; width: 100%;">
+
+            <!-- Closed box shows short format (🇦🇿 +994), dropdown panel is wide -->
+            <p:selectOneMenu id="countryCode"
+                             value="#{cc.attrs.value}"
+                             filter="true"
+                             filterMatchMode="contains"
+                             panelStyle="width: 280px;"
+                             style="width: 115px; min-width: 115px;"
+                             scrollHeight="250">
+
+                <f:selectItems value="#{countryRegistry.countries}" var="c"
+                               itemLabel="#{c.flag} #{c.code}"
+                               itemValue="#{c.code}" />
+            </p:selectOneMenu>
+
+            <!-- Subscriber Number Mask Input -->
+            <p:inputMask id="subscriber"
+                         mask="(99) 999-99-99"
+                         placeholder="50 123-45-67"
+                         validateMask="true"
+                         style="width: 100%;" />
+
+        </p:outputPanel>
+    </div>
+</composite:implementation>
+
+</html>

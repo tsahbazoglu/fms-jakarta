@@ -349,7 +349,7 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
             armDefaultValues(key, myForm, modifiedSearchObject);
 
             if (crudObject.get(key) instanceof Document doc && doc.get(MONGO_ID) != null) {
-                crudObject.put(key,doc.get(MONGO_ID));
+                crudObject.put(key, doc.get(MONGO_ID));
             }
         }
 
@@ -983,8 +983,13 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
     public String getInputText() {
         return ComponentType.inputText.name();
     }
+
     public String getInputNumber() {
         return ComponentType.inputNumber.name();
+    }
+
+    public String getInputPhone() {
+        return ComponentType.inputPhone.name();
     }
 
     public String getInputFile() {
