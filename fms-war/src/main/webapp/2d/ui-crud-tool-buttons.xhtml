@@ -1,126 +1,164 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:p="http://primefaces.org/ui">
 
-<h:panelGrid columns="20">
-    <p:button
-            icon="pi pi-filter"
-            title="#{msg['genis.filtre']}"
-            onclick="rcTableFilter();return false;"
-            rendered="false"
-    />
-    <p:button
-            icon="pi pi-info-circle"
-            value="#{msg['onemli.aciklamalar.i.cin.tiklayiniz']}"
-            title="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}"
-            rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
-            onclick="rcTableDesc();return false;"
-    />
-    <p:button
-            id="id-table-create-data-record"
-            icon="pi pi-file"
-            title="#{msg['yeni.ekle']}"
-            disabled="#{not formService.myForm.myActions.create}"
-            onclick="rcTableNew();return false;"
-    />
-    <p:button
-            icon="pi pi-check-circle"
-            value="#{msg['tum.sayfalari.kontrol.et']}"
-            rendered="#{formService.myForm.myActions.checkAll}"
-            onclick="rcTableCheck();return false;"
-    />
-    <p:button
-            icon="pi pi-check-circle"
-            value="#{msg['tum.sayfalari.kontrol.et.admin']}"
-            rendered="#{formService.myForm.myActions.checkAll and roleMB[mainFrame.architectRole]}"
-            onclick="rcTableCheckAsAdmin();return false;"
-    />
-    <p:button
-            id="id-send-ok"
-            icon="pi pi-send"
-            value="#{msg['gonder']}"
-            rendered="#{not empty formService.myForm.myActions.sendFormAction}"
-            disabled="#{not formService.myForm.myActions.sendForms}"
-            title="#{msg['gonder.2']}"
-            onclick="rcTableSend();return false;"
-    />
-    <p:button
-            icon="pi pi-circle-off"
-            value="#{formService.myForm.myActions.norecordAction.enableResult.caption}"
-            rendered="#{formService.myForm.myActions.norecord}"
-            onclick="rcTableNotifyNoRecord();return false;"
-    />
-    <p:button
-            id="id-btn-download"
-            icon="pi pi-file-excel"
-            title="#{msg['excele.aktar']}"
-            rendered="#{formService.myForm.myActions.download}"
-            onclick="rcDownload();return false;"
-    >
-    </p:button>
-    <p:button
-            value="#{msg['api']}"
-            rendered="false"
-            onclick="rcTableApi();return false;"
-    />
-    <p:button
-            id="id-button-esign-2d-v2"
-            value="#{msg['e.i.mza.sureci']}"
-            rendered="#{formService.myForm.myActions.eimza2D}"
-            onclick="rcTableApiEsign();return false;"
-    />
-    <p:button
-            value="#{msg['toplu.e.posta.gonder']}"
-            rendered="#{formService.myForm.myActions.emailToAll}"
-            onclick="rcTableEmail();return false;"
-    />
-    <p:button
-            icon="pi pi-upload"
-            title="#{msg['toplu.veri.yukleme.araci']}"
-            rendered="#{formService.myForm.myActions.upload}"
-            onclick="PF('wv-bulkdupload').show();return false;"
-    />
-    <p:button
-            icon="pi pi-trash"
-            title="#{msg['toplu.silme']}"
-            rendered="#{formService.myForm.myActions.delete}"
-            onclick="PF('wv-confirm-multiple-delete').show();return false;"
-    />
-    <p:button
-            icon="pi pi-reply"
-            onclick="rcSetMultiToRelatedForm();return false;"
-            title="#{msg['aktar']}"
-            transient="true"
-            rendered="#{mainFrame.hasSetToRelatedForm}"
-    />
-    <p:button
-            icon="pi pi-check-circle"
-            value="#{msg['test.veri.olustur']}"
-            onclick="rcCreateTestData();return false;"
-            rendered="false"
-    />
-    <p:button
-            id="id-table-bulk-copy"
-            icon="pi pi-copy"
-            title="#{msg['toplu.kopyalama']}"
-            disabled="#{not formService.myForm.myActions.create}"
-            onclick="rcBulkCopyTool();return false;"
-    />
-    <p:commandButton
-            icon="pi pi-filter"
-            title="#{msg['filtrele']}"
-            action="#{twoDimModifyCtrl.actionSearchObject}"
-            update="#{updateAjaxMB.btn2dSearch}"
-    />
-    <p:commandButton
-            icon="pi pi-filter-slash"
-            title="#{msg['filtreleri.sifirla']}"
-            action="#{twoDimModifyCtrl.resetFilter}"
-            update="#{updateAjaxMB.btn2dSearch},id-tab-view:id-2d-form-search:id-filter-current-vertical-panel-grid"
-    />
-</h:panelGrid>
+     <p:toolbar>
 
-</html>
+        <!-- Left Toolbar Group: Filters, Creation, Workflow, and Tools -->
+        <p:toolbarGroup align="left">
+            <!-- Advanced Filter -->
+            <p:button
+                    icon="pi pi-filter"
+                    title="#{msg['genis.filtre']}"
+                    onclick="rcTableFilter(); return false;"
+                    styleClass="mr-2"
+                    rendered="false"/>
+
+            <!-- Page Descriptions / Notes -->
+            <p:button
+                    icon="pi pi-info-circle"
+                    value="#{msg['onemli.aciklamalar.i.cin.tiklayiniz']}"
+                    title="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}"
+                    styleClass="mr-2"
+                    rendered="#{twoDimModifyCtrl.selectedFormUserNote}"
+                    onclick="rcTableDesc(); return false;"/>
+
+            <!-- Create New Record -->
+            <p:button
+                    id="id-table-create-data-record"
+                    icon="pi pi-file"
+                    title="#{msg['yeni.ekle']}"
+                    disabled="#{not formService.myForm.myActions.create}"
+                    styleClass="mr-2"
+                    onclick="rcTableNew(); return false;"/>
+
+            <!-- Check All Pages -->
+            <p:button
+                    icon="pi pi-check-circle"
+                    value="#{msg['tum.sayfalari.kontrol.et']}"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.checkAll}"
+                    onclick="rcTableCheck(); return false;"/>
+
+            <!-- Check All Pages (Admin) -->
+            <p:button
+                    icon="pi pi-check-circle"
+                    value="#{msg['tum.sayfalari.kontrol.et.admin']}"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.checkAll and roleMB[mainFrame.architectRole]}"
+                    onclick="rcTableCheckAsAdmin(); return false;"/>
+
+            <!-- Send Record -->
+            <p:button
+                    id="id-send-ok"
+                    icon="pi pi-send"
+                    value="#{msg['gonder']}"
+                    title="#{msg['gonder.2']}"
+                    styleClass="mr-2"
+                    rendered="#{not empty formService.myForm.myActions.sendFormAction}"
+                    disabled="#{not formService.myForm.myActions.sendForms}"
+                    onclick="rcTableSend(); return false;"/>
+
+            <!-- No Record Notification -->
+            <p:button
+                    icon="pi pi-circle-off"
+                    value="#{msg['norecordAction.enableResult.caption']}"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.norecord}"
+                    onclick="rcTableNotifyNoRecord(); return false;"/>
+
+            <!-- Excel Export -->
+            <p:button
+                    id="id-btn-download"
+                    icon="pi pi-file-excel"
+                    title="#{msg['excele.aktar']}"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.download}"
+                    onclick="rcDownload(); return false;"/>
+
+            <!-- API Trigger -->
+            <p:button
+                    value="#{msg['api']}"
+                    styleClass="mr-2"
+                    rendered="false"
+                    onclick="rcTableApi(); return false;"/>
+
+            <!-- E-Signature Process -->
+            <p:button
+                    id="id-button-esign-2d-v2"
+                    value="#{msg['e.i.mza.sureci']}"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.eimza2D}"
+                    onclick="rcTableApiEsign(); return false;"/>
+
+            <!-- Bulk Email -->
+            <p:button
+                    value="#{msg['toplu.e.posta.gonder']}"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.emailToAll}"
+                    onclick="rcTableEmail(); return false;"/>
+
+            <!-- Bulk Data Upload -->
+            <p:button
+                    icon="pi pi-upload"
+                    title="#{msg['toplu.veri.yukleme.araci']}"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.upload}"
+                    onclick="PF('wv-bulkdupload').show(); return false;"/>
+
+            <!-- Transfer / Set to Related Form -->
+            <p:button
+                    icon="pi pi-reply"
+                    title="#{msg['aktar']}"
+                    transient="true"
+                    styleClass="mr-2"
+                    rendered="#{mainFrame.hasSetToRelatedForm}"
+                    onclick="rcSetMultiToRelatedForm(); return false;"/>
+
+            <!-- Test Data Creation -->
+            <p:button
+                    icon="pi pi-check-circle"
+                    value="#{msg['test.veri.olustur']}"
+                    styleClass="mr-2"
+                    rendered="false"
+                    onclick="rcCreateTestData(); return false;"/>
+
+            <!-- Bulk Copy -->
+            <p:button
+                    id="id-table-bulk-copy"
+                    icon="pi pi-copy"
+                    title="#{msg['toplu.kopyalama']}"
+                    disabled="#{not formService.myForm.myActions.create}"
+                    styleClass="mr-2"
+                    onclick="rcBulkCopyTool(); return false;"/>
+
+            <!-- Filter Actions -->
+            <p:commandButton
+                    icon="pi pi-filter"
+                    title="#{msg['filtrele']}"
+                    styleClass="mr-2"
+                    action="#{twoDimModifyCtrl.actionSearchObject}"
+                    update="#{updateAjaxMB.btn2dSearch}"/>
+
+            <p:commandButton
+                    icon="pi pi-filter-slash"
+                    title="#{msg['filtreleri.sifirla']}"
+                    action="#{twoDimModifyCtrl.resetFilter}"
+                    update="#{updateAjaxMB.btn2dSearch},id-tab-view:id-2d-form-search:id-filter-current-vertical-panel-grid"/>
+        </p:toolbarGroup>
+
+        <!-- Right Toolbar Group: Destructive Action (Bulk Delete) -->
+        <p:toolbarGroup align="right">
+            <p:button
+                    icon="pi pi-trash"
+                    title="#{msg['toplu.silme']}"
+                    aria-label="#{msg['toplu.silme']}"
+                    rendered="#{formService.myForm.myActions.delete}"
+                    onclick="PF('wv-confirm-multiple-delete').show(); return false;"
+                    styleClass="ui-button-danger rounded-button"/>
+        </p:toolbarGroup>
+
+    </p:toolbar>
+ </html>
