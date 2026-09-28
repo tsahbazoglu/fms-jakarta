@@ -16,8 +16,8 @@
                              styleClass="ui-button-outlined ui-button-secondary p-button-sm"
                              title="#{msg['menu.ac.kapat']}"/>
 
-            <p:graphicImage value="#{mainFrame.logoSmall}" 
-                            style="max-height: 32px; width: auto; display: block;" 
+            <p:graphicImage value="#{mainFrame.logoSmall}"
+                            style="max-height: 32px; width: auto; display: block;"
                             alt="Logo" />
         </div>
 
@@ -26,8 +26,8 @@
             <h:panelGroup rendered="#{roleMB['uysdesigner']}" styleClass="text-xs mr-1">
                 <span class="font-bold text-600">#{msg['spk.i.lk.bildirim.tarihi']}</span>
                 <h:panelGroup rendered="#{not empty loginController.loggedUserDetail}">
-                    <h:outputText value="#{msg['belirtilmemis']}" 
-                                  rendered="#{empty loginController.loggedUserDetail.mapProjectInfo}" 
+                    <h:outputText value="#{msg['belirtilmemis']}"
+                                  rendered="#{empty loginController.loggedUserDetail.mapProjectInfo}"
                                   styleClass="text-500 italic"/>
                     <h:outputText value="#{loginController.loggedUserDetail.mapProjectInfo['spk_notifacation_date']}"
                                   rendered="#{not empty loginController.loggedUserDetail.mapProjectInfo}">
@@ -36,16 +36,21 @@
                 </h:panelGroup>
             </h:panelGroup>
 
-            <p:chip label="&#160;#{loginController.loggedUserDetail.username}" 
-                    icon="pi pi-user" 
-                    styleClass="surface-200 text-800 font-semibold text-xs border-round"/>
+            <!-- User Info Container matched pixel-for-pixel to button height -->
+            <div class="ui-button ui-widget ui-state-default ui-button-outlined ui-button-secondary p-button-sm flex align-items-center gap-2 text-xs"
+                 style="cursor: default; height: 31px; padding: 0 0.75rem; box-sizing: border-box;">
+                <i class="pi pi-user"></i>
+                <h:outputText value="#{loginController.loggedUserDetail.username}" />
+            </div>
 
+            <!-- Action Buttons -->
             <div class="flex align-items-center gap-1">
-                <p:linkButton icon="pi pi-share-alt" 
-                              target="_blank" 
-                              href="https://git.tspb.org.tr/explore/projects" 
+                <p:linkButton icon="pi pi-share-alt"
+                              target="_blank"
+                              href="https://git.tspb.org.tr/explore/projects"
                               title="#{msg['git.projeleri']}"
-                              styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
+                              styleClass="ui-button-outlined ui-button-secondary p-button-sm flex align-items-center justify-content-center"
+                              style="height: 31px; width: 31px; padding: 0; box-sizing: border-box;"/>
 
                 <p:commandButton value="#{msg['profil']}"
                                  icon="pi pi-user-edit"
