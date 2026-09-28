@@ -1,0 +1,19 @@
+{
+  "agentMode": "accept-edits",
+  "autoExecute": true,
+  "colorScheme": "tokyo night",
+  "permissions": {
+    "allow": [
+      "command(git grep)",
+      "command(git log)",
+      "command(git status)",
+      "command(git diff)",
+      "command(ls)",
+      "command(cat)",
+      "command(head)",
+      "command(grep)",
+      "command(tail)",
+      "command(javap)"
+    ]
+  }
+}
