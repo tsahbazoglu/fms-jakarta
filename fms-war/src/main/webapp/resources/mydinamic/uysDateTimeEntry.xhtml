@@ -1,110 +1,159 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"  
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:composite="jakarta.faces.composite"
       xmlns:ui="jakarta.faces.facelets">
 
-    <composite:interface>
-        <composite:attribute name="myconverter" required="true"/>
-        <composite:attribute name="label" required="true"/>
-        <composite:attribute name="myvalue" required="true"/>
-        <composite:attribute name="myrequired"/>
-        <composite:attribute name="myreadonly"/>
-        <composite:attribute name="mypattern" required="true"/>
-        <composite:attribute name="dateRangeControl"/>
-        <composite:attribute name="dateRangeValidate"/>
-        <composite:attribute name="dateRangeStartValue"/>
-        <composite:attribute name="dateRangeEndValue"/>
-        <composite:attribute name="eventChangeUpdate"/>
-        <composite:attribute name="eventDateSelectUpdate"/>
-        <composite:attribute name="dateChange" method-signature="void dateChange(org.primefaces.event.SelectEvent)"/>
-    </composite:interface>
+<composite:interface>
+    <composite:attribute name="myconverter" required="true"/>
+    <composite:attribute name="label" required="true"/>
+    <composite:attribute name="myvalue" required="true"/>
+    <composite:attribute name="myrequired"/>
+    <composite:attribute name="myreadonly"/>
+    <composite:attribute name="mypattern" required="true"/>
+    <composite:attribute name="mylocale" default="tr"/>
+    <composite:attribute name="dateRangeControl"/>
+    <composite:attribute name="dateRangeValidate"/>
+    <composite:attribute name="dateRangeStartValue"/>
+    <composite:attribute name="dateRangeEndValue"/>
+    <composite:attribute name="eventChangeUpdate"/>
+    <composite:attribute name="eventDateSelectUpdate"/>
+    <composite:attribute name="dateChange" method-signature="void dateChange(org.primefaces.event.SelectEvent)"/>
+</composite:interface>
 
-    <composite:implementation>
-        <h:outputScript target="head">
-            if (!PrimeFaces.locales['tr']) {
-            PrimeFaces.locales['tr'] = {
-            closeText: 'kapat',
-            prevText: 'geri',
-            nextText: 'ileri',
-            currentText: 'bugün',
-            monthNames: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
-            monthNamesShort: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
-            dayNames: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
-            dayNamesShort: ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
-            dayNamesMin: ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
-            firstDay: 1,
-            timeOnlyTitle: 'Zaman Seçiniz',
-            timeText: 'Zaman',
-            hourText: 'Saat',
-            minuteText: 'Dakika',
-            secondText: 'Saniye'
-            };
-            }
+<composite:implementation>
+    <h:outputScript target="head">
+        if (!PrimeFaces.locales) {
+        PrimeFaces.locales = {};
+        }
 
-            function cleanUysCalendar(widgetVar) {
-                var widget = PF(widgetVar);
-                if (widget) {
-                    widget.setDate(null);
-                    if (widget.jq) {
-                        widget.jq.find('input').trigger('change');
-                    }
-                }
-            }
-        </h:outputScript>
+        // Turkish Locale
+        if (!PrimeFaces.locales['tr']) {
+        PrimeFaces.locales['tr'] = {
+        closeText: 'kapat',
+        prevText: 'geri',
+        nextText: 'ileri',
+        currentText: 'bugün',
+        monthNames: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+        monthNamesShort: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+        dayNames: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
+        dayNamesShort: ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
+        dayNamesMin: ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
+        firstDay: 1,
+        timeOnlyTitle: 'Zaman Seçiniz',
+        timeText: 'Zaman',
+        hourText: 'Saat',
+        minuteText: 'Dakika',
+        secondText: 'Saniye'
+        };
+        }
 
-        <h:panelGroup layout="block" rendered="#{not cc.attrs.myreadonly}" style="display: flex; align-items: center; width: 100%; gap: 4px;">
-            <div class="ui-fluid" style="flex: 1; min-width: 0;">
-                <p:calendar 
-                    converter="fmsDateTimeConverter" 
+        // Azerbaijani Locale
+        if (!PrimeFaces.locales['az']) {
+        PrimeFaces.locales['az'] = {
+        closeText: 'bağla',
+        prevText: 'geri',
+        nextText: 'irəli',
+        currentText: 'bugün',
+        monthNames: ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'],
+        monthNamesShort: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'],
+        dayNames: ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'],
+        dayNamesShort: ['B.', 'B.e.', 'Ç.a.', 'Ç.', 'C.a.', 'C.', 'Ş.'],
+        dayNamesMin: ['B.', 'B.e.', 'Ç.a.', 'Ç.', 'C.a.', 'C.', 'Ş.'],
+        firstDay: 1,
+        timeOnlyTitle: 'Vaxtı seçin',
+        timeText: 'Vaxt',
+        hourText: 'Saat',
+        minuteText: 'Dəqiqə',
+        secondText: 'Saniyə'
+        };
+        }
+
+        // English Locale
+        if (!PrimeFaces.locales['en']) {
+        PrimeFaces.locales['en'] = {
+        closeText: 'Close',
+        prevText: 'Previous',
+        nextText: 'Next',
+        currentText: 'Current',
+        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        dayNamesMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+        firstDay: 1,
+        timeOnlyTitle: 'Only Time',
+        timeText: 'Time',
+        hourText: 'Hour',
+        minuteText: 'Minute',
+        secondText: 'Second'
+        };
+        }
+
+        function cleanUysCalendar(widgetVar) {
+        var widget = PF(widgetVar);
+        if (widget) {
+        widget.setDate(null);
+        if (widget.jq) {
+        widget.jq.find('input').trigger('change');
+        }
+        }
+        }
+    </h:outputScript>
+
+    <h:panelGroup layout="block" rendered="#{not cc.attrs.myreadonly}" style="display: flex; align-items: center; width: 100%; gap: 4px;">
+        <div class="ui-fluid" style="flex: 1; min-width: 0;">
+            <p:datePicker
+                    converter="fmsDateTimeConverter"
                     value="#{cc.attrs.myvalue}"
-                    locale="tr"
-                    showOn="button"
-                    navigator="true"
+                    locale="#{empty cc.attrs.mylocale ? 'tr' : cc.attrs.mylocale}"
+                    showIcon="true"
+                    monthNavigator="true"
+                    yearNavigator="true"
                     yearRange="c-50:c+50"
                     widgetVar="widget_#{cc.clientId.replace(':', '_')}"
                     required="#{cc.attrs.myrequired}"
                     pattern="#{cc.attrs.mypattern}"
                     mask="true"
                     requiredMessage="#{cc.attrs.label} #{msg['requiredMessage']}"
-                    >
-                    <f:attribute name="label" value="#{cc.attrs.label}"/>
-                    <f:validator validatorId="primeDateRangeValidator"/>
-                    <f:attribute name="dateRangeValidate" value="#{cc.attrs.dateRangeValidate}"/>
-                    <f:attribute name="dateRangeStartValue" value="#{cc.attrs.dateRangeStartValue}"/>
-                    <f:attribute name="dateRangeEndValue" value="#{cc.attrs.dateRangeEndValue}"/>
-                    <p:ajax event="change" 
-                            listener="#{cc.attrs.dateChange}" 
-                            update="#{cc.attrs.eventChangeUpdate}" 
-                            disabled="#{not cc.attrs.dateRangeControl}"
-                            />
-                    <p:ajax event="dateSelect" 
-                            listener="#{cc.attrs.dateChange}"
-                            update="#{cc.attrs.eventDateSelectUpdate}" 
-                            disabled="#{not cc.attrs.dateRangeControl}"
-                            />
-                </p:calendar>
-            </div>
+            >
+                <f:attribute name="label" value="#{cc.attrs.label}"/>
+                <f:validator validatorId="primeDateRangeValidator"/>
+                <f:attribute name="dateRangeValidate" value="#{cc.attrs.dateRangeValidate}"/>
+                <f:attribute name="dateRangeStartValue" value="#{cc.attrs.dateRangeStartValue}"/>
+                <f:attribute name="dateRangeEndValue" value="#{cc.attrs.dateRangeEndValue}"/>
+                <p:ajax event="change"
+                        listener="#{cc.attrs.dateChange}"
+                        update="#{cc.attrs.eventChangeUpdate}"
+                        disabled="#{not cc.attrs.dateRangeControl}"
+                />
+                <p:ajax event="dateSelect"
+                        listener="#{cc.attrs.dateChange}"
+                        update="#{cc.attrs.eventDateSelectUpdate}"
+                        disabled="#{not cc.attrs.dateRangeControl}"
+                />
+            </p:datePicker>
+        </div>
 
-            <p:commandButton
+        <p:commandButton
                 icon="pi pi-trash"
                 type="button"
                 title="#{msg['temizle.2']}"
                 onclick="cleanUysCalendar('widget_#{cc.clientId.replace(':', '_')}');"
-                />
-        </h:panelGroup>
+        />
+    </h:panelGroup>
 
-        <p:inputText
-            style="width: 100%;" 
+    <p:inputText
+            style="width: 100%;"
             readonly="true"
             value="#{cc.attrs.myvalue}"
             rendered="#{cc.attrs.myreadonly}"
-            >
-            <f:convertDateTime pattern="dd.MM.yyyy - HH:mm:ss" timeZone="#{twoDimViewCtrl.timeZone}"/>
-        </p:inputText>
+    >
+        <f:convertDateTime pattern="dd.MM.yyyy - HH:mm:ss" timeZone="#{twoDimViewCtrl.timeZone}"/>
+    </p:inputText>
 
-    </composite:implementation>
+</composite:implementation>
 </html>

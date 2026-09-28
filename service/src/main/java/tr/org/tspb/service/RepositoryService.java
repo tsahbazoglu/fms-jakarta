@@ -338,6 +338,11 @@ public class RepositoryService implements Serializable {
                     valid = Boolean.TRUE.equals(jsonResponse.get("valid"))
                             || "true".equalsIgnoreCase(String.valueOf(jsonResponse.get("valid")));
                 }
+                if (jsonResponse.get("result") == null && valid != null) {
+                    result = valid;
+                } else if (Boolean.FALSE.equals(valid)) {
+                    result = false;
+                }
 
                 Boolean proceed = null;
                 if (jsonResponse.containsKey("proceed")) {
@@ -409,13 +414,18 @@ public class RepositoryService implements Serializable {
                     return new PostSaveResult(true, tagEvent.getMsg(),
                             PostSaveResult.MessageGuiType.facesMessage, null);
                 case externalApi:
-
-                    String memberIdAsStr = operatedObject.getObjectId("member").toHexString();
-                    String periodIdAsStr = operatedObject.getObjectId("period").toHexString();
-
                     Map<String, Object> requestPayload = new HashMap<>();
-                    requestPayload.put("member", memberIdAsStr);
-                    requestPayload.put("period", periodIdAsStr);
+
+                    if(operatedObject.getObjectId("member") != null){
+                        String memberIdAsStr = operatedObject.getObjectId("member").toHexString();
+                        requestPayload.put("member", memberIdAsStr);
+                    }
+
+                    if(operatedObject.getObjectId("period") != null){
+                        String periodIdAsStr = operatedObject.getObjectId("period").toHexString();
+                        requestPayload.put("period", periodIdAsStr);
+                    }
+
                     requestPayload.put("table", myForm.getTable());
 
                     tagEvent.getUriParameters().forEach(uriParameter -> {

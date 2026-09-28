@@ -16,13 +16,34 @@ public class MyControlResult {
     private final String controlResult;
     private final boolean result;
     private final Boolean proceed;
-
     public MyControlResult(Map map) {
 
-        this.result = Boolean.TRUE.equals(map.get(RESULT));
+        Object resObj = map.get(RESULT);
+        if (resObj == null) {
+            resObj = map.get("valid");
+        }
+        boolean res = Boolean.TRUE.equals(resObj) || "true".equalsIgnoreCase(String.valueOf(resObj));
+        if (map.get("valid") != null && resObj != map.get("valid")) {
+            boolean valid = Boolean.TRUE.equals(map.get("valid")) || "true".equalsIgnoreCase(String.valueOf(map.get("valid")));
+            res = res && valid;
+        }
+        this.result = res;
+
         Object exprObj = map.get(EXPRESSION);
         if (exprObj == null) {
             exprObj = map.get("message");
+        }
+        if (exprObj == null) {
+            exprObj = map.get("msg");
+        }
+        if (exprObj == null) {
+            exprObj = map.get("error");
+        }
+        if (exprObj == null) {
+            exprObj = map.get("errorMessage");
+        }
+        if (exprObj == null) {
+            exprObj = map.get("popupMessage");
         }
         this.expression = exprObj != null ? exprObj.toString() : "";
 

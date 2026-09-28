@@ -122,6 +122,7 @@ public abstract class FmsTable extends FmsTableView {
     private List versionHistory = new ArrayList<>();
     private List historyColumnModel = new ArrayList();
     protected String currentProcessingField;
+    protected String preSaveWarningMessage;
 
     public static final String WV_BULK_COPY = "wv-bulk-copy";
     public static final String CRUD_OPERATION_DIALOG2 = "crudOperationDialog2";
@@ -153,6 +154,7 @@ public abstract class FmsTable extends FmsTableView {
     }
 
     public boolean runEventPreSave(Map query, MyMap crud) throws UserException, MongoOrmFailedException {
+        this.preSaveWarningMessage = null;
 
         FmsForm fmsForm = formService.getMyForm();
 
@@ -202,12 +204,13 @@ public abstract class FmsTable extends FmsTableView {
                                 .append("severity", "error");
                     } else if (!preSaveResult.isResult() || (preSaveResult.getMsg() != null && !preSaveResult.getMsg().isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(preSaveResult.getMsg()))) {
                         String msg = preSaveResult.getMsg();
-                        if (msg != null && !msg.isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(msg)) {
-                            result = new Document()
-                                    .append("popupMessage", msg)
-                                    .append("proceed", true)
-                                    .append("severity", "warn");
+                        if (msg == null || msg.isBlank() || "VALIDATION_PASSED".equalsIgnoreCase(msg)) {
+                            msg = MessageBundleLoader.getMessage("kayit.oncesi.kontrol.basarisiz");
                         }
+                        result = new Document()
+                                .append("popupMessage", msg)
+                                .append("proceed", true)
+                                .append("severity", "warn");
                     }
                 }
             }
@@ -220,6 +223,12 @@ public abstract class FmsTable extends FmsTableView {
         }
 
         if (result instanceof Document resultJSON) {
+            Object proceedObj = resultJSON.get("proceed");
+            boolean canProceed = false;
+            if (proceedObj != null) {
+                canProceed = (proceedObj instanceof Boolean b) ? b : Boolean.parseBoolean(proceedObj.toString());
+            }
+
             if ("facesMessage".equals(resultJSON.get("gui"))) {
                 Object facesMsgObj = resultJSON.get("facesMessage");
                 if (facesMsgObj == null) {
@@ -256,6 +265,7 @@ public abstract class FmsTable extends FmsTableView {
                     }
                 }
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, mssssage, "*"));
+                return !canProceed;
             } else {
                 Object popupMsgObj = resultJSON.get("popupMessage");
                 if (popupMsgObj == null) {
@@ -278,33 +288,32 @@ public abstract class FmsTable extends FmsTableView {
                     userMessage = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
                 }
 
-                String severityStr = resultJSON.getString("severity");
-                if (severityStr == null) {
-                    severityStr = resultJSON.getString("popupMessageSeverity");
-                }
-                if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
-                    dialogController.showPopupWarning(userMessage, MESSAGE_DIALOG);
-                } else if ("info".equalsIgnoreCase(severityStr)) {
-                    dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
+                if (!canProceed) {
+                    String severityStr = resultJSON.getString("severity");
+                    if (severityStr == null) {
+                        severityStr = resultJSON.getString("popupMessageSeverity");
+                    }
+                    if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
+                        dialogController.showPopupWarning(userMessage, MESSAGE_DIALOG);
+                    } else if ("info".equalsIgnoreCase(severityStr)) {
+                        dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
+                    } else {
+                        dialogController.showPopupError(userMessage);
+                    }
+                    return true;
                 } else {
-                    dialogController.showPopupError(userMessage);
-                }
-            }
-
-            Object proceedObj = resultJSON.get("proceed");
-            if (proceedObj != null) {
-                boolean canProceed = (proceedObj instanceof Boolean b) ? b : Boolean.parseBoolean(proceedObj.toString());
-                if (canProceed) {
+                    this.preSaveWarningMessage = userMessage;
                     return false;
                 }
             }
-            return true;
         }
 
         return false;
     }
 
     public boolean runEventPreSaveOnChild(Map query, MyMap crud) throws UserException, MongoOrmFailedException {
+        this.preSaveWarningMessage = null;
+
         FmsForm fmsForm = formService.getMyForm();
 
         TagEvent tagEventPreSaveOnChild = fmsForm.getEventPreSaveOnChild();
@@ -347,12 +356,13 @@ public abstract class FmsTable extends FmsTableView {
                                 .append("severity", "error");
                     } else if (!preSaveResult.isResult() || (preSaveResult.getMsg() != null && !preSaveResult.getMsg().isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(preSaveResult.getMsg()))) {
                         String msg = preSaveResult.getMsg();
-                        if (msg != null && !msg.isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(msg)) {
-                            result = new Document()
-                                    .append("popupMessage", msg)
-                                    .append("proceed", true)
-                                    .append("severity", "warn");
+                        if (msg == null || msg.isBlank() || "VALIDATION_PASSED".equalsIgnoreCase(msg)) {
+                            msg = MessageBundleLoader.getMessage("kayit.oncesi.kontrol.basarisiz");
                         }
+                        result = new Document()
+                                .append("popupMessage", msg)
+                                .append("proceed", true)
+                                .append("severity", "warn");
                     }
                 }
             }
@@ -363,6 +373,12 @@ public abstract class FmsTable extends FmsTableView {
             return true;
         }
         if (result instanceof Document resultJSON) {
+            Object proceedObj = resultJSON.get("proceed");
+            boolean canProceed = false;
+            if (proceedObj != null) {
+                canProceed = (proceedObj instanceof Boolean b) ? b : Boolean.parseBoolean(proceedObj.toString());
+            }
+
             if ("facesMessage".equals(resultJSON.get("gui"))) {
                 Object facesMsgObj = resultJSON.get("facesMessage");
                 if (facesMsgObj == null) {
@@ -399,6 +415,7 @@ public abstract class FmsTable extends FmsTableView {
                     }
                 }
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, mssssage, "*"));
+                return !canProceed;
             } else {
                 Object popupMsgObj = resultJSON.get("popupMessage");
                 if (popupMsgObj == null) {
@@ -421,27 +438,24 @@ public abstract class FmsTable extends FmsTableView {
                     userMessage = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
                 }
 
-                String severityStr = resultJSON.getString("severity");
-                if (severityStr == null) {
-                    severityStr = resultJSON.getString("popupMessageSeverity");
-                }
-                if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
-                    dialogController.showPopupWarning(userMessage, MESSAGE_DIALOG);
-                } else if ("info".equalsIgnoreCase(severityStr)) {
-                    dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
+                if (!canProceed) {
+                    String severityStr = resultJSON.getString("severity");
+                    if (severityStr == null) {
+                        severityStr = resultJSON.getString("popupMessageSeverity");
+                    }
+                    if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
+                        dialogController.showPopupWarning(userMessage, MESSAGE_DIALOG);
+                    } else if ("info".equalsIgnoreCase(severityStr)) {
+                        dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
+                    } else {
+                        dialogController.showPopupError(userMessage);
+                    }
+                    return true;
                 } else {
-                    dialogController.showPopupError(userMessage);
-                }
-            }
-
-            Object proceedObj = resultJSON.get("proceed");
-            if (proceedObj != null) {
-                boolean canProceed = (proceedObj instanceof Boolean b) ? b : Boolean.parseBoolean(proceedObj.toString());
-                if (canProceed) {
+                    this.preSaveWarningMessage = userMessage;
                     return false;
                 }
             }
-            return true;
         }
 
         return false;
@@ -804,7 +818,18 @@ public abstract class FmsTable extends FmsTableView {
 
         try {
             PostSaveResult postSaveResult = repositoryService.runEventPostSave(operatedObject, myForm, null);
-            if (postSaveResult.getMsg() != null) {
+            if (this.preSaveWarningMessage != null && !this.preSaveWarningMessage.isBlank()) {
+                FmsForm form = myForm != null ? myForm : inode;
+                String successMsg = (form != null && form.getName() != null && !form.getName().isBlank())
+                        ? MessageBundleLoader.getMessage("form.kaydedildi", form.getName())
+                        : MessageBundleLoader.getMessage("verileriniz.kaydedildi");
+                String combinedMsg = MessageBundleLoader.getMessage("kaydedildi.ancak.hata.var", successMsg, this.preSaveWarningMessage);
+                if (combinedMsg == null || combinedMsg.equals("kaydedildi.ancak.hata.var")) {
+                    combinedMsg = successMsg + "<br/><br/><b>Uyarı / Hata:</b> " + this.preSaveWarningMessage;
+                }
+                this.preSaveWarningMessage = null;
+                dialogController.showPopupWarning(combinedMsg, MESSAGE_DIALOG);
+            } else if (postSaveResult.getMsg() != null) {
                 String msg;
                 if (PostSaveResult.MSG.equals(postSaveResult.getMsg()) || "verileriniz.kaydedildi".equals(postSaveResult.getMsg())) {
                     FmsForm form = myForm != null ? myForm : inode;
@@ -1062,6 +1087,14 @@ public abstract class FmsTable extends FmsTableView {
 
     public void setCurrentProcessingField(String currentProcessingField) {
         this.currentProcessingField = currentProcessingField;
+    }
+
+    public String getPreSaveWarningMessage() {
+        return preSaveWarningMessage;
+    }
+
+    public void setPreSaveWarningMessage(String preSaveWarningMessage) {
+        this.preSaveWarningMessage = preSaveWarningMessage;
     }
 
 }
