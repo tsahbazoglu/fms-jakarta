@@ -548,7 +548,7 @@ public class FmsMultiFormBulkUpload implements Serializable {
                     MyMap myMap = new MyMap();
                     myMap.putAll(dbo);
                     PreSaveResult preSaveResult = repositoryService.
-                            runEventPreSave(search, fmsForm, myMap);
+                            runEventPreSaveV2(search, fmsForm, myMap);
                     if (!preSaveResult.isResult()) {
                         mongoDbUtil
                                 .updateMany(

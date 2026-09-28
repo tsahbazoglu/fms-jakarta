@@ -2,6 +2,8 @@ package tr.org.tspb.service;
 
 import static tr.org.tspb.constants.ProjectConstants.*;
 //
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.Serializable;
@@ -47,6 +49,7 @@ import org.bson.types.ObjectId;
 import org.primefaces.model.DualListModel;
 //
 import tr.org.tspb.constants.ProjectConstants;
+import tr.org.tspb.util.service.DlgCtrl;
 import tr.org.tspb.util.tools.DocumentRecursive;
 import tr.org.tspb.util.stereotype.MyServices;
 import tr.org.tspb.common.qualifier.MyCtrlServiceQualifier;
@@ -115,6 +118,12 @@ public class RepositoryService implements Serializable {
     @Inject
     @MyCtrlServiceQualifier
     private CtrlService ctrlService;
+
+    @Inject
+    protected FormService formService;
+
+    @Inject
+    protected DlgCtrl dialogController;
 
     private final Map<String, FmsForm> cacheMyFormLarge = new HashMap<>();
 
@@ -317,8 +326,165 @@ public class RepositoryService implements Serializable {
         return PostSaveResult.getNullSingleton();
     }
 
-    public PreSaveResult runEventPreSave(Map query, FmsForm myForm,
-                                         MyMap crudObject) throws MongoOrmFailedException {
+
+    public boolean runEventPreSaveV1(Map query, MyMap crud) throws UserException, MongoOrmFailedException {
+
+        FmsForm fmsForm = formService.getMyForm();
+
+        if (fmsForm.getEventPreSave() == null) {
+            return false;
+        }
+
+        TagEvent tagEventPreSave = fmsForm.getEventPreSave();
+        TagEvent.TagEventType type = tagEventPreSave.getType();
+
+        Object result = null;
+        if (type == null || type == TagEvent.TagEventType.nothing) {
+            String eventPreSaveDB = fmsForm.getEventPreSave().getDb();
+            if (eventPreSaveDB == null) {
+                dialogController.showPopupInfoWithOk("""
+                                             <ul>
+                                             <li>
+                                             <font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font>
+                                             </li> 
+                                             <li>Konfigürasyon Hatası : db tanımlı değil.</li>
+                                             </ul>                        
+                        """, MESSAGE_DIALOG);
+                return true;
+            }
+            Document myCrudObject = new Document(crud);
+            myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
+            String code = fmsForm.getEventPreSave().getJsFunction();
+            Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code, query, myCrudObject);
+            result = commandResult.get(RETVAL);
+        } else {
+            switch (type) {
+                case externalApi -> {
+                    PreSaveResult preSaveResult = this.runEventPreSaveByGivenTagEvent(
+                            fmsForm.getMyProject().getKey(),
+                            fmsForm.getMyProject().getApiToken(),
+                            tagEventPreSave,
+                            new Document(crud));
+
+                    if (!preSaveResult.isProceed()) {
+                        String msg = preSaveResult.getMsg();
+                        if (msg == null || msg.isBlank()) {
+                            msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                        }
+                        result = new Document()
+                                .append("popupMessage", msg)
+                                .append("proceed", false)
+                                .append("severity", "error");
+                    } else if (!preSaveResult.isResult() || (preSaveResult.getMsg() != null && !preSaveResult.getMsg().isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(preSaveResult.getMsg()))) {
+                        String msg = preSaveResult.getMsg();
+                        if (msg == null || msg.isBlank() || "VALIDATION_PASSED".equalsIgnoreCase(msg)) {
+                            msg = MessageBundleLoader.getMessage("kayit.oncesi.kontrol.basarisiz");
+                        }
+                        result = new Document()
+                                .append("popupMessage", msg)
+                                .append("proceed", true)
+                                .append("severity", "warn");
+                    }
+                }
+            }
+        }
+
+        if (Boolean.TRUE.equals(result)) {
+            //FIXME messagebundle
+            dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>\"Birlik Temsilcisi\" yalnız bir defa seçilebilmektedir. <br/>Daha önce seçim yaptınız.</li>" + "</ul>", MESSAGE_DIALOG);
+            return true;
+        }
+
+        if (result instanceof Document resultJSON) {
+            Object proceedObj = resultJSON.get("proceed");
+            boolean canProceed = false;
+            if (proceedObj != null) {
+                canProceed = (proceedObj instanceof Boolean b) ? b : Boolean.parseBoolean(proceedObj.toString());
+            }
+
+            if ("facesMessage".equals(resultJSON.get("gui"))) {
+                Object facesMsgObj = resultJSON.get("facesMessage");
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("msg");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("message");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("error");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("errorMessage");
+                }
+                String mssssage = (facesMsgObj != null && !facesMsgObj.toString().isBlank())
+                        ? facesMsgObj.toString()
+                        : MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                FacesMessage.Severity severity = FacesMessage.SEVERITY_ERROR;
+                if (resultJSON.get("facesMessageSeverity") != null) {
+                    switch (resultJSON.get("facesMessageSeverity").toString().toLowerCase()) {
+                        case "error":
+                            severity = FacesMessage.SEVERITY_ERROR;
+                            break;
+                        case "info":
+                            severity = FacesMessage.SEVERITY_INFO;
+                            break;
+                        case "warn":
+                        case "warning":
+                            severity = FacesMessage.SEVERITY_WARN;
+                            break;
+                        default:
+                            severity = FacesMessage.SEVERITY_ERROR;
+                            break;
+                    }
+                }
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, mssssage, "*"));
+                return !canProceed;
+            } else {
+                Object popupMsgObj = resultJSON.get("popupMessage");
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("msg");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("message");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("error");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("errorMessage");
+                }
+
+                String userMessage;
+                if (popupMsgObj != null && !popupMsgObj.toString().isBlank()) {
+                    userMessage = popupMsgObj.toString();
+                } else {
+                    userMessage = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                }
+
+                if (!canProceed) {
+                    String severityStr = resultJSON.getString("severity");
+                    if (severityStr == null) {
+                        severityStr = resultJSON.getString("popupMessageSeverity");
+                    }
+                    if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
+                        dialogController.showPopupWarning(userMessage, MESSAGE_DIALOG);
+                    } else if ("info".equalsIgnoreCase(severityStr)) {
+                        dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
+                    } else {
+                        dialogController.showPopupError(userMessage);
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public PreSaveResult runEventPreSaveV2(Map query, FmsForm myForm,
+                                           MyMap crudObject) throws MongoOrmFailedException {
 
         if (myForm.getEventPreSave() == null) {
             return PreSaveResult.getNullSingleton();
@@ -551,6 +717,155 @@ public class RepositoryService implements Serializable {
         }
 
         return preSaveResult;
+    }
+
+
+    public boolean runEventPreSaveOnChild(Map query, MyMap crud) throws UserException, MongoOrmFailedException {
+
+        FmsForm fmsForm = formService.getMyForm();
+
+        TagEvent tagEventPreSaveOnChild = fmsForm.getEventPreSaveOnChild();
+
+        if (tagEventPreSaveOnChild == null) {
+            return false;
+        }
+
+        TagEvent.TagEventType type = tagEventPreSaveOnChild.getType();
+        Object result = null;
+        if (type == null || type == TagEvent.TagEventType.nothing) {
+            String eventPreSaveDB = tagEventPreSaveOnChild.getDb();
+            if (eventPreSaveDB == null) {
+                //FIXME messagebundle
+                dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>Konfigürasyon Hatası : db tanımlı değil.</li>" + "</ul>", MESSAGE_DIALOG);
+                return true;
+            }
+            Document myCrudObject = new Document(crud);
+            myCrudObject.remove(INODE);// we remove it bacuase of MyForm class cannot be serialized for mongo.doEval
+            String code = tagEventPreSaveOnChild.getJsFunction();
+            Document commandResult = mongoDbUtil.runCommand(eventPreSaveDB, code, query, myCrudObject);
+            result = commandResult.get(RETVAL);
+        } else {
+            switch (type) {
+                case externalApi -> {
+                    PreSaveResult preSaveResult = this.runEventPreSaveByGivenTagEvent(
+                            fmsForm.getMyProject().getKey(),
+                            fmsForm.getMyProject().getApiToken(),
+                            tagEventPreSaveOnChild,
+                            new Document(crud));
+
+                    if (!preSaveResult.isProceed()) {
+                        String msg = preSaveResult.getMsg();
+                        if (msg == null || msg.isBlank()) {
+                            msg = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                        }
+                        result = new Document()
+                                .append("popupMessage", msg)
+                                .append("proceed", false)
+                                .append("severity", "error");
+                    } else if (!preSaveResult.isResult() || (preSaveResult.getMsg() != null && !preSaveResult.getMsg().isBlank() && !"VALIDATION_PASSED".equalsIgnoreCase(preSaveResult.getMsg()))) {
+                        String msg = preSaveResult.getMsg();
+                        if (msg == null || msg.isBlank() || "VALIDATION_PASSED".equalsIgnoreCase(msg)) {
+                            msg = MessageBundleLoader.getMessage("kayit.oncesi.kontrol.basarisiz");
+                        }
+                        result = new Document()
+                                .append("popupMessage", msg)
+                                .append("proceed", true)
+                                .append("severity", "warn");
+                    }
+                }
+            }
+        }
+        if (Boolean.TRUE.equals(result)) {
+            //FIXME messagebundle
+            dialogController.showPopupInfoWithOk("<ul>" + "<li><font color='red'>Kaydetme İşlemi Gerçekleştirilemedi.</font></li>" + "<li>\"Birlik Temsilcisi\" yalnız bir defa seçilebilmektedir. <br/>Daha önce seçim yaptınız.</li>" + "</ul>", MESSAGE_DIALOG);
+            return true;
+        }
+        if (result instanceof Document resultJSON) {
+            Object proceedObj = resultJSON.get("proceed");
+            boolean canProceed = false;
+            if (proceedObj != null) {
+                canProceed = (proceedObj instanceof Boolean b) ? b : Boolean.parseBoolean(proceedObj.toString());
+            }
+
+            if ("facesMessage".equals(resultJSON.get("gui"))) {
+                Object facesMsgObj = resultJSON.get("facesMessage");
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("msg");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("message");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("error");
+                }
+                if (facesMsgObj == null) {
+                    facesMsgObj = resultJSON.get("errorMessage");
+                }
+                String mssssage = (facesMsgObj != null && !facesMsgObj.toString().isBlank())
+                        ? facesMsgObj.toString()
+                        : MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                FacesMessage.Severity severity = FacesMessage.SEVERITY_ERROR;
+                if (resultJSON.get("facesMessageSeverity") != null) {
+                    switch (resultJSON.get("facesMessageSeverity").toString().toLowerCase()) {
+                        case "error":
+                            severity = FacesMessage.SEVERITY_ERROR;
+                            break;
+                        case "info":
+                            severity = FacesMessage.SEVERITY_INFO;
+                            break;
+                        case "warn":
+                        case "warning":
+                            severity = FacesMessage.SEVERITY_WARN;
+                            break;
+                        default:
+                            severity = FacesMessage.SEVERITY_ERROR;
+                            break;
+                    }
+                }
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, mssssage, "*"));
+                return !canProceed;
+            } else {
+                Object popupMsgObj = resultJSON.get("popupMessage");
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("msg");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("message");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("error");
+                }
+                if (popupMsgObj == null) {
+                    popupMsgObj = resultJSON.get("errorMessage");
+                }
+
+                String userMessage;
+                if (popupMsgObj != null && !popupMsgObj.toString().isBlank()) {
+                    userMessage = popupMsgObj.toString();
+                } else {
+                    userMessage = MessageBundleLoader.getMessage("kayit.islemi.gerceklestirilemedi");
+                }
+
+                if (!canProceed) {
+                    String severityStr = resultJSON.getString("severity");
+                    if (severityStr == null) {
+                        severityStr = resultJSON.getString("popupMessageSeverity");
+                    }
+                    if ("warn".equalsIgnoreCase(severityStr) || "warning".equalsIgnoreCase(severityStr)) {
+                        dialogController.showPopupWarning(userMessage, MESSAGE_DIALOG);
+                    } else if ("info".equalsIgnoreCase(severityStr)) {
+                        dialogController.showPopupInfoWithOk(userMessage, MESSAGE_DIALOG);
+                    } else {
+                        dialogController.showPopupError(userMessage);
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        return false;
     }
 
     public List<DocumentRecursive> findList(FmsForm myForm,

@@ -32,7 +32,6 @@ import jakarta.inject.Inject;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.enterprise.inject.spi.CDI;
 //
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoConfigurationException;
@@ -48,7 +47,6 @@ import org.bson.conversions.Bson;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.slf4j.Logger;
-import tr.org.tspb.outsider.impl.NoOpEsignDoor;
 import tr.org.tspb.util.tools.MongoDbVersion;
 import tr.org.tspb.util.stereotype.MyController;
 import tr.org.tspb.common.qualifier.MyQualifier;
@@ -501,12 +499,8 @@ public class CrudOneDim implements ValueChangeListener, Serializable {
                 }
             }
 
-            PreSaveResult preSaveResult = repositoryService
-                    .runEventPreSave(filterService.getTableFilterCurrent(),
-                    formService.getMyForm(), crudObject);
-
-            if (preSaveResult.isResult()) {
-                throw new UserException(preSaveResult.getMsg());
+            if (repositoryService.runEventPreSaveV1(filterService.getTableFilterCurrent(), crudObject)) {
+                return null;
             }
 
             saveObject(formService.getMyForm(), loginController, crudObject);

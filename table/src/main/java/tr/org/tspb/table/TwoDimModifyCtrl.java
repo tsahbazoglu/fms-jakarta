@@ -740,7 +740,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
             ELException, MongoOrmFailedException, ParseException, MoreThenOneInListException,
             RecursiveLimitExceedException, net.sourceforge.jeval.EvaluationException {
 
-        if (runEventPreSave(filterService.getTableFilterCurrent(), crudObject)) {
+        if (repositoryService.runEventPreSaveV1(filterService.getTableFilterCurrent(), crudObject)) {
             return null;
         }
 
@@ -817,7 +817,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
 
             crud.put(NOTE, message.toString());
 
-            if (runEventPreSave(filterService.getTableFilterCurrent(), crud)) {
+            if (repositoryService.runEventPreSaveV1(filterService.getTableFilterCurrent(), crud)) {
                 return null;
             }
 
@@ -2012,7 +2012,7 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
                 }
             }
 
-            if (runEventPreSaveOnChild(filterService.getTableFilterCurrent(), selectedChildRow)) {
+            if (repositoryService.runEventPreSaveOnChild(filterService.getTableFilterCurrent(), selectedChildRow)) {
                 return null;
             }
 
@@ -2208,12 +2208,12 @@ public class TwoDimModifyCtrl extends FmsTable implements ActionListener {
     }
 
     private static final String[] COMPLETION_KEYS = {
-        "completionPercentage",
-        "completion_percentage",
-        "CompletionPercentage",
-        "completionpercentage",
-        "complete",
-        "Complete"
+            "completionPercentage",
+            "completion_percentage",
+            "CompletionPercentage",
+            "completionpercentage",
+            "complete",
+            "Complete"
     };
 
     public String resolveCompletionKey() {
