@@ -1,97 +1,122 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="jakarta.faces.core"
-      >
-    <p:panel>
-        <div style="height: 35px;">
-            <h:panelGrid 
-                columns="15"   
-                rendered="#{not esignViewCtrl.preventedMultiTab}">
-                <p:button 
-                    icon="pi pi-save"
-                    id="mySaveButton"
-                    onclick="rcOneDimSave();return false;"
-                    title="#{msg['kaydet']}"
-                    rendered="#{formService.myForm.myActions.save}"
-                    />  
-                <p:commandButton 
-                    onclick="PF('widget_1d_delete_confirmation').show();return false;"
-                    value="#{msg['sil']}" 
-                    transient="true"
-                    rendered="#{formService.myForm.myActions.delete}"
-                    icon="ui-icon-trash"
-                    /> 
-                <p:commandButton 
-                    id ="buttonDelete1dObjectId"
-                    style="display: none;"
-                    value="#{msg['direk.sil']}" 
-                    action="#{crudOneDim.deleteObject}" 
-                    rendered="#{formService.myForm.myActions.delete}"
-                    icon="ui-icon-trash"
-                    update="#{updateAjaxMB.msgDlg}"
-                    /> 
-                <p:commandButton 
-                    id ="buttonCopyObject"
-                    value="#{msg['kopyala']}" 
-                    action="#{crudOneDim.copyObject}" 
-                    rendered="false"/>
-                <p:commandButton 
-                    value="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}" 
-                    action="#{crudOneDim.showAllNote}" 
-                    style="white-space: nowrap;font-family: inherit;"
-                    rendered="#{crudOneDim.selectedFormUserNote}"
-                    update="#{updateAjaxMB.msgDlg}"
-                    />
-                <h:outputText 
-                    value="#{msg['tarihce.etkin.siz.lestir']}" 
-                    style="white-space: nowrap;font-family: inherit;" 
-                    rendered="#{mainFrame.adminRole}"
-                    />
-                <h:selectBooleanCheckbox  
-                    value="#{crudOneDim.enableHistoryOnSave}" 
-                    rendered="#{mainFrame.adminRole}"
-                    readonly="true"/>
-                <!--            <span class="ui-separator">
-                                <span class="ui-icon ui-icon-grip-dotted-vertical" />
-                            </span>-->
-                <p:commandButton
-                    id="buttonEimza"
-                    value="#{msg['e.i.mza.sureci']}" 
-                    action="#{crudOneDim.showEimza}" 
-                    rendered="#{formService.myForm.myActions.esign}"
-                    update="id-tab-view:idToBeSignedDialog,#{updateAjaxMB.msgDlg}"/>
-                <!--update=":idToBeSignedDialog,# {updateAjaxMB.msgDlg},:id_dlg_error_warning"/>-->
+      xmlns:f="jakarta.faces.core">
 
-                <h:selectOneMenu 
-                    value="#{crudOneDim.transparentProperties['emailType']}" 
-                    rendered="#{formService.myForm.myActions.email}">
-                    <f:selectItems value="#{crudOneDim.emailTypes}"/>
-                </h:selectOneMenu> 
-                <p:commandButton 
+<p:panel styleClass="ui-no-border">
+    <p:toolbar rendered="#{not esignViewCtrl.preventedMultiTab}">
+
+        <!-- Left Toolbar Group: CRUD, Workflow, and Utility Actions -->
+        <p:toolbarGroup align="left">
+            <!-- Save Button -->
+            <p:commandButton
+                    id="mySaveButton"
+                    icon="pi pi-save"
+                    onclick="rcOneDimSave(); return false;"
+                    title="#{msg['kaydet']}"
+                    value="#{msg['kaydet']}"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.save}" />
+
+            <!-- Copy Button (Currently disabled in original) -->
+            <p:commandButton
+                    id="buttonCopyObject"
+                    value="#{msg['kopyala']}"
+                    action="#{crudOneDim.copyObject}"
+                    icon="pi pi-copy"
+                    styleClass="mr-2"
+                    rendered="false" />
+
+            <!-- Page Notes -->
+            <p:commandButton
+                    value="#{msg['bu.sayfa.ile.ilgili.aciklamalar']}"
+                    action="#{crudOneDim.showAllNote}"
+                    style="white-space: nowrap; font-family: inherit;"
+                    styleClass="mr-2"
+                    rendered="#{crudOneDim.selectedFormUserNote}"
+                    update="#{updateAjaxMB.msgDlg}" />
+
+            <!-- Admin History Controls -->
+            <h:outputText
+                    value="#{msg['tarihce.etkin.siz.lestir']}"
+                    styleClass="mx-2"
+                    rendered="#{mainFrame.adminRole}" />
+            <h:selectBooleanCheckbox
+                    value="#{crudOneDim.enableHistoryOnSave}"
+                    rendered="#{mainFrame.adminRole}"
+                    disabled="true" />
+
+            <!-- E-Signature Process -->
+            <p:commandButton
+                    id="buttonEimza"
+                    value="#{msg['e.i.mza.sureci']}"
+                    action="#{crudOneDim.showEimza}"
+                    icon="pi pi-shield"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.esign}"
+                    update="id-tab-view:idToBeSignedDialog,#{updateAjaxMB.msgDlg}" />
+
+            <!-- Email Controls -->
+            <h:selectOneMenu
+                    value="#{crudOneDim.transparentProperties['emailType']}"
+                    rendered="#{formService.myForm.myActions.email}"
+                    styleClass="ui-selectonemenu mr-2">
+                <f:selectItems value="#{crudOneDim.emailTypes}"/>
+            </h:selectOneMenu>
+
+            <p:commandButton
                     id="buttonSendEmailId"
                     value="#{msg['email.onizleme']}"
                     action="#{crudOneDim.actionEmail}"
-                    rendered="#{formService.myForm.myActions.email}"/> 
-                <h:form>
-                    <p:commandButton 
-                        id="id_downlod_button"
-                        value="#{msg['islak.imza.formatinda.indirmek.icin']}"
-                        ajax="false"
-                        icon="ui-icon-arrowthick-1-s"
-                        rendered="#{formService.myForm.myActions.customDownload}">
-                        <p:fileDownload value="#{crudOneDim.file}"/>
-                    </p:commandButton> 
-                </h:form>
-                <p:commandButton 
-                    value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}" 
-                    actionListener="#{twoDimModifyCtrl.sendForm}" 
-                    rendered="#{formService.myForm.myActions.sendForms}"
-                    style="white-space: nowrap;font-family: inherit;"
-                    />
-            </h:panelGrid>
-        </div>
-    </p:panel>
+                    icon="pi pi-envelope"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.email}" />
+
+            <!-- File Download (Wet Ink Signature Format) -->
+            <p:commandButton
+                    id="id_downlod_button"
+                    value="#{msg['islak.imza.formatinda.indirmek.icin']}"
+                    ajax="false"
+                    icon="pi pi-download"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.customDownload}">
+                <p:fileDownload value="#{crudOneDim.file}"/>
+            </p:commandButton>
+
+            <!-- Send Form Action -->
+            <p:commandButton
+                    value="#{formService.myForm.myActions.sendFormAction.enableResult.caption}"
+                    actionListener="#{twoDimModifyCtrl.sendForm}"
+                    icon="pi pi-send"
+                    styleClass="mr-2"
+                    rendered="#{formService.myForm.myActions.sendForms}" />
+        </p:toolbarGroup>
+
+        <!-- Right Toolbar Group: Destructive Actions (Delete) -->
+        <p:toolbarGroup align="right">
+            <!-- Hidden direct delete action backend trigger -->
+            <p:commandButton
+                    id="buttonDelete1dObjectId"
+                    style="display: none;"
+                    value="#{msg['direk.sil']}"
+                    action="#{crudOneDim.deleteObject}"
+                    rendered="#{formService.myForm.myActions.delete}"
+                    update="#{updateAjaxMB.msgDlg}" />
+
+            <!-- Visible Delete Button: Red, Icon-Only, Triggers Confirmation Dialog -->
+            <p:commandButton
+                    id="buttonDeleteTrigger"
+                    onclick="PF('widget_1d_delete_confirmation').show(); return false;"
+                    title="#{msg['sil']}"
+                    aria-label="#{msg['sil']}"
+                    transient="true"
+                    rendered="#{formService.myForm.myActions.delete}"
+                    icon="pi pi-trash"
+                    styleClass="ui-button-danger rounded-button" />
+        </p:toolbarGroup>
+
+    </p:toolbar>
+</p:panel>
 </html>
