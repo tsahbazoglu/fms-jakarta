@@ -5,18 +5,18 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:composite="jakarta.faces.composite">
 
-<composite:interface>
+<composite:interface componentType="phoneInput">
     <composite:attribute name="value" required="true" type="java.lang.String" />
     <composite:attribute name="styleClass" required="false" />
+    <composite:attribute name="defaultCode" required="false" />
 </composite:interface>
 
 <composite:implementation>
     <div id="#{cc.clientId}" class="dh-phone-composite #{cc.attrs.styleClass}">
         <p:outputPanel id="panel" styleClass="ui-inputgroup" style="display: flex; width: 100%;">
 
-            <!-- Country Dropdown (Design styles 100% preserved) -->
+            <!-- No value binding here: the backing component owns the real value -->
             <p:selectOneMenu id="countryCode"
-                             value="#{cc.attrs.value}"
                              filter="true"
                              filterMatchMode="contains"
                              panelStyle="width: 320px;"
@@ -27,19 +27,16 @@
                                itemLabel="#{c.flag} #{c.name} (#{c.code})"
                                itemValue="#{c.code}" />
 
-                <!-- Dynamically update the subscriber mask when country changes -->
-                <p:ajax update="subscriber" />
+                <!-- Country changed: re-render mask and clear the old number -->
+                <p:ajax update="subscriber" resetValues="true" />
             </p:selectOneMenu>
 
-            <!-- Subscriber Number Mask Input (Dynamic mask based on registry) -->
             <p:inputMask id="subscriber"
-                         mask="#{countryRegistry.getMask(cc.attrs.value)}"
+                         mask="#{cc.currentMask}"
                          placeholder="Enter number"
                          validateMask="true"
                          style="width: 100%;" />
-
         </p:outputPanel>
     </div>
 </composite:implementation>
-
 </html>

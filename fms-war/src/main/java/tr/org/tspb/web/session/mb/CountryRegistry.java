@@ -40,4 +40,28 @@ public class CountryRegistry {
         }
         return "(99) 999-99-99";
     }
+
+    public Country findByCode(String code) {
+        for (Country c : countries) {
+            if (c.getCode().equals(code)) return c;
+        }
+        return null;
+    }
+
+    /** Longest matching country-code prefix wins. */
+    public Country findByE164(String number) {
+        Country best = null;
+        if (number == null) return null;
+        for (Country c : countries) {
+            if (number.startsWith(c.getCode())
+                    && (best == null || c.getCode().length() > best.getCode().length())) {
+                best = c;
+            }
+        }
+        return best;
+    }
+
+    public Country getDefaultCountry() {
+        return countries.get(0);
+    }
 }

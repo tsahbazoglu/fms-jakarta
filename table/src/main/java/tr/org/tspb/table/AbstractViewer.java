@@ -218,6 +218,10 @@ public abstract class AbstractViewer implements FmsOnFlyData, Serializable {
         return ComponentType.selectBooleanCheckbox.name();
     }
 
+    public String getInputPhone() {
+        return ComponentType.inputPhone.name();
+    }
+
     public void setSelectProperties(Reference selectProperties) {
         throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
     }
