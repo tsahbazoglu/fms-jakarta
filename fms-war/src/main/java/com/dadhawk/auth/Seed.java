@@ -7,18 +7,21 @@ import jakarta.inject.Inject;
 import java.util.List;
 import org.bson.Document;
 
-/** Seeds the role -> CRUD permission map. Who has which role in which company lives in LDAP. */
+/**
+ * Seeds the role -> CRUD permission map. Who has which role in which company lives in LDAP.
+ */
 @ApplicationScoped
 public class Seed {
-    @Inject Db db;
+    @Inject
+    Db db;
 
     void onStart(@Observes @Initialized(ApplicationScoped.class) Object evt) {
         var roles = db.db().getCollection("roles");
         if (roles.countDocuments() > 0) return;
         roles.insertMany(List.of(
-            role("admin",  "invoices:create", "invoices:read", "invoices:update", "invoices:delete"),
-            role("editor", "invoices:create", "invoices:read", "invoices:update"),
-            role("viewer", "invoices:read")));
+                role("admin", "invoices:create", "invoices:read", "invoices:update", "invoices:delete"),
+                role("editor", "invoices:create", "invoices:read", "invoices:update"),
+                role("viewer", "invoices:read")));
     }
 
     private static Document role(String name, String... perms) {

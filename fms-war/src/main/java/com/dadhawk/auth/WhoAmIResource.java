@@ -12,13 +12,17 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import org.bson.Document;
 
-/** Container-managed login demo: curl -u ayse@dadhawk.com:password123 -H 'X-Company: DENEME_GS_1' .../api/whoami */
+/**
+ * Container-managed login demo: curl -u ayse@dadhawk.com:password123 -H 'X-Company: DENEME_GS_1' .../api/whoami
+ */
 @Path("whoami")
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 public class WhoAmIResource {
-    @Inject CompanyContext company;
-    @Inject Db db;
+    @Inject
+    CompanyContext company;
+    @Inject
+    Db db;
 
     @GET
     public Map<String, Object> whoami() {
@@ -30,6 +34,6 @@ public class WhoAmIResource {
             if (d != null) perms.addAll(d.getList("permissions", String.class));
         }
         return Map.of("user", company.caller().getName(), "companyId", cid,
-                      "roles", roles, "permissions", perms, "companies", company.companies());
+                "roles", roles, "permissions", perms, "companies", company.companies());
     }
 }

@@ -17,10 +17,16 @@ public class Db {
     }
 
     @PostConstruct
-    void init() { client = MongoClients.create(env("MONGO_URI", "mongodb://localhost:27017")); }
+    void init() {
+        client = MongoClients.create(env("MONGO_URI", "mongodb://localhost:27017"));
+    }
 
     @PreDestroy
-    void close() { if (client != null) client.close(); }
+    void close() {
+        if (client != null) client.close();
+    }
 
-    public MongoDatabase db() { return client.getDatabase("dadhawk"); }
+    public MongoDatabase db() {
+        return client.getDatabase("dadhawk");
+    }
 }

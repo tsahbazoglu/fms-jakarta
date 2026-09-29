@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class LdapIdentityStore implements IdentityStore {
-    @Inject LdapAuth ldap;
+    @Inject
+    LdapAuth ldap;
 
     @Override
     public CredentialValidationResult validate(Credential credential) {
@@ -26,8 +27,8 @@ public class LdapIdentityStore implements IdentityStore {
         if (user.isEmpty()) return CredentialValidationResult.INVALID_RESULT;
 
         Set<String> groups = user.get().memberships().stream()
-            .map(m -> m.companyId() + ":" + m.role())
-            .collect(Collectors.toSet());
+                .map(m -> m.companyId() + ":" + m.role())
+                .collect(Collectors.toSet());
         return new CredentialValidationResult(new LdapPrincipal(user.get()), groups);
     }
 }

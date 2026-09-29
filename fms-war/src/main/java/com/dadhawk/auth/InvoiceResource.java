@@ -16,15 +16,20 @@ import java.util.Map;
 import java.util.UUID;
 import org.bson.Document;
 
-/** Every query is filtered by the session's companyId; every action checks a permission. */
+/**
+ * Every query is filtered by the session's companyId; every action checks a permission.
+ */
 @Path("invoices")
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class InvoiceResource {
-    @Inject Db db;
+    @Inject
+    Db db;
 
-    private com.mongodb.client.MongoCollection<Document> col() { return db.db().getCollection("invoices"); }
+    private com.mongodb.client.MongoCollection<Document> col() {
+        return db.db().getCollection("invoices");
+    }
 
     @GET
     public List<Document> list(@Context HttpServletRequest req) {
@@ -36,15 +41,16 @@ public class InvoiceResource {
     public Response create(Map<String, Object> body, @Context HttpServletRequest req) {
         Ctx c = Ctx.require(req, "invoices:create");
         Document doc = new Document("_id", UUID.randomUUID().toString())
-            .append("companyId", c.companyId())          // never taken from the request body
-            .append("title", String.valueOf(body.get("title")))
-            .append("amount", body.get("amount"))
-            .append("createdBy", c.userId());
+                .append("companyId", c.companyId())          // never taken from the request body
+                .append("title", String.valueOf(body.get("title")))
+                .append("amount", body.get("amount"))
+                .append("createdBy", c.userId());
         col().insertOne(doc);
         return Response.status(201).entity(doc).build();
     }
 
-    @DELETE @Path("{id}")
+    @DELETE
+    @Path("{id}")
     public Response delete(@PathParam("id") String id, @Context HttpServletRequest req) {
         Ctx c = Ctx.require(req, "invoices:delete");
         long n = col().deleteOne(and(eq("_id", id), eq("companyId", c.companyId()))).getDeletedCount();

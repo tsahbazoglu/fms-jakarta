@@ -22,11 +22,16 @@ import org.bson.Document;
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthResource {
     private static final long TTL_SECONDS = 3600;
-    @Inject LdapAuth ldap;
-    @Inject Db db;
+    @Inject
+    LdapAuth ldap;
+    @Inject
+    Db db;
 
-    /** Body: {"username":"ayse@dadhawk.com","password":"...","companyId":"DENEME_GS_1"}  (companyId optional) */
-    @POST @Path("login")
+    /**
+     * Body: {"username":"ayse@dadhawk.com","password":"...","companyId":"DENEME_GS_1"}  (companyId optional)
+     */
+    @POST
+    @Path("login")
     public Response login(Map<String, String> body) {
         var lu = ldap.authenticate(body.get("username"), body.get("password"));
         if (lu.isEmpty()) return error(401, "Invalid credentials");
@@ -34,8 +39,11 @@ public class AuthResource {
         return issue(u.entryUuid(), u.uid(), u.memberships(), body.get("companyId"));
     }
 
-    /** Body: {"companyId":"DENEME_KURUM"}. Needs the current Bearer token; no password. */
-    @POST @Path("switch")
+    /**
+     * Body: {"companyId":"DENEME_KURUM"}. Needs the current Bearer token; no password.
+     */
+    @POST
+    @Path("switch")
     public Response switchCompany(Map<String, String> body, @Context HttpServletRequest req) {
         Ctx cur = Ctx.require(req, null);
         String wanted = body.get("companyId");
@@ -44,19 +52,24 @@ public class AuthResource {
         return issue(cur.userId(), null, ldap.membershipsByEntryUuid(cur.userId()), wanted);
     }
 
-    @GET @Path("me")
-    public Ctx me(@Context HttpServletRequest req) { return Ctx.require(req, null); }
+    @GET
+    @Path("me")
+    public Ctx me(@Context HttpServletRequest req) {
+        return Ctx.require(req, null);
+    }
 
-    /** Picks the company, combines the user's roles in it, maps them to permissions, signs the token. */
+    /**
+     * Picks the company, combines the user's roles in it, maps them to permissions, signs the token.
+     */
     private Response issue(String entryUuid, String uid, List<LdapAuth.Membership> all, String wanted) {
         List<String> companies = all.stream().map(LdapAuth.Membership::companyId).distinct().sorted().toList();
         String cid = (wanted == null || wanted.isBlank())
-            ? (companies.isEmpty() ? null : companies.get(0))
-            : companies.stream().filter(c -> c.equals(wanted)).findFirst().orElse(null);
+                ? (companies.isEmpty() ? null : companies.get(0))
+                : companies.stream().filter(c -> c.equals(wanted)).findFirst().orElse(null);
         if (cid == null) return error(403, "No role in that company");
 
         List<String> roleNames = all.stream().filter(m -> m.companyId().equals(cid))
-            .map(LdapAuth.Membership::role).distinct().toList();
+                .map(LdapAuth.Membership::role).distinct().toList();
         var perms = new LinkedHashSet<String>();
         for (String r : roleNames) {   // role name -> CRUD permissions (MongoDB)
             Document role = db.db().getCollection("roles").find(eq("_id", r)).first();

@@ -17,16 +17,19 @@ import javax.naming.ldap.LdapName;
 
 /**
  * LDAP layout:
- *   ou=users,BASE                          uid=alice ...
- *   ou=companies,BASE / ou=<company> / cn=<role>   (groupOfNames, member: user DNs)
+ * ou=users,BASE                          uid=alice ...
+ * ou=companies,BASE / ou=<company> / cn=<role>   (groupOfNames, member: user DNs)
  * A user's company + role come from which role groups list them as a member.
  */
 @ApplicationScoped
 public class LdapAuth {
-    public record Membership(String companyId, String role) {}
-    public record LdapUser(String uid, String entryUuid, String mail, List<Membership> memberships) {}
+    public record Membership(String companyId, String role) {
+    }
 
-    private static final String URL  = Db.env("LDAP_URL", "ldap://localhost:389"); // use ldaps:// in production
+    public record LdapUser(String uid, String entryUuid, String mail, List<Membership> memberships) {
+    }
+
+    private static final String URL = Db.env("LDAP_URL", "ldap://localhost:389"); // use ldaps:// in production
     private static final String BASE = Db.env("LDAP_BASE", "dc=dadhawk,dc=com");
     private static final String SVC_DN = Db.env("LDAP_BIND_DN", "cn=admin," + BASE);
     private static final String SVC_PW = Db.env("LDAP_BIND_PW", "adminpw");
@@ -41,7 +44,9 @@ public class LdapAuth {
         return e;
     }
 
-    /** 1) find the user's DN, 2) bind as the user, 3) read the user's role groups. */
+    /**
+     * 1) find the user's DN, 2) bind as the user, 3) read the user's role groups.
+     */
     public Optional<LdapUser> authenticate(String username, String password) {
         if (username == null || username.isBlank() || password == null || password.isEmpty())
             return Optional.empty();   // empty password would be an anonymous bind = "success"
@@ -50,10 +55,10 @@ public class LdapAuth {
             try {
                 var sc = new SearchControls();
                 sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
-                sc.setReturningAttributes(new String[] {"uid", "mail", "entryUUID"});
+                sc.setReturningAttributes(new String[]{"uid", "mail", "entryUUID"});
                 // {0} is escaped by JNDI, which prevents LDAP injection
                 NamingEnumeration<SearchResult> r =
-                    svc.search("ou=users," + BASE, "(uid={0})", new Object[] {username}, sc);
+                        svc.search("ou=users," + BASE, "(uid={0})", new Object[]{username}, sc);
                 if (!r.hasMore()) return Optional.empty();
                 SearchResult sr = r.next();
                 String dn = sr.getNameInNamespace();
@@ -62,10 +67,10 @@ public class LdapAuth {
                 new InitialDirContext(env(dn, password)).close();   // throws if password is wrong
 
                 return Optional.of(new LdapUser(
-                    a.get("uid").get().toString(),
-                    a.get("entryUUID").get().toString(),
-                    a.get("mail") != null ? a.get("mail").get().toString() : null,
-                    memberships(svc, dn)));
+                        a.get("uid").get().toString(),
+                        a.get("entryUUID").get().toString(),
+                        a.get("mail") != null ? a.get("mail").get().toString() : null,
+                        memberships(svc, dn)));
             } finally {
                 svc.close();
             }
@@ -76,16 +81,18 @@ public class LdapAuth {
         }
     }
 
-    /** Fresh company + role memberships for a user identified by entryUUID (used when switching company). */
+    /**
+     * Fresh company + role memberships for a user identified by entryUUID (used when switching company).
+     */
     public List<Membership> membershipsByEntryUuid(String entryUuid) {
         try {
             DirContext svc = new InitialDirContext(env(SVC_DN, SVC_PW));
             try {
                 var sc = new SearchControls();
                 sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
-                sc.setReturningAttributes(new String[] {"uid"});
+                sc.setReturningAttributes(new String[]{"uid"});
                 NamingEnumeration<SearchResult> r =
-                    svc.search("ou=users," + BASE, "(entryUUID={0})", new Object[] {entryUuid}, sc);
+                        svc.search("ou=users," + BASE, "(entryUUID={0})", new Object[]{entryUuid}, sc);
                 if (!r.hasMore()) return List.of();
                 return memberships(svc, r.next().getNameInNamespace());
             } finally {
@@ -99,16 +106,16 @@ public class LdapAuth {
     private List<Membership> memberships(DirContext svc, String userDn) throws NamingException {
         var sc = new SearchControls();
         sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        sc.setReturningAttributes(new String[] {"cn"});
+        sc.setReturningAttributes(new String[]{"cn"});
         var out = new ArrayList<Membership>();
         NamingEnumeration<SearchResult> r = svc.search("ou=companies," + BASE,
-            "(&(objectClass=groupOfNames)(member={0}))", new Object[] {userDn}, sc);
+                "(&(objectClass=groupOfNames)(member={0}))", new Object[]{userDn}, sc);
         while (r.hasMore()) {
             // relative name looks like "cn=admin,ou=acme"
             LdapName n = new LdapName(r.next().getName());
             if (n.size() >= 2)
                 out.add(new Membership(n.getRdn(n.size() - 2).getValue().toString(),
-                                       n.getRdn(n.size() - 1).getValue().toString()));
+                        n.getRdn(n.size() - 1).getValue().toString()));
         }
         return out;
     }

@@ -9,22 +9,28 @@ import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotAuthorizedException;
 import java.util.List;
 
-/** Gives resources the caller's company after a successful container login. */
+/**
+ * Gives resources the caller's company after a successful container login.
+ */
 @RequestScoped
 public class CompanyContext {
-    @Inject SecurityContext security;
-    @Inject HttpServletRequest request;
+    @Inject
+    SecurityContext security;
+    @Inject
+    HttpServletRequest request;
 
     public LdapPrincipal caller() {
         return security.getPrincipalsByType(LdapPrincipal.class).stream().findFirst()
-            .orElseThrow(() -> new NotAuthorizedException("Basic realm=\"dadhawk.com\""));
+                .orElseThrow(() -> new NotAuthorizedException("Basic realm=\"dadhawk.com\""));
     }
 
     public List<String> companies() {
         return caller().memberships().stream().map(LdapAuth.Membership::companyId).distinct().toList();
     }
 
-    /** Only one company -> used automatically. Several -> the client picks with the X-Company header. */
+    /**
+     * Only one company -> used automatically. Several -> the client picks with the X-Company header.
+     */
     public String companyId() {
         List<String> mine = companies();
         String wanted = request.getHeader("X-Company");
@@ -33,12 +39,12 @@ public class CompanyContext {
             throw new BadRequestException("Choose a company with the X-Company header: " + mine);
         }
         return mine.stream().filter(c -> c.equals(wanted)).findFirst()
-            .orElseThrow(() -> new ForbiddenException("Not a member of " + wanted));
+                .orElseThrow(() -> new ForbiddenException("Not a member of " + wanted));
     }
 
     public List<String> roles(String companyId) {
         return caller().memberships().stream()
-            .filter(m -> m.companyId().equals(companyId)).map(LdapAuth.Membership::role).toList();
+                .filter(m -> m.companyId().equals(companyId)).map(LdapAuth.Membership::role).toList();
     }
 
     public boolean inRole(String companyId, String role) {

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -49,26 +48,15 @@ public class LoginFilter implements Filter {
         }
         return stackTrace;
     }
-    // The filter configuration object we are associated with.  If
-    // this value is null, this filter instance is not currently
-    // configured. 
+
     private FilterConfig filterConfig = null;
 
     public LoginFilter() {
     }
 
-    /**
-     *
-     * @param request The servlet request we are processing
-     * @param response The servlet response we are creating
-     * @param chain The filter chain we are processing
-     *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
-     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain)
+                         FilterChain chain)
             throws IOException, ServletException {
 
         if (debug) {
@@ -76,15 +64,8 @@ public class LoginFilter implements Filter {
         }
         HttpServletRequest req = ((HttpServletRequest) request);
 
-        // IP Restrict for Rest Service
-        if (req.getRequestURI().contains("/api")) {
-            //FIXME should be defined in config file space splitted ips like 123.123.123 123.123.123.123 123.123.123.123
-            if (!"".contains(req.getRemoteAddr())) {
-                throw new ServerException("Restricted IP is : ".concat(req.getRemoteAddr()));
-            }
-        }
-
         if (req.getRemoteUser() != null
+                && req.getSession(false) != null
                 && req.getSession(false).getAttribute(LOGGED_USER_ROLES) == null
                 && req.getSession(false).getAttribute(LOGGED_USER) == null) {
 
@@ -105,23 +86,21 @@ public class LoginFilter implements Filter {
 
             req.getSession(false).setAttribute(LOGGED_USER_ROLES, loggedUserRoles);
             req.getSession(false).setAttribute(LOGGED_USER, req.getRemoteUser().toUpperCase());
-
         }
 
-        //doBeforeProcessing(request, response);
         Throwable problem = null;
         try {
             chain.doFilter(request, response);
         } catch (Throwable t) {
-            // If an exception is thrown somewhere down the filter chain,
-            // we still want to execute our after processing, and then
-            // rethrow the problem after that.
             problem = t;
+            // ---> ADD THIS DEBUG LOG <---
+            Logger.getLogger(LoginFilter.class.getName()).log(
+                    Level.SEVERE,
+                    "CAPTURE-DEBUG: Filter caught exception on URI: " + req.getRequestURI(),
+                    t
+            );
         }
 
-        //doAfterProcessing(request, response);
-        // If there was a problem, we want to rethrow it if it is
-        // a known type, otherwise log it.
         if (problem != null) {
             if (problem instanceof ServletException) {
                 throw (ServletException) problem;
@@ -133,31 +112,17 @@ public class LoginFilter implements Filter {
         }
     }
 
-    /**
-     * Return the filter configuration object for this filter.
-     */
     public FilterConfig getFilterConfig() {
         return (this.filterConfig);
     }
 
-    /**
-     * Set the filter configuration object for this filter.
-     *
-     * @param filterConfig The filter configuration object
-     */
     public void setFilterConfig(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
     }
 
-    /**
-     * Destroy method for this filter
-     */
     public void destroy() {
     }
 
-    /**
-     * Init method for this filter
-     */
     public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
         if (filterConfig != null && debug) {
@@ -165,9 +130,6 @@ public class LoginFilter implements Filter {
         }
     }
 
-    /**
-     * Return a String representation of this object.
-     */
     @Override
     public String toString() {
         if (filterConfig == null) {
@@ -187,12 +149,11 @@ public class LoginFilter implements Filter {
                 response.setContentType("text/html");
                 PrintStream ps = new PrintStream(response.getOutputStream());
                 PrintWriter pw = new PrintWriter(ps);
-                pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
+                pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n");
 
-                // PENDING! Localize this for next official release
                 pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
                 pw.print(stackTrace);
-                pw.print("</pre></body>\n</html>"); //NOI18N
+                pw.print("</pre></body>\n</html>");
                 pw.close();
                 ps.close();
                 response.getOutputStream().close();
@@ -214,5 +175,4 @@ public class LoginFilter implements Filter {
     public void log(String msg) {
         filterConfig.getServletContext().log(msg);
     }
-
 }
