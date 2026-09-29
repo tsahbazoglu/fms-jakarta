@@ -1,0 +1,43 @@
+= Create Users
+
+----
+cat > create-users-dn.ldif << 'EOL'
+dn: ou=Users,dc=dadhawk,dc=com
+objectClass: organizationalUnit
+ou: Users
+EOL
+ldapadd -c -x -D cn=admin,dc=dadhawk,dc=com -w 12345678 -f create-users-dn.ldif
+
+----
+
+----
+cat > create-users.ldif << 'EOL'
+dn: uid=developer@dadhawk.com,ou=Users,dc=dadhawk,dc=com
+objectClass: inetOrgPerson
+uid: developer@dadhawk.com
+cn: Developer
+sn: Developer
+mail: developer@dadhawk.com
+userPassword: 123
+
+dn: uid=ali@dadhawk.com,ou=Users,dc=dadhawk,dc=com
+objectClass: inetOrgPerson
+uid: ali@dadhawk.com
+cn: Ali Yilmaz
+sn: Yilmaz
+mail: ali@dadhawk.com
+userPassword: 123
+
+dn: uid=ayse@dadhawk.com,ou=Users,dc=dadhawk,dc=com
+objectClass: inetOrgPerson
+uid: ayse@dadhawk.com
+cn: Ayse Demir
+sn: Demir
+mail: ayse@dadhawk.com
+userPassword: 123
+EOL
+
+ldapadd -c -x -D cn=admin,dc=dadhawk,dc=com -w 12345678 -f create-users.ldif
+
+ldapadd -c -x -D cn=admin,dc=dadhawk,dc=com -W -f create-users.ldif
+----

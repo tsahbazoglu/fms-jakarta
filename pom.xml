@@ -597,6 +597,12 @@
     </reporting>
 
     <profiles>
+        <profile>
+            <id>multiuser</id>
+            <properties>
+                <customer.folder>multiuser</customer.folder>
+            </properties>
+        </profile>
 
         <profile>
             <id>azclerk</id>

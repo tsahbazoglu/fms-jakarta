@@ -1,0 +1,32 @@
+
+=== Add {openldap-username} To {openldap-rolename}
+[subs="attributes,verbatim,quotes"]
+----
+cat > openldap-add-user-to-role.ldif << EOL
+dn: cn={openldap-rolename},ou=Roles,{openldap-base-dn}
+changetype: modify
+add: uniqueMember
+uniqueMember: uid={openldap-username},ou=Users,{openldap-base-dn}
+EOL
+
+cat openldap-add-user-to-role.ldif
+
+ldapadd -x -D cn=admin,{openldap-base-dn} -w 12345678 -f openldap-add-user-to-role.ldif
+----
+
+
+
+=== Add  {openldap-username} To fmsuser Role
+[subs="attributes,verbatim,quotes"]
+----
+cat > openldap-add-user-to-role.ldif << EOL
+dn: cn=fmsuser,ou=Roles,{openldap-base-dn}
+changetype: modify
+add: uniqueMember
+uniqueMember: uid={openldap-username},ou=Users,{openldap-base-dn}
+EOL
+
+cat openldap-add-user-to-role.ldif
+
+ldapadd -x -D cn=admin,{openldap-base-dn} -w 12345678 -f openldap-add-user-to-role.ldif
+----
