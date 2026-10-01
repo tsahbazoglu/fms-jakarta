@@ -32,7 +32,7 @@ public class LdapAuth {
     private static final String URL = Db.env("LDAP_URL", "ldap://localhost:389"); // use ldaps:// in production
     private static final String BASE = Db.env("LDAP_BASE", "dc=dadhawk,dc=com");
     private static final String SVC_DN = Db.env("LDAP_BIND_DN", "cn=admin," + BASE);
-    private static final String SVC_PW = Db.env("LDAP_BIND_PW", "adminpw");
+    private static final String SVC_PW = Db.env("LDAP_BIND_PW", "12345678");
 
     private static Hashtable<String, Object> env(String dn, String pw) {
         var e = new Hashtable<String, Object>();
@@ -56,9 +56,9 @@ public class LdapAuth {
                 var sc = new SearchControls();
                 sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
                 sc.setReturningAttributes(new String[]{"uid", "mail", "entryUUID"});
-                // {0} is escaped by JNDI, which prevents LDAP injection
+                // Support exact uid, email or uid with default domain suffix
                 NamingEnumeration<SearchResult> r =
-                        svc.search("ou=users," + BASE, "(uid={0})", new Object[]{username}, sc);
+                        svc.search("ou=Users," + BASE, "(|(uid={0})(uid={0}@dadhawk.com)(mail={0}))", new Object[]{username}, sc);
                 if (!r.hasMore()) return Optional.empty();
                 SearchResult sr = r.next();
                 String dn = sr.getNameInNamespace();
@@ -66,8 +66,34 @@ public class LdapAuth {
 
                 new InitialDirContext(env(dn, password)).close();   // throws if password is wrong
 
+                String uid = null;
+                if (a.get("uid") != null) {
+                    var uidAttr = a.get("uid");
+                    for (int i = 0; i < uidAttr.size(); i++) {
+                        String val = uidAttr.get(i).toString();
+                        if (val.equalsIgnoreCase(username) || (username.contains("@") && val.equalsIgnoreCase(username.substring(0, username.indexOf('@'))))) {
+                            uid = val;
+                            break;
+                        }
+                    }
+                    if (uid == null) {
+                        try {
+                            LdapName ln = new LdapName(dn);
+                            for (var rdn : ln.getRdns()) {
+                                if ("uid".equalsIgnoreCase(rdn.getType())) {
+                                    uid = rdn.getValue().toString();
+                                    break;
+                                }
+                            }
+                        } catch (Exception ignored) {}
+                    }
+                    if (uid == null) {
+                        uid = uidAttr.get().toString();
+                    }
+                }
+
                 return Optional.of(new LdapUser(
-                        a.get("uid").get().toString(),
+                        uid,
                         a.get("entryUUID").get().toString(),
                         a.get("mail") != null ? a.get("mail").get().toString() : null,
                         memberships(svc, dn)));
@@ -92,7 +118,7 @@ public class LdapAuth {
                 sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
                 sc.setReturningAttributes(new String[]{"uid"});
                 NamingEnumeration<SearchResult> r =
-                        svc.search("ou=users," + BASE, "(entryUUID={0})", new Object[]{entryUuid}, sc);
+                        svc.search("ou=Users," + BASE, "(entryUUID={0})", new Object[]{entryUuid}, sc);
                 if (!r.hasMore()) return List.of();
                 return memberships(svc, r.next().getNameInNamespace());
             } finally {

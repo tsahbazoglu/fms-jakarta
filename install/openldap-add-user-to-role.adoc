@@ -1,32 +1,27 @@
 
-=== Add {openldap-username} To {openldap-rolename}
+
+=== Add laciuser To fmsuser Role
 [subs="attributes,verbatim,quotes"]
 ----
 cat > openldap-add-user-to-role.ldif << EOL
-dn: cn={openldap-rolename},ou=Roles,{openldap-base-dn}
+dn: cn=fmsuser,ou=Roles,dc=dadhawk,dc=com
 changetype: modify
 add: uniqueMember
-uniqueMember: uid={openldap-username},ou=Users,{openldap-base-dn}
+uniqueMember: uid=laciuser,ou=Users,dc=dadhawk,dc=com
+uniqueMember: uid=ali@dadhawk.com,ou=Users,dc=dadhawk,dc=com
 EOL
-
-cat openldap-add-user-to-role.ldif
-
-ldapadd -x -D cn=admin,{openldap-base-dn} -w 12345678 -f openldap-add-user-to-role.ldif
+ldapadd -x -D cn=admin,dc=dadhawk,dc=com -w 12345678 -f openldap-add-user-to-role.ldif
 ----
 
+=== Add  laciuser To cn=viewer,ou=DENEME_KURUM,ou=companies,dc=dadhawk,dc=com Role
 
-
-=== Add  {openldap-username} To fmsuser Role
 [subs="attributes,verbatim,quotes"]
 ----
 cat > openldap-add-user-to-role.ldif << EOL
-dn: cn=fmsuser,ou=Roles,{openldap-base-dn}
+dn: cn=viewer,ou=DENEME_KURUM,ou=companies,dc=dadhawk,dc=com
 changetype: modify
-add: uniqueMember
-uniqueMember: uid={openldap-username},ou=Users,{openldap-base-dn}
+add: member
+member: uid=laciuser,ou=Users,dc=dadhawk,dc=com
 EOL
-
-cat openldap-add-user-to-role.ldif
-
-ldapadd -x -D cn=admin,{openldap-base-dn} -w 12345678 -f openldap-add-user-to-role.ldif
+ldapadd -x -D cn=admin,dc=dadhawk,dc=com -w 12345678 -f openldap-add-user-to-role.ldif
 ----

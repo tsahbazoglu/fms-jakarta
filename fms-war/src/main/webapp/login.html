@@ -1,10 +1,327 @@
-<!DOCTYPE html>
-<html>
-this page is set by mvn profile
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>dadhawk.com invoices</title>
+    <style>
+        :root { --bg:#f6f7f9; --card:#fff; --fg:#1c1f24; --mut:#6b7280; --ac:#2f5bea; --bd:#e2e5ea; --err:#c62828; }
+        @media (prefers-color-scheme: dark) { :root { --bg:#14161a; --card:#1e2127; --fg:#e8eaed; --mut:#9aa0a6; --bd:#333842; --ac:#6d8cff; --err:#ff6b6b; } }
+        * { box-sizing:border-box; }
+        body { margin:0; font:16px system-ui,sans-serif; background:var(--bg); color:var(--fg); }
+        main { max-width:560px; margin:0 auto; padding:24px 16px; }
+        .card { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        h1 { font-size:1.4rem; margin:0 0 16px; }
+        h2 { font-size:1.1rem; margin:0 0 12px; }
+        input, button, select { font:inherit; padding:10px 12px; border-radius:8px; border:1px solid var(--bd); background:var(--bg); color:var(--fg); width:100%; margin-bottom:12px; }
+        input:focus, select:focus { outline: none; border-color: var(--ac); }
+        button { background:var(--ac); color:#fff; border:0; cursor:pointer; font-weight: 500; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        button.sec { background:transparent; color:var(--ac); border:1px solid var(--ac); width: auto; padding: 8px 16px; }
+        button.del { width:auto; padding:6px 10px; margin:0; background:var(--err); }
+        .row { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 0; border-top:1px solid var(--bd); }
+        .mut { color:var(--mut); font-size:.9rem; }
+        .err { color:var(--err); font-size: 0.9rem; min-height:1.2em; margin-top: 4px; }
+        .hide { display:none; }
+        .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>dadhawk.com invoices</h1>
+
+    <section id="login" class="card">
+        <h2>Sign in</h2>
+        <form id="loginForm" onsubmit="return false;">
+            <input id="u" placeholder="Username (e.g. ali@dadhawk.com or ali)" autocomplete="username" autocapitalize="none" required>
+            <input id="p" type="password" placeholder="Password" autocomplete="current-password" required>
+            <input id="c" placeholder="Company (optional: DENEME_GS_1, DENEME_KURUM)" autocapitalize="none">
+            <button id="loginBtn" type="submit">Sign in</button>
+            <div id="lerr" class="err"></div>
+        </form>
+    </section>
+
+    <section id="app" class="card hide">
+        <div class="user-header">
+            <h2 id="who" style="margin:0;"></h2>
+            <button class="sec" id="outBtn">Sign out</button>
+        </div>
+        <select id="cs" class="hide" aria-label="Company Switcher" style="margin-bottom: 16px;"></select>
+
+        <div id="projectNav" style="background:var(--bg); border:1px solid var(--bd); border-radius:8px; padding:12px; margin-bottom:16px;">
+            <div style="font-weight:600; font-size:0.95rem; margin-bottom:8px;">Projeye Git (index.xhtml)</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:6px;">
+                <button id="goToProjectBtn" type="button" style="width:auto; margin-bottom:0; padding:8px 14px;">Projeye Git (<span id="btnRoleLabel">DENEME_KURUM</span>)</button>
+                <button id="btnDenemeKurum" type="button" class="sec" style="width:auto; margin-bottom:0; padding:8px 14px;">DENEME_KURUM ile Git</button>
+                <button id="btnDenemeGs1" type="button" class="sec" style="width:auto; margin-bottom:0; padding:8px 14px;">DENEME_GS_1 ile Git</button>
+            </div>
+            <div class="mut" style="font-size:0.8rem;">Seçilen rol çerez (cookie) token üzerinden doğrulanıp projeye aktarılacaktır.</div>
+        </div>
+
+        <div id="create" class="hide" style="background:var(--bg); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+            <h3 style="font-size:0.95rem; margin:0 0 8px;">Create New Invoice</h3>
+            <input id="t" placeholder="Invoice title">
+            <input id="a" type="number" placeholder="Amount" step="0.01">
+            <button id="addBtn">Add invoice</button>
+        </div>
+
+        <div id="list"></div>
+        <div id="aerr" class="err"></div>
+    </section>
+</main>
+
+<script>
+    const $ = id => document.getElementById(id);
+    let token = null, me = null;
+
+    // Dynamically calculate API base URL for root or subpath deployment
+    const API_BASE = (() => {
+        const path = window.location.pathname;
+        const base = path.substring(0, path.lastIndexOf('/') + 1);
+        return window.location.origin + base + 'api/';
+    })();
+
+    async function api(path, opts = {}) {
+        const url = API_BASE + path;
+        const r = await fetch(url, {
+            ...opts,
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: 'Bearer ' + token } : {})
+            }
+        });
+
+        const text = await r.text();
+        let data = {};
+        try {
+            data = text ? JSON.parse(text) : {};
+        } catch (e) {
+            console.error("Non-JSON response from server:", text);
+            throw new Error(`Server returned unexpected response (Status ${r.status}).`);
+        }
+
+        if (r.status === 401 && token) {
+            signOut();
+            throw new Error('Session expired, sign in again');
+        }
+        if (r.status === 403) {
+            throw new Error(data.error || 'Not allowed for your role');
+        }
+        if (!r.ok && r.status !== 204) {
+            throw new Error(data.error || ('Error ' + r.status));
+        }
+        return data;
+    }
+
+    function enter(res) {
+        me = { ...(me || {}), ...res };
+        token = res.token;
+        if (token) {
+            document.cookie = "token=" + encodeURIComponent(token) + "; path=/; SameSite=Lax";
+            document.cookie = "cas_token=" + encodeURIComponent(token) + "; path=/; SameSite=Lax";
+        }
+        $('login').classList.add('hide');
+        $('app').classList.remove('hide');
+        $('who').textContent = `${me.userId} · ${me.companyId} · ${me.role}`;
+
+        const cs = $('cs');
+        cs.replaceChildren();
+        for (const c of me.companies) {
+            const o = document.createElement('option');
+            o.value = o.textContent = c;
+            cs.append(o);
+        }
+        cs.value = me.companyId;
+        cs.classList.toggle('hide', me.companies.length < 2);
+        $('create').classList.toggle('hide', !me.permissions.includes('invoices:create'));
+        updateProjectNav();
+        load();
+    }
+
+    function updateProjectNav() {
+        const curRole = (me && me.companyId) ? me.companyId : ($('cs').value || 'DENEME_KURUM');
+        const lbl = $('btnRoleLabel');
+        if (lbl) lbl.textContent = curRole;
+    }
+
+    async function goToProjectWithRole(role) {
+        if (!role) {
+            role = (me && me.companyId) ? me.companyId : ($('cs').value || 'DENEME_KURUM');
+        }
+        if (me && me.companyId !== role) {
+            try {
+                const switched = await api('auth/switch', {
+                    method: 'POST',
+                    body: JSON.stringify({ companyId: role })
+                });
+                enter(switched);
+            } catch (e) {
+                console.warn('Switch company failed:', e);
+            }
+        }
+        if (token) {
+            document.cookie = "token=" + encodeURIComponent(token) + "; path=/; SameSite=Lax";
+            document.cookie = "cas_token=" + encodeURIComponent(token) + "; path=/; SameSite=Lax";
+        }
+        let base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        const excludeIdx = base.indexOf('/exclude/');
+        if (excludeIdx !== -1) {
+            base = base.substring(0, excludeIdx + 1);
+        }
+        const targetUrl = window.location.origin + base + 'index.xhtml';
+
+        try {
+            await api('auth/select-role', {
+                method: 'POST',
+                body: JSON.stringify({ role: role })
+            });
+        } catch (e) {
+            console.warn('select-role API call failed, continuing to project:', e);
+        }
+        window.location.href = targetUrl;
+    }
+
+    $('goToProjectBtn').onclick = () => goToProjectWithRole();
+    $('btnDenemeKurum').onclick = () => goToProjectWithRole('DENEME_KURUM');
+    $('btnDenemeGs1').onclick = () => goToProjectWithRole('DENEME_GS_1');
+
+    async function handleLogin(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        const btn = $('loginBtn');
+        const errDiv = $('lerr');
+        errDiv.textContent = '';
+        btn.disabled = true;
+        btn.textContent = 'Signing in...';
+
+        try {
+            me = null;
+            const username = $('u').value.trim();
+            const password = $('p').value;
+            const companyId = $('c').value.trim();
+
+            const res = await api('auth/login', {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    companyId: companyId
+                })
+            });
+
+            // Establish container authentication for JSF application (index.xhtml)
+            try {
+                let base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+                const excludeIdx = base.indexOf('/exclude/');
+                if (excludeIdx !== -1) {
+                    base = base.substring(0, excludeIdx + 1);
+                }
+                const securityCheckUrl = window.location.origin + base + 'j_security_check';
+                const formBody = new URLSearchParams();
+                formBody.append('j_username', (res && res.userId) ? res.userId : (username.includes('@') ? username : username + '@dadhawk.com'));
+                formBody.append('j_password', password);
+                await fetch(securityCheckUrl, {
+                    method: 'POST',
+                    body: formBody,
+                    credentials: 'include'
+                });
+            } catch (err) {
+                console.warn('Container authentication warning:', err);
+            }
+
+            enter(res);
+            $('p').value = '';
+        } catch (e) {
+            errDiv.textContent = e.message;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Sign in';
+        }
+    }
+
+    $('loginBtn').onclick = handleLogin;
+    $('loginForm').onsubmit = handleLogin;
+
+    $('cs').onchange = async () => {$('aerr').textContent = '';
+        try {
+            enter(await api('auth/switch', {
+                method: 'POST',
+                body: JSON.stringify({ companyId: $('cs').value })
+            }));
+            updateProjectNav();
+        } catch (e) {
+            $('aerr').textContent = e.message;
+            $('cs').value = me.companyId;
+            updateProjectNav();
+        }
+    };
+
+    async function load() {
+        $('aerr').textContent = '';
+        const box = $('list');
+        box.replaceChildren();
+        try {
+            const items = await api('invoices');
+            if (!items.length) {
+                const p = document.createElement('div');
+                p.className = 'mut';
+                p.textContent = 'No invoices yet.';
+                box.append(p);
+                return;
+            }
+            for (const i of items) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                const txt = document.createElement('span');
+                txt.textContent = `${i.title} — ${i.amount}`;
+                row.append(txt);
+
+                if (me.permissions.includes('invoices:delete')) {
+                    const b = document.createElement('button');
+                    b.className = 'del';
+                    b.textContent = 'Delete';
+                    b.onclick = async () => {
+                        try {
+                            await api('invoices/' + i._id, { method: 'DELETE' });
+                            load();
+                        } catch (e) {
+                            $('aerr').textContent = e.message;
+                        }
+                    };
+                    row.append(b);
+                }
+                box.append(row);
+            }
+        } catch (e) {
+            $('aerr').textContent = e.message;
+        }
+    }
+
+    $('addBtn').onclick = async () => {
+        try {
+            await api('invoices', {
+                method: 'POST',
+                body: JSON.stringify({
+                    title: $('t').value,
+                    amount: Number($('a').value)
+                })
+            });
+            $('t').value = '';$('a').value = '';
+            load();
+        } catch (e) {
+            $('aerr').textContent = e.message;
+        }
+    };
+
+    function signOut() {
+        token = me = null;
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie = "cas_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        $('app').classList.add('hide');
+        $('login').classList.remove('hide');$('u').focus();
+    }
+
+    $('outBtn').onclick = signOut;
+</script>
+</body>
 </html>
-
-
-
-
-
-

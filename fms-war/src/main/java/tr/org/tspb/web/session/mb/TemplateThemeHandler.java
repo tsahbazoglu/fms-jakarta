@@ -49,6 +49,10 @@ public class TemplateThemeHandler implements Serializable {
     @PostConstruct
     public void init() {
 
+        if (loginController == null || loginController.getLoggedUserDetail() == null) {
+            return;
+        }
+
         String username = loginController.getLoggedUserDetail().getUsername();
 
         Map<String, Object> settings = repositoryService.one(DB_NAME, COLLECTION_NAME, Filters.eq(FIELD_MEMBER_ID, username));
@@ -75,6 +79,9 @@ public class TemplateThemeHandler implements Serializable {
     }
 
     private void savePreferences() {
+        if (loginController == null || loginController.getLoggedUserDetail() == null) {
+            return;
+        }
         String username = loginController.getLoggedUserDetail().getUsername();
 
         Map<String, Object> filter = new HashMap<>();

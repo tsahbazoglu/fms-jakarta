@@ -11,8 +11,21 @@ import java.util.List;
 public record Ctx(String userId, String companyId, List<String> perms) {
 
     public static Ctx require(HttpServletRequest req, String permission) {
-        String h = req.getHeader("Authorization");
-        Ctx c = (h != null && h.startsWith("Bearer ")) ? Jwt.verify(h.substring(7)) : null;
+        String token = null;
+        String h = req != null ? req.getHeader("Authorization") : null;
+        if (h != null && h.startsWith("Bearer ")) {
+            token = h.substring(7);
+        } else if (req != null && req.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie c : req.getCookies()) {
+                if ("token".equalsIgnoreCase(c.getName())
+                        || "cas_token".equalsIgnoreCase(c.getName())
+                        || "auth_token".equalsIgnoreCase(c.getName())) {
+                    token = c.getValue();
+                    break;
+                }
+            }
+        }
+        Ctx c = (token != null && !token.isBlank()) ? Jwt.verify(token) : null;
         if (c == null) throw new NotAuthorizedException("Bearer");
         if (permission != null && !c.perms().contains(permission))
             throw new ForbiddenException("Missing permission " + permission);

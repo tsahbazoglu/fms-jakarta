@@ -93,6 +93,7 @@ public class LoginController implements Serializable {
     private String newLdapUserRole;
     private final transient Map dialogMap = new HashMap();
     private RoleMap roleMap;
+    private String jaasLoginName;
 
     @PostConstruct
     public void init() {
@@ -102,9 +103,21 @@ public class LoginController implements Serializable {
                 getExternalContext().
                 getRequest();
 
-        String jaasLoginUsername = request.getRemoteUser();
+        if (jaasLoginName == null || jaasLoginName.trim().isEmpty()) {
+            if (request.getSession(false) != null && request.getSession(false).getAttribute("jaasLoginName") != null) {
+                jaasLoginName = (String) request.getSession(false).getAttribute("jaasLoginName");
+            } else if (request.getRemoteUser() != null && !request.getRemoteUser().trim().isEmpty()) {
+                jaasLoginName = request.getRemoteUser();
+            } else if (request.getUserPrincipal() != null) {
+                jaasLoginName = request.getUserPrincipal().getName();
+            }
+        }
 
-        initUser(jaasLoginUsername, request);
+        if (jaasLoginName != null && !jaasLoginName.trim().isEmpty() && request.getSession(false) != null) {
+            request.getSession(false).setAttribute("jaasLoginName", jaasLoginName);
+        }
+
+        initUser(jaasLoginName, request);
     }
 
     private void initUser(String jaasLoginUsername, HttpServletRequest request) {
@@ -114,7 +127,7 @@ public class LoginController implements Serializable {
             return;
         }
         loggedUserDetail = ldapService.getUserDetailByUserID(jaasLoginUsername);
-        if (loggedUserDetail.getUsername() == null || loggedUserDetail.
+        if (loggedUserDetail == null || loggedUserDetail.getUsername() == null || loggedUserDetail.
                 getUsername().
                 trim().
                 isEmpty()) {
@@ -611,6 +624,25 @@ public class LoginController implements Serializable {
      */
     public void setUserpassword(String userpassword) {
         this.userpassword = userpassword;
+    }
+
+    public String getJaasLoginName() {
+        return jaasLoginName;
+    }
+
+    public void setJaasLoginName(String jaasLoginName) {
+        this.jaasLoginName = jaasLoginName;
+        HttpServletRequest request = (HttpServletRequest) FacesContext.
+                getCurrentInstance().
+                getExternalContext().
+                getRequest();
+        if (request != null && request.getSession(false) != null && jaasLoginName != null) {
+            request.getSession(false).setAttribute("jaasLoginName", jaasLoginName);
+        }
+        if (jaasLoginName != null && !jaasLoginName.trim().isEmpty()
+                && (loggedUserDetail == null || !jaasLoginName.equals(loggedUserDetail.getUsername()))) {
+            initUser(jaasLoginName, request);
+        }
     }
 
     public RoleMap getRoleMap() {

@@ -26,9 +26,12 @@ public class LdapIdentityStore implements IdentityStore {
         var user = ldap.authenticate(c.getCaller(), c.getPasswordAsString());
         if (user.isEmpty()) return CredentialValidationResult.INVALID_RESULT;
 
-        Set<String> groups = user.get().memberships().stream()
-                .map(m -> m.companyId() + ":" + m.role())
-                .collect(Collectors.toSet());
+        Set<String> groups = new java.util.HashSet<>();
+        groups.add("fmsuser");
+        for (var m : user.get().memberships()) {
+            groups.add(m.companyId() + ":" + m.role());
+            groups.add(m.role());
+        }
         return new CredentialValidationResult(new LdapPrincipal(user.get()), groups);
     }
 }

@@ -372,17 +372,21 @@ public class LdapService extends AbstractSrv {
 
             final SearchResult sr = (SearchResult) answer.next();
 
-            result = (String) sr.getAttributes().
-                    get(attribute).
-                    get();
+            Attributes attrs = sr.getAttributes();
+            if (attrs != null) {
+                Attribute attr = attrs.get(attribute);
+                if (attr != null && attr.get() != null) {
+                    result = attr.get().toString();
+                }
+            }
         } catch (final NamingException e) {
             logger.warn(
                     "NamingException occurred while trying to fetch attribute: ",
                     e);
             result = String.format("No Record for UID %s", uid);
-        } catch (final NullPointerException e) {
+        } catch (final Exception e) {
             logger.warn(
-                    "NullPointerException occurred while trying to fetch attribute: ",
+                    "Exception occurred while trying to fetch attribute: ",
                     e);
             result = String.format("No Record for UID %s", uid);
         }
