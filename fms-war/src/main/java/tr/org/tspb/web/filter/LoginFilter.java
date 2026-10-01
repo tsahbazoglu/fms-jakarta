@@ -58,10 +58,12 @@ public class LoginFilter implements Filter {
                         || "auth_token".equalsIgnoreCase(c.getName())) {
                     String token = c.getValue();
                     if (token != null && !token.isBlank()) {
-                        com.dadhawk.auth.Ctx ctx = com.dadhawk.auth.Jwt.verify(token);
-                        if (ctx != null && req.getSession(false) != null) {
-                            req.getSession(false).setAttribute("jaasLoginName", ctx.companyId());
-                            req.getSession(false).setAttribute("companyId", ctx.companyId());
+                        CasLoginFilter.GateVerifyResult ctx = CasLoginFilter.verifyToken(token);
+                        if (ctx != null && ctx.isValid() && req.getSession(false) != null) {
+                            String compId = ctx.getCompanyId() != null && !ctx.getCompanyId().isBlank()
+                                    ? ctx.getCompanyId() : ctx.getUserId();
+                            req.getSession(false).setAttribute("jaasLoginName", compId);
+                            req.getSession(false).setAttribute("companyId", compId);
                         }
                     }
                     break;
