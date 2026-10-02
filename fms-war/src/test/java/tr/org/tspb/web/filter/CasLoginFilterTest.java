@@ -2,13 +2,15 @@ package tr.org.tspb.web.filter;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.junit.Test;
 
+import javax.security.auth.Subject;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.Principal;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -92,6 +94,108 @@ public class CasLoginFilterTest {
         assertTrue(body.contains("\"token\":\"jwt.token.val\""));
         assertTrue(body.contains("\"project\":\"tspb\""));
         assertTrue(body.contains("\"projectId\":\"tspb\""));
+    }
+
+    @Test
+    public void testCreateSubjectWithPrincipalAndRoles() {
+        List<String> roles = Arrays.asList("fmsuser", "ADMIN", "REPORT_VIEW");
+        Subject subject = CasLoginFilter.createSubject("COMPANY_123", "USER_ABC", roles);
+
+        assertNotNull(subject);
+        Set<Principal> principals = subject.getPrincipals();
+        assertEquals(5, principals.size()); // COMPANY_123, USER_ABC, 3 roles
+
+        Set<CasLoginFilter.JaasPrincipal> userPrincipals = subject.getPrincipals(CasLoginFilter.JaasPrincipal.class);
+        assertEquals(2, userPrincipals.size());
+
+        Set<CasLoginFilter.JaasRolePrincipal> rolePrincipals = subject.getPrincipals(CasLoginFilter.JaasRolePrincipal.class);
+        assertEquals(3, rolePrincipals.size());
+
+        boolean hasCompany = userPrincipals.stream().anyMatch(p -> "COMPANY_123".equals(p.getName()));
+        boolean hasUser = userPrincipals.stream().anyMatch(p -> "USER_ABC".equals(p.getName()));
+        boolean hasAdminRole = rolePrincipals.stream().anyMatch(p -> "ADMIN".equals(p.getName()));
+
+        assertTrue(hasCompany);
+        assertTrue(hasUser);
+        assertTrue(hasAdminRole);
+    }
+
+    @Test
+    public void testCreateSubjectWhenPrincipalEqualsUserId() {
+        Subject subject = CasLoginFilter.createSubject("SAME_USER", "SAME_USER", Collections.singletonList("USER_ROLE"));
+        assertNotNull(subject);
+        Set<CasLoginFilter.JaasPrincipal> userPrincipals = subject.getPrincipals(CasLoginFilter.JaasPrincipal.class);
+        assertEquals(1, userPrincipals.size());
+        assertEquals("SAME_USER", userPrincipals.iterator().next().getName());
+    }
+
+    @Test
+    public void testJaasPrincipalEqualsAndHashCode() {
+        CasLoginFilter.JaasPrincipal p1 = new CasLoginFilter.JaasPrincipal("user1");
+        CasLoginFilter.JaasPrincipal p2 = new CasLoginFilter.JaasPrincipal("user1");
+        CasLoginFilter.JaasPrincipal p3 = new CasLoginFilter.JaasPrincipal("user2");
+
+        assertEquals(p1, p2);
+        assertNotEquals(p1, p3);
+        assertEquals(p1.hashCode(), p2.hashCode());
+        assertEquals("user1", p1.toString());
+    }
+
+    @Test
+    public void testJaasRolePrincipalEqualsAndHashCode() {
+        CasLoginFilter.JaasRolePrincipal r1 = new CasLoginFilter.JaasRolePrincipal("roleA");
+        CasLoginFilter.JaasRolePrincipal r2 = new CasLoginFilter.JaasRolePrincipal("roleA");
+        CasLoginFilter.JaasRolePrincipal r3 = new CasLoginFilter.JaasRolePrincipal("roleB");
+
+        assertEquals(r1, r2);
+        assertNotEquals(r1, r3);
+        assertEquals(r1.hashCode(), r2.hashCode());
+        assertEquals("roleA", r1.toString());
+    }
+
+    @Test
+    public void testGetSubjectFromRequestAndSession() {
+        final Map<String, Object> reqAttrs = new HashMap<>();
+        final Map<String, Object> sessionAttrs = new HashMap<>();
+
+        Subject testSubject = CasLoginFilter.createSubject("PRINCIPAL1", null, Collections.emptyList());
+
+        HttpSession mockSession = (HttpSession) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class<?>[]{HttpSession.class},
+                (proxy, method, args) -> {
+                    if ("getAttribute".equals(method.getName()) && args != null && args.length > 0) {
+                        return sessionAttrs.get(args[0]);
+                    }
+                    return null;
+                }
+        );
+
+        HttpServletRequest request = (HttpServletRequest) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class<?>[]{HttpServletRequest.class},
+                (proxy, method, args) -> {
+                    if ("getAttribute".equals(method.getName()) && args != null && args.length > 0) {
+                        return reqAttrs.get(args[0]);
+                    }
+                    if ("getSession".equals(method.getName())) {
+                        return mockSession;
+                    }
+                    return null;
+                }
+        );
+
+        // Initially null
+        assertNull(CasLoginFilter.getSubject(request));
+
+        // When in session
+        sessionAttrs.put("javax.security.auth.subject", testSubject);
+        assertEquals(testSubject, CasLoginFilter.getSubject(request));
+
+        // When in request attribute (precedence)
+        Subject reqSubject = CasLoginFilter.createSubject("PRINCIPAL2", null, Collections.emptyList());
+        reqAttrs.put("javax.security.auth.subject", reqSubject);
+        assertEquals(reqSubject, CasLoginFilter.getSubject(request));
     }
 
     private HttpServletRequest createMockRequest(String uri, Cookie[] cookies, Map<String, String> params, Map<String, String> headers) {

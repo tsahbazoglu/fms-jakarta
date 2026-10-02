@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URI;
@@ -23,12 +24,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.security.auth.Subject;
 
 @WebFilter(filterName = "CasLoginFilter", urlPatterns = {"/*"})
 public class CasLoginFilter implements Filter {
@@ -47,8 +51,12 @@ public class CasLoginFilter implements Filter {
             .connectTimeout(Duration.ofSeconds(3))
             .build();
 
+    private FilterConfig filterConfig = null;
+
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) throws ServletException {
+        this.filterConfig = filterConfig;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -61,7 +69,18 @@ public class CasLoginFilter implements Filter {
         String relativePath = path.substring(contextPath.length());
 
         if (isPublicPath(relativePath)) {
-            chain.doFilter(request, response);
+            Throwable problem = null;
+            try {
+                chain.doFilter(request, response);
+            } catch (Throwable t) {
+                problem = t;
+                LOGGER.log(Level.SEVERE, "CAPTURE-DEBUG: Filter caught exception on URI: " + req.getRequestURI(), t);
+            }
+            if (problem != null) {
+                if (problem instanceof ServletException) throw (ServletException) problem;
+                if (problem instanceof IOException) throw (IOException) problem;
+                sendProcessingError(problem, response);
+            }
             return;
         }
 
@@ -120,6 +139,22 @@ public class CasLoginFilter implements Filter {
             long ttlSeconds = ctx.getExpiresInSeconds() > 0 ? ctx.getExpiresInSeconds() : 3600;
             currentSession.setAttribute("tokenExpiry", System.currentTimeMillis() + (ttlSeconds * 1000L));
 
+            // Create JAAS security Subject & Principal
+            Subject subject = createSubject(principalName, userId, combinedRoles);
+            JaasPrincipal userPrincipal = new JaasPrincipal(principalName);
+
+            currentSession.setAttribute("javax.security.auth.subject", subject);
+            currentSession.setAttribute("jakarta.security.auth.subject", subject);
+            currentSession.setAttribute("subject", subject);
+            currentSession.setAttribute("jaasSubject", subject);
+            currentSession.setAttribute("userPrincipal", userPrincipal);
+
+            req.setAttribute("javax.security.auth.subject", subject);
+            req.setAttribute("jakarta.security.auth.subject", subject);
+            req.setAttribute("subject", subject);
+            req.setAttribute("jaasSubject", subject);
+            req.setAttribute("userPrincipal", userPrincipal);
+
             // Ensure cookie is available on client side
             ensureTokenCookie(req, res, token);
 
@@ -131,7 +166,7 @@ public class CasLoginFilter implements Filter {
 
                 @Override
                 public Principal getUserPrincipal() {
-                    return () -> principalName;
+                    return userPrincipal;
                 }
 
                 @Override
@@ -155,11 +190,28 @@ public class CasLoginFilter implements Filter {
                 }
             };
 
-            chain.doFilter(wrappedRequest, response);
+            Throwable problem = null;
+            try {
+                Subject.doAs(subject, (PrivilegedExceptionAction<Void>) () -> {
+                    chain.doFilter(wrappedRequest, response);
+                    return null;
+                });
+            } catch (PrivilegedActionException pae) {
+                problem = pae.getCause() != null ? pae.getCause() : pae;
+            } catch (Throwable t) {
+                problem = t;
+            }
+
+            if (problem != null) {
+                LOGGER.log(Level.SEVERE, "CAPTURE-DEBUG: Filter caught exception on URI: " + req.getRequestURI(), problem);
+                if (problem instanceof ServletException) throw (ServletException) problem;
+                if (problem instanceof IOException) throw (IOException) problem;
+                sendProcessingError(problem, response);
+            }
             return;
         }
 
-        // 4. In case of fail, clear any invalid session attributes and redirect to http://localhost:8088/?project=tspb
+        // 4. In case of fail, clear any invalid session attributes and redirect to CAS portal
         if (session != null) {
             session.removeAttribute("token");
             session.removeAttribute("jaasLoginName");
@@ -167,6 +219,11 @@ public class CasLoginFilter implements Filter {
             session.removeAttribute("gateVerifyResult");
             session.removeAttribute(LOGGED_USER);
             session.removeAttribute(LOGGED_USER_ROLES);
+            session.removeAttribute("javax.security.auth.subject");
+            session.removeAttribute("jakarta.security.auth.subject");
+            session.removeAttribute("subject");
+            session.removeAttribute("jaasSubject");
+            session.removeAttribute("userPrincipal");
         }
 
         String redirectUrl = resolveRedirectUrl(req);
@@ -182,6 +239,65 @@ public class CasLoginFilter implements Filter {
         }
 
         res.sendRedirect(redirectUrl);
+    }
+
+    /**
+     * Creates a JAAS security Subject populated with Caller Principal and Role Principals.
+     */
+    public static Subject createSubject(String principalName, String userId, List<String> roles) {
+        Subject subject = new Subject();
+        if (principalName != null && !principalName.isBlank()) {
+            subject.getPrincipals().add(new JaasPrincipal(principalName));
+        }
+        if (userId != null && !userId.isBlank() && !userId.equalsIgnoreCase(principalName)) {
+            subject.getPrincipals().add(new JaasPrincipal(userId));
+        }
+        if (roles != null) {
+            for (String role : roles) {
+                if (role != null && !role.isBlank()) {
+                    subject.getPrincipals().add(new JaasRolePrincipal(role));
+                }
+            }
+        }
+        return subject;
+    }
+
+    /**
+     * Resolves Subject from request or session.
+     */
+    public static Subject getSubject(HttpServletRequest req) {
+        if (req == null) return null;
+        Object subj = req.getAttribute("javax.security.auth.subject");
+        if (subj instanceof Subject) return (Subject) subj;
+        subj = req.getAttribute("jakarta.security.auth.subject");
+        if (subj instanceof Subject) return (Subject) subj;
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            subj = session.getAttribute("javax.security.auth.subject");
+            if (subj instanceof Subject) return (Subject) subj;
+            subj = session.getAttribute("jakarta.security.auth.subject");
+            if (subj instanceof Subject) return (Subject) subj;
+        }
+        return null;
+    }
+
+    /**
+     * Displays a user-friendly error page without exposing technical dumps or stack traces.
+     */
+    private void sendProcessingError(Throwable t, ServletResponse response) {
+        LOGGER.log(Level.SEVERE, "Processing error in CasLoginFilter", t);
+        try {
+            response.setContentType("text/html;charset=UTF-8");
+            try (PrintWriter pw = response.getWriter()) {
+                pw.print("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Hata</title></head><body>");
+                pw.print("<div style='text-align:center;margin-top:50px;font-family:sans-serif;'>");
+                pw.print("<h2>İşlem sırasında bir hata oluştu.</h2>");
+                pw.print("<p>Lütfen daha sonra tekrar deneyiniz.</p>");
+                pw.print("</div></body></html>");
+            }
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -449,6 +565,14 @@ public class CasLoginFilter implements Filter {
                 || lower.endsWith(".ttf");
     }
 
+    public FilterConfig getFilterConfig() {
+        return filterConfig;
+    }
+
+    public void setFilterConfig(FilterConfig filterConfig) {
+        this.filterConfig = filterConfig;
+    }
+
     @Override
     public void destroy() {}
 
@@ -491,5 +615,75 @@ public class CasLoginFilter implements Filter {
         public String companyId() { return companyId; }
         public List<String> perms() { return permissions; }
         public List<String> roles() { return roles; }
+    }
+
+    /**
+     * JAAS Principal implementation for caller/user identity.
+     */
+    public static class JaasPrincipal implements Principal, Serializable {
+        private static final long serialVersionUID = 1L;
+        private final String name;
+
+        public JaasPrincipal(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || !(o instanceof Principal)) return false;
+            Principal that = (Principal) o;
+            return name != null ? name.equals(that.getName()) : that.getName() == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return name != null ? name.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    /**
+     * JAAS Principal implementation for assigned roles/permissions.
+     */
+    public static class JaasRolePrincipal implements Principal, Serializable {
+        private static final long serialVersionUID = 1L;
+        private final String name;
+
+        public JaasRolePrincipal(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || !(o instanceof Principal)) return false;
+            Principal that = (Principal) o;
+            return name != null ? name.equals(that.getName()) : that.getName() == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return name != null ? name.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }
