@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters;
 import static tr.org.tspb.constants.ProjectConstants.*;
 import htmlflow.HtmlFlow;
 import htmlflow.HtmlView;
+import javax.security.auth.Subject;
 import tr.org.tspb.constants.exceptions.LdapException;
 import tr.org.tspb.util.service.DlgCtrl;
 import java.io.IOException;
@@ -17,8 +18,17 @@ import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.mail.MessagingException;
 import javax.naming.NamingException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import org.slf4j.LoggerFactory;
 import org.bson.types.ObjectId;
 import tr.org.tspb.util.stereotype.MyController;
 import java.io.Serializable;
@@ -140,6 +150,9 @@ public class LoginController implements Serializable {
                 getSession(false);
 
         try {
+
+             getSubject(request).get;
+
             roleAsList = ldapService
                     .getRolesByUsername(loggedUserDetail.getUsername());
         } catch (LdapException e) {
@@ -172,6 +185,24 @@ public class LoginController implements Serializable {
             resolveDelegations(databaseUser);
         }
     }
+
+
+    public static Subject getSubject(HttpServletRequest req) {
+        if (req == null) return null;
+        Object subj = req.getAttribute("javax.security.auth.subject");
+        if (subj instanceof Subject) return (Subject) subj;
+        subj = req.getAttribute("jakarta.security.auth.subject");
+        if (subj instanceof Subject) return (Subject) subj;
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            subj = session.getAttribute("javax.security.auth.subject");
+            if (subj instanceof Subject) return (Subject) subj;
+            subj = session.getAttribute("jakarta.security.auth.subject");
+            if (subj instanceof Subject) return (Subject) subj;
+        }
+        return null;
+    }
+
 
     private void logBaseInfo(HttpServletRequest request) {
         StringBuilder serverLog = new StringBuilder(
@@ -567,35 +598,136 @@ public class LoginController implements Serializable {
         return null;
     }
 
+    public static final String DEFAULT_AUTH_LOGOUT_URL = "http://localhost:8088/api/auth/logout";
+    private static final Logger STATIC_LOGGER = LoggerFactory.getLogger(LoginController.class);
+
+    private static final HttpClient LOGOUT_HTTP_CLIENT = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(3))
+            .build();
+
+    public static String resolveAuthLogoutUrl() {
+        String url = System.getProperty("cas.auth.logout.url");
+        if (url == null || url.isBlank()) {
+            url = System.getenv("CAS_AUTH_LOGOUT_URL");
+        }
+        if (url == null || url.isBlank()) {
+            url = System.getProperty("cas.logout.url");
+        }
+        if (url == null || url.isBlank()) {
+            url = System.getenv("CAS_LOGOUT_URL");
+        }
+        if (url == null || url.isBlank()) {
+            url = DEFAULT_AUTH_LOGOUT_URL;
+        }
+        return url.trim();
+    }
+
+    public static boolean callAuthLogout(String token) {
+        String logoutUrl = resolveAuthLogoutUrl();
+        return callAuthLogout(logoutUrl, token);
+    }
+
+    public static boolean callAuthLogout(String logoutUrl, String token) {
+        if (logoutUrl == null || logoutUrl.isBlank()) {
+            logoutUrl = resolveAuthLogoutUrl();
+        }
+        try {
+            HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
+                    .uri(URI.create(logoutUrl.trim()))
+                    .timeout(Duration.ofSeconds(3))
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .POST(HttpRequest.BodyPublishers.noBody());
+
+            if (token != null && !token.isBlank()) {
+                reqBuilder.header("Authorization", "Bearer " + token);
+                reqBuilder.header("Cookie", "token=" + token + "; cas_token=" + token);
+            }
+
+            HttpResponse<String> response = LOGOUT_HTTP_CLIENT.send(
+                    reqBuilder.build(),
+                    HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
+            );
+            STATIC_LOGGER.info("Auth logout POST called at {}, response status: {}", logoutUrl, response.statusCode());
+            return response.statusCode() >= 200 && response.statusCode() < 300;
+        } catch (Exception ex) {
+            STATIC_LOGGER.warn("Failed to call auth logout POST {}: {}", logoutUrl, ex.getMessage());
+            return false;
+        }
+    }
+
     public void logout() throws IOException {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpSession session = null;
+        HttpServletRequest request = null;
+        HttpServletResponse response = null;
+        String token = null;
 
-        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().
-                getExternalContext().
-                getSession(false);
-        HttpServletRequest request = (HttpServletRequest) FacesContext.
-                getCurrentInstance().
-                getExternalContext().
-                getRequest();
-        session.invalidate();
-        /**
-         * <welcome-file-list>.
-         *
-         * <welcome-file>loginServlet</welcome-file>.
-         *
-         * </welcome-file-list>.
-         *
-         * going to /uys it will try to load welcome page which is a
-         * loginServlet in our case :)
-         *
-         * loginServlet is responsible for retrieving Jaas roles
-         *
-         * the following force the LoginServlet triggered
-         */
-        FacesContext.getCurrentInstance().
-                getExternalContext().
-                redirect(request.
-                        getContextPath());
+        if (facesContext != null && facesContext.getExternalContext() != null) {
+            session = (HttpSession) facesContext.getExternalContext().getSession(false);
+            Object reqObj = facesContext.getExternalContext().getRequest();
+            if (reqObj instanceof HttpServletRequest) {
+                request = (HttpServletRequest) reqObj;
+            }
+            Object respObj = facesContext.getExternalContext().getResponse();
+            if (respObj instanceof HttpServletResponse) {
+                response = (HttpServletResponse) respObj;
+            }
+        }
 
+        if (session != null) {
+            Object tokenObj = session.getAttribute("token");
+            if (tokenObj instanceof String) {
+                token = (String) tokenObj;
+            }
+        }
+        if (token == null && request != null && request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if ("token".equalsIgnoreCase(c.getName())
+                        || "cas_token".equalsIgnoreCase(c.getName())
+                        || "auth_token".equalsIgnoreCase(c.getName())) {
+                    token = c.getValue();
+                    break;
+                }
+            }
+        }
+
+        callAuthLogout(token);
+
+        if (response != null) {
+            for (String cookieName : new String[]{"token", "cas_token", "auth_token"}) {
+                Cookie cookie = new Cookie(cookieName, "");
+                cookie.setPath("/");
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            }
+        }
+
+        if (session != null) {
+            session.removeAttribute("token");
+            session.removeAttribute("jaasLoginName");
+            session.removeAttribute("companyId");
+            session.removeAttribute("gateVerifyResult");
+            session.removeAttribute(LOGGED_USER);
+            session.removeAttribute(LOGGED_USER_ROLES);
+            session.removeAttribute("javax.security.auth.subject");
+            session.removeAttribute("jakarta.security.auth.subject");
+            session.removeAttribute("subject");
+            session.removeAttribute("jaasSubject");
+            session.removeAttribute("userPrincipal");
+            try {
+                session.invalidate();
+            } catch (IllegalStateException ignored) {
+            }
+        }
+
+        if (facesContext != null && facesContext.getExternalContext() != null && request != null) {
+            String redirectTarget = request.getContextPath();
+            if (redirectTarget == null || redirectTarget.isBlank()) {
+                redirectTarget = "/";
+            }
+            facesContext.getExternalContext().redirect(redirectTarget);
+        }
     }
 
     /**

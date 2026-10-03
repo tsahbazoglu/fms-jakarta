@@ -48,6 +48,7 @@ public class ProjectConstants {
     public static final String CUSTOM_RESOURCE_ENVIRONMENT = "fms/environment";
     public static final String CUSTOM_RESOURCE_MONGO_URL = "fms/mongourl";
     public static final String CUSTOM_RESOURCE_MONGO_ADMIN_PSWD = "fms/mongoadmin";
+    public static final String DEFAULT_CAS_AUTH_LOGOUT_URL = "http://localhost:8088/api/auth/logout";
 
     public static final String ARCHITECT_ROLE = "architect";
 

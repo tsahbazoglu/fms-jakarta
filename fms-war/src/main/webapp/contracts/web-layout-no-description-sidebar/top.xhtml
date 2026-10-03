@@ -61,6 +61,7 @@
                 <p:commandButton value="#{msg['cikis']}"
                                  icon="pi pi-sign-out"
                                  action="#{loginController.logout}"
+                                 onclick="try { fetch('http://localhost:8088/api/auth/logout', { method: 'POST', keepalive: true }).catch(function(){}); } catch(e){}"
                                  immediate="true"
                                  update="#{updateAjaxMB.msgDlg}"
                                  styleClass="ui-button-outlined ui-button-danger p-button-sm">

@@ -45,6 +45,7 @@ public class CasLoginFilter implements Filter {
 
     public static final String DEFAULT_LOGIN_URL = "http://localhost:8088/api/login";
     public static final String DEFAULT_GATE_VERIFY_URL = "http://localhost:8088/api/gate/verify";
+    public static final String DEFAULT_AUTH_LOGOUT_URL = "http://localhost:8088/api/auth/logout";
     public static final String DEFAULT_CAS_PORTAL_URL = "http://localhost:8088/?project=tspb";
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
@@ -505,6 +506,53 @@ public class CasLoginFilter implements Filter {
             url = DEFAULT_LOGIN_URL;
         }
         return url.trim();
+    }
+
+    public static String getAuthLogoutUrl() {
+        String url = System.getProperty("cas.auth.logout.url");
+        if (url == null || url.isBlank()) {
+            url = System.getenv("CAS_AUTH_LOGOUT_URL");
+        }
+        if (url == null || url.isBlank()) {
+            url = System.getProperty("cas.logout.url");
+        }
+        if (url == null || url.isBlank()) {
+            url = System.getenv("CAS_LOGOUT_URL");
+        }
+        if (url == null || url.isBlank()) {
+            url = DEFAULT_AUTH_LOGOUT_URL;
+        }
+        return url.trim();
+    }
+
+    public static boolean postAuthLogout() {
+        return postAuthLogout(getAuthLogoutUrl(), null);
+    }
+
+    public static boolean postAuthLogout(String logoutUrl, String token) {
+        if (logoutUrl == null || logoutUrl.isBlank()) {
+            logoutUrl = getAuthLogoutUrl();
+        }
+        try {
+            HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
+                    .uri(URI.create(logoutUrl.trim()))
+                    .timeout(Duration.ofSeconds(3))
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .POST(HttpRequest.BodyPublishers.noBody());
+
+            if (token != null && !token.isBlank()) {
+                reqBuilder.header("Authorization", "Bearer " + token);
+                reqBuilder.header("Cookie", "token=" + token + "; cas_token=" + token);
+            }
+
+            HttpResponse<String> response = HTTP_CLIENT.send(reqBuilder.build(), HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            return response.statusCode() >= 200 && response.statusCode() < 300;
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error calling CAS auth logout endpoint ({0}): {1}",
+                    new Object[]{logoutUrl, e.getMessage()});
+            return false;
+        }
     }
 
     public static String resolveRedirectUrl(HttpServletRequest req) {

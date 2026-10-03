@@ -198,6 +198,24 @@ public class CasLoginFilterTest {
         assertEquals(reqSubject, CasLoginFilter.getSubject(request));
     }
 
+    @Test
+    public void testGetAuthLogoutUrlDefault() {
+        System.clearProperty("cas.auth.logout.url");
+        System.clearProperty("cas.logout.url");
+        String logoutUrl = CasLoginFilter.getAuthLogoutUrl();
+        assertEquals("http://localhost:8088/api/auth/logout", logoutUrl);
+    }
+
+    @Test
+    public void testGetAuthLogoutUrlCustom() {
+        System.setProperty("cas.auth.logout.url", "http://myauth:9090/api/auth/logout");
+        try {
+            assertEquals("http://myauth:9090/api/auth/logout", CasLoginFilter.getAuthLogoutUrl());
+        } finally {
+            System.clearProperty("cas.auth.logout.url");
+        }
+    }
+
     private HttpServletRequest createMockRequest(String uri, Cookie[] cookies, Map<String, String> params, Map<String, String> headers) {
         return (HttpServletRequest) Proxy.newProxyInstance(
                 getClass().getClassLoader(),

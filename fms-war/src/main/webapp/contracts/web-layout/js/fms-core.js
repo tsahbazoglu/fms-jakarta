@@ -31,4 +31,11 @@ function openAnotherPopup() {
     return false;
 }
 
- 
+function handleAuthLogout() {
+    try {
+        fetch('http://localhost:8088/api/auth/logout', {
+            method: 'POST',
+            keepalive: true
+        }).catch(function() {});
+    } catch (e) {}
+}
