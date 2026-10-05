@@ -357,6 +357,19 @@
                                 myconverter="#{myField.myconverter}"
                         />
 
+                        <p:inputNumber
+                                value="#{crudOneDim.myObject[myField.key]}"
+                                myMaxValue="#{myField.maxValue}"
+                                rendered="#{crudOneDim.inputNumber eq  myField.componentType and myField.rendered}"
+                                symbol=" ₼"
+                                symbolPosition="s"
+                                decimalSeparator="."
+                                thousandSeparator=","
+                                decimalPlaces="2"
+                                minValue="0.00"
+                                maxValue="9999999999999999.99"
+                        />
+
                         <dh:phone
                                 id="phone"
                                 rendered="#{twoDimModifyCtrl.inputPhone eq  myField.componentType and myField.rendered}"

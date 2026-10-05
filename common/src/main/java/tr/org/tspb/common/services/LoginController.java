@@ -1,7 +1,9 @@
 package tr.org.tspb.common.services;
 
 import com.mongodb.client.model.Filters;
+
 import static tr.org.tspb.constants.ProjectConstants.*;
+
 import htmlflow.HtmlFlow;
 import htmlflow.HtmlView;
 import javax.security.auth.Subject;
@@ -130,13 +132,26 @@ public class LoginController implements Serializable {
         initUser(jaasLoginName, request);
     }
 
+
+    private UserDetail userDetail(String userID) {
+
+        UserDetail userDetail = new UserDetail();
+
+        userDetail.setUsername(userID);
+        userDetail.setFirstName(userID);
+        userDetail.setLastName(userID);
+        userDetail.setCommonName(userID);
+
+        return userDetail;
+    }
+
     private void initUser(String jaasLoginUsername, HttpServletRequest request) {
         if (jaasLoginUsername == null || jaasLoginUsername.trim().
                 isEmpty()) {
             logBaseInfo(request);
             return;
         }
-        loggedUserDetail = ldapService.getUserDetailByUserID(jaasLoginUsername);
+        loggedUserDetail = userDetail(jaasLoginUsername);
         if (loggedUserDetail == null || loggedUserDetail.getUsername() == null || loggedUserDetail.
                 getUsername().
                 trim().
@@ -149,13 +164,12 @@ public class LoginController implements Serializable {
                 getExternalContext().
                 getSession(false);
 
-        try {
+        HttpSession httpSession = (HttpSession) session;
+        if (httpSession != null && httpSession.getAttribute(LOGGED_USER_ROLES) != null) {
+            roleAsList = (List<String>) httpSession.getAttribute(LOGGED_USER_ROLES);
+        }
 
-             getSubject(request).get;
-
-            roleAsList = ldapService
-                    .getRolesByUsername(loggedUserDetail.getUsername());
-        } catch (LdapException e) {
+        if (roleAsList == null || roleAsList.isEmpty()) {
             logBaseInfo(request);
             invalidateSession();
             return;
