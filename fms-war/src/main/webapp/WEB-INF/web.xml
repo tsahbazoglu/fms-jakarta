@@ -17,7 +17,7 @@
 
     <error-page>
         <exception-type>com.dadhawk.auth.client.CasLoginException</exception-type>
-        <location>/error-login-not-accessible.html</location>
+        <location>/no-access.html</location>
     </error-page>
 
     <error-page>

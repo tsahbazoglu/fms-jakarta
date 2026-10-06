@@ -663,13 +663,19 @@ public class CasLoginFilterTest {
     }
 
     @Test
-    public void testDoFilterAllowsErrorLoginNotAccessiblePage() throws Exception {
-        HttpServletRequest request = createMockRequest("/error-login-not-accessible.html", null, null, null);
+    public void testDoFilterDirectlyServesNoAccessHtml() throws Exception {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+
+        HttpServletRequest request = createMockRequest("/no-access.html", null, null, null);
         List<String> redirects = new ArrayList<>();
         HttpServletResponse response = (HttpServletResponse) Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class<?>[]{HttpServletResponse.class},
                 (proxy, method, args) -> {
+                    if ("getWriter".equals(method.getName())) {
+                        return pw;
+                    }
                     if ("sendRedirect".equals(method.getName()) && args != null && args.length > 0) {
                         redirects.add((String) args[0]);
                     }
@@ -683,16 +689,30 @@ public class CasLoginFilterTest {
         CasLoginFilter filter = new CasLoginFilter();
         filter.doFilter(request, response, chain);
 
-        assertTrue("Chain should be called for public error-login-not-accessible page", chainCalled[0]);
-        assertTrue("No redirect should occur for error-login-not-accessible page", redirects.isEmpty());
+        assertFalse("Chain should not be called since filter serves no-access page directly", chainCalled[0]);
+        assertTrue("No redirect should occur for no-access page", redirects.isEmpty());
+        String content = sw.toString();
+        assertTrue("Served content should contain no-access page markup", content.contains("id_heading") || content.contains("Giriş"));
     }
 
     @Test
-    public void testReadCasConfigFromRootFile() {
+    public void testReadCasConfigFromSettingFile() {
         CasLoginFilter.resetCasConfigCache();
         File configFile = CasLoginFilter.findCasConfigFile();
-        assertNotNull("cas.json should be discovered in root", configFile);
+        assertNotNull("setting.json or cas.json should be discovered in cas-config folder or root", configFile);
         assertTrue(configFile.exists());
+
+        File configDir = CasLoginFilter.findCasConfigDir();
+        assertNotNull("cas-config directory should be found", configDir);
+        assertTrue(configDir.exists());
+
+        File noAccessFile = CasLoginFilter.findNoAccessFile();
+        assertNotNull("no-access.html file should be found", noAccessFile);
+        assertTrue(noAccessFile.exists());
+
+        String noAccessHtml = CasLoginFilter.getNoAccessHtml();
+        assertNotNull(noAccessHtml);
+        assertTrue(noAccessHtml.contains("id_heading") || noAccessHtml.contains("Giriş"));
 
         assertEquals("5", CasLoginFilter.getCasConfigProperty("timeout"));
         assertEquals("8088", CasLoginFilter.getCasConfigProperty("port"));
