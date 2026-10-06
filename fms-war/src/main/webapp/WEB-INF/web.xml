@@ -92,4 +92,9 @@
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
 
+    <mime-mapping>
+        <extension>html</extension>
+        <mime-type>text/html;charset=UTF-8</mime-type>
+    </mime-mapping>
+
 </web-app>

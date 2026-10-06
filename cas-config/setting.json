@@ -1,9 +1,0 @@
-{
-  "timeout": 5,
-  "port": "8088",
-  "project": "tspb",
-  "checkAvailability": true,
-  "language": "tr",
-  "logo": "/public/logo_tspb.png",
-  "copyright": "© 2026 Türkiye Sermaye Piyasaları Birliği"
-}
