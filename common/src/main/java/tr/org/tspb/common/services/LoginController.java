@@ -620,6 +620,20 @@ public class LoginController implements Serializable {
             .build();
 
     public static String resolveAuthLogoutUrl() {
+        HttpServletRequest req = null;
+        try {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            if (fc != null && fc.getExternalContext() != null) {
+                Object r = fc.getExternalContext().getRequest();
+                if (r instanceof HttpServletRequest) {
+                    req = (HttpServletRequest) r;
+                }
+            }
+        } catch (Exception ignored) {}
+        return resolveAuthLogoutUrl(req);
+    }
+
+    public static String resolveAuthLogoutUrl(HttpServletRequest req) {
         String url = System.getProperty("cas.auth.logout.url");
         if (url == null || url.isBlank()) {
             url = System.getenv("CAS_AUTH_LOGOUT_URL");
@@ -630,14 +644,50 @@ public class LoginController implements Serializable {
         if (url == null || url.isBlank()) {
             url = System.getenv("CAS_LOGOUT_URL");
         }
-        if (url == null || url.isBlank()) {
-            url = DEFAULT_AUTH_LOGOUT_URL;
+        if (url != null && !url.isBlank()) {
+            return url.trim();
         }
-        return url.trim();
+        String port = System.getProperty("cas.port");
+        if (port == null || port.isBlank()) {
+            port = System.getenv("CAS_PORT");
+        }
+        if (port == null || port.isBlank()) {
+            port = "8088";
+        }
+        port = port.trim();
+        if (req != null) {
+            String fwdHost = req.getHeader("X-Forwarded-Host");
+            String host = (fwdHost != null && !fwdHost.isBlank()) ? fwdHost.split(",")[0].trim() : req.getHeader("Host");
+            if (host == null || host.isBlank()) {
+                host = req.getServerName();
+            }
+            if (host != null && !host.isBlank()) {
+                String hostOnly = host;
+                int idx = hostOnly.indexOf(':');
+                if (idx != -1) {
+                    hostOnly = hostOnly.substring(0, idx);
+                }
+                hostOnly = hostOnly.trim().toLowerCase();
+                boolean isLocal = "localhost".equals(hostOnly) || "127.0.0.1".equals(hostOnly) || "0.0.0.0".equals(hostOnly) || "::1".equals(hostOnly);
+                if (!isLocal) {
+                    String proto = req.getHeader("X-Forwarded-Proto");
+                    String scheme = (proto != null && !proto.isBlank()) ? proto.split(",")[0].trim().toLowerCase() : (req.getScheme() != null ? req.getScheme().toLowerCase() : "http");
+                    return scheme + "://" + hostOnly + ":" + port + "/api/auth/logout";
+                }
+            }
+        }
+        if (!"8088".equals(port)) {
+            return "http://localhost:" + port + "/api/auth/logout";
+        }
+        return DEFAULT_AUTH_LOGOUT_URL;
     }
 
     public static boolean callAuthLogout(String token) {
-        String logoutUrl = resolveAuthLogoutUrl();
+        return callAuthLogout((HttpServletRequest) null, token);
+    }
+
+    public static boolean callAuthLogout(HttpServletRequest req, String token) {
+        String logoutUrl = resolveAuthLogoutUrl(req);
         return callAuthLogout(logoutUrl, token);
     }
 
@@ -706,7 +756,7 @@ public class LoginController implements Serializable {
             }
         }
 
-        callAuthLogout(token);
+        callAuthLogout(request, token);
 
         if (response != null) {
             for (String cookieName : new String[]{"token", "cas_token", "auth_token"}) {

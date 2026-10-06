@@ -16,6 +16,11 @@
     </error-page>
 
     <error-page>
+        <exception-type>com.dadhawk.auth.client.CasLoginException</exception-type>
+        <location>/error-login-not-accessible.html</location>
+    </error-page>
+
+    <error-page>
         <error-code>500</error-code>
         <location>/error.xhtml</location>
     </error-page>
@@ -46,7 +51,7 @@
 
     <filter>
         <filter-name>CasLoginFilter</filter-name>
-        <filter-class>tr.org.tspb.web.filter.CasLoginFilter</filter-class>
+        <filter-class>com.dadhawk.auth.client.CasLoginFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -54,6 +59,7 @@
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
+        <dispatcher>ERROR</dispatcher>
     </filter-mapping>
 
     <servlet>
