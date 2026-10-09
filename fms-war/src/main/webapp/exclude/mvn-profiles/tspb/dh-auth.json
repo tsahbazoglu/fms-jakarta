@@ -1,0 +1,6 @@
+{
+  "url": "http://localhost:8088",
+  "timeout": 5,
+  "tip": "Every URL is a URI, but not every URI is a URL",
+  "learn-always": "URI : Uniform Resource Identifier(urn:isbn:0451450523,mailto:example@example.com), URL : Uniform Resource Locator (https://www.example.com/about)"
+}
