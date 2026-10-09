@@ -49,19 +49,6 @@
         <param-value>/tmp/muhurdar</param-value>
     </context-param>
 
-    <filter>
-        <filter-name>CasLoginFilter</filter-name>
-        <filter-class>com.dadhawk.auth.client.CasLoginFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>CasLoginFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>ERROR</dispatcher>
-    </filter-mapping>
-
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
