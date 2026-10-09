@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="${language}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link id="id_link_favicon" rel="shortcut icon" type="image/x-icon" href="/favicon_tspb.ico"/>
+
+    <style type="text/css">
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #eef2f7 0%, #e2e8f0 100%);
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 580px;
+            padding: 24px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 74, 142, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-top: 5px solid #004a8e;
+            padding: 44px 36px 36px 36px;
+            text-align: center;
+        }
+
+        .logo-wrap {
+            margin-bottom: 24px;
+        }
+
+        .logo-wrap img {
+            max-height: 54px;
+            max-width: 220px;
+            height: auto;
+            width: auto;
+            display: inline-block;
+        }
+
+        .status-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px auto;
+            border-radius: 50%;
+            background-color: #fff7ed;
+            border: 2px solid #fed7aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ea580c;
+        }
+
+        .status-icon svg {
+            width: 34px;
+            height: 34px;
+            stroke-width: 2;
+        }
+
+        h1 {
+            margin: 0 0 16px 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: #004a8e;
+            letter-spacing: -0.3px;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+            margin: 18px 0 22px 0;
+            border: 0;
+        }
+
+        .message-box {
+            background-color: #f8fafc;
+            border: 1px solid #edf2f7;
+            border-radius: 10px;
+            padding: 20px 22px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .message-box p {
+            margin: 0;
+            font-size: 14.5px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            line-height: 1.2;
+            min-width: 145px;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #004a8e;
+            color: #ffffff;
+            box-shadow: 0 3px 6px rgba(0, 74, 142, 0.25);
+        }
+
+        .btn-primary:hover {
+            background-color: #003366;
+            box-shadow: 0 4px 10px rgba(0, 51, 102, 0.3);
+            color: #ffffff;
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .footer {
+            margin-top: 10px;
+            padding-top: 18px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="logo-wrap">
+                <img id="img_logo" src="logo-small.png" alt="TSPB Logo" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='/public/logo_tspb.png';}else{this.style.display='none';}"/>
+            </div>
+
+            <div class="status-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+
+            <div class="message-box">
+                <p id="id_msg">${message}</p>
+            </div>
+
+            <div class="actions">
+                <button id="btnRetry" type="button" class="btn btn-primary" onclick="window.location.reload();">${retry}</button>
+            </div>
+
+            <div class="footer" id="id_footer">
+                © 2026 Türkiye Sermaye Piyasaları Birliği
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        (function() {
+            var i18n = {
+                tr: {
+                    message: "Kimlik doğrulama servisine (CAS) şu anda erişilemiyor. Lütfen sistem yöneticiniz ile iletişime geçiniz veya bir süre sonra tekrar deneyiniz.",
+                    retry: "Tekrar Dene",
+                    copyright: "© 2026 Türkiye Sermaye Piyasaları Birliği"
+                },
+                en: {
+                    message: "The authentication service (CAS) is currently inaccessible. Please try again later or contact your system administrator.",
+                    retry: "Retry",
+                    copyright: "© 2026 Turkish Capital Markets Association"
+                },
+                ru: {
+                    message: "Служба аутентификации (CAS) в настоящее время недоступна. Пожалуйста, обратитесь к системному администратору или повторите попытку позже.",
+                    retry: "Повторить",
+                    copyright: "© 2026 Ассоциация рынков капитала Турции"
+                },
+                az: {
+                    message: "Autentifikasiya xidmətinə (CAS) hazırda daxil olmaq mümkün deyil. Zəhmət olmasa sistem administratoru ilə əlaqə saxlayın və ya bir qədər sonra yenidən cəhd edin.",
+                    retry: "Yenidən cəhd et",
+                    copyright: "© 2026 Türkiyə Kapital Bazarları Birliyi"
+                }
+            };
+
+            function cleanPlaceholder(val, fallback) {
+                if (!val || val.indexOf("${") === 0) return fallback;
+                return val;
+            }
+
+            function applyConfig(cfg) {
+                var currentLang = document.documentElement.lang;
+                var lang = (cfg && (cfg.language || cfg.lang)) || cleanPlaceholder(currentLang, 'tr');
+                lang = (lang || 'tr').toLowerCase().trim();
+                var dict = i18n[lang] || i18n.tr;
+
+                document.documentElement.lang = lang;
+
+                var msgEl = document.getElementById('id_msg');
+                if (msgEl) {
+                    var curMsg = msgEl.innerText;
+                    msgEl.innerText = (cfg && cfg.message) || cleanPlaceholder(curMsg, dict.message);
+                }
+
+                var retryBtn = document.getElementById('btnRetry');
+                if (retryBtn) {
+                    var curRetry = retryBtn.innerText;
+                    retryBtn.innerText = (cfg && cfg.retry) || cleanPlaceholder(curRetry, dict.retry);
+                }
+
+                var logoEl = document.getElementById('img_logo');
+                if (logoEl) {
+                    var curLogo = logoEl.getAttribute('src');
+                    var targetLogo = (cfg && cfg.logo) || cleanPlaceholder(curLogo, 'logo-small.png');
+                    if (targetLogo) logoEl.src = targetLogo;
+                }
+
+                var footerEl = document.getElementById('id_footer');
+                if (footerEl) {
+                    var curFooter = footerEl.innerText;
+                    footerEl.innerText = (cfg && cfg.copyright) || cleanPlaceholder(curFooter, dict.copyright);
+                }
+            }
+
+            // Initial cleanup of any unprocessed placeholders
+            applyConfig(null);
+
+            try {
+                var pathname = window.location.pathname || '';
+                var contextPath = '';
+                var secondSlash = pathname.indexOf('/', 1);
+                if (secondSlash > 0) {
+                    contextPath = pathname.substring(0, secondSlash);
+                }
+                var apiUrl = (contextPath ? contextPath : '') + '/api/cas/error-config';
+                fetch(apiUrl)
+                    .then(function(r) { return r.json(); })
+                    .then(function(cfg) { applyConfig(cfg); })
+                    .catch(function() {});
+            } catch (e) {}
+        })();
+    </script>
+</body>
+</html>

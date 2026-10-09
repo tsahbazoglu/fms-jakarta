@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="${language}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>DadHawk - Gateway Offline</title>
+    <link id="id_link_favicon" rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+    <style type="text/css">
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Exo 2', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        :root {
+            --cyan-primary: #01d7fe;
+            --cyan-bright: #3ce0ff;
+            --cyan-glow: rgba(1, 215, 254, 0.4);
+            --cyan-dim: rgba(1, 215, 254, 0.12);
+            --amber-alert: #f59e0b;
+            --amber-bright: #fbbf24;
+            --amber-glow: rgba(245, 158, 11, 0.35);
+            --bg-deep: #030712;
+            --card-bg: rgba(6, 12, 31, 0.88);
+            --card-border: rgba(1, 215, 254, 0.22);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image:
+                linear-gradient(to right, rgba(1, 215, 254, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(1, 215, 254, 0.04) 1px, transparent 1px),
+                radial-gradient(ellipse 90% 60% at 50% -10%, rgba(1, 215, 254, 0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 70% 50% at 50% 110%, rgba(2, 40, 80, 0.35) 0%, transparent 70%);
+            background-size: 38px 38px, 38px 38px, 100% 100%, 100% 100%;
+            background-position: center top;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            line-height: 1.5;
+            padding: 24px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient subtle scanning beam across background */
+        .scan-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(1, 215, 254, 0.02) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: 1;
+            background-size: 100% 8px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Cyber HUD Console Card */
+        .hud-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow:
+                0 0 60px rgba(0, 0, 0, 0.8),
+                0 0 35px rgba(1, 215, 254, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            position: relative;
+            padding: 26px 32px 28px 32px;
+            overflow: hidden;
+        }
+
+        /* Decorative cyber corner ticks */
+        .hud-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            border-top: 3px solid var(--cyan-primary);
+            border-left: 3px solid var(--cyan-primary);
+            border-top-left-radius: 18px;
+            pointer-events: none;
+        }
+
+        .hud-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 28px;
+            height: 28px;
+            border-bottom: 3px solid var(--cyan-primary);
+            border-right: 3px solid var(--cyan-primary);
+            border-bottom-right-radius: 18px;
+            pointer-events: none;
+        }
+
+        /* Top HUD Navigation Bar */
+        .hud-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid rgba(1, 215, 254, 0.14);
+        }
+
+        .gateway-beacon {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            color: var(--amber-bright);
+            text-transform: uppercase;
+        }
+
+        .beacon-pulse {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--amber-alert);
+            box-shadow: 0 0 10px var(--amber-alert);
+            animation: pulse-beacon 1.8s infinite;
+        }
+
+        @keyframes pulse-beacon {
+            0% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 0 0 var(--amber-glow); }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+            100% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+
+        /* Language Switcher */
+        .lang-switch {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 3px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 4px 9px;
+            border-radius: 7px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .lang-btn:hover {
+            color: var(--cyan-bright);
+            background: rgba(1, 215, 254, 0.08);
+        }
+
+        .lang-btn.active {
+            color: #030712;
+            background: var(--cyan-primary);
+            font-weight: 700;
+            box-shadow: 0 0 12px var(--cyan-glow);
+        }
+
+        /* Brand Showcase Pedestal */
+        .brand-section {
+            text-align: center;
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .logo-pedestal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 16px;
+            position: relative;
+        }
+
+        .logo-pedestal img {
+            max-width: 290px;
+            width: 100%;
+            height: auto;
+            max-height: 64px;
+            object-fit: contain;
+            display: inline-block;
+            filter: drop-shadow(0 0 18px rgba(1, 215, 254, 0.35));
+            transition: transform 0.3s ease;
+        }
+
+        .logo-pedestal img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Tactical Telemetry HUD Graphic (Hawk Shield Radar) */
+        .telemetry-radar-wrap {
+            position: relative;
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 18px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radar-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: radar-sweep-rotate 10s linear infinite;
+        }
+
+        @keyframes radar-sweep-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .radar-icon-center {
+            position: relative;
+            z-index: 2;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(4, 14, 48, 0.8) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--amber-bright);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .radar-icon-center svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* Status Title */
+        .status-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+        }
+
+        /* Diagnostics Terminal Box */
+        .terminal-box {
+            background: rgba(3, 7, 20, 0.75);
+            border: 1px solid rgba(1, 215, 254, 0.16);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan-primary), transparent);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .terminal-dots {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .t-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .t-dot-red { background: #ef4444; }
+        .t-dot-amber { background: #f59e0b; }
+        .t-dot-cyan { background: var(--cyan-primary); }
+
+        .terminal-code {
+            color: var(--amber-bright);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .msg-text {
+            font-size: 14.5px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 14px;
+            text-align: left;
+        }
+
+        .telemetry-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .tel-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: #94a3b8;
+        }
+
+        .tel-pill span {
+            color: var(--cyan-bright);
+        }
+
+        /* Action Buttons */
+        .actions-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .btn-cyber {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 13px 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            min-width: 200px;
+            border: 1px solid var(--cyan-primary);
+            background: linear-gradient(135deg, #01d7fe 0%, #0099cc 100%);
+            color: #030712;
+            box-shadow: 0 4px 20px var(--cyan-glow);
+        }
+
+        .btn-cyber:hover {
+            background: linear-gradient(135deg, #3ce0ff 0%, #01d7fe 100%);
+            box-shadow: 0 6px 28px rgba(1, 215, 254, 0.65);
+            transform: translateY(-2px);
+        }
+
+        .btn-cyber:active {
+            transform: translateY(1px);
+        }
+
+        .btn-cyber svg {
+            width: 17px;
+            height: 17px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-cyber:hover svg {
+            transform: rotate(180deg);
+        }
+
+        /* Footer */
+        .hud-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 11.5px;
+            color: #64748b;
+            font-family: var(--font-mono);
+        }
+
+        .hud-footer a {
+            color: #94a3b8;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 14px; }
+            .hud-card { padding: 20px 18px 22px 18px; }
+            .hud-topbar { flex-direction: column; gap: 12px; align-items: stretch; }
+            .gateway-beacon { justify-content: center; }
+            .lang-switch { justify-content: center; }
+            .hud-footer { flex-direction: column; gap: 8px; text-align: center; }
+            .telemetry-badges { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scan-overlay"></div>
+
+    <div class="container">
+        <div class="hud-card">
+
+            <!-- Top HUD Bar: Beacon & Language Switcher -->
+            <div class="hud-topbar">
+                <div class="gateway-beacon">
+                    <span class="beacon-pulse"></span>
+                    <span id="id_beacon_status">CAS GATEWAY: OFFLINE</span>
+                </div>
+
+                <div class="lang-switch">
+                    <button type="button" class="lang-btn active" onclick="setLang('en')">EN</button>
+                    <button type="button" class="lang-btn" onclick="setLang('az')">AZ</button>
+                    <button type="button" class="lang-btn" onclick="setLang('tr')">TR</button>
+                    <button type="button" class="lang-btn" onclick="setLang('ru')">RU</button>
+                </div>
+            </div>
+
+            <!-- Brand Pedestal: Uses logo-small.png -->
+            <div class="brand-section">
+                <div class="logo-pedestal">
+                    <img id="img_logo" src="logo-small.png" alt="DadHawk Logo"/>
+                </div>
+            </div>
+
+            <!-- Tactical Shield Radar Graphic -->
+            <div class="telemetry-radar-wrap" aria-hidden="true">
+                <svg class="radar-svg" viewBox="0 0 100 100" fill="none">
+                    <circle cx="50" cy="50" r="46" stroke="#01d7fe" stroke-opacity="0.18" stroke-width="1"/>
+                    <circle cx="50" cy="50" r="34" stroke="#01d7fe" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="3 3"/>
+                    <line x1="50" y1="4" x2="50" y2="96" stroke="#01d7fe" stroke-opacity="0.12" stroke-width="1"/>
+                    <line x1="4" y1="50" x2="96" y2="50" stroke="#01d7fe" stroke-opacity="0.12" stroke-width="1"/>
+                    <path d="M 50 4 A 46 46 0 0 1 96 50" stroke="url(#radarGradient)" stroke-width="2" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="radarGradient" x1="50" y1="4" x2="96" y2="50" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#3ce0ff" stop-opacity="0"/>
+                            <stop offset="1" stop-color="#01d7fe" stop-opacity="0.9"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <div class="radar-icon-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Status Title -->
+            <h1 class="status-title" id="id_status_title">Gateway Inaccessible</h1>
+
+            <!-- Diagnostics Terminal -->
+            <div class="terminal-box">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <span class="t-dot t-dot-red"></span>
+                        <span class="t-dot t-dot-amber"></span>
+                        <span class="t-dot t-dot-cyan"></span>
+                        <span style="margin-left: 6px;" id="id_diag_title">DIAGNOSTICS READOUT</span>
+                    </div>
+                    <span class="terminal-code" id="id_diag_code">ERR_CAS_UNAVAILABLE (503)</span>
+                </div>
+
+                <p id="id_msg" class="msg-text">${message}</p>
+
+                <div class="telemetry-badges">
+                    <div class="tel-pill">GATEWAY: <span>ONLINE</span></div>
+                    <div class="tel-pill">CAS AUTH: <span style="color:#f59e0b;">DISCONNECTED</span></div>
+                    <div class="tel-pill">PORT: <span>8088</span></div>
+                    <div class="tel-pill">PROTOCOL: <span>CAS 3.0</span></div>
+                </div>
+            </div>
+
+            <!-- Action Section -->
+            <div class="actions-section">
+                <button id="btnRetry" type="button" class="btn-cyber" onclick="executeRetry('${redirectUrl}');">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    <span id="id_retry_text">${retry}</span>
+                </button>
+            </div>
+
+            <!-- HUD Footer -->
+            <div class="hud-footer">
+                <div id="id_footer">© 2026 DadHawk - All rights reserved</div>
+                <div>SEC_ID: DADHAWK-AUTH-GW</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var i18n = {
+            en: {
+                title: "Gateway Inaccessible",
+                beacon: "CAS GATEWAY: OFFLINE",
+                diagTitle: "DIAGNOSTICS READOUT",
+                diagCode: "ERR_CAS_UNAVAILABLE (503)",
+                message: "The authentication service (CAS) is currently inaccessible. Please try again later or contact your system administrator.",
+                retry: "Retry Connection",
+                copyright: "© 2026 DadHawk - All rights reserved"
+            },
+            az: {
+                title: "Autentifikasiya Şlüzü Əlçatmazdır",
+                beacon: "CAS ŞLÜZÜ: OFFLAYN",
+                diagTitle: "DİAQNOSTİKA MƏLUMATI",
+                diagCode: "ERR_CAS_ƏLÇATMAZDIR (503)",
+                message: "Autentifikasiya xidmətinə (CAS) hazırda daxil olmaq mümkün deyil. Zəhmət olmasa sistem administratoru ilə əlaqə saxlayın və ya bir qədər sonra yenidən cəhd edin.",
+                retry: "Yenidən Qoşul",
+                copyright: "© 2026 DadHawk - Bütün hüquqlar qorunur"
+            },
+            tr: {
+                title: "Kimlik Doğrulama Ağ Geçidi Erişilemiyor",
+                beacon: "CAS GEÇİDİ: ÇEVRİMDIŞI",
+                diagTitle: "TANI BİLGİSİ RAPORU",
+                diagCode: "ERR_CAS_ERİŞİLEMEZ (503)",
+                message: "Kimlik doğrulama servisine (CAS) şu anda erişilemiyor. Lütfen sistem yöneticiniz ile iletişime geçiniz veya bir süre sonra tekrar deneyiniz.",
+                retry: "Yeniden Bağlan",
+                copyright: "© 2026 DadHawk - Tüm hakları saklıdır"
+            },
+            ru: {
+                title: "Шлюз аутентификации недоступен",
+                beacon: "ШЛЮЗ CAS: ОФФЛАЙН",
+                diagTitle: "ОТЧЕТ ДИАГНОСТИКИ",
+                diagCode: "ERR_CAS_НЕДОСТУПЕН (503)",
+                message: "Служба аутентификации (CAS) в настоящее время недоступна. Пожалуйста, обратитесь к системному администратору или повторите попытку позже.",
+                retry: "Повторить попытку",
+                copyright: "© 2026 DadHawk - Все права защищены"
+            }
+        };
+
+        function cleanPlaceholder(val, fallback) {
+            if (!val) return fallback;
+            if (val.indexOf('${') === 0 && val.indexOf('}') === val.length - 1) return fallback;
+            return val;
+        }
+
+        function setLang(lang) {
+            lang = (lang || 'en').toLowerCase().trim();
+            var dict = i18n[lang] || i18n.en;
+            document.documentElement.lang = lang;
+
+            var titleEl = document.getElementById('id_status_title');
+            if (titleEl) titleEl.innerText = dict.title;
+
+            var beaconEl = document.getElementById('id_beacon_status');
+            if (beaconEl) beaconEl.innerText = dict.beacon;
+
+            var diagTitleEl = document.getElementById('id_diag_title');
+            if (diagTitleEl) diagTitleEl.innerText = dict.diagTitle;
+
+            var diagCodeEl = document.getElementById('id_diag_code');
+            if (diagCodeEl) diagCodeEl.innerText = dict.diagCode;
+
+            var msgEl = document.getElementById('id_msg');
+            if (msgEl) msgEl.innerText = dict.message;
+
+            var retryEl = document.getElementById('id_retry_text');
+            if (retryEl) retryEl.innerText = dict.retry;
+
+            var footerEl = document.getElementById('id_footer');
+            if (footerEl) footerEl.innerText = dict.copyright;
+
+            var btns = document.querySelectorAll('.lang-btn');
+            btns.forEach(function(b) {
+                var btnTxt = (b.innerText || '').toLowerCase().trim();
+                if (btnTxt === lang) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+        }
+
+        function executeRetry(redUrl) {
+            var btn = document.getElementById('btnRetry');
+            if (btn) {
+                btn.style.opacity = '0.7';
+                btn.style.pointerEvents = 'none';
+            }
+            if (redUrl && redUrl.indexOf('${') !== 0 && redUrl.indexOf('http') === 0) {
+                window.location.href = redUrl;
+            } else {
+                window.location.reload();
+            }
+        }
+
+        function applyConfig(cfg) {
+            var currentLang = document.documentElement.lang;
+            var lang = (cfg && (cfg.language || cfg.lang)) || cleanPlaceholder(currentLang, 'en');
+            setLang(lang);
+
+            var logoEl = document.getElementById('img_logo');
+            if (logoEl) {
+                var curLogo = logoEl.getAttribute('src');
+                var targetLogo = (cfg && cfg.logo) || cleanPlaceholder(curLogo, 'logo-small.png');
+                if (targetLogo) {
+                    logoEl.src = targetLogo;
+                    logoEl.style.display = 'inline-block';
+                }
+            }
+        }
+
+        // Initialize on load
+        (function() {
+            var rawLang = document.documentElement.getAttribute('lang');
+            var initialLang = cleanPlaceholder(rawLang, 'en');
+            var cleanMsg = cleanPlaceholder(document.getElementById('id_msg').innerText, '');
+            if (!cleanMsg) {
+                setLang(initialLang);
+            } else {
+                // Keep localized dynamic message from server if already provided
+                var dict = i18n[initialLang] || i18n.en;
+                var retryEl = document.getElementById('id_retry_text');
+                if (retryEl) {
+                    var rText = cleanPlaceholder(retryEl.innerText, '');
+                    if (!rText) retryEl.innerText = dict.retry;
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
