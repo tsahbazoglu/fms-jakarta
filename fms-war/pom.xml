@@ -148,4 +148,25 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>azclerk</id>
+            <properties>
+                <customer.folder>azclerk</customer.folder>
+            </properties>
+        </profile>
+        <profile>
+            <id>tspb</id>
+            <properties>
+                <customer.folder>tspb</customer.folder>
+            </properties>
+        </profile>
+        <profile>
+            <id>dadhawk</id>
+            <properties>
+                <customer.folder>dadhawk</customer.folder>
+            </properties>
+        </profile>
+    </profiles>
 </project>

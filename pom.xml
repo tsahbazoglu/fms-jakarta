@@ -107,6 +107,7 @@
 
         <esign.backend.artifact>fms-esign-core-oyas-backend</esign.backend.artifact>
         <esign.ui.artifact>fms-esign-core-oyas-ui</esign.ui.artifact>
+        <customer.folder>tspb</customer.folder>
     </properties>
 
 
@@ -468,6 +469,14 @@
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                         <packagingExcludes>exclude/**</packagingExcludes>
+                        <warSourceExcludes>exclude/**,resources/dadhawk-auth/**</warSourceExcludes>
+                        <webResources>
+                            <resource>
+                                <directory>src/main/webapp/exclude/mvn-profiles/${customer.folder}</directory>
+                                <targetPath>resources/dadhawk-auth</targetPath>
+                                <filtering>false</filtering>
+                            </resource>
+                        </webResources>
                     </configuration>
                 </plugin>
 
@@ -573,6 +582,24 @@
     </reporting>
 
     <profiles>
+        <profile>
+            <id>azclerk</id>
+            <properties>
+                <customer.folder>azclerk</customer.folder>
+            </properties>
+        </profile>
+        <profile>
+            <id>tspb</id>
+            <properties>
+                <customer.folder>tspb</customer.folder>
+            </properties>
+        </profile>
+        <profile>
+            <id>dadhawk</id>
+            <properties>
+                <customer.folder>dadhawk</customer.folder>
+            </properties>
+        </profile>
         <profile>
             <id>esignOyas</id>
             <properties>
