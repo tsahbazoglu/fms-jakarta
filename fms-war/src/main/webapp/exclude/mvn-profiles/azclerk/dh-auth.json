@@ -1,4 +1,4 @@
 {
-  "url": "http://azclerk.com/login",
+  "url": "http://localhost:8088",
   "timeout": 5
 }
