@@ -17,7 +17,7 @@
 
     <error-page>
         <exception-type>com.dadhawk.auth.client.CasLoginException</exception-type>
-        <location>/no-access.html</location>
+        <location>/public/no-access.html</location>
     </error-page>
 
     <error-page>
@@ -83,5 +83,34 @@
         <extension>html</extension>
         <mime-type>text/html;charset=UTF-8</mime-type>
     </mime-mapping>
+
+
+
+    <filter>
+        <filter-name>CasLoginFilter</filter-name>
+        <filter-class>com.dadhawk.auth.client.CasLoginFilter</filter-class>
+
+        <!-- Override or provide init-params here -->
+        <init-param>
+            <param-name>cas.url</param-name>
+            <param-value>https://localhost:8088</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cas.timeout</param-name>
+            <param-value>5</param-value>
+        </init-param>
+        <init-param>
+            <param-name>public-folders</param-name>
+            <param-value>public</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CasLoginFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
 
 </web-app>

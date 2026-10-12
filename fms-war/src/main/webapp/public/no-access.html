@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="${language}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link id="id_link_favicon" rel="shortcut icon" type="image/x-icon" href="/public/favicon.ico"/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+    <style type="text/css">
+        *, *::before, *::after {
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0b132b 0%, #1c2541 50%, #004d80 100%);
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            line-height: 1.5;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient glowing circles */
+        .glow-sphere-1 {
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, rgba(0, 146, 188, 0.22) 0%, rgba(0, 0, 0, 0) 70%);
+            top: -120px;
+            left: -120px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .glow-sphere-2 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            bottom: -150px;
+            right: -150px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 580px;
+            padding: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-top: 4px solid #38bdf8;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 22px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 30px rgba(56, 189, 248, 0.08);
+            padding: 44px 38px 36px 38px;
+            text-align: center;
+        }
+
+        .lang-switch {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 24px;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .lang-btn:hover {
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+        }
+
+        .lang-btn.active {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .brand-logo-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 18px 28px;
+            border-radius: 18px;
+            margin-bottom: 28px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .logo-symbol {
+            font-size: 38px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        .logo-symbol span {
+            color: #38bdf8;
+        }
+
+        .brand-badge {
+            background: rgba(0, 146, 188, 0.25);
+            color: #38bdf8;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .logo-wrap-custom {
+            margin-top: 10px;
+        }
+
+        .logo-wrap-custom img {
+            max-height: 44px;
+            max-width: 180px;
+            height: auto;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .status-icon-wrap {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 22px auto;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, rgba(15, 23, 42, 0.4) 100%);
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f87171;
+            box-shadow: 0 0 24px rgba(239, 68, 68, 0.25);
+            animation: pulse-ring 2.8s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35);
+            }
+            70% {
+                box-shadow: 0 0 0 14px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .status-icon-wrap svg {
+            width: 36px;
+            height: 36px;
+            stroke-width: 2.2;
+        }
+
+        h1 {
+            margin: 0 0 14px 0;
+            font-size: 23px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.4px;
+        }
+
+        .message-box {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .message-box p {
+            margin: 0;
+            font-size: 14.5px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14.5px;
+            font-weight: 600;
+            text-align: center;
+            padding: 13px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-sizing: border-box;
+            line-height: 1.2;
+            min-width: 160px;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066cc 0%, #004d80 100%);
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 6px 18px rgba(0, 102, 204, 0.35);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0284c7 0%, #0066cc 100%);
+            box-shadow: 0 8px 24px rgba(56, 189, 248, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .footer {
+            margin-top: 12px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 12px;
+            color: #64748b;
+            letter-spacing: 0.2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-sphere-1"></div>
+    <div class="glow-sphere-2"></div>
+
+    <div class="container">
+        <div class="card">
+
+            <div class="lang-switch">
+                <button type="button" class="lang-btn active" onclick="setLang('az')">AZ</button>
+                <button type="button" class="lang-btn" onclick="setLang('tr')">TR</button>
+                <button type="button" class="lang-btn" onclick="setLang('en')">EN</button>
+                <button type="button" class="lang-btn" onclick="setLang('ru')">RU</button>
+            </div>
+
+            <div class="brand-logo-box">
+                <div class="logo-symbol">Az<span>Clerk</span></div>
+                <div class="brand-badge">MANAGEMENT BUSINESS SYSTEM</div>
+                <div class="logo-wrap-custom">
+                    <img id="img_logo" src="logo-small.png" alt="AzClerk Logo" style="display:none;" onerror="this.style.display='none'" onload="this.style.display='inline-block';"/>
+                </div>
+            </div>
+
+            <div class="status-icon-wrap" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+
+            <div class="message-box">
+                <p id="id_msg">${message}</p>
+            </div>
+
+            <div class="actions">
+                <button id="btnRetry" type="button" class="btn btn-primary" onclick="window.location.reload();">${retry}</button>
+            </div>
+
+            <div class="footer" id="id_footer">
+                © 2026 AzClerk - Bütün hüquqlar qorunur
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var i18n = {
+            az: {
+                message: "Autentifikasiya xidmətinə (CAS) hazırda daxil olmaq mümkün deyil. Zəhmət olmasa sistem administratoru ilə əlaqə saxlayın və ya bir qədər sonra yenidən cəhd edin.",
+                retry: "Yenidən cəhd et",
+                copyright: "© 2026 AzClerk - Bütün hüquqlar qorunur"
+            },
+            tr: {
+                message: "Kimlik doğrulama servisine (CAS) şu anda erişilemiyor. Lütfen sistem yöneticiniz ile iletişime geçiniz veya bir süre sonra tekrar deneyiniz.",
+                retry: "Tekrar Dene",
+                copyright: "© 2026 AzClerk - Tüm hakları saklıdır"
+            },
+            en: {
+                message: "The authentication service (CAS) is currently inaccessible. Please try again later or contact your system administrator.",
+                retry: "Retry",
+                copyright: "© 2026 AzClerk - All rights reserved"
+            },
+            ru: {
+                message: "Служба аутентификации (CAS) в настоящее время недоступна. Пожалуйста, обратитесь к системному администратору или повторите попытку позже.",
+                retry: "Повторить",
+                copyright: "© 2026 AzClerk - Все права защищены"
+            }
+        };
+
+        function cleanPlaceholder(val, fallback) {
+            if (!val || val.indexOf("${") === 0) return fallback;
+            return val;
+        }
+
+        function setLang(lang) {
+            lang = (lang || 'az').toLowerCase().trim();
+            var dict = i18n[lang] || i18n.az;
+            document.documentElement.lang = lang;
+
+            var msgEl = document.getElementById('id_msg');
+            if (msgEl) msgEl.innerText = dict.message;
+
+            var retryBtn = document.getElementById('btnRetry');
+            if (retryBtn) retryBtn.innerText = dict.retry;
+
+            var footerEl = document.getElementById('id_footer');
+            if (footerEl) footerEl.innerText = dict.copyright;
+
+            var buttons = document.querySelectorAll('.lang-btn');
+            buttons.forEach(function(b) {
+                if (b.innerText.toLowerCase() === lang) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+        }
+
+        function applyConfig(cfg) {
+            var currentLang = document.documentElement.lang;
+            var lang = (cfg && (cfg.language || cfg.lang)) || cleanPlaceholder(currentLang, 'az');
+            lang = (lang || 'az').toLowerCase().trim();
+            var dict = i18n[lang] || i18n.az;
+
+            document.documentElement.lang = lang;
+
+            var msgEl = document.getElementById('id_msg');
+            if (msgEl) {
+                var curMsg = msgEl.innerText;
+                msgEl.innerText = (cfg && cfg.message) || cleanPlaceholder(curMsg, dict.message);
+            }
+
+            var retryBtn = document.getElementById('btnRetry');
+            if (retryBtn) {
+                var curRetry = retryBtn.innerText;
+                retryBtn.innerText = (cfg && cfg.retry) || cleanPlaceholder(curRetry, dict.retry);
+            }
+
+            var logoEl = document.getElementById('img_logo');
+            if (logoEl) {
+                var curLogo = logoEl.getAttribute('src');
+                var targetLogo = (cfg && cfg.logo) || cleanPlaceholder(curLogo, '');
+                if (targetLogo) {
+                    logoEl.src = targetLogo;
+                    logoEl.style.display = 'inline-block';
+                }
+            }
+
+            var footerEl = document.getElementById('id_footer');
+            if (footerEl) {
+                var curFooter = footerEl.innerText;
+                footerEl.innerText = (cfg && cfg.copyright) || cleanPlaceholder(curFooter, dict.copyright);
+            }
+
+            var buttons = document.querySelectorAll('.lang-btn');
+            buttons.forEach(function(b) {
+                if (b.innerText.toLowerCase() === lang) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+        }
+
+        // Initial cleanup of placeholders
+        applyConfig(null);
+
+        try {
+            var pathname = window.location.pathname || '';
+            var contextPath = '';
+            var secondSlash = pathname.indexOf('/', 1);
+            if (secondSlash > 0) {
+                contextPath = pathname.substring(0, secondSlash);
+            }
+            var apiUrl = (contextPath ? contextPath : '') + '/api/cas/error-config';
+            fetch(apiUrl)
+                .then(function(r) { return r.json(); })
+                .then(function(cfg) { applyConfig(cfg); })
+                .catch(function() {});
+        } catch (e) {}
+    </script>
+</body>
+</html>

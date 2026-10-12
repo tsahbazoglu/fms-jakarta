@@ -436,7 +436,6 @@
         </dependencies>
     </dependencyManagement>
 
-
     <dependencies>
         <dependency>
             <groupId>jakarta.platform</groupId>
@@ -475,6 +474,18 @@
                                 <directory>src/main/webapp/exclude/mvn-profiles/${customer.folder}</directory>
                                 <targetPath>resources/com/dadhawk/auth/client</targetPath>
                                 <filtering>false</filtering>
+                                <includes>
+                                    <include>dh-auth.json</include>
+                                </includes>
+                            </resource>
+                            <resource>
+                                <directory>src/main/webapp/exclude/mvn-profiles/${customer.folder}</directory>
+                                <targetPath>public</targetPath>
+                                <filtering>false</filtering>
+                                <includes>
+                                    <include>logo-small.png</include>
+                                    <include>no-access.html</include>
+                                </includes>
                             </resource>
                         </webResources>
                     </configuration>
