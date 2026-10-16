@@ -469,15 +469,8 @@
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                         <packagingExcludes>exclude/**</packagingExcludes>
                         <warSourceExcludes>exclude/**,resources/dadhawk-auth/**</warSourceExcludes>
+                        <webXml>${project.basedir}/src/main/webapp/exclude/mvn-profiles/${customer.folder}/web.xml</webXml>
                         <webResources>
-                            <resource>
-                                <directory>src/main/webapp/exclude/mvn-profiles/${customer.folder}</directory>
-                                <targetPath>resources/com/dadhawk/auth/client</targetPath>
-                                <filtering>false</filtering>
-                                <includes>
-                                    <include>dh-auth.json</include>
-                                </includes>
-                            </resource>
                             <resource>
                                 <directory>src/main/webapp/exclude/mvn-profiles/${customer.folder}</directory>
                                 <targetPath>public</targetPath>
