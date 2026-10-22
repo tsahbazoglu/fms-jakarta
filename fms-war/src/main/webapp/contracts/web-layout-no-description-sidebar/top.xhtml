@@ -18,7 +18,7 @@
 
             <p:graphicImage value="#{mainFrame.logoSmall}"
                             style="max-height: 32px; width: auto; display: block;"
-                            alt="Logo" />
+                            alt="Logo"/>
         </div>
 
         <!-- Right Side: User Info & Action Buttons -->
@@ -40,7 +40,7 @@
             <div class="ui-button ui-widget ui-state-default ui-button-outlined ui-button-secondary p-button-sm flex align-items-center gap-2 text-xs"
                  style="cursor: default; height: 31px; padding: 0 0.75rem; box-sizing: border-box;">
                 <i class="pi pi-user"></i>
-                <h:outputText value="#{loginController.loggedUserDetail.username}" />
+                <h:outputText value="#{loginController.loggedUserDetail.username}"/>
             </div>
 
             <!-- Action Buttons -->
@@ -58,14 +58,26 @@
                                  update="#{updateAjaxMB.btnDetay},id-dlg-user-info"
                                  styleClass="ui-button-outlined ui-button-secondary p-button-sm"/>
 
-                <p:commandButton value="#{msg['cikis']}"
-                                 icon="pi pi-sign-out"
-                                 action="#{casLogout.logout}"
-                                 immediate="true"
-                                 update="#{updateAjaxMB.msgDlg}"
-                                 styleClass="ui-button-outlined ui-button-danger p-button-sm">
+                <p:commandButton
+                        id="id-logout"
+                        value="#{msg['cikis']}"
+                        icon="pi pi-sign-out"
+                        onclick="handleLogout();return false;"
+                        immediate="true"
+                        update="#{updateAjaxMB.msgDlg}"
+                        styleClass="ui-button-outlined ui-button-danger p-button-sm">
                     <f:attribute name="toPage" value="#{msg['personnel']}"/>
                 </p:commandButton>
+
+                <script>
+                    async function handleLogout() {
+                        try {
+                            await fetch('/logout', { method: 'POST', credentials: 'same-origin' });
+                        } catch (e) {}
+
+                        window.location.href = '/';
+                    }
+                </script>
             </div>
         </div>
     </div>

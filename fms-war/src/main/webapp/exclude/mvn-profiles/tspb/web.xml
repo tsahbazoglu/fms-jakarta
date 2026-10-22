@@ -95,29 +95,28 @@
             <param-name>casDomain</param-name>
             <param-value>tspb.org.tr</param-value>
         </init-param>
-
         <!-- ÖNEMLİ: Apache 301 yönlendirmesini ve POST kaybını önlemek için HTTPS ve tam URL belirtin -->
         <init-param>
             <param-name>casServerUrl</param-name>
             <param-value>https://login.tspb.org.tr</param-value>
         </init-param>
-
         <!-- Cookie adı -->
         <init-param>
             <param-name>cookieName</param-name>
             <param-value>AUTH_TOKEN</param-value>
         </init-param>
-
         <!-- Token doğrulama uç noktası (loginUrl veya gateVerifyUrl) -->
         <init-param>
             <param-name>gateVerifyUrl</param-name>
             <param-value>https://login.tspb.org.tr/api/gate/verify</param-value>
         </init-param>
-
-
         <init-param>
             <param-name>cas.timeout</param-name>
             <param-value>5</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cas.logout.path</param-name>
+            <param-value>/logout</param-value>
         </init-param>
         <init-param>
             <param-name>public-folders</param-name>
